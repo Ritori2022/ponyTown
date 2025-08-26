@@ -1,6 +1,6 @@
 # Pony Town 修复起点
 
-使用这个项目进行修复[A game of ponies building a town](https://github.com/Ritori2022/pony-town-reboot)
+使用这个项目进行修复[pony-town version 0.53.1-alpha 在2025年8月的最小可行修复版本](https://github.com/Ritori2022/pony-town-reboot)
 
 ## Prerequisites
 
@@ -241,4 +241,5 @@ gulp dev --coverage # run with tests and code coverage
 
 - `src/ts/server/start.ts:35` - adding custom map to the world
 - `src/ts/server/map/customMap.ts` - commented introduction to customizing maps
+
 
