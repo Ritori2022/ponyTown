@@ -43,6 +43,8 @@
 
 ### Git提交
 - `da198c3` - [Planning] Add modernization plan and automation config
+- `0a1d840` - [Tracking] Add progress tracking and daily log documents
+- `c689de3` - [Config] Update CLAUDE.md with automation strategies
 
 ### 关键决策
 1. **策略选择**: 采用激进现代化而非保守修复
