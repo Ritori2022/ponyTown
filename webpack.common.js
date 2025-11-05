@@ -43,16 +43,21 @@ module.exports = {
 					{
 						loader: 'postcss-loader',
 						options: {
-							ident: 'postcss',
-							plugins: loader => [
-								require('autoprefixer')('last 2 versions'),
-								require('cssnano')({ discardComments: { removeAll: true } }),
-							],
+							postcssOptions: {
+								plugins: [
+									require('autoprefixer'),
+									require('cssnano')({ preset: 'default' }),
+								],
+							},
 						},
 					},
 					{
 						loader: 'sass-loader',
-						options: { includePaths: ['src/styles'] },
+						options: {
+							sassOptions: {
+								includePaths: ['src/styles'],
+							},
+						},
 					},
 				],
 			},

@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const merge = require('webpack-merge');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const { merge } = require('webpack-merge');
+const TerserPlugin = require('terser-webpack-plugin');
 const WrapperPlugin = require('wrapper-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { AngularCompilerPlugin } = require('@ngtools/webpack');
@@ -55,7 +55,6 @@ module.exports = (args = {}) =>
 				path: path.resolve(__dirname, 'build', outDir, 'scripts'),
 			}),
 			devtool: script === 'bootstrap' ? 'source-map' : false,
-			node: { Buffer: false },
 			module: {
 				rules: [
 					{
@@ -68,9 +67,8 @@ module.exports = (args = {}) =>
 			},
 			optimization: {
 				minimizer: [
-					new UglifyJSPlugin({
-						sourceMap: true,
-						uglifyOptions: {
+					new TerserPlugin({
+						terserOptions: {
 							ecma,
 							mangle: !args.debug,
 							output: { comments: false },
@@ -84,6 +82,6 @@ module.exports = (args = {}) =>
 				(script === 'bootstrap' && !args.analyze) ? new WrapperPlugin({ test: /\.js$/, header: analytics }) : undefined,
 				args.analyze ? new BundleAnalyzerPlugin({ analyzerMode: 'static' }) : undefined,
 				new webpack.DefinePlugin({ DEVELOPMENT: false, TOOLS, SERVER: false, BETA: !!args.beta, TIMING: !!args.timing, TESTS: false }),
-				new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+				new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/ }),
 			].filter(x => x),
 		}));

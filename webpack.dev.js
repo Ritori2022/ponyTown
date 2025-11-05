@@ -1,5 +1,6 @@
 const webpack = require('webpack');
-const merge = require('webpack-merge');
+const path = require('path');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 const compilerOptions = {
@@ -15,13 +16,19 @@ module.exports = merge(common, {
 		'bootstrap-admin': './ts/bootstrap-admin',
 		'bootstrap-tools': './ts/bootstrap-tools',
 	},
-	devtool: 'cheap-eval-source-map',
+	devtool: 'eval-cheap-module-source-map',
 	devServer: {
 		host: '0.0.0.0',
 		hot: true,
 		historyApiFallback: true,
-		publicPath: '/assets/scripts/',
-		stats: 'minimal',
+		static: {
+			directory: path.join(__dirname, 'build'),
+			publicPath: '/',
+		},
+		devMiddleware: {
+			publicPath: '/assets/scripts/',
+			stats: 'minimal',
+		},
 	},
 	stats: 'minimal',
 	output: {
@@ -60,8 +67,6 @@ module.exports = merge(common, {
 		},
 	},
 	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NamedModulesPlugin(),
 		new webpack.DefinePlugin({ DEVELOPMENT: true, TOOLS: true, SERVER: false, BETA: true, TIMING: true, TESTS: false }),
 	],
 });
