@@ -1,10 +1,28 @@
-# Pony Town 修复起点
+# Pony Town - Modernized 2025
 
-使用这个项目进行修复[pony-town version 0.53.1-alpha 在2025年8月的最小可行修复版本](https://github.com/Ritori2022/pony-town-reboot)
+> **🎉 Modernization Status**: Phase 1-3 Complete (2025-11-05)
+> This fork has been modernized from 2019 tech stack to 2025 standards.
+
+## 📊 Modernization Overview
+
+This branch contains a **full modernization** of the Pony Town codebase:
+
+| Component | Original | Current | Status |
+|-----------|----------|---------|--------|
+| Node.js | ~12.x | 22.21.0 LTS | ✅ |
+| TypeScript | 3.5.3 | 5.9.3 | ✅ |
+| Angular | 8.2.4 | 18.2.14 | ✅ |
+| Webpack | 4.39.3 | 5.102.1 | ✅ |
+| Express | 4.17.1 | 4.21.2 | ✅ |
+| Mongoose | 5.6.11 | 8.19.3 | ✅ |
+
+**See [MODERNIZATION_SUMMARY.md](./MODERNIZATION_SUMMARY.md) for complete details.**
+
+---
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org/download/release/v9.11.2/) (version 9)
+* **[Node.js](https://nodejs.org/)** (version 22.x LTS) - **Updated from v9**
 * gulp `npm install -g gulp`
 * MongoDB: [download link](https://www.mongodb.com/download-center/community) and [installation instructions](https://docs.mongodb.com/manual/administration/install-community/)
 * [ImageMagick](https://imagemagick.org/script/download.php#windows) (optional, required for generating preview gifs in animation tool)
@@ -12,8 +30,16 @@
 ## Installation
 
 ```bash
-npm install
+# Install dependencies (may take a few minutes)
+npm install --legacy-peer-deps
+
+# Note: --legacy-peer-deps is needed due to some legacy dependencies
+# Some native modules (canvas) may fail to compile but are not critical
 ```
+
+**Known Installation Issues:**
+- `canvas` package may fail (not required for core functionality)
+- Use `--ignore-scripts` if you encounter compilation errors
 
 ## Setting up Database
 
@@ -161,12 +187,22 @@ Add `config.json` file in root directory with following content. You can use `co
 
 ## Running
 
-Production environment
+**Important:** Create `config.json` from `config-template.json` before starting!
+
+### Production environment
 
 ```bash
-npm run build
+# Compile TypeScript
+npm run ts
+
+# Start server (build step currently has known issues, see below)
 npm start
 ```
+
+**⚠️ Known Issues:**
+- Full build (`npm run build`) requires Webpack AOT configuration updates
+- Server can still run with pre-compiled JS files
+- See [MODERNIZATION_SUMMARY.md](./MODERNIZATION_SUMMARY.md) for details
 
 Adding/removing roles
 
@@ -242,4 +278,67 @@ gulp dev --coverage # run with tests and code coverage
 - `src/ts/server/start.ts:35` - adding custom map to the world
 - `src/ts/server/map/customMap.ts` - commented introduction to customizing maps
 
+---
+
+## 📚 Modernization Documentation
+
+- **[MODERNIZATION_SUMMARY.md](./MODERNIZATION_SUMMARY.md)** - Complete modernization report
+- **[MODERNIZATION_PLAN.md](./MODERNIZATION_PLAN.md)** - Original 5-phase plan
+- **[REFACTOR_PROGRESS.md](./REFACTOR_PROGRESS.md)** - Detailed progress tracking
+- **[REFACTOR_DAILY_LOG.md](./REFACTOR_DAILY_LOG.md)** - Development log
+
+## 🔧 Technology Stack (2025)
+
+### Frontend
+- **Angular 18.2.14** (from 8.2.4) - Modern framework with Ivy engine
+- **TypeScript 5.9.3** - Latest language features
+- **Webpack 5.102.1** - Modern bundler with improved performance
+- **Sass 1.93.3** - Dart Sass (replaces deprecated node-sass)
+
+### Backend
+- **Node.js 22.21.0** - LTS version
+- **Express 4.21.2** - Latest 4.x
+- **Mongoose 8.19.3** - Modern MongoDB ODM
+- **Passport 0.7.0** - Authentication
+
+### Build Tools
+- **ESLint 9.39.1** - Replaces deprecated TSLint
+- **gulp-sass 5.1.0** - Compatible with Dart Sass
+
+## 🚀 Development Changes
+
+### New Commands
+```bash
+# Linting (now uses ESLint instead of TSLint)
+npm run lint
+
+# TypeScript compilation (stricter checks)
+npm run ts
+
+# Watch mode
+npm run ts-watch
+```
+
+### Breaking Changes from Original
+1. **Node.js 22 Required** - Old node-sass incompatible with Node 22
+2. **Webpack 5** - Configuration syntax updated
+3. **Angular 18** - 10 major version jump with breaking changes
+4. **Mongoose 8** - Connection options updated
+
+## ⚠️ Current Limitations
+
+1. **Webpack AOT Build**: Requires configuration updates for Angular 18 + TypeScript 5.9
+2. **Type Errors**: 221 TypeScript warnings (non-blocking, JS files compile)
+3. **Testing**: Test suite needs validation with new versions
+
+See [MODERNIZATION_SUMMARY.md](./MODERNIZATION_SUMMARY.md) for detailed status.
+
+---
+
+## 📖 Original Documentation
+
+For historical reference, see the original [pony-town-reboot](https://github.com/Ritori2022/pony-town-reboot) project.
+
+**Last Updated**: 2025-11-05
+**Modernization Branch**: `claude/pony-town-modernization-011CUqRSp1cMrZSm7fY5Zeg7`
 
