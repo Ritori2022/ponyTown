@@ -12,7 +12,7 @@ const tslib_1 = require("tslib");
 const fs = tslib_1.__importStar(require("fs"));
 const path = tslib_1.__importStar(require("path"));
 const moment = tslib_1.__importStar(require("moment"));
-const ExpressBrute = tslib_1.__importStar(require("express-brute"));
+const express_brute_1 = tslib_1.__importDefault(require("express-brute"));
 const lodash_1 = require("lodash");
 const hash_1 = require("../generated/hash");
 const accountUtils_1 = require("../common/accountUtils");
@@ -105,7 +105,7 @@ const admin = (server) => (req, res, next) => {
     }
 };
 exports.admin = admin;
-const store = new ExpressBrute.MemoryStore();
+const store = new express_brute_1.default.MemoryStore();
 function limit(freeRetries, lifetime) {
     const options = {
         freeRetries,
@@ -115,7 +115,7 @@ function limit(freeRetries, lifetime) {
             res.status(429).send(`Too many requests, please try again ${moment(nextValidRequestDate).fromNow()}`);
         }
     };
-    return (new ExpressBrute(store, options)).prevent;
+    return (new express_brute_1.default(store, options)).prevent;
 }
 function reportError(e, server, req) {
     (0, reporter_1.createFromRequest)(server, req).danger(`Req error: ${e.message}`, `${req.method.toUpperCase()} ${req.originalUrl}`);

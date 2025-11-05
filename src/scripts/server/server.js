@@ -8,7 +8,7 @@ const mongoose = tslib_1.__importStar(require("mongoose"));
 const http = tslib_1.__importStar(require("http"));
 const morgan_1 = tslib_1.__importDefault(require("morgan"));
 const body_parser_1 = tslib_1.__importDefault(require("body-parser"));
-const expressSession = tslib_1.__importStar(require("express-session"));
+const express_session_1 = tslib_1.__importDefault(require("express-session"));
 const serve_favicon_1 = tslib_1.__importDefault(require("serve-favicon"));
 const Rollbar = tslib_1.__importStar(require("rollbar"));
 const passport_1 = tslib_1.__importDefault(require("passport"));
@@ -160,14 +160,14 @@ if (!production) {
 }
 const httpServer = http.createServer(app);
 const errorHandler = new socketErrorHandler_1.SocketErrorHandler(rollbar, config_1.server);
-const createSession = () => expressSession({
+const createSession = () => (0, express_session_1.default)({
     secret: config_1.config.secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
         maxAge: constants_1.WEEK * 2,
     },
-    store: new connect_mongo_1.default({ mongooseConnection: mongoose.connection }),
+    store: connect_mongo_1.default.create({ mongoUrl: config_1.config.db }),
 });
 const statsPath = (0, paths_1.pathTo)('logs', `stats-${config_1.server.id}.csv`);
 const stats = new stats_1.StatsTracker(statsPath);

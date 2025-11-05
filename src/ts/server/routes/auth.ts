@@ -1,5 +1,5 @@
 import { Router, Request, Response, RequestHandler } from 'express';
-import { use, authenticate, AuthenticateOptions } from 'passport';
+import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { remove } from 'lodash';
 import { MINUTE } from '../../common/constants';
@@ -219,7 +219,7 @@ function createHandler(
 	removedDocument: RemovedDocument
 ): RequestHandler {
 	return (req, res, next) => {
-		const handler = authenticate(id, options, (error: Error | null, account: IAccount | null) =>
+		const handler = passport.authenticate(id, options, (error: Error | null, account: IAccount | null) =>
 			handleAuth(server, live, removedDocument, req, res, error, account));
 
 		return handler(req, res, next);
@@ -261,7 +261,7 @@ export function authRoutes(
 			return account;
 		}
 
-		use(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
+		passport.use(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
 			const profile = getProfile(id, oauthProfile);
 
 			signInOrSignUp(req, profile)
@@ -290,8 +290,8 @@ export function authRoutes(
 	}));
 
 	if (mockLogin) {
-		use(new LocalStrategy((login, _pass, done) => Account.findById(login, done)));
-		app.get('/local', authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
+		passport.use(new LocalStrategy((login, _pass, done) => Account.findById(login, done)));
+		app.get('/local', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
 	}
 
 	return app;

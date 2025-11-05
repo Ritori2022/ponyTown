@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 import * as http from 'http';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import * as expressSession from 'express-session';
+import expressSession from 'express-session';
 import serveFavicon from 'serve-favicon';
 import * as Rollbar from 'rollbar';
 import passport from 'passport';
@@ -195,7 +195,7 @@ const createSession = () => expressSession({
 	cookie: {
 		maxAge: WEEK * 2,
 	},
-	store: new MongoStore({ mongooseConnection: mongoose.connection }),
+	store: MongoStore.create({ mongoUrl: config.db }),
 });
 
 const statsPath = pathTo('logs', `stats-${server.id}.csv`);

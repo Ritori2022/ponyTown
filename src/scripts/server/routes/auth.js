@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRoutes = authRoutes;
+const tslib_1 = require("tslib");
 const express_1 = require("express");
-const passport_1 = require("passport");
+const passport_1 = tslib_1.__importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
 const lodash_1 = require("lodash");
 const constants_1 = require("../../common/constants");
@@ -178,7 +179,7 @@ async function handleAuth(server, live, removedDocument, req, res, error, accoun
 }
 function createHandler(server, live, id, options, removedDocument) {
     return (req, res, next) => {
-        const handler = (0, passport_1.authenticate)(id, options, (error, account) => handleAuth(server, live, removedDocument, req, res, error, account));
+        const handler = passport_1.default.authenticate(id, options, (error, account) => handleAuth(server, live, removedDocument, req, res, error, account));
         return handler(req, res, next);
     };
 }
@@ -211,7 +212,7 @@ function authRoutes(host, server, settings, live, mockLogin, removedDocument) {
             (0, logger_1.system)(account._id, `signed-in with "${auth.name}" [${auth._id}] [${ip}] [${userAgent}]`);
             return account;
         }
-        (0, passport_1.use)(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
+        passport_1.default.use(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
             const profile = (0, oauth_1.getProfile)(id, oauthProfile);
             signInOrSignUp(req, profile)
                 .then(account => {
@@ -236,8 +237,8 @@ function authRoutes(host, server, settings, live, mockLogin, removedDocument) {
         return { success: true };
     }));
     if (mockLogin) {
-        (0, passport_1.use)(new passport_local_1.Strategy((login, _pass, done) => db_1.Account.findById(login, done)));
-        app.get('/local', (0, passport_1.authenticate)('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
+        passport_1.default.use(new passport_local_1.Strategy((login, _pass, done) => db_1.Account.findById(login, done)));
+        app.get('/local', passport_1.default.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
     }
     return app;
 }
