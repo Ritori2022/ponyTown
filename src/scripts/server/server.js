@@ -6,16 +6,17 @@ const fs = tslib_1.__importStar(require("fs"));
 const Bluebird = tslib_1.__importStar(require("bluebird"));
 const mongoose = tslib_1.__importStar(require("mongoose"));
 const http = tslib_1.__importStar(require("http"));
-const morgan = tslib_1.__importStar(require("morgan"));
-const bodyParser = tslib_1.__importStar(require("body-parser"));
+const morgan_1 = tslib_1.__importDefault(require("morgan"));
+const body_parser_1 = tslib_1.__importDefault(require("body-parser"));
 const expressSession = tslib_1.__importStar(require("express-session"));
-const serveFavicon = tslib_1.__importStar(require("serve-favicon"));
+const serve_favicon_1 = tslib_1.__importDefault(require("serve-favicon"));
 const Rollbar = tslib_1.__importStar(require("rollbar"));
-const passport = tslib_1.__importStar(require("passport"));
-const connectMongo = tslib_1.__importStar(require("connect-mongo"));
-const express = tslib_1.__importStar(require("express"));
+const passport_1 = tslib_1.__importDefault(require("passport"));
+const connect_mongo_1 = tslib_1.__importDefault(require("connect-mongo"));
+const express_1 = tslib_1.__importDefault(require("express"));
 // import { WebSocketServer } from '@clusterws/cws';
-const clusterws_uws_1 = require("clusterws-uws");
+// import { WebSocketServer } from 'clusterws-uws';
+const ws_1 = require("ws");
 const lodash_1 = require("lodash");
 const fs_extra_1 = require("fs-extra");
 const ag_sockets_1 = require("ag-sockets");
@@ -63,13 +64,10 @@ function getServiceWorker() {
     }
 }
 mongoose.connect(config_1.config.db, {
-    reconnectTries: Number.MAX_VALUE,
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
+// Mongoose 8 removed these deprecated options
+// reconnectTries, useNewUrlParser, useCreateIndex, useFindAndModify are no longer needed
 });
-const MongoStore = connectMongo(expressSession);
-const app = express();
+const app = (0, express_1.default)();
 const production = app.get('env') === 'production';
 const maxAge = production ? constants_1.YEAR : 0;
 const etag = false;
@@ -113,9 +111,9 @@ if (production) {
     // app.use(require('shrink-ray-current')());
 }
 if (config_1.args.login || config_1.args.admin) {
-    app.use(serveFavicon((0, paths_1.pathTo)('favicons', 'favicon.ico')));
+    app.use((0, serve_favicon_1.default)((0, paths_1.pathTo)('favicons', 'favicon.ico')));
 }
-app.use(morgan('dev', { skip: (_, res) => res.statusCode < 500 || res.statusCode === 503 }));
+app.use((0, morgan_1.default)('dev', { skip: (_, res) => res.statusCode < 500 || res.statusCode === 503 }));
 const serviceWorker = getServiceWorker();
 if (serviceWorker) {
     app.get('/sw.js', (_, res) => {
@@ -131,16 +129,16 @@ if (config_1.args.login || config_1.args.admin) {
     if (production) {
         app.use((0, requestUtils_1.inMemoryStaticFiles)(assetsPath, '/assets', maxAge));
     }
-    app.use('/assets', (0, requestUtils_1.blockMaps)(DEVELOPMENT, !!config_1.args.local), express.static(assetsPath, { maxAge, etag }));
-    app.use(express.static((0, paths_1.pathTo)('public'), { maxAge, etag }));
-    app.use(express.static((0, paths_1.pathTo)('favicons'), { maxAge, etag }));
+    app.use('/assets', (0, requestUtils_1.blockMaps)(DEVELOPMENT, !!config_1.args.local), express_1.default.static(assetsPath, { maxAge, etag }));
+    app.use(express_1.default.static((0, paths_1.pathTo)('public'), { maxAge, etag }));
+    app.use(express_1.default.static((0, paths_1.pathTo)('favicons'), { maxAge, etag }));
 }
-app.use(bodyParser.json({ type: ['json', 'application/csp-report'], limit }));
-app.use(bodyParser.urlencoded({ extended: true, limit }));
+app.use(body_parser_1.default.json({ type: ['json', 'application/csp-report'], limit }));
+app.use(body_parser_1.default.urlencoded({ extended: true, limit }));
 app.use(require('cookie-parser')());
 if (config_1.args.login || config_1.args.admin) {
-    passport.serializeUser((account, done) => done(null, account._id.toString()));
-    passport.deserializeUser((id, done) => db_1.Account.findById(id, (err, a) => done(err, a && !(0, adminUtils_1.isBanned)(a) ? a : false)));
+    passport_1.default.serializeUser((account, done) => done(null, account._id.toString()));
+    passport_1.default.deserializeUser((id, done) => db_1.Account.findById(id, (err, a) => done(err, a && !(0, adminUtils_1.isBanned)(a) ? a : false)));
 }
 const ignore = [
     'RangeNotSatisfiableError',
@@ -154,10 +152,10 @@ if (rollbar) {
     app.use(rollbar.errorHandler());
 }
 if (!production) {
-    app.use('/assets-admin', express.static((0, paths_1.pathTo)('assets')));
-    app.use('/assets-admin', express.static((0, paths_1.pathTo)('src')));
-    app.use('/assets', express.static((0, paths_1.pathTo)('assets')));
-    app.use('/assets', express.static((0, paths_1.pathTo)('src')));
+    app.use('/assets-admin', express_1.default.static((0, paths_1.pathTo)('assets')));
+    app.use('/assets-admin', express_1.default.static((0, paths_1.pathTo)('src')));
+    app.use('/assets', express_1.default.static((0, paths_1.pathTo)('assets')));
+    app.use('/assets', express_1.default.static((0, paths_1.pathTo)('src')));
     app.use(require('errorhandler')());
 }
 const httpServer = http.createServer(app);
@@ -169,21 +167,21 @@ const createSession = () => expressSession({
     cookie: {
         maxAge: constants_1.WEEK * 2,
     },
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    store: new connect_mongo_1.default({ mongooseConnection: mongoose.connection }),
 });
 const statsPath = (0, paths_1.pathTo)('logs', `stats-${config_1.server.id}.csv`);
 const stats = new stats_1.StatsTracker(statsPath);
-const sessionMiddlewares = (0, lodash_1.once)(() => [createSession(), passport.initialize(), passport.session()]);
+const sessionMiddlewares = (0, lodash_1.once)(() => [createSession(), passport_1.default.initialize(), passport_1.default.session()]);
 const adminMiddlewares = (0, lodash_1.once)(() => [...sessionMiddlewares(), (0, requestUtils_1.admin)(config_1.server)]);
 const socketOptionsBase = {
-    ws: { Server: clusterws_uws_1.WebSocketServer },
+    ws: { Server: ws_1.WebSocketServer },
     hash: hash_1.STAMP,
 };
 (0, requestUtils_1.initLogRequest)(stats.logRequest);
 (0, admin_accounts_1.initLogSwearingAndSpamming)(stats.logSwearing, stats.logSpamming);
 const host = (0, ag_sockets_1.createServerHost)(httpServer, {
     path: config_1.args.standaloneadmin && !config_1.args.game ? '/admin/ws-admin' : config_1.server.path,
-    ws: { Server: clusterws_uws_1.WebSocketServer },
+    ws: { Server: ws_1.WebSocketServer },
     perMessageDeflate: false,
     errorHandler,
 });
@@ -231,7 +229,7 @@ const removedDocument = (0, internal_1.createRemovedDocument)(endPoints, adminSe
 const index = (0, index_1.createIndex)(assetsPath, adminAssetsPath);
 if (config_1.args.admin) {
     if (config_1.args.standaloneadmin) {
-        app.use('/admin/assets-admin', ...adminMiddlewares(), express.static(adminAssetsPath, { maxAge, etag }));
+        app.use('/admin/assets-admin', ...adminMiddlewares(), express_1.default.static(adminAssetsPath, { maxAge, etag }));
         app.get('/admin/assets-admin/*', (_, res) => res.sendStatus(404));
         const adminApi = new internal_admin_1.InternalAdminApi(adminService, endPoints);
         app.use('/api-internal-admin', (0, requestUtils_1.internal)(config_1.config, config_1.server), (0, requestUtils_1.wrapApi)(config_1.server, adminApi));
@@ -269,7 +267,7 @@ if (config_1.args.login) {
     const linkPreloads = [
         ...userPage.preload,
     ];
-    app.use('/assets-admin', ...adminMiddlewares(), express.static(adminAssetsPath, { maxAge, etag }));
+    app.use('/assets-admin', ...adminMiddlewares(), express_1.default.static(adminAssetsPath, { maxAge, etag }));
     app.use('/auth', ...sessionMiddlewares(), (0, auth_1.authRoutes)(config_1.config.host, config_1.server, settings_1.settings, liveSettings_1.liveSettings, config_1.args.local || DEVELOPMENT, removedDocument));
     app.use('/api', ...sessionMiddlewares(), (0, api_1.default)(config_1.server, settings_1.settings, { version: config_1.version, host: config_1.config.host, debug: DEVELOPMENT, local: !!config_1.args.local }, removedDocument));
     app.use('/api1', ...sessionMiddlewares(), (0, api1_1.default)(config_1.server, settings_1.settings));

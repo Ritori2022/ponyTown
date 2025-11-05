@@ -4,6 +4,7 @@ require('source-map-support').install();
 
 import 'core-js/stable/promise/finally';
 import 'reflect-metadata';
+import '@angular/compiler';
 import * as Promise from 'bluebird';
 import * as fs from 'fs';
 import { argv } from 'yargs';

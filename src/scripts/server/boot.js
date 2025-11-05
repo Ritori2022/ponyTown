@@ -5,6 +5,7 @@ const tslib_1 = require("tslib");
 require('source-map-support').install();
 require("core-js/stable/promise/finally");
 require("reflect-metadata");
+require("@angular/compiler");
 const Promise = tslib_1.__importStar(require("bluebird"));
 const fs = tslib_1.__importStar(require("fs"));
 const yargs_1 = require("yargs");

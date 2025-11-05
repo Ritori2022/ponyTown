@@ -3,16 +3,17 @@ import * as fs from 'fs';
 import * as Bluebird from 'bluebird';
 import * as mongoose from 'mongoose';
 import * as http from 'http';
-import * as morgan from 'morgan';
-import * as bodyParser from 'body-parser';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
 import * as expressSession from 'express-session';
-import * as serveFavicon from 'serve-favicon';
+import serveFavicon from 'serve-favicon';
 import * as Rollbar from 'rollbar';
-import * as passport from 'passport';
-import * as connectMongo from 'connect-mongo';
-import * as express from 'express';
+import passport from 'passport';
+import MongoStore from 'connect-mongo';
+import express from 'express';
 // import { WebSocketServer } from '@clusterws/cws';
-import { WebSocketServer } from 'clusterws-uws';
+// import { WebSocketServer } from 'clusterws-uws';
+import { WebSocketServer } from 'ws';
 import { compact, once } from 'lodash';
 import { copySync, removeSync, ensureDirSync } from 'fs-extra';
 import { createServerHost, createClientOptions, ServerOptions, ClientExtensions, Packet } from 'ag-sockets';
@@ -69,13 +70,9 @@ function getServiceWorker() {
 }
 
 mongoose.connect(config.db, {
-	reconnectTries: Number.MAX_VALUE,
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
+	// Mongoose 8 removed these deprecated options
+	// reconnectTries, useNewUrlParser, useCreateIndex, useFindAndModify are no longer needed
 });
-
-const MongoStore = connectMongo(expressSession);
 const app = express();
 const production = app.get('env') === 'production';
 const maxAge = production ? YEAR : 0;
