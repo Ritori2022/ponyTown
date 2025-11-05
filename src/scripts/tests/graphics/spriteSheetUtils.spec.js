@@ -6,7 +6,7 @@ const sinon_1 = require("sinon");
 const spriteSheetUtils_1 = require("../../graphics/spriteSheetUtils");
 const canvasUtils_1 = require("../../client/canvasUtils");
 function createImageData() {
-    return canvasUtils_1.createCanvas(10, 10).getContext('2d').getImageData(0, 0, 10, 10);
+    return (0, canvasUtils_1.createCanvas)(10, 10).getContext('2d').getImageData(0, 0, 10, 10);
 }
 describe('spriteSheetUtils', () => {
     describe('createTexturesForSpriteSheets()', () => {
@@ -14,20 +14,20 @@ describe('spriteSheetUtils', () => {
             const gl = {};
             const data = createImageData();
             const tex = {};
-            const createTexture = sinon_1.stub().returns(tex);
+            const createTexture = (0, sinon_1.stub)().returns(tex);
             const sheet = [
                 { sprites: [], src: 'foo', data, texture: undefined, palette: false },
             ];
-            spriteSheetUtils_1.createTexturesForSpriteSheets(gl, sheet, createTexture);
+            (0, spriteSheetUtils_1.createTexturesForSpriteSheets)(gl, sheet, createTexture);
             sinon_1.assert.calledWith(createTexture, gl, data);
-            chai_1.expect(sheet[0].texture).equal(tex);
+            (0, chai_1.expect)(sheet[0].texture).equal(tex);
         });
         it('handles empty sprites', () => {
-            const createTexture = sinon_1.stub().returns({});
+            const createTexture = (0, sinon_1.stub)().returns({});
             const sheet = [
                 { sprites: [undefined], src: 'foo', data: createImageData(), texture: undefined, palette: false },
             ];
-            spriteSheetUtils_1.createTexturesForSpriteSheets({}, sheet, createTexture);
+            (0, spriteSheetUtils_1.createTexturesForSpriteSheets)({}, sheet, createTexture);
         });
     });
     // describe('releaseTexturesForSpriteSheets()', () => {

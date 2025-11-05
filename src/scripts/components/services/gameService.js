@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GameService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -16,7 +17,7 @@ const accountUtils_1 = require("../../common/accountUtils");
 const clientUtils_1 = require("../../client/clientUtils");
 const storageService_1 = require("./storageService");
 function createSocket(gameService, game, model, zone, options, token, errorHandler) {
-    const socket = browser_1.createClientSocket(options, token, errorHandler);
+    const socket = (0, browser_1.createClientSocket)(options, token, errorHandler);
     socket.client = new clientActions_1.ClientActions(gameService, game, model, zone);
     if (!socket.supportsBinary) {
         throw new Error(errors_1.BROWSER_NOT_SUPPORTED_ERROR);
@@ -93,14 +94,14 @@ let GameService = class GameService {
                 return false;
             }
             return this.zone.runOutsideAngular(() => {
-                const options = Object.assign({}, data_1.socketOptions(), { path: server.path, host: server.host });
+                const options = { ...(0, data_1.socketOptions)(), path: server.path, host: server.host };
                 const errorHandler = this.errorReporter.createClientErrorHandler(options);
                 const socket = createSocket(this, this.game, this.model, this.zone, options, token, errorHandler);
                 if (this.gameLoop) {
                     this.gameLoop.cancel();
                 }
                 this.game.startup(socket, this.model.isMod);
-                this.gameLoop = gameLoop_1.startGameLoop(this.game, e => this.handleGameError(e));
+                this.gameLoop = (0, gameLoop_1.startGameLoop)(this.game, e => this.handleGameError(e));
                 return this.gameLoop.started
                     .then(() => {
                     this.errorReporter.captureEvent({ name: 'gameLoop.started' });
@@ -146,11 +147,11 @@ let GameService = class GameService {
             this.playing = true;
         });
     }
-    left(from, reason = 0 /* None */) {
+    left(from, reason = 0 /* LeaveReason.None */) {
         this.errorReporter.captureEvent({ name: 'Left', from, reason });
         this.storage.setBoolean('playing', false);
         this.safelyLeft = true;
-        if (reason === 1 /* Swearing */) {
+        if (reason === 1 /* LeaveReason.Swearing */) {
             this.leftMessage = 'Kicked for swearing or inappropriate language';
             this.locked = true;
         }
@@ -195,7 +196,7 @@ let GameService = class GameService {
         });
     }
     getAndUpdateStatus(account) {
-        if (this.joining || this.playing || !account || !clientUtils_1.isFocused()) {
+        if (this.joining || this.playing || !account || !(0, clientUtils_1.isFocused)()) {
             return Promise.resolve();
         }
         else {
@@ -215,14 +216,14 @@ let GameService = class GameService {
         this.version = status.version;
         this.update = status.update;
         for (const server of status.servers) {
-            const existing = utils_1.findById(this.servers, server.id);
+            const existing = (0, utils_1.findById)(this.servers, server.id);
             if (existing) {
-                lodash_1.merge(existing, server);
+                (0, lodash_1.merge)(existing, server);
             }
             else if ('name' in server) {
                 const info = server;
                 info.countryFlags = info.flag && /^[a-z]{2}( [a-z]{2})*$/.test(info.flag) ? info.flag.split(/ /g) : [];
-                if (info.name && account && accountUtils_1.meetsRequirement(account, info.require)) {
+                if (info.name && account && (0, accountUtils_1.meetsRequirement)(account, info.require)) {
                     this.servers.push(info);
                 }
             }
@@ -232,20 +233,20 @@ let GameService = class GameService {
             }
         }
         for (let i = this.servers.length - 1; i >= 0; i--) {
-            if (!utils_1.findById(status.servers, this.servers[i].id)) {
+            if (!(0, utils_1.findById)(status.servers, this.servers[i].id)) {
                 this.servers.splice(i, 1);
             }
         }
-        if (clientUtils_1.isLanguage('ru')) {
+        if ((0, clientUtils_1.isLanguage)('ru')) {
             this.servers.sort(clientUtils_1.sortServersForRussian);
         }
         if (!this.server && account.settings.defaultServer) {
-            this.server = utils_1.findById(this.servers, account.settings.defaultServer);
+            this.server = (0, utils_1.findById)(this.servers, account.settings.defaultServer);
             if (DEVELOPMENT && /join/.test(this.model.pony.name)) {
                 setTimeout(() => this.join(this.model.pony.id));
             }
         }
-        if (!utils_1.includes(this.servers, this.server)) {
+        if (!(0, utils_1.includes)(this.servers, this.server)) {
             this.server = undefined;
         }
     }
@@ -270,8 +271,9 @@ let GameService = class GameService {
         });
     }
 };
-GameService = tslib_1.__decorate([
-    core_1.Injectable({
+exports.GameService = GameService;
+exports.GameService = GameService = tslib_1.__decorate([
+    (0, core_1.Injectable)({
         providedIn: 'root',
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model,
@@ -281,5 +283,4 @@ GameService = tslib_1.__decorate([
         errorReporter_1.ErrorReporter,
         storageService_1.StorageService])
 ], GameService);
-exports.GameService = GameService;
 //# sourceMappingURL=gameService.js.map

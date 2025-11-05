@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SocketErrorHandler = void 0;
 const lodash_1 = require("lodash");
 const ag_sockets_1 = require("ag-sockets");
 const logger_1 = require("../logger");
@@ -52,8 +53,8 @@ function getPerson(client) {
     } : {};
 }
 function reportError(rollbar, e, client, config) {
-    if (userError_1.isUserError(e)) {
-        userError_1.reportUserError2(e, client);
+    if ((0, userError_1.isUserError)(e)) {
+        (0, userError_1.reportUserError2)(e, client);
         return e;
     }
     else {
@@ -61,11 +62,11 @@ function reportError(rollbar, e, client, config) {
             client.reporter.error(e);
         }
         else if (client && client.originalRequest) {
-            const origin = client.originalRequest && originUtils_1.getOriginFromHTTP(client.originalRequest);
-            reporter_1.create(config, undefined, undefined, origin).error(e);
+            const origin = client.originalRequest && (0, originUtils_1.getOriginFromHTTP)(client.originalRequest);
+            (0, reporter_1.create)(config, undefined, undefined, origin).error(e);
         }
         else {
-            reporter_1.create(config).error(e);
+            (0, reporter_1.create)(config).error(e);
         }
         if (!rollbarIgnore.test(e.message)) {
             rollbar && rollbar.error(e, null, { person: getPerson(client) });
@@ -73,7 +74,7 @@ function reportError(rollbar, e, client, config) {
         return new Error('Error occurred');
     }
 }
-const serverMethods = ag_sockets_1.getMethods(serverActions_1.ServerActions);
+const serverMethods = (0, ag_sockets_1.getMethods)(serverActions_1.ServerActions);
 function getMethodNameFromPacket(packet) {
     try {
         if (typeof packet === 'string') {
@@ -84,7 +85,7 @@ function getMethodNameFromPacket(packet) {
             return serverMethods[packet[0]].name;
         }
     }
-    catch (_a) {
+    catch {
         return '???';
     }
 }
@@ -138,7 +139,7 @@ class SocketErrorHandler {
                 const desc = e.message.replace(/transfer limit exceeded /i, '');
                 client.reporter.warn('Transfer limit exceeded', `${desc} - (${method}) ${message}`);
             }
-            else if (!utils_1.includes(ignoreErrors, e.message)) {
+            else if (!(0, utils_1.includes)(ignoreErrors, e.message)) {
                 reported = true;
                 client.reporter.error(e, `(${method}) ${message}`);
             }

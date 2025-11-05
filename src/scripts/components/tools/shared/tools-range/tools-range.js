@@ -1,12 +1,11 @@
 "use strict";
-var ToolsRange_1;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsRange = void 0;
 const tslib_1 = require("tslib");
-"use strict";
 const core_1 = require("@angular/core");
 const forms_1 = require("@angular/forms");
 const icons_1 = require("../../../../client/icons");
-let ToolsRange = ToolsRange_1 = class ToolsRange {
+let ToolsRange = class ToolsRange {
     constructor() {
         this.rightIcon = icons_1.faChevronRight;
         this.leftIcon = icons_1.faChevronLeft;
@@ -49,40 +48,40 @@ let ToolsRange = ToolsRange_1 = class ToolsRange {
     registerOnTouched() {
     }
 };
+exports.ToolsRange = ToolsRange;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsRange.prototype, "min", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsRange.prototype, "max", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsRange.prototype, "vertical", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsRange.prototype, "small", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], ToolsRange.prototype, "placeholder", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsRange.prototype, "change", void 0);
-ToolsRange = ToolsRange_1 = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsRange = ToolsRange = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-range',
         templateUrl: 'tools-range.pug',
         styleUrls: ['tools-range.scss'],
         providers: [
-            { provide: forms_1.NG_VALUE_ACCESSOR, useExisting: core_1.forwardRef(() => ToolsRange_1), multi: true },
+            { provide: forms_1.NG_VALUE_ACCESSOR, useExisting: (0, core_1.forwardRef)(() => ToolsRange), multi: true },
         ],
         changeDetection: core_1.ChangeDetectionStrategy.OnPush,
     })
 ], ToolsRange);
-exports.ToolsRange = ToolsRange;
 //# sourceMappingURL=tools-range.js.map

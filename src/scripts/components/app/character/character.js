@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Character = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -8,7 +9,7 @@ const utils_1 = require("../../../common/utils");
 const ponyUtils_1 = require("../../../client/ponyUtils");
 const ponyHelpers_1 = require("../../../client/ponyHelpers");
 const ponyInfo_1 = require("../../../common/ponyInfo");
-const sprites = require("../../../generated/sprites");
+const sprites = tslib_1.__importStar(require("../../../generated/sprites"));
 const ponyAnimations_1 = require("../../../client/ponyAnimations");
 const contextSpriteBatch_1 = require("../../../graphics/contextSpriteBatch");
 const model_1 = require("../../services/model");
@@ -25,21 +26,21 @@ const tags_1 = require("../../../common/tags");
 const color_1 = require("../../../common/color");
 const frontHoofTitles = ['', 'Fetlocks', 'Paws', 'Claws', ''];
 const backHoofTitles = ['', 'Fetlocks', 'Paws', '', ''];
-const horns = spriteUtils_1.addLabels(sprites.horns, [
+const horns = (0, spriteUtils_1.addLabels)(sprites.horns, [
     'None', 'Unicorn horn', 'Short unicorn horn', 'Curved unicorn horn', 'Tiny deer antlers',
     'Short deer antlers', 'Medium deer antlers', 'Large deer antlers', 'Raindeer antlers', 'Goat horns',
     'Ram horns', 'Buffalo horns', 'Moose horns', 'Bug antenna', 'Long unicorn horn',
 ]);
-const wings = spriteUtils_1.addLabels(sprites.wings[0], [
+const wings = (0, spriteUtils_1.addLabels)(sprites.wings[0], [
     'None', 'Pegasus wings', 'Bat wings', 'Gryphon wings', 'Bug wings'
 ]);
-const ears = spriteUtils_1.addLabels(sprites.ears, [
+const ears = (0, spriteUtils_1.addLabels)(sprites.ears, [
     'Regular ears', 'Fluffy ears', 'Long feathered ears', 'Bug ears', 'Short feathered ears', 'Deer ears',
 ]);
-const noses = spriteUtils_1.addTitles(sprites.noses[0], ['Pony muzzle', 'Gryphon beak', 'Deer nose']);
-const flyAnimations = [Object.assign({}, ponyAnimations_1.stand, { name: 'fly' }), ponyAnimations_1.fly, ponyAnimations_1.fly, ponyAnimations_1.fly, Object.assign({}, ponyAnimations_1.flyBug, { name: 'fly' })];
+const noses = (0, spriteUtils_1.addTitles)(sprites.noses[0], ['Pony muzzle', 'Gryphon beak', 'Deer nose']);
+const flyAnimations = [{ ...ponyAnimations_1.stand, name: 'fly' }, ponyAnimations_1.fly, ponyAnimations_1.fly, ponyAnimations_1.fly, { ...ponyAnimations_1.flyBug, name: 'fly' }];
 function eyeSprite(e) {
-    return spriteUtils_1.createEyeSprite(e, 0, sprites.defaultPalette);
+    return (0, spriteUtils_1.createEyeSprite)(e, 0, sprites.defaultPalette);
 }
 let Character = class Character {
     constructor(gameService, model) {
@@ -71,8 +72,8 @@ let Character = class Character {
         this.sleeveAccessories = sprites.frontLegSleeves[1];
         this.waistAccessories = sprites.waistAccessories[1];
         this.extraAccessories = ponyUtils_1.mergedExtraAccessories;
-        this.frontHooves = spriteUtils_1.addTitles(ponyUtils_1.frontHooves[1], frontHoofTitles);
-        this.backHooves = spriteUtils_1.addTitles(sprites.backLegHooves[1], backHoofTitles);
+        this.frontHooves = (0, spriteUtils_1.addTitles)(ponyUtils_1.frontHooves[1], frontHoofTitles);
+        this.backHooves = (0, spriteUtils_1.addTitles)(sprites.backLegHooves[1], backHoofTitles);
         this.animations = [
             () => ponyAnimations_1.stand,
             () => ponyAnimations_1.trot,
@@ -93,7 +94,7 @@ let Character = class Character {
         this.tags = [
             tags_1.emptyTag,
         ];
-        this.state = ponyHelpers_1.defaultPonyState();
+        this.state = (0, ponyHelpers_1.defaultPonyState)();
         this.saved = [];
         this.activeAnimation = 0;
         this.loaded = false;
@@ -103,14 +104,14 @@ let Character = class Character {
         this.previewExtra = false;
         this.previewPony = undefined;
         this.sites = [];
-        this.canSaveFiles = clientUtils_1.isFileSaverSupported();
+        this.canSaveFiles = (0, clientUtils_1.isFileSaverSupported)();
         this.savingLocked = false;
         this.animationTime = 0;
         this.createMuzzles();
         this.updateMuzzles();
     }
     getMuzzleType() {
-        return lodash_1.clamp(utils_1.toInt(this.info && this.info.nose && this.info.nose.type), 0, sprites.noses[0].length);
+        return (0, lodash_1.clamp)((0, utils_1.toInt)(this.info && this.info.nose && this.info.nose.type), 0, sprites.noses[0].length);
     }
     createMuzzles() {
         const type = this.getMuzzleType();
@@ -157,7 +158,7 @@ let Character = class Character {
         return this.previewPony ? this.previewPony.name : this.pony.name;
     }
     get previewTag() {
-        return model_1.getPonyTag(this.previewPony || this.pony, this.account);
+        return (0, model_1.getPonyTag)(this.previewPony || this.pony, this.account);
     }
     get customOutlines() {
         return this.info.customOutlines;
@@ -175,25 +176,25 @@ let Character = class Character {
         return this.pony.ponyInfo;
     }
     get maneFill() {
-        return ponyInfo_1.getBaseFill(this.info.mane);
+        return (0, ponyInfo_1.getBaseFill)(this.info.mane);
     }
     get coatFill() {
         return this.info.coatFill;
     }
     get hoovesFill() {
-        return ponyInfo_1.getBaseFill(this.info.frontHooves);
+        return (0, ponyInfo_1.getBaseFill)(this.info.frontHooves);
     }
     get canExport() {
         return DEVELOPMENT;
     }
     get site() {
-        return utils_1.findById(this.sites, this.pony.site) || this.sites[0];
+        return (0, utils_1.findById)(this.sites, this.pony.site) || this.sites[0];
     }
     set site(value) {
         this.pony.site = value.id;
     }
     get tag() {
-        return utils_1.findById(this.tags, this.pony.tag) || this.tags[0];
+        return (0, utils_1.findById)(this.tags, this.pony.tag) || this.tags[0];
     }
     set tag(value) {
         this.pony.tag = value.id;
@@ -226,19 +227,19 @@ let Character = class Character {
         this.info.unlockEyelashColor = !value;
     }
     icon(id) {
-        return sign_in_box_1.getProviderIcon(id);
+        return (0, sign_in_box_1.getProviderIcon)(id);
     }
     hasSleeves(type) {
         return ponyUtils_1.SLEEVED_ACCESSORIES.indexOf(type) !== -1;
     }
     ngOnInit() {
         if (this.model.account) {
-            this.tags.push(...tags_1.getAvailableTags(this.model.account));
+            this.tags.push(...(0, tags_1.getAvailableTags)(this.model.account));
         }
         this.sites = this.model.sites.filter(s => !!s.name);
         this.updateMuzzles();
         let last = Date.now();
-        return spriteUtils_1.loadAndInitSpriteSheets().then(() => {
+        return (0, spriteUtils_1.loadAndInitSpriteSheets)().then(() => {
             this.loaded = true;
             this.interval = setInterval(() => {
                 const now = Date.now();
@@ -254,11 +255,11 @@ let Character = class Character {
         if (!this.syncTimeout) {
             this.syncTimeout = requestAnimationFrame(() => {
                 this.syncTimeout = undefined;
-                ponyInfo_1.syncLockedPonyInfo(this.info);
+                (0, ponyInfo_1.syncLockedPonyInfo)(this.info);
             });
         }
         if (DEVELOPMENT || BETA) {
-            this.state.blushColor = colors_1.blushColor(color_1.parseColorWithAlpha(this.coatFill || '', 1));
+            this.state.blushColor = (0, colors_1.blushColor)((0, color_1.parseColorWithAlpha)(this.coatFill || '', 1));
         }
     }
     update(delta) {
@@ -321,16 +322,16 @@ let Character = class Character {
             this.savingLocked = true;
             this.model.savePony(this.pony)
                 .catch((e) => this.error = e.message)
-                .then(() => utils_1.delay(2000))
+                .then(() => (0, utils_1.delay)(2000))
                 .then(() => this.savingLocked = false);
         }
     }
     get canRevert() {
-        return !!utils_1.findById(this.ponies, this.pony.id);
+        return !!(0, utils_1.findById)(this.ponies, this.pony.id);
     }
     revert() {
         if (this.canRevert) {
-            this.select(utils_1.findById(this.ponies, this.pony.id));
+            this.select((0, utils_1.findById)(this.ponies, this.pony.id));
         }
     }
     get canDuplicate() {
@@ -339,7 +340,7 @@ let Character = class Character {
     duplicate() {
         if (this.canDuplicate) {
             this.deleting = false;
-            this.pony = utils_1.cloneDeep(this.pony);
+            this.pony = (0, utils_1.cloneDeep)(this.pony);
             this.pony.name = '';
             this.pony.id = '';
         }
@@ -349,19 +350,24 @@ let Character = class Character {
         const frameHeight = 90;
         const animations = index === undefined ? this.animations.map(a => a()) : [this.animations[index]()];
         const frames = animations.reduce((sum, a) => sum + a.frames.length, 0);
-        const info = ponyInfo_1.toPalette(this.info);
-        const options = ponyHelpers_1.defaultDrawPonyOptions();
-        const canvas = contextSpriteBatch_1.drawCanvas(frameWidth * frames, frameHeight, sprites.paletteSpriteSheet, colors_1.TRANSPARENT, batch => {
+        const info = (0, ponyInfo_1.toPalette)(this.info);
+        const options = (0, ponyHelpers_1.defaultDrawPonyOptions)();
+        const canvas = (0, contextSpriteBatch_1.drawCanvas)(frameWidth * frames, frameHeight, sprites.paletteSpriteSheet, colors_1.TRANSPARENT, batch => {
             let i = 0;
             animations.forEach(a => {
                 for (let f = 0; f < a.frames.length; f++, i++) {
-                    const state = Object.assign({}, ponyHelpers_1.defaultPonyState(), { animation: a, animationFrame: f, blinkFrame: 1 });
-                    ponyDraw_1.drawPony(batch, info, state, i * frameWidth + frameWidth / 2, frameHeight - 10, options);
+                    const state = {
+                        ...(0, ponyHelpers_1.defaultPonyState)(),
+                        animation: a,
+                        animationFrame: f,
+                        blinkFrame: 1,
+                    };
+                    (0, ponyDraw_1.drawPony)(batch, info, state, i * frameWidth + frameWidth / 2, frameHeight - 10, options);
                 }
             });
         });
         const name = animations.length === 1 ? animations[0].name : 'all';
-        canvasUtils_1.saveCanvas(canvas, `${this.pony.name}-${name}.png`);
+        (0, canvasUtils_1.saveCanvas)(canvas, `${this.pony.name}-${name}.png`);
     }
     import() {
         if (DEVELOPMENT) {
@@ -373,14 +379,17 @@ let Character = class Character {
     }
     importPony(data) {
         if (DEVELOPMENT) {
-            this.pony.ponyInfo = compressPony_1.decompressPonyString(data, true);
-            const t = compressPony_1.decompressPonyString(data, false);
+            this.pony.ponyInfo = (0, compressPony_1.decompressPonyString)(data, true);
+            const t = (0, compressPony_1.decompressPonyString)(data, false);
             console.log(JSON.stringify(t, undefined, 2));
         }
     }
     addBlush() {
         if (DEVELOPMENT || BETA) {
-            this.state = Object.assign({}, this.state, { expression: clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 0 /* Smile */, 0 /* Forward */, 0 /* Forward */, 1 /* Blush */) });
+            this.state = {
+                ...this.state,
+                expression: (0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 0 /* Muzzle.Smile */, 0 /* Iris.Forward */, 0 /* Iris.Forward */, 1 /* ExpressionExtra.Blush */),
+            };
             this.changed();
         }
     }
@@ -389,16 +398,16 @@ let Character = class Character {
             return values.map(x => JSON.stringify(x)).join(typeof values[0] === 'object' ? ',\n\t' : ', ');
         }
         if (DEVELOPMENT) {
-            const compressed = compressPony_1.compressPonyString(this.info);
+            const compressed = (0, compressPony_1.compressPonyString)(this.info);
             const regularSize = JSON.stringify(this.info).length;
-            const ponyInfoNumber = compressPony_1.decompressPony(compressed);
-            const precomp = compressPony_1.precompressPony(ponyInfoNumber, colors_1.BLACK, x => x);
+            const ponyInfoNumber = (0, compressPony_1.decompressPony)(compressed);
+            const precomp = (0, compressPony_1.precompressPony)(ponyInfoNumber, colors_1.BLACK, x => x);
             const details = Object.keys(precomp)
                 .filter(key => key !== 'version')
                 .map(key => ({ key, values: precomp[key] || [] }))
                 .map(({ key, values }) => `${key}: [\n\t${stringifyValues(values)}\n]`)
                 .join(',\n');
-            const serialized = compressPony_1.compressPonyString(this.info);
+            const serialized = (0, compressPony_1.compressPonyString)(this.info);
             console.log(serialized);
             console.log(details);
             console.log(`${serialized.length} / ${regularSize}`);
@@ -419,7 +428,7 @@ let Character = class Character {
     }
     async importPonies(file) {
         if (file) {
-            const text = await clientUtils_1.readFileAsText(file);
+            const text = await (0, clientUtils_1.readFileAsText)(file);
             const lines = text.split(/\r?\n/g);
             let imported = 0;
             for (const line of lines) {
@@ -431,7 +440,7 @@ let Character = class Character {
                             id: '',
                             info,
                             desc,
-                            ponyInfo: compressPony_1.decompressPonyString(info, true),
+                            ponyInfo: (0, compressPony_1.decompressPonyString)(info, true),
                         };
                         await this.model.savePony(pony, true);
                         imported++;
@@ -445,15 +454,15 @@ let Character = class Character {
         }
     }
 };
-Character = tslib_1.__decorate([
-    core_1.Component({
+exports.Character = Character;
+exports.Character = Character = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'character',
         templateUrl: 'character.pug',
         styleUrls: ['character.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [gameService_1.GameService, model_1.Model])
 ], Character);
-exports.Character = Character;
 function ponyToExport(pony) {
     return `${pony.name}\t${pony.info}\t${pony.desc || ''}`.trim();
 }

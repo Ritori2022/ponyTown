@@ -1,11 +1,41 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.chatAnimationDuration = exports.DrawNameFlags = exports.commonPalettes = void 0;
+exports.drawTaperedRect = drawTaperedRect;
+exports.drawRectBaloon = drawRectBaloon;
+exports.drawRoundBaloon = drawRoundBaloon;
+exports.drawBaloon = drawBaloon;
+exports.drawSpeechBaloon = drawSpeechBaloon;
+exports.drawWhisperBaloon = drawWhisperBaloon;
+exports.drawThinkingBaloon = drawThinkingBaloon;
+exports.drawNamePlate = drawNamePlate;
+exports.drawBounds = drawBounds;
+exports.drawWorldBounds = drawWorldBounds;
+exports.drawBoundsOutline = drawBoundsOutline;
+exports.drawOutlineRect = drawOutlineRect;
+exports.drawOutline = drawOutline;
+exports.drawCharacter = drawCharacter;
+exports.drawPixelTextBase = drawPixelTextBase;
+exports.drawPixelText = drawPixelText;
+exports.fillRect = fillRect;
+exports.drawPixelTextOnCanvas = drawPixelTextOnCanvas;
+exports.compareSays = compareSays;
+exports.drawNames = drawNames;
+exports.getChatBallonXY = getChatBallonXY;
+exports.drawChat = drawChat;
+exports.dismissSays = dismissSays;
+exports.drawBox = drawBox;
+exports.drawSpriteBorder = drawSpriteBorder;
+exports.drawSpriteCropped = drawSpriteCropped;
+exports.drawFullScreenMessage = drawFullScreenMessage;
+exports.createCommonPalettes = createCommonPalettes;
+const tslib_1 = require("tslib");
 const interfaces_1 = require("../common/interfaces");
 const utils_1 = require("../common/utils");
 const colors_1 = require("../common/colors");
 const constants_1 = require("../common/constants");
 const spriteFont_1 = require("../graphics/spriteFont");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const fonts_1 = require("../client/fonts");
 const pony_1 = require("../common/pony");
 const camera_1 = require("../common/camera");
@@ -40,36 +70,33 @@ function drawTaperedRect(batch, color, x, y, w, h, taper) {
     }
     batch.drawRect(color, x + gap, y, Math.max(0, w - gap * 2), h);
 }
-exports.drawTaperedRect = drawTaperedRect;
 function drawRectBaloon(batch, color, x, y, w, h) {
     drawTaperedRect(batch, color, x, y, w, h, baloonTaper);
 }
-exports.drawRectBaloon = drawRectBaloon;
 function drawRoundBaloon(batch, color, x, y, w, h) {
     drawTaperedRect(batch, color, x, y, w, h, roundTaper);
 }
-exports.drawRoundBaloon = drawRoundBaloon;
 function getMessagePalette(type, palettes) {
-    if (type === 10 /* Supporter2 */) {
+    if (type === 10 /* MessageType.Supporter2 */) {
         return palettes.supporter2;
     }
-    else if (type === 11 /* Supporter3 */) {
+    else if (type === 11 /* MessageType.Supporter3 */) {
         return palettes.supporter3;
     }
     else {
         return undefined;
     }
 }
-function drawBaloon(batch, { message, type = 0 /* Chat */, timer = 1, total = 10 }, x, y, bounds, palettes) {
+function drawBaloon(batch, { message, type = 0 /* MessageType.Chat */, timer = 1, total = 10 }, x, y, bounds, palettes) {
     if (!fonts_1.fontPal)
         return;
-    let { w, h } = spriteFont_1.measureText(message, fonts_1.fontPal);
+    let { w, h } = (0, spriteFont_1.measureText)(message, fonts_1.fontPal);
     w = Math.max(w, 4);
     const screenPad = 8;
     const availableWidth = bounds.w - screenPad * 2;
     if (w > availableWidth) {
-        message = spriteFont_1.lineBreak(message, fonts_1.fontPal, availableWidth);
-        const size = spriteFont_1.measureText(message, fonts_1.fontPal);
+        message = (0, spriteFont_1.lineBreak)(message, fonts_1.fontPal, availableWidth);
+        const size = (0, spriteFont_1.measureText)(message, fonts_1.fontPal);
         w = size.w;
         h = size.h;
     }
@@ -78,18 +105,18 @@ function drawBaloon(batch, { message, type = 0 /* Chat */, timer = 1, total = 10
     const nippleX = x;
     const toTheLeft = Math.max(0, screenPad - x);
     const toTheRight = Math.max(0, x - bounds.w + screenPad);
-    x = utils_1.clamp(x, screenPad + w / 2 - toTheLeft, bounds.w - screenPad - w / 2 + toTheRight);
-    if (utils_1.intersect(0, 0, bounds.w, bounds.h, x - w / 2, y - h / 2, w, h)) {
+    x = (0, utils_1.clamp)(x, screenPad + w / 2 - toTheLeft, bounds.w - screenPad - w / 2 + toTheRight);
+    if ((0, utils_1.intersect)(0, 0, bounds.w, bounds.h, x - w / 2, y - h / 2, w, h)) {
         const palette = getMessagePalette(type, palettes.mainFont);
-        const color = palette ? colors_1.WHITE : colors_1.getMessageColor(type);
+        const color = palette ? colors_1.WHITE : (0, colors_1.getMessageColor)(type);
         const options = {
             palette: palette || palettes.mainFont.white,
             emojiPalette: palettes.mainFont.emoji,
         };
-        if (interfaces_1.isThinking(type)) {
+        if ((0, interfaces_1.isThinking)(type)) {
             drawThinkingBaloon(batch, message, color, options, x, y, w, h, alpha, nippleX);
         }
-        else if (interfaces_1.isWhisper(type) || interfaces_1.isWhisperTo(type)) {
+        else if ((0, interfaces_1.isWhisper)(type) || (0, interfaces_1.isWhisperTo)(type)) {
             drawWhisperBaloon(batch, message, color, options, x, y, w, h, alpha, nippleX);
         }
         else {
@@ -97,27 +124,25 @@ function drawBaloon(batch, { message, type = 0 /* Chat */, timer = 1, total = 10
         }
     }
 }
-exports.drawBaloon = drawBaloon;
 function drawSpeechBaloon(batch, text, color, options, x, y, w, h, alpha, nippleX) {
     const pad = 4;
     const xx = x - Math.round(w / 2);
     const yy = y - h;
     const nipple = sprites.nipple_2.color;
-    nippleX = utils_1.clamp(nippleX, xx + pad, xx + w - pad);
+    nippleX = (0, utils_1.clamp)(nippleX, xx + pad, xx + w - pad);
     batch.globalAlpha = 0.6 * alpha;
     drawRectBaloon(batch, colors_1.BLACK, xx - pad, yy - pad, w + pad * 2, h + pad * 2);
     batch.drawSprite(nipple, colors_1.BLACK, undefined, nippleX - Math.round(nipple.w / 2), y + pad);
     batch.globalAlpha = alpha;
-    spriteFont_1.drawText(batch, text, fonts_1.fontPal, color, xx, yy, options);
+    (0, spriteFont_1.drawText)(batch, text, fonts_1.fontPal, color, xx, yy, options);
     batch.globalAlpha = 1;
 }
-exports.drawSpeechBaloon = drawSpeechBaloon;
 function drawWhisperBaloon(batch, text, color, options, x, y, w, h, alpha, nippleX) {
     const pad = 4;
     const xx = x - Math.round(w / 2);
     const yy = y - h;
     const nipple = sprites.nipple_alt_2.color;
-    nippleX = utils_1.clamp(nippleX, xx + pad, xx + w - pad);
+    nippleX = (0, utils_1.clamp)(nippleX, xx + pad, xx + w - pad);
     batch.globalAlpha = 0.6 * alpha;
     const left = xx - pad;
     const top = yy - pad;
@@ -140,16 +165,15 @@ function drawWhisperBaloon(batch, text, color, options, x, y, w, h, alpha, nippl
     }
     batch.drawSprite(nipple, colors_1.BLACK, undefined, nippleX - 3, y + pad + 2);
     batch.globalAlpha = alpha;
-    spriteFont_1.drawText(batch, text, fonts_1.fontPal, color, xx, yy, options);
+    (0, spriteFont_1.drawText)(batch, text, fonts_1.fontPal, color, xx, yy, options);
     batch.globalAlpha = 1;
 }
-exports.drawWhisperBaloon = drawWhisperBaloon;
 function drawThinkingBaloon(batch, text, color, options, x, y, w, h, alpha, nippleX) {
     const padX = 6;
     const padY = 4;
     const xx = x - Math.round(w / 2);
     const yy = y - h;
-    const ox = utils_1.clamp(nippleX, xx, xx + w) - 1;
+    const ox = (0, utils_1.clamp)(nippleX, xx, xx + w) - 1;
     const oy = y + 12;
     batch.globalAlpha = 0.6 * alpha;
     drawRoundBaloon(batch, colors_1.BLACK, xx - padX, yy - padY, w + padX * 2, h + padY * 2);
@@ -157,21 +181,20 @@ function drawThinkingBaloon(batch, text, color, options, x, y, w, h, alpha, nipp
     batch.drawRect(colors_1.BLACK, ox - 1, oy - 3, 2, 2);
     batch.drawRect(colors_1.BLACK, ox, oy - 7, 3, 3);
     batch.globalAlpha = alpha;
-    spriteFont_1.drawText(batch, text, fonts_1.fontPal, color, xx, yy, options);
+    (0, spriteFont_1.drawText)(batch, text, fonts_1.fontPal, color, xx, yy, options);
     batch.globalAlpha = 1;
 }
-exports.drawThinkingBaloon = drawThinkingBaloon;
 var DrawNameFlags;
 (function (DrawNameFlags) {
     DrawNameFlags[DrawNameFlags["None"] = 0] = "None";
     DrawNameFlags[DrawNameFlags["Party"] = 1] = "Party";
     DrawNameFlags[DrawNameFlags["Friend"] = 2] = "Friend";
-})(DrawNameFlags = exports.DrawNameFlags || (exports.DrawNameFlags = {}));
+})(DrawNameFlags || (exports.DrawNameFlags = DrawNameFlags = {}));
 function getNameColor(flags) {
-    if (utils_1.hasFlag(flags, DrawNameFlags.Party)) {
+    if ((0, utils_1.hasFlag)(flags, DrawNameFlags.Party)) {
         return colors_1.PARTY_COLOR;
     }
-    else if (utils_1.hasFlag(flags, DrawNameFlags.Friend)) {
+    else if ((0, utils_1.hasFlag)(flags, DrawNameFlags.Friend)) {
         return colors_1.FRIENDS_COLOR;
     }
     else {
@@ -179,50 +202,44 @@ function getNameColor(flags) {
     }
 }
 function drawNamePlate(batch, text, x, y, flags, palettes, tagId) {
-    const tag = tags_1.getTag(tagId);
-    const size = spriteFont_1.measureText(text, fonts_1.fontPal);
+    const tag = (0, tags_1.getTag)(tagId);
+    const size = (0, spriteFont_1.measureText)(text, fonts_1.fontPal);
     const xx = x - Math.round(size.w / 2);
     const yy = y - size.h + 6 - (tag ? 3 : 0);
     const color = getNameColor(flags);
     const options = { palette: palettes.mainFont.white, emojiPalette: palettes.mainFont.emoji };
-    spriteFont_1.drawOutlinedText(batch, text, fonts_1.fontPal, color, colors_1.OUTLINE_COLOR, xx, yy, options);
+    (0, spriteFont_1.drawOutlinedText)(batch, text, fonts_1.fontPal, color, colors_1.OUTLINE_COLOR, xx, yy, options);
     if (tag) {
-        const tagSize = spriteFont_1.measureText(tag.label, fonts_1.fontSmallPal);
+        const tagSize = (0, spriteFont_1.measureText)(tag.label, fonts_1.fontSmallPal);
         const textX = x - Math.round(tagSize.w / 2);
-        const palette = tags_1.getTagPalette(tag, palettes.smallFont);
-        spriteFont_1.drawOutlinedText(batch, tag.label, fonts_1.fontSmallPal, tag.color, colors_1.OUTLINE_COLOR, textX, yy + 11, { palette });
+        const palette = (0, tags_1.getTagPalette)(tag, palettes.smallFont);
+        (0, spriteFont_1.drawOutlinedText)(batch, tag.label, fonts_1.fontSmallPal, tag.color, colors_1.OUTLINE_COLOR, textX, yy + 11, { palette });
     }
 }
-exports.drawNamePlate = drawNamePlate;
 function drawBounds(batch, e, r, color) {
     if (r) {
         batch.drawRect(color, Math.round(e.x * constants_1.tileWidth + r.x), Math.round(e.y * constants_1.tileHeight + r.y), Math.round(r.w), Math.round(r.h));
     }
 }
-exports.drawBounds = drawBounds;
 function drawWorldBounds(batch, e, r, color) {
     if (r) {
         batch.drawRect(color, Math.round((e.x + r.x) * constants_1.tileWidth), Math.round((e.y + r.y) * constants_1.tileHeight), Math.round(r.w * constants_1.tileWidth), Math.round(r.h * constants_1.tileHeight));
     }
 }
-exports.drawWorldBounds = drawWorldBounds;
 function drawBoundsOutline(batch, e, r, color, thickness = 1) {
     if (r) {
         drawOutline(batch, color, Math.round(e.x * constants_1.tileWidth + r.x), Math.round(e.y * constants_1.tileHeight + r.y), Math.round(r.w), Math.round(r.h), thickness);
     }
 }
-exports.drawBoundsOutline = drawBoundsOutline;
 function drawOutlineRect(batch, color, { x, y, w, h }, thickness = 1) {
     drawOutline(batch, color, x, y, w, h, thickness);
 }
-exports.drawOutlineRect = drawOutlineRect;
 function drawOutline(batch, color, x, y, w, h, thickness = 1) {
     batch.drawRect(color, x - thickness, y - thickness, w + thickness * 2, thickness); // top
     batch.drawRect(color, x - thickness, y + h, w + thickness * 2, thickness); // bottom
     batch.drawRect(color, x - thickness, y, thickness, h); // left
     batch.drawRect(color, x + w, y, thickness, h); // right
 }
-exports.drawOutline = drawOutline;
 function drawCharacter(drawRect, x, y, color, char) {
     switch (char) {
         case '0':
@@ -303,88 +320,79 @@ function drawCharacter(drawRect, x, y, color, char) {
             return 3;
     }
 }
-exports.drawCharacter = drawCharacter;
 function drawPixelTextBase(drawRect, x, y, color, text) {
     for (let i = 0; i < text.length; i++) {
         x += drawCharacter(drawRect, x, y, color, text.charAt(i)) + 1;
     }
 }
-exports.drawPixelTextBase = drawPixelTextBase;
 function drawPixelText(batch, x, y, color, text) {
     drawPixelTextBase(batch.drawRect.bind(batch), x, y, color, text);
 }
-exports.drawPixelText = drawPixelText;
 function fillRect(context, color, x, y, w, h) {
     context.fillStyle = color;
     context.fillRect(x, y, w, h);
 }
-exports.fillRect = fillRect;
 function drawPixelTextOnCanvas(context, x, y, color, text) {
-    drawPixelTextBase((color, x, y, w, h) => fillRect(context, color_1.colorToCSS(color), x, y, w, h), x, y, color, text);
+    drawPixelTextBase((color, x, y, w, h) => fillRect(context, (0, color_1.colorToCSS)(color), x, y, w, h), x, y, color, text);
 }
-exports.drawPixelTextOnCanvas = drawPixelTextOnCanvas;
 function compareSays(a, b) {
     return a.message.created - b.message.created;
 }
-exports.compareSays = compareSays;
 function isPartyMember(entity, party) {
     return entity.type === constants_1.PONY_TYPE && party !== undefined && party.members.some(p => p.id === entity.id && !p.pending);
 }
 function drawNames(batch, entities, player, party, camera, hover, drawHidden, palettes) {
-    entityUtils_1.sortEntities(entities);
+    (0, entityUtils_1.sortEntities)(entities);
     for (const e of entities) {
-        if ((!entityUtils_1.isHidden(e) || drawHidden) && e.name && e !== player) {
+        if ((!(0, entityUtils_1.isHidden)(e) || drawHidden) && e.name && e !== player) {
             const nameOffsetBase = 12;
             const bounds = e.interactBounds || e.bounds;
             const chatBounds = e.chatBounds || bounds;
-            if (chatBounds !== undefined && bounds !== undefined && utils_1.contains(e.x, e.y, bounds, hover)) {
-                const { x, y } = camera_1.worldToScreen(camera, e);
+            if (chatBounds !== undefined && bounds !== undefined && (0, utils_1.contains)(e.x, e.y, bounds, hover)) {
+                const { x, y } = (0, camera_1.worldToScreen)(camera, e);
                 const nameOffset = nameOffsetBase - getChatHeight(e);
-                const tag = (entityUtils_1.isHidden(e) && drawHidden) ? 'hidden' : e.tag;
+                const tag = ((0, entityUtils_1.isHidden)(e) && drawHidden) ? 'hidden' : e.tag;
                 const flags = DrawNameFlags.None |
                     (isPartyMember(e, party) ? DrawNameFlags.Party : 0) |
-                    (entityUtils_1.isFriend(e) ? DrawNameFlags.Friend : 0);
+                    ((0, entityUtils_1.isFriend)(e) ? DrawNameFlags.Friend : 0);
                 drawNamePlate(batch, e.name, x, y + chatBounds.y - nameOffset, flags, palettes, tag);
             }
         }
     }
 }
-exports.drawNames = drawNames;
 function getChatBallonXY(e, camera) {
     const nameOffsetBase = 12;
     const bounds = e.interactBounds || e.bounds;
     const chatBounds = e.chatBounds || bounds;
-    const screen = camera_1.worldToScreen(camera, e);
+    const screen = (0, camera_1.worldToScreen)(camera, e);
     const nameOffset = nameOffsetBase - getChatHeight(e);
     const offset = (nameOffset + 6) + (e.tag ? 5 : 0);
     const yy = screen.y + (chatBounds ? chatBounds.y : 0) - offset;
-    const x = screen.x + utils_1.toInt(e.chatX);
-    const y = yy + utils_1.toInt(e.chatY);
+    const x = screen.x + (0, utils_1.toInt)(e.chatX);
+    const y = yy + (0, utils_1.toInt)(e.chatY);
     return { x, y };
 }
-exports.getChatBallonXY = getChatBallonXY;
 function drawChatBaloon(batch, entity, camera, palettes) {
     const { x, y } = getChatBallonXY(entity, camera);
     drawBaloon(batch, entity.says, x, y, camera, palettes);
 }
 function drawChat(batch, entities, camera, drawHidden, palettes, hidePublic) {
-    entityUtils_1.sortEntities(entities);
+    (0, entityUtils_1.sortEntities)(entities);
     for (const entity of entities) {
-        if ((!entityUtils_1.isHidden(entity) || drawHidden) && !interfaces_1.isPartyMessage(entity.says.type || 0 /* Chat */)) {
-            if (!hidePublic || !interfaces_1.isPublicMessage(entity.says.type || 0 /* Chat */)) {
+        if ((!(0, entityUtils_1.isHidden)(entity) || drawHidden) && !(0, interfaces_1.isPartyMessage)(entity.says.type || 0 /* MessageType.Chat */)) {
+            if (!hidePublic || !(0, interfaces_1.isPublicMessage)(entity.says.type || 0 /* MessageType.Chat */)) {
                 drawChatBaloon(batch, entity, camera, palettes);
             }
         }
     }
     for (const entity of entities) {
-        if ((!entityUtils_1.isHidden(entity) || drawHidden) && interfaces_1.isPartyMessage(entity.says.type || 0 /* Chat */)) {
+        if ((!(0, entityUtils_1.isHidden)(entity) || drawHidden) && (0, interfaces_1.isPartyMessage)(entity.says.type || 0 /* MessageType.Chat */)) {
             drawChatBaloon(batch, entity, camera, palettes);
         }
     }
 }
-exports.drawChat = drawChat;
 function getChatHeight(entity) {
-    return pony_1.isPony(entity) ? pony_1.getPonyChatHeight(entity) : 0;
+    return (0, pony_1.isPony)(entity) ? (0, pony_1.getPonyChatHeight)(entity) : 0;
 }
 exports.chatAnimationDuration = 0.2;
 function dismissSays(says) {
@@ -392,7 +400,6 @@ function dismissSays(says) {
         says.timer = Math.min(says.timer, exports.chatAnimationDuration);
     }
 }
-exports.dismissSays = dismissSays;
 function calcAnimation(timer, total) {
     const start = (total - timer) / exports.chatAnimationDuration;
     const end = timer / exports.chatAnimationDuration;
@@ -400,14 +407,14 @@ function calcAnimation(timer, total) {
     const dys2 = [-4, -3, -2, -1];
     const dyd = start * dys.length;
     const dyd2 = end * dys2.length;
-    const dyi = utils_1.clamp(Math.round(dyd), 0, dys.length - 1);
-    const dyi2 = utils_1.clamp(Math.round(dyd2), 0, dys2.length);
+    const dyi = (0, utils_1.clamp)(Math.round(dyd), 0, dys.length - 1);
+    const dyi2 = (0, utils_1.clamp)(Math.round(dyd2), 0, dys2.length);
     const dy = dyi2 < dys2.length ? dys2[dyi2] : dys[dyi];
     const alpha = Math.min(start, end, 1);
     return { alpha, dy };
 }
 function drawBox(batch, color, shadowColor, x, y, z, w, l, h) {
-    const darker = color_1.multiplyColor(color, 0.8);
+    const darker = (0, color_1.multiplyColor)(color, 0.8);
     const left = (x - w / 2) * constants_1.tileWidth;
     const bottom = y * constants_1.tileHeight;
     const elevation = z * constants_1.tileElevation;
@@ -418,7 +425,6 @@ function drawBox(batch, color, shadowColor, x, y, z, w, l, h) {
     batch.drawRect(darker, left, bottom - elevation - frontHeight, width, frontHeight); // front
     batch.drawRect(color, left, bottom - elevation - frontHeight - topHeight, width, topHeight); // top
 }
-exports.drawBox = drawBox;
 function drawSpriteBorder(batch, border, color, x, y, w, h) {
     x = Math.round(x) | 0;
     y = Math.round(y) | 0;
@@ -440,7 +446,6 @@ function drawSpriteBorder(batch, border, color, x, y, w, h) {
     drawStretched(batch, border.right, color, x + w - size, y + size, size, bgHeight);
     drawStretched(batch, border.bottom, color, x + size, y + h - size, bgWidth, size);
 }
-exports.drawSpriteBorder = drawSpriteBorder;
 function drawStretched(batch, sprite, color, x, y, w, h) {
     if (sprite.h && sprite.w) {
         const sw = Math.min(sprite.w, w);
@@ -455,15 +460,13 @@ function drawSpriteCropped(batch, s, color, palette, x, y, maxY) {
         batch.drawImage(s.type, color, palette, s.x, s.y, s.w, s.h, x + s.ox, top, s.w, bottom - top);
     }
 }
-exports.drawSpriteCropped = drawSpriteCropped;
 function drawFullScreenMessage(batch, camera, text, palette) {
     const messageHeight = 100;
     const messageY = Math.round((camera.h - messageHeight) / 2);
     batch.drawRect(colors_1.MESSAGE_COLOR, 0, messageY, camera.w, messageHeight);
-    const textRect = rect_1.rect(0, messageY, camera.w, messageHeight);
-    spriteFont_1.drawTextAligned(batch, text, fonts_1.fontPal, colors_1.WHITE, textRect, 2 /* Center */, 2 /* Middle */, { palette });
+    const textRect = (0, rect_1.rect)(0, messageY, camera.w, messageHeight);
+    (0, spriteFont_1.drawTextAligned)(batch, text, fonts_1.fontPal, colors_1.WHITE, textRect, 2 /* HAlign.Center */, 2 /* VAlign.Middle */, { palette });
 }
-exports.drawFullScreenMessage = drawFullScreenMessage;
 function createCommonPalettes(paletteManager) {
     return {
         defaultPalette: paletteManager.addArray(sprites.defaultPalette),
@@ -483,5 +486,4 @@ function createCommonPalettes(paletteManager) {
         },
     };
 }
-exports.createCommonPalettes = createCommonPalettes;
 //# sourceMappingURL=graphicsUtils.js.map

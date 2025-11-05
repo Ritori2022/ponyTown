@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StorageService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 /* istanbul ignore next */
@@ -11,7 +12,7 @@ let StorageService = class StorageService {
                 this.data = new Map();
             }
         }
-        catch (_a) {
+        catch {
             this.data = new Map();
         }
     }
@@ -24,7 +25,7 @@ let StorageService = class StorageService {
                 const value = localStorage.getItem(key);
                 return value == null ? undefined : value;
             }
-            catch (_a) {
+            catch {
                 return undefined;
             }
         }
@@ -34,7 +35,7 @@ let StorageService = class StorageService {
             localStorage.setItem(key, data);
             this.data = undefined;
         }
-        catch (_a) {
+        catch {
             if (!this.data) {
                 this.data = new Map();
             }
@@ -49,7 +50,7 @@ let StorageService = class StorageService {
             try {
                 localStorage.removeItem(key);
             }
-            catch (_a) { }
+            catch { }
         }
     }
     clear() {
@@ -60,14 +61,14 @@ let StorageService = class StorageService {
             try {
                 localStorage.clear();
             }
-            catch (_a) { }
+            catch { }
         }
     }
     getJSON(key, defaultValue) {
         try {
             return JSON.parse(this.getItem(key) || '');
         }
-        catch (_a) {
+        catch {
             return defaultValue;
         }
     }
@@ -92,9 +93,9 @@ let StorageService = class StorageService {
         }
     }
 };
-StorageService = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' }),
+exports.StorageService = StorageService;
+exports.StorageService = StorageService = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' }),
     tslib_1.__metadata("design:paramtypes", [])
 ], StorageService);
-exports.StorageService = StorageService;
 //# sourceMappingURL=storageService.js.map

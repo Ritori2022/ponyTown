@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Key = void 0;
 var Key;
 (function (Key) {
     // Keyboard
@@ -137,5 +138,5 @@ var Key;
     Key[Key["TOUCH_SECOND_CLICK"] = 329] = "TOUCH_SECOND_CLICK";
     // Other
     Key[Key["MAX_VALUE"] = 330] = "MAX_VALUE";
-})(Key = exports.Key || (exports.Key = {}));
+})(Key || (exports.Key = Key = {}));
 //# sourceMappingURL=input.js.map

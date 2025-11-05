@@ -1,5 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UpdateFlags = exports.defaultWorldState = exports.defaultDrawOptions = exports.Engine = exports.ExpressionExtra = exports.Iris = exports.Eye = exports.CLOSED_MUZZLES = exports.Muzzle = exports.NoDraw = exports.PonyStateFlags = exports.SelectFlags = exports.InfoFlags = exports.Action = exports.PartyFlags = exports.houseTiles = exports.tileTypeNames = exports.TileType = exports.WallType = exports.defaultMapState = exports.WorldStateFlags = exports.UpdateType = exports.LeaveReason = exports.ModAction = exports.PlayerAction = exports.FriendStatusFlags = exports.AccountDataFlags = exports.DoAction = exports.InteractAction = exports.ChatType = exports.MessageType = exports.EntityPlayerState = exports.EntityState = exports.EntityFlags = exports.ServerFlags = exports.NotificationFlags = exports.MapFlags = exports.MapType = exports.Weather = exports.Holiday = exports.Season = void 0;
+exports.isPaletteSpriteBatch = isPaletteSpriteBatch;
+exports.getAnimationFromEntityState = getAnimationFromEntityState;
+exports.setAnimationToEntityState = setAnimationToEntityState;
+exports.toMessageType = toMessageType;
+exports.toAnnouncementMessageType = toAnnouncementMessageType;
+exports.isWhisper = isWhisper;
+exports.isWhisperTo = isWhisperTo;
+exports.isThinking = isThinking;
+exports.isModOrAdminMessage = isModOrAdminMessage;
+exports.isPartyMessage = isPartyMessage;
+exports.isPublicMessage = isPublicMessage;
+exports.isNonIgnorableMessage = isNonIgnorableMessage;
+exports.isPartyChat = isPartyChat;
+exports.isPublicChat = isPublicChat;
+exports.canWalk = canWalk;
+exports.isValidTile = isValidTile;
+exports.isValidModTile = isValidModTile;
+exports.isExpressionAction = isExpressionAction;
+exports.isEyeSleeping = isEyeSleeping;
 const colors_1 = require("./colors");
 var Season;
 (function (Season) {
@@ -7,7 +27,7 @@ var Season;
     Season[Season["Autumn"] = 2] = "Autumn";
     Season[Season["Winter"] = 4] = "Winter";
     Season[Season["Spring"] = 8] = "Spring";
-})(Season = exports.Season || (exports.Season = {}));
+})(Season || (exports.Season = Season = {}));
 var Holiday;
 (function (Holiday) {
     Holiday[Holiday["None"] = 0] = "None";
@@ -15,19 +35,19 @@ var Holiday;
     Holiday[Holiday["Halloween"] = 2] = "Halloween";
     Holiday[Holiday["StPatricks"] = 3] = "StPatricks";
     Holiday[Holiday["Easter"] = 4] = "Easter";
-})(Holiday = exports.Holiday || (exports.Holiday = {}));
+})(Holiday || (exports.Holiday = Holiday = {}));
 var Weather;
 (function (Weather) {
     Weather[Weather["None"] = 0] = "None";
     Weather[Weather["Rain"] = 1] = "Rain";
-})(Weather = exports.Weather || (exports.Weather = {}));
+})(Weather || (exports.Weather = Weather = {}));
 var MapType;
 (function (MapType) {
     MapType[MapType["None"] = 0] = "None";
     MapType[MapType["Island"] = 1] = "Island";
     MapType[MapType["House"] = 2] = "House";
     MapType[MapType["Cave"] = 3] = "Cave";
-})(MapType = exports.MapType || (exports.MapType = {}));
+})(MapType || (exports.MapType = MapType = {}));
 var MapFlags;
 (function (MapFlags) {
     MapFlags[MapFlags["None"] = 0] = "None";
@@ -35,7 +55,7 @@ var MapFlags;
     MapFlags[MapFlags["EditableEntities"] = 2] = "EditableEntities";
     MapFlags[MapFlags["EditableTiles"] = 4] = "EditableTiles";
     MapFlags[MapFlags["EdibleGrass"] = 8] = "EdibleGrass";
-})(MapFlags = exports.MapFlags || (exports.MapFlags = {}));
+})(MapFlags || (exports.MapFlags = MapFlags = {}));
 var NotificationFlags;
 (function (NotificationFlags) {
     NotificationFlags[NotificationFlags["None"] = 0] = "None";
@@ -47,18 +67,17 @@ var NotificationFlags;
     NotificationFlags[NotificationFlags["Supporter"] = 32] = "Supporter";
     NotificationFlags[NotificationFlags["Ignore"] = 64] = "Ignore";
     NotificationFlags[NotificationFlags["NameBad"] = 128] = "NameBad";
-})(NotificationFlags = exports.NotificationFlags || (exports.NotificationFlags = {}));
+})(NotificationFlags || (exports.NotificationFlags = NotificationFlags = {}));
 function isPaletteSpriteBatch(batch) {
     return batch.palette;
 }
-exports.isPaletteSpriteBatch = isPaletteSpriteBatch;
 var ServerFlags;
 (function (ServerFlags) {
     ServerFlags[ServerFlags["None"] = 0] = "None";
     ServerFlags[ServerFlags["TreeCrown"] = 1] = "TreeCrown";
     ServerFlags[ServerFlags["DoNotSave"] = 2] = "DoNotSave";
     ServerFlags[ServerFlags["Seasonal"] = 4] = "Seasonal";
-})(ServerFlags = exports.ServerFlags || (exports.ServerFlags = {}));
+})(ServerFlags || (exports.ServerFlags = ServerFlags = {}));
 var EntityFlags;
 (function (EntityFlags) {
     EntityFlags[EntityFlags["None"] = 0] = "None";
@@ -75,7 +94,7 @@ var EntityFlags;
     EntityFlags[EntityFlags["OnOff"] = 1024] = "OnOff";
     EntityFlags[EntityFlags["Bobbing"] = 2048] = "Bobbing";
     EntityFlags[EntityFlags["IgnoreTool"] = 4096] = "IgnoreTool";
-})(EntityFlags = exports.EntityFlags || (exports.EntityFlags = {}));
+})(EntityFlags || (exports.EntityFlags = EntityFlags = {}));
 var EntityState;
 (function (EntityState) {
     EntityState[EntityState["None"] = 0] = "None";
@@ -101,7 +120,7 @@ var EntityState;
     // animated entities
     EntityState[EntityState["AnimationMask"] = 240] = "AnimationMask";
     // max 0xff
-})(EntityState = exports.EntityState || (exports.EntityState = {}));
+})(EntityState || (exports.EntityState = EntityState = {}));
 var EntityPlayerState;
 (function (EntityPlayerState) {
     EntityPlayerState[EntityPlayerState["None"] = 0] = "None";
@@ -109,15 +128,13 @@ var EntityPlayerState;
     EntityPlayerState[EntityPlayerState["Hidden"] = 2] = "Hidden";
     EntityPlayerState[EntityPlayerState["Friend"] = 4] = "Friend";
     // max 0xff
-})(EntityPlayerState = exports.EntityPlayerState || (exports.EntityPlayerState = {}));
+})(EntityPlayerState || (exports.EntityPlayerState = EntityPlayerState = {}));
 function getAnimationFromEntityState(state) {
-    return (state & 240 /* AnimationMask */) >> 4;
+    return (state & 240 /* EntityState.AnimationMask */) >> 4;
 }
-exports.getAnimationFromEntityState = getAnimationFromEntityState;
 function setAnimationToEntityState(state, animation) {
-    return (state & ~240 /* AnimationMask */) | (animation << 4);
+    return (state & ~240 /* EntityState.AnimationMask */) | (animation << 4);
 }
-exports.setAnimationToEntityState = setAnimationToEntityState;
 var MessageType;
 (function (MessageType) {
     MessageType[MessageType["Chat"] = 0] = "Chat";
@@ -137,69 +154,60 @@ var MessageType;
     MessageType[MessageType["WhisperTo"] = 14] = "WhisperTo";
     MessageType[MessageType["WhisperAnnouncement"] = 15] = "WhisperAnnouncement";
     MessageType[MessageType["WhisperToAnnouncement"] = 16] = "WhisperToAnnouncement";
-})(MessageType = exports.MessageType || (exports.MessageType = {}));
+})(MessageType || (exports.MessageType = MessageType = {}));
 function toMessageType(type) {
-    if (type === 15 /* WhisperAnnouncement */) {
-        return 16 /* WhisperToAnnouncement */;
+    if (type === 15 /* MessageType.WhisperAnnouncement */) {
+        return 16 /* MessageType.WhisperToAnnouncement */;
     }
     else {
-        return 14 /* WhisperTo */;
+        return 14 /* MessageType.WhisperTo */;
     }
 }
-exports.toMessageType = toMessageType;
 function toAnnouncementMessageType(type) {
     switch (type) {
-        case 1 /* Party */: return 8 /* PartyAnnouncement */;
-        case 9 /* Whisper */: return 15 /* WhisperAnnouncement */;
-        default: return 7 /* Announcement */;
+        case 1 /* ChatType.Party */: return 8 /* MessageType.PartyAnnouncement */;
+        case 9 /* ChatType.Whisper */: return 15 /* MessageType.WhisperAnnouncement */;
+        default: return 7 /* MessageType.Announcement */;
     }
 }
-exports.toAnnouncementMessageType = toAnnouncementMessageType;
 function isWhisper(type) {
-    return type === 13 /* Whisper */ ||
-        type === 15 /* WhisperAnnouncement */;
+    return type === 13 /* MessageType.Whisper */ ||
+        type === 15 /* MessageType.WhisperAnnouncement */;
 }
-exports.isWhisper = isWhisper;
 function isWhisperTo(type) {
-    return type === 14 /* WhisperTo */ ||
-        type === 16 /* WhisperToAnnouncement */;
+    return type === 14 /* MessageType.WhisperTo */ ||
+        type === 16 /* MessageType.WhisperToAnnouncement */;
 }
-exports.isWhisperTo = isWhisperTo;
 function isThinking(type) {
-    return type === 5 /* Thinking */ ||
-        type === 6 /* PartyThinking */;
+    return type === 5 /* MessageType.Thinking */ ||
+        type === 6 /* MessageType.PartyThinking */;
 }
-exports.isThinking = isThinking;
 function isModOrAdminMessage(type) {
-    return type === 3 /* Mod */ ||
-        type === 2 /* Admin */;
+    return type === 3 /* MessageType.Mod */ ||
+        type === 2 /* MessageType.Admin */;
 }
-exports.isModOrAdminMessage = isModOrAdminMessage;
 function isPartyMessage(type) {
-    return type === 4 /* Party */ ||
-        type === 6 /* PartyThinking */ ||
-        type === 8 /* PartyAnnouncement */;
+    return type === 4 /* MessageType.Party */ ||
+        type === 6 /* MessageType.PartyThinking */ ||
+        type === 8 /* MessageType.PartyAnnouncement */;
 }
-exports.isPartyMessage = isPartyMessage;
 function isPublicMessage(type) {
-    return type === 0 /* Chat */ ||
-        type === 5 /* Thinking */ ||
-        type === 7 /* Announcement */ ||
-        type === 2 /* Admin */ ||
-        type === 3 /* Mod */ ||
-        type === 9 /* Supporter1 */ ||
-        type === 10 /* Supporter2 */ ||
-        type === 11 /* Supporter3 */;
+    return type === 0 /* MessageType.Chat */ ||
+        type === 5 /* MessageType.Thinking */ ||
+        type === 7 /* MessageType.Announcement */ ||
+        type === 2 /* MessageType.Admin */ ||
+        type === 3 /* MessageType.Mod */ ||
+        type === 9 /* MessageType.Supporter1 */ ||
+        type === 10 /* MessageType.Supporter2 */ ||
+        type === 11 /* MessageType.Supporter3 */;
 }
-exports.isPublicMessage = isPublicMessage;
 function isNonIgnorableMessage(type) {
     return isModOrAdminMessage(type) ||
         isPartyMessage(type) ||
-        type === 1 /* System */ ||
-        type === 12 /* Dismiss */ ||
-        type === 7 /* Announcement */;
+        type === 1 /* MessageType.System */ ||
+        type === 12 /* MessageType.Dismiss */ ||
+        type === 7 /* MessageType.Announcement */;
 }
-exports.isNonIgnorableMessage = isNonIgnorableMessage;
 var ChatType;
 (function (ChatType) {
     ChatType[ChatType["Say"] = 0] = "Say";
@@ -212,18 +220,16 @@ var ChatType;
     ChatType[ChatType["Supporter3"] = 7] = "Supporter3";
     ChatType[ChatType["Dismiss"] = 8] = "Dismiss";
     ChatType[ChatType["Whisper"] = 9] = "Whisper";
-})(ChatType = exports.ChatType || (exports.ChatType = {}));
+})(ChatType || (exports.ChatType = ChatType = {}));
 function isPartyChat(type) {
-    return type === 1 /* Party */ || type === 3 /* PartyThink */;
+    return type === 1 /* ChatType.Party */ || type === 3 /* ChatType.PartyThink */;
 }
-exports.isPartyChat = isPartyChat;
 function isPublicChat(type) {
-    return type !== 1 /* Party */ &&
-        type !== 3 /* PartyThink */ &&
-        type !== 8 /* Dismiss */ &&
-        type !== 9 /* Whisper */;
+    return type !== 1 /* ChatType.Party */ &&
+        type !== 3 /* ChatType.PartyThink */ &&
+        type !== 8 /* ChatType.Dismiss */ &&
+        type !== 9 /* ChatType.Whisper */;
 }
-exports.isPublicChat = isPublicChat;
 var InteractAction;
 (function (InteractAction) {
     InteractAction[InteractAction["None"] = 0] = "None";
@@ -232,26 +238,26 @@ var InteractAction;
     InteractAction[InteractAction["GiveFruits"] = 3] = "GiveFruits";
     InteractAction[InteractAction["GiveCookie1"] = 4] = "GiveCookie1";
     InteractAction[InteractAction["GiveCookie2"] = 5] = "GiveCookie2";
-})(InteractAction = exports.InteractAction || (exports.InteractAction = {}));
+})(InteractAction || (exports.InteractAction = InteractAction = {}));
 var DoAction;
 (function (DoAction) {
     DoAction[DoAction["None"] = 0] = "None";
     DoAction[DoAction["Boop"] = 1] = "Boop";
     DoAction[DoAction["Swing"] = 2] = "Swing";
     DoAction[DoAction["HoldPoof"] = 3] = "HoldPoof";
-})(DoAction = exports.DoAction || (exports.DoAction = {}));
+})(DoAction || (exports.DoAction = DoAction = {}));
 var AccountDataFlags;
 (function (AccountDataFlags) {
     AccountDataFlags[AccountDataFlags["None"] = 0] = "None";
     AccountDataFlags[AccountDataFlags["Duplicates"] = 1] = "Duplicates";
     AccountDataFlags[AccountDataFlags["PastSupporter"] = 4] = "PastSupporter";
-})(AccountDataFlags = exports.AccountDataFlags || (exports.AccountDataFlags = {}));
+})(AccountDataFlags || (exports.AccountDataFlags = AccountDataFlags = {}));
 var FriendStatusFlags;
 (function (FriendStatusFlags) {
     FriendStatusFlags[FriendStatusFlags["None"] = 0] = "None";
     FriendStatusFlags[FriendStatusFlags["Online"] = 1] = "Online";
     FriendStatusFlags[FriendStatusFlags["Remove"] = 2] = "Remove";
-})(FriendStatusFlags = exports.FriendStatusFlags || (exports.FriendStatusFlags = {}));
+})(FriendStatusFlags || (exports.FriendStatusFlags = FriendStatusFlags = {}));
 // NOTE: also update in serverActions.ts
 var PlayerAction;
 (function (PlayerAction) {
@@ -265,7 +271,7 @@ var PlayerAction;
     PlayerAction[PlayerAction["InviteToSupporterServers"] = 7] = "InviteToSupporterServers";
     PlayerAction[PlayerAction["AddFriend"] = 8] = "AddFriend";
     PlayerAction[PlayerAction["RemoveFriend"] = 9] = "RemoveFriend";
-})(PlayerAction = exports.PlayerAction || (exports.PlayerAction = {}));
+})(PlayerAction || (exports.PlayerAction = PlayerAction = {}));
 var ModAction;
 (function (ModAction) {
     ModAction[ModAction["None"] = 0] = "None";
@@ -274,12 +280,12 @@ var ModAction;
     ModAction[ModAction["Shadow"] = 3] = "Shadow";
     ModAction[ModAction["Kick"] = 4] = "Kick";
     ModAction[ModAction["Ban"] = 5] = "Ban";
-})(ModAction = exports.ModAction || (exports.ModAction = {}));
+})(ModAction || (exports.ModAction = ModAction = {}));
 var LeaveReason;
 (function (LeaveReason) {
     LeaveReason[LeaveReason["None"] = 0] = "None";
     LeaveReason[LeaveReason["Swearing"] = 1] = "Swearing";
-})(LeaveReason = exports.LeaveReason || (exports.LeaveReason = {}));
+})(LeaveReason || (exports.LeaveReason = LeaveReason = {}));
 var UpdateType;
 (function (UpdateType) {
     UpdateType[UpdateType["None"] = 0] = "None";
@@ -287,20 +293,20 @@ var UpdateType;
     UpdateType[UpdateType["UpdateEntity"] = 2] = "UpdateEntity";
     UpdateType[UpdateType["RemoveEntity"] = 3] = "RemoveEntity";
     UpdateType[UpdateType["UpdateTile"] = 4] = "UpdateTile";
-})(UpdateType = exports.UpdateType || (exports.UpdateType = {}));
+})(UpdateType || (exports.UpdateType = UpdateType = {}));
 var WorldStateFlags;
 (function (WorldStateFlags) {
     WorldStateFlags[WorldStateFlags["None"] = 0] = "None";
     WorldStateFlags[WorldStateFlags["Safe"] = 1] = "Safe";
-})(WorldStateFlags = exports.WorldStateFlags || (exports.WorldStateFlags = {}));
+})(WorldStateFlags || (exports.WorldStateFlags = WorldStateFlags = {}));
 exports.defaultMapState = {
-    weather: 0 /* None */,
+    weather: 0 /* Weather.None */,
 };
 var WallType;
 (function (WallType) {
     WallType[WallType["None"] = 0] = "None";
     WallType[WallType["Wood"] = 1] = "Wood";
-})(WallType = exports.WallType || (exports.WallType = {}));
+})(WallType || (exports.WallType = WallType = {}));
 var TileType;
 (function (TileType) {
     TileType[TileType["None"] = 0] = "None";
@@ -319,39 +325,36 @@ var TileType;
     // special
     TileType[TileType["WallH"] = 100] = "WallH";
     TileType[TileType["WallV"] = 101] = "WallV";
-})(TileType = exports.TileType || (exports.TileType = {}));
+})(TileType || (exports.TileType = TileType = {}));
 exports.tileTypeNames = [
     'none', 'dirt', 'grass', 'water', 'wood', 'ice', 'snow-on-ice', 'walkable-water', 'boat', 'walkable-ice',
     'stone', 'stone-2', 'elevated-dirt',
 ];
 exports.houseTiles = [
-    { type: 1 /* Dirt */, name: 'Dirt' },
-    { type: 4 /* Wood */, name: 'Wood' },
-    { type: 2 /* Grass */, name: 'Grass' },
-    { type: 3 /* Water */, name: 'Water' },
-    { type: 5 /* Ice */, name: 'Ice' },
-    { type: 10 /* Stone */, name: 'Stone' },
-    { type: 11 /* Stone2 */, name: 'Brick' },
+    { type: 1 /* TileType.Dirt */, name: 'Dirt' },
+    { type: 4 /* TileType.Wood */, name: 'Wood' },
+    { type: 2 /* TileType.Grass */, name: 'Grass' },
+    { type: 3 /* TileType.Water */, name: 'Water' },
+    { type: 5 /* TileType.Ice */, name: 'Ice' },
+    { type: 10 /* TileType.Stone */, name: 'Stone' },
+    { type: 11 /* TileType.Stone2 */, name: 'Brick' },
 ];
 function canWalk(tile) {
-    return tile !== 0 /* None */;
+    return tile !== 0 /* TileType.None */;
 }
-exports.canWalk = canWalk;
 function isValidTile(tile) {
-    return tile === 1 /* Dirt */ || tile === 2 /* Grass */;
+    return tile === 1 /* TileType.Dirt */ || tile === 2 /* TileType.Grass */;
 }
-exports.isValidTile = isValidTile;
 function isValidModTile(tile) {
-    return tile >= 0 /* None */ && tile < 100 /* WallH */;
+    return tile >= 0 /* TileType.None */ && tile < 100 /* TileType.WallH */;
 }
-exports.isValidModTile = isValidModTile;
 var PartyFlags;
 (function (PartyFlags) {
     PartyFlags[PartyFlags["None"] = 0] = "None";
     PartyFlags[PartyFlags["Leader"] = 1] = "Leader";
     PartyFlags[PartyFlags["Pending"] = 2] = "Pending";
     PartyFlags[PartyFlags["Offline"] = 4] = "Offline";
-})(PartyFlags = exports.PartyFlags || (exports.PartyFlags = {}));
+})(PartyFlags || (exports.PartyFlags = PartyFlags = {}));
 var Action;
 (function (Action) {
     Action[Action["None"] = 0] = "None";
@@ -387,30 +390,29 @@ var Action;
     Action[Action["SwitchToolRev"] = 30] = "SwitchToolRev";
     Action[Action["SwitchToPlaceTool"] = 31] = "SwitchToPlaceTool";
     Action[Action["SwitchToTileTool"] = 32] = "SwitchToTileTool";
-})(Action = exports.Action || (exports.Action = {}));
+})(Action || (exports.Action = Action = {}));
 var InfoFlags;
 (function (InfoFlags) {
     InfoFlags[InfoFlags["None"] = 0] = "None";
     InfoFlags[InfoFlags["Incognito"] = 1] = "Incognito";
     InfoFlags[InfoFlags["SupportsWASM"] = 2] = "SupportsWASM";
     InfoFlags[InfoFlags["SupportsLetAndConst"] = 4] = "SupportsLetAndConst";
-})(InfoFlags = exports.InfoFlags || (exports.InfoFlags = {}));
+})(InfoFlags || (exports.InfoFlags = InfoFlags = {}));
 function isExpressionAction(action) {
-    return action === 3 /* Yawn */ || action === 4 /* Laugh */ || action === 5 /* Sneeze */;
+    return action === 3 /* Action.Yawn */ || action === 4 /* Action.Laugh */ || action === 5 /* Action.Sneeze */;
 }
-exports.isExpressionAction = isExpressionAction;
 var SelectFlags;
 (function (SelectFlags) {
     SelectFlags[SelectFlags["None"] = 0] = "None";
     SelectFlags[SelectFlags["FetchEx"] = 1] = "FetchEx";
     SelectFlags[SelectFlags["FetchInfo"] = 2] = "FetchInfo";
-})(SelectFlags = exports.SelectFlags || (exports.SelectFlags = {}));
+})(SelectFlags || (exports.SelectFlags = SelectFlags = {}));
 var PonyStateFlags;
 (function (PonyStateFlags) {
     PonyStateFlags[PonyStateFlags["None"] = 0] = "None";
     PonyStateFlags[PonyStateFlags["CurlTail"] = 1] = "CurlTail";
     PonyStateFlags[PonyStateFlags["FaceForward"] = 2] = "FaceForward";
-})(PonyStateFlags = exports.PonyStateFlags || (exports.PonyStateFlags = {}));
+})(PonyStateFlags || (exports.PonyStateFlags = PonyStateFlags = {}));
 var NoDraw;
 (function (NoDraw) {
     NoDraw[NoDraw["None"] = 0] = "None";
@@ -444,7 +446,7 @@ var NoDraw;
     NoDraw[NoDraw["CloseLegs"] = 655360] = "CloseLegs";
     NoDraw[NoDraw["AllLegs"] = 1966080] = "AllLegs";
     NoDraw[NoDraw["Sleeves"] = 6291456] = "Sleeves";
-})(NoDraw = exports.NoDraw || (exports.NoDraw = {}));
+})(NoDraw || (exports.NoDraw = NoDraw = {}));
 // expression
 var Muzzle;
 (function (Muzzle) {
@@ -475,10 +477,10 @@ var Muzzle;
     Muzzle[Muzzle["Oh"] = 24] = "Oh";
     Muzzle[Muzzle["FlatBlep"] = 25] = "FlatBlep";
     // max: 31
-})(Muzzle = exports.Muzzle || (exports.Muzzle = {}));
+})(Muzzle || (exports.Muzzle = Muzzle = {}));
 exports.CLOSED_MUZZLES = [
-    0 /* Smile */, 1 /* Frown */, 2 /* Neutral */, 3 /* Scrunch */, 6 /* Flat */, 7 /* Concerned */,
-    13 /* Kiss */, 17 /* Kiss2 */,
+    0 /* Muzzle.Smile */, 1 /* Muzzle.Frown */, 2 /* Muzzle.Neutral */, 3 /* Muzzle.Scrunch */, 6 /* Muzzle.Flat */, 7 /* Muzzle.Concerned */,
+    13 /* Muzzle.Kiss */, 17 /* Muzzle.Kiss2 */,
 ];
 var Eye;
 (function (Eye) {
@@ -508,13 +510,12 @@ var Eye;
     Eye[Eye["X"] = 23] = "X";
     Eye[Eye["X2"] = 24] = "X2";
     // max: 31
-})(Eye = exports.Eye || (exports.Eye = {}));
+})(Eye || (exports.Eye = Eye = {}));
 function isEyeSleeping(eye) {
-    return eye === 6 /* Closed */ ||
-        (eye >= 11 /* Lines */ && eye <= 14 /* ClosedHappy */) ||
-        (eye >= 21 /* Peaceful */ && eye <= 24 /* X2 */);
+    return eye === 6 /* Eye.Closed */ ||
+        (eye >= 11 /* Eye.Lines */ && eye <= 14 /* Eye.ClosedHappy */) ||
+        (eye >= 21 /* Eye.Peaceful */ && eye <= 24 /* Eye.X2 */);
 }
-exports.isEyeSleeping = isEyeSleeping;
 var Iris;
 (function (Iris) {
     Iris[Iris["Forward"] = 0] = "Forward";
@@ -527,7 +528,7 @@ var Iris;
     Iris[Iris["Down"] = 7] = "Down";
     // max: 15
     Iris[Iris["COUNT"] = 8] = "COUNT";
-})(Iris = exports.Iris || (exports.Iris = {}));
+})(Iris || (exports.Iris = Iris = {}));
 var ExpressionExtra;
 (function (ExpressionExtra) {
     ExpressionExtra[ExpressionExtra["None"] = 0] = "None";
@@ -537,7 +538,7 @@ var ExpressionExtra;
     ExpressionExtra[ExpressionExtra["Tears"] = 8] = "Tears";
     ExpressionExtra[ExpressionExtra["Hearts"] = 16] = "Hearts";
     // max: 31
-})(ExpressionExtra = exports.ExpressionExtra || (exports.ExpressionExtra = {}));
+})(ExpressionExtra || (exports.ExpressionExtra = ExpressionExtra = {}));
 var Engine;
 (function (Engine) {
     Engine[Engine["Default"] = 0] = "Default";
@@ -545,7 +546,7 @@ var Engine;
     Engine[Engine["Whiteness"] = 2] = "Whiteness";
     Engine[Engine["NewLighting"] = 3] = "NewLighting";
     Engine[Engine["Total"] = 4] = "Total";
-})(Engine = exports.Engine || (exports.Engine = {}));
+})(Engine || (exports.Engine = Engine = {}));
 exports.defaultDrawOptions = {
     gameTime: 0,
     lightColor: colors_1.WHITE,
@@ -558,11 +559,11 @@ exports.defaultDrawOptions = {
     tileIndices: false,
     tileGrid: false,
     engine: Engine.Default,
-    season: 1 /* Summer */,
+    season: 1 /* Season.Summer */,
     error: () => { },
 };
 exports.defaultWorldState = {
-    season: 1 /* Summer */,
+    season: 1 /* Season.Summer */,
 };
 var UpdateFlags;
 (function (UpdateFlags) {
@@ -580,5 +581,5 @@ var UpdateFlags;
     UpdateFlags[UpdateFlags["PlayerState"] = 1024] = "PlayerState";
     UpdateFlags[UpdateFlags["SwitchRegion"] = 2048] = "SwitchRegion";
     // max 32768
-})(UpdateFlags = exports.UpdateFlags || (exports.UpdateFlags = {}));
+})(UpdateFlags || (exports.UpdateFlags = UpdateFlags = {}));
 //# sourceMappingURL=interfaces.js.map

@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.App = void 0;
+exports.tooltipConfig = tooltipConfig;
+exports.popoverConfig = popoverConfig;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -21,11 +24,9 @@ const gameUtils_1 = require("../../client/gameUtils");
 function tooltipConfig() {
     return Object.assign(new tooltip_1.TooltipConfig(), { container: 'body' });
 }
-exports.tooltipConfig = tooltipConfig;
 function popoverConfig() {
     return Object.assign(new popover_1.PopoverConfig(), { container: 'body' });
 }
-exports.popoverConfig = popoverConfig;
 let App = class App {
     constructor(modalService, gameService, model, game, router, activatedRoute, installService, errorReporter) {
         this.modalService = modalService;
@@ -93,7 +94,7 @@ let App = class App {
             this.errorReporter.disable();
         }
         if (!DEVELOPMENT) {
-            clientUtils_1.registerServiceWorker(`${data_1.host}sw.js`, () => {
+            (0, clientUtils_1.registerServiceWorker)(`${data_1.host}sw.js`, () => {
                 this.model.updating = true;
                 setTimeout(() => {
                     this.model.updatingTakesLongTime = true;
@@ -133,7 +134,7 @@ let App = class App {
         if (!this.reloadModalRef) {
             this.reloadModalRef = this.modalService.show(this.reloadModal, { class: 'modal-lg', ignoreBackdropClick: true, keyboard: false });
             this.reloadInterval = setInterval(() => {
-                if (clientUtils_1.checkIframeKey('reload-frame', 'gep84r9jshge4g')) {
+                if ((0, clientUtils_1.checkIframeKey)('reload-frame', 'gep84r9jshge4g')) {
                     this.cancelReloadModal();
                 }
             }, 500);
@@ -150,14 +151,14 @@ let App = class App {
         if (!message.entityId) {
             return;
         }
-        let entity = worldMap_1.findEntityById(this.game.map, message.entityId);
-        if (entity && (!pony_1.isPony(entity) || entity === this.game.player)) {
+        let entity = (0, worldMap_1.findEntityById)(this.game.map, message.entityId);
+        if (entity && (!(0, pony_1.isPony)(entity) || entity === this.game.player)) {
             return;
         }
         if (!entity) {
             entity = { fake: true, type: constants_1.PONY_TYPE, id: message.entityId, name: message.name };
         }
-        if (gameUtils_1.isSelected(this.game, message.entityId)) {
+        if ((0, gameUtils_1.isSelected)(this.game, message.entityId)) {
             this.game.whisperTo = entity;
             chatBox.setChatType('whisper');
         }
@@ -178,30 +179,31 @@ let App = class App {
         });
     }
 };
+exports.App = App;
 tslib_1.__decorate([
-    core_1.ViewChild('announcer', { static: true }),
+    (0, core_1.ViewChild)('announcer', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], App.prototype, "announcer", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('announcerText', { static: true }),
+    (0, core_1.ViewChild)('announcerText', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], App.prototype, "announcerText", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('reloadModal', { static: true }),
+    (0, core_1.ViewChild)('reloadModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], App.prototype, "reloadModal", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('signInModal', { static: true }),
+    (0, core_1.ViewChild)('signInModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], App.prototype, "signInModal", void 0);
 tslib_1.__decorate([
-    core_1.HostListener('window:focus'),
+    (0, core_1.HostListener)('window:focus'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], App.prototype, "focus", null);
-App = tslib_1.__decorate([
-    core_1.Component({
+exports.App = App = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-town-app',
         templateUrl: 'app.pug',
         styleUrls: ['app.scss'],
@@ -219,5 +221,4 @@ App = tslib_1.__decorate([
         installService_1.InstallService,
         errorReporter_1.ErrorReporter])
 ], App);
-exports.App = App;
 //# sourceMappingURL=app.js.map

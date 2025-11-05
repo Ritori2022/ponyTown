@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ButtMarkEditor = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -18,22 +19,22 @@ let ButtMarkEditor = class ButtMarkEditor {
         };
     }
     clearCM() {
-        lodash_1.fill(this.info.cm, '');
+        (0, lodash_1.fill)(this.info.cm, '');
     }
 };
+exports.ButtMarkEditor = ButtMarkEditor;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ButtMarkEditor.prototype, "info", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ButtMarkEditor.prototype, "state", void 0);
-ButtMarkEditor = tslib_1.__decorate([
-    core_1.Component({
+exports.ButtMarkEditor = ButtMarkEditor = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'butt-mark-editor',
         templateUrl: 'butt-mark-editor.pug',
     })
 ], ButtMarkEditor);
-exports.ButtMarkEditor = ButtMarkEditor;
 //# sourceMappingURL=butt-mark-editor.js.map

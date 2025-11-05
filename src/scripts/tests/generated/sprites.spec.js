@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 require("../lib");
 const chai_1 = require("chai");
 const lodash_1 = require("lodash");
-const sprites = require("../../generated/sprites");
+const sprites = tslib_1.__importStar(require("../../generated/sprites"));
 /* tslint:disable */
 const sets = [
     // name, index, frames, expected patterns colors counts
@@ -44,9 +45,9 @@ describe('sprites', () => {
     describe('pony', () => {
         sets.map(([name, index, frames, expectedPatterns]) => it(name, () => {
             const field = sprites[name];
-            const counts = lodash_1.map(index !== -1 ? field[index] : field, (x) => x ? x.map(y => y.colors) : null);
-            chai_1.expect(index === -1 ? 1 : field.length).eql(frames, 'frame count');
-            chai_1.expect(counts).eql(expectedPatterns, `\n\nACT: ${JSON.stringify(counts)}\nEXP: ${JSON.stringify(expectedPatterns)}\n\n`);
+            const counts = (0, lodash_1.map)(index !== -1 ? field[index] : field, (x) => x ? x.map(y => y.colors) : null);
+            (0, chai_1.expect)(index === -1 ? 1 : field.length).eql(frames, 'frame count');
+            (0, chai_1.expect)(counts).eql(expectedPatterns, `\n\nACT: ${JSON.stringify(counts)}\nEXP: ${JSON.stringify(expectedPatterns)}\n\n`);
         }));
     });
 });

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SettingsModal = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const settingsService_1 = require("../../services/settingsService");
@@ -41,11 +42,11 @@ let SettingsModal = class SettingsModal {
     }
     get chatlogRangeText() {
         const range = this.account.chatlogRange;
-        return constants_1.isChatlogRangeUnlimited(range) ? 'entire screen' : `${range} tiles`;
+        return (0, constants_1.isChatlogRangeUnlimited)(range) ? 'entire screen' : `${range} tiles`;
     }
     ngOnInit() {
-        this.accountBackup = utils_1.cloneDeep(this.settingsService.account);
-        this.browserBackup = utils_1.cloneDeep(this.settingsService.browser);
+        this.accountBackup = (0, utils_1.cloneDeep)(this.settingsService.account);
+        this.browserBackup = (0, utils_1.cloneDeep)(this.settingsService.browser);
         this.account = this.settingsService.account;
         this.browser = this.settingsService.browser;
         this.setupDefaults();
@@ -89,11 +90,11 @@ let SettingsModal = class SettingsModal {
     }
     updateChatlogRange(range) {
         document.body.classList.add('translucent-modals');
-        clientUtils_1.updateRangeIndicator(range, this.game);
+        (0, clientUtils_1.updateRangeIndicator)(range, this.game);
     }
     finishChatlogRange() {
         document.body.classList.remove('translucent-modals');
-        clientUtils_1.updateRangeIndicator(undefined, this.game);
+        (0, clientUtils_1.updateRangeIndicator)(undefined, this.game);
     }
     setupDefaults() {
         if (this.account.chatlogOpacity === undefined) {
@@ -107,27 +108,28 @@ let SettingsModal = class SettingsModal {
         }
     }
     export() {
-        const account = Object.assign({}, this.account, { actions: undefined });
+        const account = { ...this.account, actions: undefined };
         const browser = this.browser;
         const data = JSON.stringify({ account, browser });
         saveAs(new Blob([data], { type: 'text/plain;charset=utf-8' }), `pony-town-settings.json`);
     }
     async import(file) {
         if (file) {
-            const text = await clientUtils_1.readFileAsText(file);
+            const text = await (0, clientUtils_1.readFileAsText)(file);
             const { account, browser } = JSON.parse(text);
             const actions = this.account.actions;
-            Object.assign(this.account, Object.assign({}, account, { actions }));
+            Object.assign(this.account, { ...account, actions });
             Object.assign(this.browser, browser);
         }
     }
 };
+exports.SettingsModal = SettingsModal;
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], SettingsModal.prototype, "close", void 0);
-SettingsModal = tslib_1.__decorate([
-    core_1.Component({
+exports.SettingsModal = SettingsModal = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'settings-modal',
         templateUrl: 'settings-modal.pug',
         styleUrls: ['settings-modal.scss'],
@@ -136,5 +138,4 @@ SettingsModal = tslib_1.__decorate([
         storageService_1.StorageService,
         game_1.PonyTownGame])
 ], SettingsModal);
-exports.SettingsModal = SettingsModal;
 //# sourceMappingURL=settings-modal.js.map

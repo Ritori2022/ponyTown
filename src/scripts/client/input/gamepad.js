@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GamePadController = void 0;
 const gamepad_mappings_1 = require("../../generated/gamepad-mappings");
 const clientUtils_1 = require("../clientUtils");
 const JOYSTICK_THRESHHOLD = 0.2;
@@ -76,7 +77,7 @@ class GamePadController {
         window.removeEventListener('gamepaddisconnected', this.gamepaddisconnected);
     }
     update() {
-        if (this.manager.disabledGamepad || !clientUtils_1.isFocused() || this.gamepadIndex === -1)
+        if (this.manager.disabledGamepad || !(0, clientUtils_1.isFocused)() || this.gamepadIndex === -1)
             return;
         const gamepads = navigator.getGamepads();
         const gamepad = gamepads[this.gamepadIndex];
@@ -85,16 +86,16 @@ class GamePadController {
             return;
         }
         const pad = createGamepad(gamepad);
-        this.zeroed1 = readAxis(this.manager, 307 /* GAMEPAD_AXIS1_X */, 308 /* GAMEPAD_AXIS1_Y */, axis(pad, 0 /* LeftStickX */), axis(pad, 1 /* LeftStickY */), this.zeroed1);
-        this.zeroed2 = readAxis(this.manager, 309 /* GAMEPAD_AXIS2_X */, 310 /* GAMEPAD_AXIS2_Y */, axis(pad, 2 /* RightStickX */), axis(pad, 3 /* RightStickY */), this.zeroed2);
-        this.manager.setValue(313 /* GAMEPAD_BUTTON_X */, button(pad, 2 /* X */) ? 1 : 0);
-        this.manager.setValue(314 /* GAMEPAD_BUTTON_Y */, button(pad, 3 /* Y */) ? 1 : 0);
-        this.manager.setValue(311 /* GAMEPAD_BUTTON_A */, button(pad, 0 /* A */) ? 1 : 0);
-        this.manager.setValue(312 /* GAMEPAD_BUTTON_B */, button(pad, 1 /* B */) ? 1 : 0);
-        this.manager.setValue(324 /* GAMEPAD_BUTTON_DOWN */, button(pad, 6 /* DpadDown */) ? 1 : 0);
-        this.manager.setValue(325 /* GAMEPAD_BUTTON_LEFT */, button(pad, 7 /* DpadLeft */) ? 1 : 0);
-        this.manager.setValue(326 /* GAMEPAD_BUTTON_RIGHT */, button(pad, 8 /* DpadRight */) ? 1 : 0);
-        this.manager.setValue(323 /* GAMEPAD_BUTTON_UP */, button(pad, 9 /* DpadUp */) ? 1 : 0);
+        this.zeroed1 = readAxis(this.manager, 307 /* Key.GAMEPAD_AXIS1_X */, 308 /* Key.GAMEPAD_AXIS1_Y */, axis(pad, 0 /* GamepadAxes.LeftStickX */), axis(pad, 1 /* GamepadAxes.LeftStickY */), this.zeroed1);
+        this.zeroed2 = readAxis(this.manager, 309 /* Key.GAMEPAD_AXIS2_X */, 310 /* Key.GAMEPAD_AXIS2_Y */, axis(pad, 2 /* GamepadAxes.RightStickX */), axis(pad, 3 /* GamepadAxes.RightStickY */), this.zeroed2);
+        this.manager.setValue(313 /* Key.GAMEPAD_BUTTON_X */, button(pad, 2 /* GamepadButtons.X */) ? 1 : 0);
+        this.manager.setValue(314 /* Key.GAMEPAD_BUTTON_Y */, button(pad, 3 /* GamepadButtons.Y */) ? 1 : 0);
+        this.manager.setValue(311 /* Key.GAMEPAD_BUTTON_A */, button(pad, 0 /* GamepadButtons.A */) ? 1 : 0);
+        this.manager.setValue(312 /* Key.GAMEPAD_BUTTON_B */, button(pad, 1 /* GamepadButtons.B */) ? 1 : 0);
+        this.manager.setValue(324 /* Key.GAMEPAD_BUTTON_DOWN */, button(pad, 6 /* GamepadButtons.DpadDown */) ? 1 : 0);
+        this.manager.setValue(325 /* Key.GAMEPAD_BUTTON_LEFT */, button(pad, 7 /* GamepadButtons.DpadLeft */) ? 1 : 0);
+        this.manager.setValue(326 /* Key.GAMEPAD_BUTTON_RIGHT */, button(pad, 8 /* GamepadButtons.DpadRight */) ? 1 : 0);
+        this.manager.setValue(323 /* Key.GAMEPAD_BUTTON_UP */, button(pad, 9 /* GamepadButtons.DpadUp */) ? 1 : 0);
     }
     clear() {
     }

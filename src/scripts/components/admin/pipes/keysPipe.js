@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KeysPipe = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let KeysPipe = class KeysPipe {
@@ -7,10 +8,10 @@ let KeysPipe = class KeysPipe {
         return value ? Object.keys(value) : value;
     }
 };
-KeysPipe = tslib_1.__decorate([
-    core_1.Pipe({
+exports.KeysPipe = KeysPipe;
+exports.KeysPipe = KeysPipe = tslib_1.__decorate([
+    (0, core_1.Pipe)({
         name: 'keys',
     })
 ], KeysPipe);
-exports.KeysPipe = KeysPipe;
 //# sourceMappingURL=keysPipe.js.map

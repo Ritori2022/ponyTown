@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
+exports.createIndex = createIndex;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const pug_1 = require("pug");
 const ag_sockets_1 = require("ag-sockets");
 const oauth_1 = require("../oauth");
@@ -19,7 +21,7 @@ function getFiles(urlBase, dir, sub) {
             url: `${urlBase}/${sub}/${file}`,
         }));
     }
-    catch (_a) {
+    catch {
         return [];
     }
 }
@@ -47,13 +49,13 @@ function createIndex(assetsPath, adminAssetsPath) {
     const getRevScriptURL = revUrlGetter('scripts');
     const getRevStyleURL = revUrlGetter('styles');
     const getRevImageURL = revUrlGetter('images');
-    const template = pug_1.compileFile(paths_1.pathTo('views', 'index.pug'));
+    const template = (0, pug_1.compileFile)((0, paths_1.pathTo)('views', 'index.pug'));
     const inlineStyle = fs.readFileSync(getRevPath('style-inline.css'), 'utf8');
     const loadingImage = fs.readFileSync(getRevPath('logo-gray.png'));
     const oauthProviders = oauth_1.providers.map(toOAuthProvider);
     function encodeSocketOptions(options) {
         if (options) {
-            const data = binaryUtils_1.writeBinary(writer => ag_sockets_1.writeObject(writer, options));
+            const data = (0, binaryUtils_1.writeBinary)(writer => (0, ag_sockets_1.writeObject)(writer, options));
             const buffer = Buffer.from(data);
             return buffer.toString('base64');
         }
@@ -122,5 +124,4 @@ function createIndex(assetsPath, adminAssetsPath) {
     }
     return { admin, user, getRevScript: getRevScriptURL, getRevStyle: getRevStyleURL };
 }
-exports.createIndex = createIndex;
 //# sourceMappingURL=index.js.map

@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.timingStart = timingStart;
+exports.timingEnd = timingEnd;
+exports.timingReset = timingReset;
+exports.timingEntries = timingEntries;
 const ENABLED = true;
 const ENTRIES_LIMIT = 50000;
 const entries = [];
@@ -26,7 +30,7 @@ function timingStart(name) {
     if (ENABLED) {
         if (entriesCount < ENTRIES_LIMIT) {
             const entry = entries[entriesCount];
-            entry.type = 0 /* Start */;
+            entry.type = 0 /* TimingEntryType.Start */;
             entry.time = now();
             entry.name = name;
             entriesCount++;
@@ -36,12 +40,11 @@ function timingStart(name) {
         }
     }
 }
-exports.timingStart = timingStart;
 function timingEnd() {
     if (ENABLED) {
         if (entriesCount < ENTRIES_LIMIT) {
             const entry = entries[entriesCount];
-            entry.type = 1 /* End */;
+            entry.type = 1 /* TimingEntryType.End */;
             entry.time = now();
             entry.name = undefined;
             entriesCount++;
@@ -51,15 +54,12 @@ function timingEnd() {
         }
     }
 }
-exports.timingEnd = timingEnd;
 function timingReset() {
     if (ENABLED) {
         entriesCount = 0;
     }
 }
-exports.timingReset = timingReset;
 function timingEntries() {
     return entries.slice(0, entriesCount);
 }
-exports.timingEntries = timingEntries;
 //# sourceMappingURL=timing.js.map

@@ -1,5 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createEmptyTexture = createEmptyTexture;
+exports.createTexture = createTexture;
+exports.disposeTexture = disposeTexture;
+exports.bindTexture = bindTexture;
+exports.resizeTexture = resizeTexture;
 function createEmptyTexture(gl, width, height, format, type) {
     if (format === undefined) {
         format = gl.RGBA;
@@ -18,7 +23,6 @@ function createEmptyTexture(gl, width, height, format, type) {
     gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null);
     return { handle, width, height, format, type };
 }
-exports.createEmptyTexture = createEmptyTexture;
 function createTexture(gl, data, format, type) {
     if (format === undefined) {
         format = gl.RGBA;
@@ -30,7 +34,6 @@ function createTexture(gl, data, format, type) {
     gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, data);
     return { handle, width: data.width, height: data.height, format, type };
 }
-exports.createTexture = createTexture;
 function disposeTexture(gl, texture) {
     try {
         if (gl && texture) {
@@ -42,12 +45,10 @@ function disposeTexture(gl, texture) {
     }
     return undefined;
 }
-exports.disposeTexture = disposeTexture;
 function bindTexture(gl, unit, texture) {
     gl.activeTexture(gl.TEXTURE0 + unit);
     gl.bindTexture(gl.TEXTURE_2D, texture ? texture.handle : null);
 }
-exports.bindTexture = bindTexture;
 function resizeTexture(gl, texture, width, height) {
     width = width | 0;
     height = height | 0;
@@ -61,7 +62,6 @@ function resizeTexture(gl, texture, width, height) {
     gl.bindTexture(gl.TEXTURE_2D, texture.handle);
     gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null);
 }
-exports.resizeTexture = resizeTexture;
 function createTextureHandle(gl) {
     const texture = gl.createTexture();
     if (!texture) {

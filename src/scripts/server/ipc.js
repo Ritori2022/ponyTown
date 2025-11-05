@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const ipc = require("node-ipc");
+exports.startIPCServer = startIPCServer;
+exports.startIPCClient = startIPCClient;
+const tslib_1 = require("tslib");
+const ipc = tslib_1.__importStar(require("node-ipc"));
 function startIPCServer(id, createServer) {
     ipc.config.id = id;
     ipc.config.retry = 500;
@@ -41,7 +44,6 @@ function startIPCServer(id, createServer) {
     });
     ipc.server.start();
 }
-exports.startIPCServer = startIPCServer;
 function startIPCClient(serverId, clientId, createClient) {
     ipc.config.id = clientId;
     ipc.config.retry = 500;
@@ -71,5 +73,4 @@ function startIPCClient(serverId, clientId, createClient) {
         });
     });
 }
-exports.startIPCClient = startIPCClient;
 //# sourceMappingURL=ipc.js.map

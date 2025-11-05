@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createSpamChecker = exports.RAPID_MESSAGE_TIMEOUT = exports.RAPID_MESSAGE_COUNT = exports.LONG_MESSAGE_MUL = exports.SHORT_MESSAGE_MUL = exports.TINY_MESSAGE_MUL = exports.MUTE_AFTER_LIMIT = exports.REPORT_AFTER_LIMIT = exports.MULTIPLE_MATCH_COUNT = void 0;
 const utils_1 = require("../common/utils");
 const reporting_1 = require("./reporting");
 const playerUtils_1 = require("./playerUtils");
@@ -16,11 +17,11 @@ exports.SHORT_MESSAGE_MUL = 1.5; // was 2
 exports.LONG_MESSAGE_MUL = 0.75;
 exports.RAPID_MESSAGE_COUNT = 35;
 exports.RAPID_MESSAGE_TIMEOUT = 30 * constants_1.SECOND;
-exports.createSpamChecker = (spamCounter, rapidCounter, countSpamming, timeoutAccount, handlePromise = serverUtils_1.handlePromiseDefault) => {
+const createSpamChecker = (spamCounter, rapidCounter, countSpamming, timeoutAccount, handlePromise = serverUtils_1.handlePromiseDefault) => {
     async function countAndTimeout(client, timeout, message, items, settings) {
-        const timeoutTime = utils_1.fromNow(reporting_1.SPAM_TIMEOUT * (settings.doubleTimeouts ? 2 : 1));
+        const timeoutTime = (0, utils_1.fromNow)(reporting_1.SPAM_TIMEOUT * (settings.doubleTimeouts ? 2 : 1));
         await countSpamming(client.accountId);
-        if (!playerUtils_1.isMutedOrShadowed(client)) {
+        if (!(0, playerUtils_1.isMutedOrShadowed)(client)) {
             if (timeout && settings.autoBanSpamming) {
                 await timeoutAccount(client.accountId, timeoutTime, 'Timed out for spamming');
                 if (settings.reportSpam) {
@@ -85,6 +86,7 @@ exports.createSpamChecker = (spamCounter, rapidCounter, countSpamming, timeoutAc
         }
     };
 };
+exports.createSpamChecker = createSpamChecker;
 function findLastSayByPartialString(lastSays, message) {
     for (const say of lastSays) {
         if (partialString(say.message, message)) {

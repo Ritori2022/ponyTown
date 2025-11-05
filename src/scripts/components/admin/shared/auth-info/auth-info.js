@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthInfo = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../../client/icons");
@@ -20,16 +21,17 @@ let AuthInfo = class AuthInfo {
         return (this.auth && this.auth.pledged || 0) / 100;
     }
 };
+exports.AuthInfo = AuthInfo;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AuthInfo.prototype, "auth", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AuthInfo.prototype, "showName", void 0);
-AuthInfo = tslib_1.__decorate([
-    core_1.Component({
+exports.AuthInfo = AuthInfo = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'auth-info',
         templateUrl: 'auth-info.pug',
         styleUrls: ['auth-info.scss'],
@@ -38,5 +40,4 @@ AuthInfo = tslib_1.__decorate([
         },
     })
 ], AuthInfo);
-exports.AuthInfo = AuthInfo;
 //# sourceMappingURL=auth-info.js.map

@@ -14,7 +14,7 @@ describe('ErrorReporter', () => {
             socketOptions = {};
             errorReporter = new errorReporter_1.ErrorReporter();
             clientErrorHandler = errorReporter.createClientErrorHandler(socketOptions);
-            reportError = sinon_1.stub(errorReporter, 'reportError');
+            reportError = (0, sinon_1.stub)(errorReporter, 'reportError');
         });
         it('reports error without data', () => {
             const error = new Error('foo');
@@ -37,7 +37,7 @@ describe('ErrorReporter', () => {
             const error = new Error('foo');
             socketOptions.client = [['bar', {}]];
             clientErrorHandler.handleRecvError(error, new Uint8Array(300));
-            sinon_1.assert.calledWithMatch(reportError, error, { data: `<${utils_1.times(200, () => '0').join(',')}...>`, method: 'bar' });
+            sinon_1.assert.calledWithMatch(reportError, error, { data: `<${(0, utils_1.times)(200, () => '0').join(',')}...>`, method: 'bar' });
         });
         it('does nothing if error has no message', () => {
             const error = new Error('');

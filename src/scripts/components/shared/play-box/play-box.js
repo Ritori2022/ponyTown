@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlayBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../../common/utils");
@@ -96,7 +97,7 @@ let PlayBox = class PlayBox {
     }
     get isMarkedForMultiples() {
         const account = this.model.account;
-        return !!account && utils_1.hasFlag(account.flags, 1 /* Duplicates */);
+        return !!account && (0, utils_1.hasFlag)(account.flags, 1 /* AccountDataFlags.Duplicates */);
     }
     get isAndroidBrowser() {
         return clientUtils_1.isAndroidBrowser;
@@ -111,7 +112,7 @@ let PlayBox = class PlayBox {
         return this.model.accountAlert;
     }
     ngOnInit() {
-        spriteUtils_1.loadAndInitSpriteSheets()
+        (0, spriteUtils_1.loadAndInitSpriteSheets)()
             .then(loaded => this.failedToLoadImages = !loaded);
     }
     play() {
@@ -120,20 +121,20 @@ let PlayBox = class PlayBox {
             this.locked = true;
             this.error = undefined;
             const delayTime = (!DEVELOPMENT && this.gameService.wasPlaying) ? 1500 : 10;
-            utils_1.delay(delayTime) // delay joing if user reloaded the game instead of leaving cleanly
+            (0, utils_1.delay)(delayTime) // delay joing if user reloaded the game instead of leaving cleanly
                 .then(() => this.model.savePony(this.model.pony))
                 .then(pony => this.joining ? this.gameService.join(pony.id) : Promise.resolve())
                 .catch((e) => {
                 if (!/^Cancelled/.test(e.message)) {
                     this.error = e.message;
-                    if (!utils_1.includes(ignoredErrors, e.message) && !/shader/.test(e.message)) {
+                    if (!(0, utils_1.includes)(ignoredErrors, e.message) && !/shader/.test(e.message)) {
                         this.errorReporter.reportError(e, { status: e.status, text: e.text });
                     }
                     DEVELOPMENT && console.error(e);
                 }
             })
                 .finally(() => this.joining = false)
-                .then(() => utils_1.delay(1500))
+                .then(() => (0, utils_1.delay)(1500))
                 .finally(() => this.locked = false);
         }
     }
@@ -144,7 +145,7 @@ let PlayBox = class PlayBox {
         location.reload(true);
     }
     hardReload() {
-        clientUtils_1.hardReload();
+        (0, clientUtils_1.hardReload)();
     }
     hasFlag(server) {
         return server.countryFlags && server.countryFlags.length;
@@ -166,21 +167,22 @@ let PlayBox = class PlayBox {
         }
     }
 };
+exports.PlayBox = PlayBox;
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], PlayBox.prototype, "errorChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], PlayBox.prototype, "label", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], PlayBox.prototype, "error", null);
-PlayBox = tslib_1.__decorate([
-    core_1.Component({
+exports.PlayBox = PlayBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'play-box',
         templateUrl: 'play-box.pug',
         styleUrls: ['play-box.scss'],
@@ -190,5 +192,4 @@ PlayBox = tslib_1.__decorate([
         storageService_1.StorageService,
         errorReporter_1.ErrorReporter])
 ], PlayBox);
-exports.PlayBox = PlayBox;
 //# sourceMappingURL=play-box.js.map

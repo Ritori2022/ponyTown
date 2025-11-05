@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ContextSpriteBatch = void 0;
+exports.drawBatch = drawBatch;
+exports.drawCanvas = drawCanvas;
 const canvasUtils_1 = require("../client/canvasUtils");
 const color_1 = require("../common/color");
 const baseStateBatch_1 = require("./baseStateBatch");
@@ -13,11 +16,9 @@ function drawBatch(canvas, sheet, bg, action) {
     batch.end();
     return canvas;
 }
-exports.drawBatch = drawBatch;
 function drawCanvas(width, height, sheet, bg, action) {
-    return drawBatch(canvasUtils_1.createCanvas(width, height), sheet, bg, action);
+    return drawBatch((0, canvasUtils_1.createCanvas)(width, height), sheet, bg, action);
 }
-exports.drawCanvas = drawCanvas;
 class ContextSpriteBatch extends baseStateBatch_1.BaseStateBatch {
     constructor(canvas) {
         super();
@@ -39,10 +40,10 @@ class ContextSpriteBatch extends baseStateBatch_1.BaseStateBatch {
         }
         if (this.data) {
             const color = clearColor || 0;
-            const r = color_1.getR(color);
-            const g = color_1.getG(color);
-            const b = color_1.getB(color);
-            const a = color_1.getAlpha(color);
+            const r = (0, color_1.getR)(color);
+            const g = (0, color_1.getG)(color);
+            const b = (0, color_1.getB)(color);
+            const a = (0, color_1.getAlpha)(color);
             const data = this.data.data;
             for (let i = 0; i < data.length; i += 4) {
                 data[i] = r;
@@ -112,7 +113,7 @@ exports.ContextSpriteBatch = ContextSpriteBatch;
 const min = Math.min;
 const typeOffsets = [0, 2, 3, 0, 1, 2, 3];
 function drawRect(dst, transform, globalAlpha, color, x, y, w, h) {
-    if (DEVELOPMENT && !mat2d_1.isTranslation(transform)) {
+    if (DEVELOPMENT && !(0, mat2d_1.isTranslation)(transform)) {
         console.error('Transform not supported');
     }
     if (!dst)
@@ -129,7 +130,7 @@ function drawRect(dst, transform, globalAlpha, color, x, y, w, h) {
     h += min(0, dst.height - (y + h));
     if (w <= 0 && h <= 0)
         return;
-    const { r, g, b, a } = color_1.colorToRGBA(color);
+    const { r, g, b, a } = (0, color_1.colorToRGBA)(color);
     const alpha = (globalAlpha * a) | 0;
     if (alpha === 0)
         return;
@@ -145,7 +146,7 @@ function drawRect(dst, transform, globalAlpha, color, x, y, w, h) {
 function drawImageNormal(src, dst, transform, globalAlpha, tint, sx, sy, sw, sh, dx, dy, dw, dh) {
     if (sw !== dw || sh !== dh)
         throw new Error('Different dimentions not supported');
-    if (DEVELOPMENT && !mat2d_1.isTranslation(transform)) {
+    if (DEVELOPMENT && !(0, mat2d_1.isTranslation)(transform)) {
         console.error('Transform not supported');
     }
     if (!src || !dst)
@@ -166,7 +167,7 @@ function drawImageNormal(src, dst, transform, globalAlpha, tint, sx, sy, sw, sh,
     h += min(0, src.height - (sy + h), dst.height - (dy + h));
     if (w <= 0 && h <= 0)
         return;
-    const { r, g, b, a } = color_1.colorToRGBA(tint);
+    const { r, g, b, a } = (0, color_1.colorToRGBA)(tint);
     const alpha = (globalAlpha * a) | 0;
     const dstData = dst.data;
     const srcData = src.data;
@@ -193,7 +194,7 @@ function drawImageNormal(src, dst, transform, globalAlpha, tint, sx, sy, sw, sh,
 function drawImagePalette(src, dst, transform, globalAlpha, ignoreColorOption, disableShadingOption, type, tint, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
     if (sw !== dw || sh !== dh)
         throw new Error('Different dimentions not supported');
-    if (DEVELOPMENT && !mat2d_1.isTranslation(transform)) {
+    if (DEVELOPMENT && !(0, mat2d_1.isTranslation)(transform)) {
         console.error('Transform not supported');
     }
     if (palette === undefined) {
@@ -217,7 +218,7 @@ function drawImagePalette(src, dst, transform, globalAlpha, ignoreColorOption, d
     h += min(0, src.height - (sy + h), dst.height - (dy + h));
     if (w <= 0 && h <= 0)
         return;
-    const { r, g, b, a } = color_1.colorToRGBA(tint);
+    const { r, g, b, a } = (0, color_1.colorToRGBA)(tint);
     const alpha = (globalAlpha * a) | 0;
     const colors = palette.colors;
     const dstData = dst.data;
@@ -232,12 +233,12 @@ function drawImagePalette(src, dst, transform, globalAlpha, ignoreColorOption, d
             const srcO = ((sx + x) + (sy + y) * srcWidth) << 2;
             const index = srcData[srcO + offset];
             const color = colors[index];
-            const srcAlpha = ignoreColor === color ? 0 : blendColor(color_1.getAlpha(color), alpha, 255);
+            const srcAlpha = ignoreColor === color ? 0 : blendColor((0, color_1.getAlpha)(color), alpha, 255);
             if (srcAlpha !== 0) {
                 const shade = disableShading ? 255 : srcData[srcO + 1];
-                const rr = blendColor(color_1.getR(color), r, shade);
-                const gg = blendColor(color_1.getG(color), g, shade);
-                const bb = blendColor(color_1.getB(color), b, shade);
+                const rr = blendColor((0, color_1.getR)(color), r, shade);
+                const gg = blendColor((0, color_1.getG)(color), g, shade);
+                const bb = blendColor((0, color_1.getB)(color), b, shade);
                 const dst0 = ((dx + x) + (dy + y) * dstWidth) << 2;
                 blendPrecise(dstData, dst0, rr, gg, bb, srcAlpha);
             }

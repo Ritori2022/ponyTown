@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PaletteManager = void 0;
+exports.createPalette = createPalette;
+exports.releasePalette = releasePalette;
+exports.colorsEqual = colorsEqual;
 const texture2d_1 = require("./webgl/texture2d");
 const utils_1 = require("../common/utils");
 const INITIAL_SIZE = 512;
@@ -7,13 +11,11 @@ const MAX_SIZE = 2048;
 function createPalette(colors) {
     return { x: 0, y: 0, u: 0, v: 0, refs: 1, colors };
 }
-exports.createPalette = createPalette;
 function releasePalette(palette) {
     if (palette && palette.refs) {
         palette.refs--;
     }
 }
-exports.releasePalette = releasePalette;
 function colorsEqual(a, b) {
     if (a === b) {
         return true;
@@ -28,14 +30,13 @@ function colorsEqual(a, b) {
     }
     return true;
 }
-exports.colorsEqual = colorsEqual;
 function isInUse(palette) {
     return palette.refs > 0;
 }
 class PaletteManager {
     constructor(size = INITIAL_SIZE) {
         this.size = size;
-        this.palettes = utils_1.times(512, () => []);
+        this.palettes = (0, utils_1.times)(512, () => []);
         this.dirty = [];
         this.dirtyMinY = 0;
         this.dirtyMaxY = -1;
@@ -64,7 +65,7 @@ class PaletteManager {
         return this.addArray(colors);
     }
     addArray(colors) {
-        const hash = utils_1.computeCRC(colors) & 0x1ff;
+        const hash = (0, utils_1.computeCRC)(colors) & 0x1ff;
         const palettes = this.palettes[hash];
         if (this.deduplicate) {
             for (let i = 0; i < palettes.length; i++) {
@@ -111,7 +112,7 @@ class PaletteManager {
         this.initializeTexture(gl, this.size);
     }
     dispose(gl) {
-        this.paletteTexture = texture2d_1.disposeTexture(gl, this.paletteTexture);
+        this.paletteTexture = (0, texture2d_1.disposeTexture)(gl, this.paletteTexture);
         for (let i = 0; i < this.palettes.length; i++) {
             if (this.palettes[i].length > 0) {
                 this.palettes[i] = [];
@@ -124,7 +125,7 @@ class PaletteManager {
         this.cleanupPalettes();
     }
     resetPalettes() {
-        this.dirty = utils_1.flatten(this.palettes);
+        this.dirty = (0, utils_1.flatten)(this.palettes);
         this.lastX = 0;
         this.lastY = 0;
     }
@@ -140,10 +141,10 @@ class PaletteManager {
     initializeTexture(gl, size) {
         try {
             if (!this.paletteTexture) {
-                this.paletteTexture = texture2d_1.createEmptyTexture(gl, size, size, gl.RGBA, gl.UNSIGNED_BYTE);
+                this.paletteTexture = (0, texture2d_1.createEmptyTexture)(gl, size, size, gl.RGBA, gl.UNSIGNED_BYTE);
             }
             else if (this.paletteTexture.width !== size) {
-                texture2d_1.resizeTexture(gl, this.paletteTexture, size, size);
+                (0, texture2d_1.resizeTexture)(gl, this.paletteTexture, size, size);
             }
         }
         catch (e) {

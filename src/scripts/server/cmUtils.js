@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.hexToLab = hexToLab;
+exports.theSameColor = theSameColor;
+exports.isBadCM = isBadCM;
 const lodash_1 = require("lodash");
 const color_convert_1 = require("color-convert");
 const delta_e_1 = require("delta-e");
@@ -420,27 +423,25 @@ function hexToLab(c) {
     const [L, A, B] = color_convert_1.hex.lab(c);
     return { L, A, B };
 }
-exports.hexToLab = hexToLab;
 // export function colorToGrayscale(c: string) {
 // 	const color = parseColorFast(c);
 // 	const grayscale = toGrayscale(color);
 // 	return getB(grayscale);
 // }
 function theSameColor(a, b, delta = 27) {
-    return delta_e_1.getDeltaE00(a, b) < delta;
+    return (0, delta_e_1.getDeltaE00)(a, b) < delta;
 }
-exports.theSameColor = theSameColor;
 function isBadCM(cmString, coatColor) {
     if (!cmString || !cmString.length)
         return undefined;
     const pad = constants_1.CM_SIZE * constants_1.CM_SIZE - cmString.length;
     const coat = hexToLab(coatColor || '000000');
-    const padded = [...cmString, ...utils_1.repeat(pad, '')];
+    const padded = [...cmString, ...(0, utils_1.repeat)(pad, '')];
     const cmAlpha = padded.map(c => (!c || (coatColor && theSameColor(hexToLab(c), coat, 1))) ? 0 : 1);
     const cmAlpha2 = padded.map(c => c ? 1 : 0);
     const hasAlpha = cmString.some(c => !c);
-    const cm = [...cmString.map(c => c ? hexToLab(c) : coat), ...utils_1.repeat(pad, coat)];
-    const colorsString = lodash_1.compact(lodash_1.uniq([coatColor, ...cmString]));
+    const cm = [...cmString.map(c => c ? hexToLab(c) : coat), ...(0, utils_1.repeat)(pad, coat)];
+    const colorsString = (0, lodash_1.compact)((0, lodash_1.uniq)([coatColor, ...cmString]));
     const colors = colorsString.map(hexToLab);
     // const cmGrayscale = padded.map(colorToGrayscale);
     // const grays = compact(uniq(cmGrayscale));
@@ -466,7 +467,6 @@ function isBadCM(cmString, coatColor) {
     }
     return undefined;
 }
-exports.isBadCM = isBadCM;
 function matchesAlpha(pattern, cm) {
     const length = Math.max(pattern.length, cm.length);
     for (let i = 0; i < length; i++) {

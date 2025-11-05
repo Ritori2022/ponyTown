@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CharacterList = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -69,7 +70,7 @@ let CharacterList = class CharacterList {
     }
     ngOnInit() {
         this.updatePonies();
-        this.tags = lodash_1.uniq(utils_1.flatten(this.ponies.map(p => (p.desc || '').split(/ /g).map(x => x.trim())))
+        this.tags = (0, lodash_1.uniq)((0, utils_1.flatten)(this.ponies.map(p => (p.desc || '').split(/ /g).map(x => x.trim())))
             .filter(x => /^#/.test(x)))
             .sort();
         if (!data_1.isMobile) {
@@ -77,7 +78,7 @@ let CharacterList = class CharacterList {
         }
     }
     keydown(e) {
-        if (e.keyCode === 27 /* ESCAPE */) {
+        if (e.keyCode === 27 /* Key.ESCAPE */) {
             if (this.search) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -88,7 +89,7 @@ let CharacterList = class CharacterList {
                 this.closed();
             }
         }
-        else if (e.keyCode === 13 /* ENTER */) {
+        else if (e.keyCode === 13 /* Key.ENTER */) {
             const pony = this.ponies[this.selectedIndex];
             if (pony) {
                 this.select(pony);
@@ -97,10 +98,10 @@ let CharacterList = class CharacterList {
                 this.closed();
             }
         }
-        else if (e.keyCode === 38 /* UP */) {
+        else if (e.keyCode === 38 /* Key.UP */) {
             this.setSelectedIndex(this.selectedIndex <= 0 ? (this.ponies.length - 1) : (this.selectedIndex - 1));
         }
-        else if (e.keyCode === 40 /* DOWN */) {
+        else if (e.keyCode === 40 /* Key.DOWN */) {
             this.setSelectedIndex(this.selectedIndex === (this.ponies.length - 1) ? 0 : (this.selectedIndex + 1));
         }
     }
@@ -150,7 +151,7 @@ let CharacterList = class CharacterList {
     }
     setSelectedIndex(index) {
         this.zone.run(() => {
-            this.selectedIndex = utils_1.clamp(index, -1, this.ponies.length - 1);
+            this.selectedIndex = (0, utils_1.clamp)(index, -1, this.ponies.length - 1);
             const pony = this.ponies[index];
             this.ariaAnnounce.nativeElement.textContent = pony ? pony.name : '';
             if (pony) {
@@ -162,45 +163,45 @@ let CharacterList = class CharacterList {
         });
     }
 };
+exports.CharacterList = CharacterList;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "inGame", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "canNew", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "close", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "newCharacter", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "selectCharacter", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterList.prototype, "previewCharacter", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('ariaAnnounce', { static: true }),
+    (0, core_1.ViewChild)('ariaAnnounce', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], CharacterList.prototype, "ariaAnnounce", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('searchInput', { static: true }),
+    (0, core_1.ViewChild)('searchInput', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], CharacterList.prototype, "searchInput", void 0);
-CharacterList = tslib_1.__decorate([
-    core_1.Component({
+exports.CharacterList = CharacterList = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'character-list',
         templateUrl: 'character-list.pug',
         styleUrls: ['character-list.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model, core_1.NgZone])
 ], CharacterList);
-exports.CharacterList = CharacterList;
 //# sourceMappingURL=character-list.js.map

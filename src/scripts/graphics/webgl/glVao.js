@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createVAO = createVAO;
 const timing_1 = require("../../client/timing");
 function extensionShim(gl) {
     return {
@@ -15,7 +16,6 @@ function createVAO(gl, attributes, elements, elementsType) {
     vao.update(attributes, elements, elementsType);
     return vao;
 }
-exports.createVAO = createVAO;
 class VAONative {
     constructor(gl, ext, handle) {
         this.gl = gl;
@@ -42,14 +42,14 @@ class VAONative {
         this.elementsType = elementsType || this.gl.UNSIGNED_SHORT;
     }
     draw(mode, count, offset = 0) {
-        TIMING && timing_1.timeStart('VAONative.draw');
+        TIMING && (0, timing_1.timeStart)('VAONative.draw');
         if (this.useElements) {
             this.gl.drawElements(mode, count, this.elementsType, offset);
         }
         else {
             this.gl.drawArrays(mode, offset, count);
         }
-        TIMING && timing_1.timeEnd();
+        TIMING && (0, timing_1.timeEnd)();
     }
 }
 class VAOEmulated {
@@ -73,14 +73,14 @@ class VAOEmulated {
     unbind() {
     }
     draw(mode, count, offset = 0) {
-        TIMING && timing_1.timeStart('VAOEmulated.draw');
+        TIMING && (0, timing_1.timeStart)('VAOEmulated.draw');
         if (this.elements) {
             this.gl.drawElements(mode, count, this.elementsType, offset);
         }
         else {
             this.gl.drawArrays(mode, offset, count);
         }
-        TIMING && timing_1.timeEnd();
+        TIMING && (0, timing_1.timeEnd)();
     }
 }
 function bindAttribs(gl, elements, attributes, maxAttribs) {

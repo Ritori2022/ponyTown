@@ -1,5 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isNightTime = exports.isDayTime = exports.isSunSetting = exports.isSunRaising = exports.isFullNight = exports.isFullDay = exports.isNight = exports.isDay = exports.DAY_LENGTH = exports.HOUR_LENGTH = void 0;
+exports.getHour = getHour;
+exports.formatHourMinutes = formatHourMinutes;
+exports.createLightData = createLightData;
+exports.getLightColor = getLightColor;
+exports.getShadowColor = getShadowColor;
 const color_1 = require("./color");
 const colors_1 = require("./colors");
 const constants_1 = require("./constants");
@@ -17,7 +23,6 @@ function getHour(time) {
     const hourOfDay = getHourOfDay(timeOfDay);
     return hourOfDay;
 }
-exports.getHour = getHour;
 function formatHourMinutes(time) {
     const timeOfDay = getTimeOfDay(time);
     const minutesInDay = 60 * 24;
@@ -26,12 +31,12 @@ function formatHourMinutes(time) {
     const hours = Math.floor(totalMinutes / 60);
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
-exports.formatHourMinutes = formatHourMinutes;
 const isHour = (test) => (time) => {
     return test(getHour(time));
 };
 exports.isDay = isHour(hour => hour > DAY_START && hour <= DAY_END);
-exports.isNight = (time) => !exports.isDay(time);
+const isNight = (time) => !(0, exports.isDay)(time);
+exports.isNight = isNight;
 exports.isFullDay = isHour(hour => hour > (DAY_START + SUN_HALF) && hour <= (DAY_END - SUN_HALF));
 exports.isFullNight = isHour(hour => hour < (DAY_START - SUN_HALF) || hour >= (DAY_END + SUN_HALF));
 exports.isSunRaising = isHour(hour => hour > (DAY_START - SUN_HALF) && hour <= (DAY_START + SUN_HALF));
@@ -40,18 +45,18 @@ exports.isDayTime = isHour(hour => hour > DAY_START && hour < (DAY_END - SUN_HAL
 exports.isNightTime = isHour(hour => hour < (DAY_START - SUN_HALF) || hour > DAY_END);
 function createLightData(season) {
     const lightDay = colors_1.WHITE;
-    const lightNight = season === 4 /* Winter */ ? 0x253f76ff : 0x2b3374ff;
+    const lightNight = season === 4 /* Season.Winter */ ? 0x253f76ff : 0x2b3374ff;
     const sunrise1 = 0x853d7dff;
     const sunrise2 = 0xc96161ff;
     const sunrise3 = 0xeeb7a0ff;
     const sunset1 = sunrise3;
     const sunset2 = sunrise2;
     const sunset3 = sunrise1;
-    const shadowAlphaMultiplier = season === 4 /* Winter */ ? 0.7 : 1;
-    const shadowDay = color_1.withAlphaFloat(colors_1.BLACK, 0.3 * shadowAlphaMultiplier);
-    const shadowNight = color_1.withAlphaFloat(colors_1.BLACK, 0.2 * shadowAlphaMultiplier);
-    const shadowSunset = color_1.withAlphaFloat(colors_1.BLACK, 0.25 * shadowAlphaMultiplier);
-    const shadowSunrise = color_1.withAlphaFloat(colors_1.BLACK, 0.25 * shadowAlphaMultiplier);
+    const shadowAlphaMultiplier = season === 4 /* Season.Winter */ ? 0.7 : 1;
+    const shadowDay = (0, color_1.withAlphaFloat)(colors_1.BLACK, 0.3 * shadowAlphaMultiplier);
+    const shadowNight = (0, color_1.withAlphaFloat)(colors_1.BLACK, 0.2 * shadowAlphaMultiplier);
+    const shadowSunset = (0, color_1.withAlphaFloat)(colors_1.BLACK, 0.25 * shadowAlphaMultiplier);
+    const shadowSunrise = (0, color_1.withAlphaFloat)(colors_1.BLACK, 0.25 * shadowAlphaMultiplier);
     const lightPoints = [
         // night
         { time: 0, light: lightNight, shadow: shadowNight },
@@ -75,15 +80,12 @@ function createLightData(season) {
     const lightStops = lightPoints.map(l => l.time);
     return { lightColors, shadowColors, lightStops };
 }
-exports.createLightData = createLightData;
 function getLightColor(data, time) {
     return getColorForTime(time, data.lightStops, data.lightColors, colors_1.WHITE);
 }
-exports.getLightColor = getLightColor;
 function getShadowColor(data, time) {
     return getColorForTime(time, data.lightStops, data.shadowColors, colors_1.SHADOW_COLOR);
 }
-exports.getShadowColor = getShadowColor;
 function getColorForTime(time, stops, colors, defaultColor) {
     const timeOfDay = getTimeOfDay(time);
     const hourOfDay = getHourOfDay(timeOfDay);
@@ -93,7 +95,7 @@ function getColorForTime(time, stops, colors, defaultColor) {
             const to = stops[i];
             const fromLight = colors[i - 1];
             const toLight = colors[i];
-            return color_1.lerpColors(fromLight, toLight, (hourOfDay - from) / (to - from));
+            return (0, color_1.lerpColors)(fromLight, toLight, (hourOfDay - from) / (to - from));
         }
     }
     return defaultColor;

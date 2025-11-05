@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultBodyAnimation = exports.headAnimations = exports.sneeze = exports.surpriseSad = exports.excite = exports.surprise = exports.yawn = exports.laugh = exports.nom = exports.smile = exports.lieDownUp = exports.sitDownUp = exports.animations = exports.flyDownAnims = exports.flyUpAnims = exports.flyAnims = exports.swing = exports.flyDownBug = exports.flyUpBug = exports.flyBug = exports.flyDown = exports.flyToTrotBug = exports.flyToTrot = exports.trotToFlyBug = exports.trotToFly = exports.flyUp = exports.boopFlyBug = exports.boopFly = exports.fly = exports.lieToTrot = exports.sitUp = exports.lieDown = exports.lie = exports.sitToTrot = exports.standUp = exports.sitDown = exports.sit = exports.boopSwim = exports.boopLie = exports.boopSit = exports.boop = exports.trot = exports.swimToFlyBug = exports.swimToFly = exports.flyToSwimBug = exports.flyToSwim = exports.swimToTrot = exports.trotToSwim = exports.swim = exports.stand = void 0;
+exports.defaultHeadFrame = exports.defaultBodyFrame = exports.defaultHeadAnimation = void 0;
+exports.createBodyFrame = createBodyFrame;
+exports.createBodyAnimation = createBodyAnimation;
+exports.mergeAnimations = mergeAnimations;
+exports.createHeadFrame = createHeadFrame;
+exports.createHeadAnimation = createHeadAnimation;
 const utils_1 = require("../common/utils");
 // body animations
 function createBodyFrame([body = 0, head = 0, wing = 0, tail = 0, frontLeg = 0, frontFarLeg = 0, backLeg = 0, backFarLeg = 0, bodyX = 0, bodyY = 0, headX = 0, headY = 0, frontLegX = 0, frontLegY = 0, frontFarLegX = 0, frontFarLegY = 0, backLegX = 0, backLegY = 0, backFarLegX = 0, backFarLegY = 0]) {
@@ -11,7 +18,6 @@ function createBodyFrame([body = 0, head = 0, wing = 0, tail = 0, frontLeg = 0, 
         backLegX, backLegY, backFarLegX, backFarLegY
     };
 }
-exports.createBodyFrame = createBodyFrame;
 function createBodyAnimation(name, fps, loop, frames, shadowOffsets) {
     if (shadowOffsets && shadowOffsets.length !== frames.length) {
         throw new Error(`Incorrect frame count for shadowOffsets for ${name}`);
@@ -19,7 +25,6 @@ function createBodyAnimation(name, fps, loop, frames, shadowOffsets) {
     const shadow = shadowOffsets && shadowOffsets.map(([frame, offset]) => ({ frame, offset }));
     return { name, loop, fps, frames: frames.map(createBodyFrame), shadow };
 }
-exports.createBodyAnimation = createBodyAnimation;
 exports.stand = createBodyAnimation('stand', 24, true, [
     [1, 1, 0, 0, 1, 1, 1, 1],
 ]);
@@ -114,7 +119,7 @@ exports.boop = createBodyAnimation('boop', 24, false, [
     [1, 1, 0, 0, 21, 1, 1, 1],
     [1, 1, 0, 0, 22, 28, 18, 18, -1],
     [1, 1, 0, 0, 23, 26, 19, 19, -2, -1],
-    ...utils_1.repeat(5, [1, 1, 0, 0, 23, 27, 20, 20, -3, -1]),
+    ...(0, utils_1.repeat)(5, [1, 1, 0, 0, 23, 27, 20, 20, -3, -1]),
     [1, 1, 0, 0, 23, 26, 19, 19, -2, -1],
     [1, 1, 0, 0, 22, 1, 1, 1],
     [1, 1, 0, 0, 24, 1, 1, 1],
@@ -130,26 +135,26 @@ exports.boopSit = createBodyAnimation('boop-sit', 24, false, [
     [9, 1, 2, 2, 21, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 22, 34, 26, 26, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 23, 34, 26, 26, 0, -1, 0, 0, -1, -1, 0, 1, 0, 1, 0, -1],
-    ...utils_1.repeat(5, [9, 1, 2, 2, 23, 34, 26, 26, -1, -2, 0, 0, -2, -2, 1, 2, 1, 2, 1]),
+    ...(0, utils_1.repeat)(5, [9, 1, 2, 2, 23, 34, 26, 26, -1, -2, 0, 0, -2, -2, 1, 2, 1, 2, 1]),
     [9, 1, 2, 2, 23, 34, 26, 26, 0, -1, 0, 0, -1, -1, 0, 1, 0, 1, 0, -1],
     [9, 1, 2, 2, 22, 34, 26, 26, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 24, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 25, 34, 26, 26, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 12, 34, 26, 26, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, -2],
     [9, 1, 2, 2, 34, 34, 26, 26],
-], utils_1.repeat(18, [0, 6]));
+], (0, utils_1.repeat)(18, [0, 6]));
 exports.boopLie = createBodyAnimation('boop-lie', 24, false, [
     [15, 1, 0, 2, 38, 38, 26, 26],
-    ...utils_1.repeat(2, [15, 1, 0, 2, 24, 38, 26, 26, 0, 0, 0, 0, 0, 1]),
+    ...(0, utils_1.repeat)(2, [15, 1, 0, 2, 24, 38, 26, 26, 0, 0, 0, 0, 0, 1]),
     [15, 1, 0, 2, 21, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 22, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 23, 38, 26, 26, 0, 0, -1, -1, 0, 1],
     [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -1, 1, 0, 0, 1, 0, 1],
-    ...utils_1.repeat(4, [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -2, 1, 0, 0, 1, 0, 1]),
+    ...(0, utils_1.repeat)(4, [12, 1, 0, 2, 23, 37, 26, 26, -1, 0, 0, 0, -2, 1, 0, 0, 1, 0, 1]),
     [15, 1, 0, 2, 23, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 22, 38, 26, 26, 0, 0, 0, 0, 0, 1],
     [15, 1, 0, 2, 21, 38, 26, 26, 0, 0, 0, 0, 0, 1],
-], utils_1.repeat(14, [3, 3]));
+], (0, utils_1.repeat)(14, [3, 3]));
 exports.boopSwim = createBodyAnimation('boop-swim', 24, false, [
     [1, 1, 0, 0, 1, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 18, 10, 6, 5, 0, 13],
@@ -158,7 +163,7 @@ exports.boopSwim = createBodyAnimation('boop-swim', 24, false, [
     [1, 1, 0, 0, 21, 10, 6, 5, 0, 12],
     [1, 1, 0, 0, 22, 9, 6, 5, -1, 12],
     [1, 1, 0, 0, 23, 8, 6, 5, -2, 11],
-    ...utils_1.repeat(5, [1, 1, 0, 0, 23, 8, 6, 5, -3, 11]),
+    ...(0, utils_1.repeat)(5, [1, 1, 0, 0, 23, 8, 6, 5, -3, 11]),
     [1, 1, 0, 0, 23, 9, 6, 5, -2, 11],
     [1, 1, 0, 0, 22, 10, 6, 5, 0, 13],
     [1, 1, 0, 0, 24, 10, 6, 5, 0, 13],
@@ -172,8 +177,8 @@ exports.sit = createBodyAnimation('sit', 24, true, [
 const sitShadow = [0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 6].map(offset => [0, offset]);
 exports.sitDown = createBodyAnimation('sit-down', 24, false, [
     [1, 1, 0, 0, 1, 1, 1, 1],
-    ...utils_1.repeat(2, [2, 1, 0, 0, 29, 29, 1, 1]),
-    ...utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]),
+    ...(0, utils_1.repeat)(2, [2, 1, 0, 0, 29, 29, 1, 1]),
+    ...(0, utils_1.repeat)(2, [3, 1, 0, 0, 30, 30, 21, 21]),
     [4, 1, 0, 0, 31, 31, 22, 22],
     [5, 1, 0, 1, 32, 32, 23, 23],
     [6, 1, 1, 2, 33, 33, 24, 24],
@@ -188,7 +193,7 @@ exports.standUp = createBodyAnimation('stand-up', 24, false, [
     [6, 1, 1, 2, 33, 33, 24, 24],
     [5, 1, 0, 1, 32, 32, 23, 23],
     [4, 1, 0, 0, 31, 31, 22, 22],
-    ...utils_1.repeat(2, [3, 1, 0, 0, 30, 30, 21, 21]),
+    ...(0, utils_1.repeat)(2, [3, 1, 0, 0, 30, 30, 21, 21]),
     [1, 1, 0, 0, 1, 1, 1, 1],
 ], sitShadow.slice(2).reverse());
 exports.sitToTrot = createBodyAnimation('sit-to-trot', 24, false, [
@@ -209,10 +214,10 @@ exports.lieDown = createBodyAnimation('lie-down', 24, false, [
     [11, 1, 1, 2, 36, 36, 26, 26, 0, 0, 0, 0, 0, 0, 1],
     [12, 1, 1, 2, 37, 37, 26, 26, 0, 0, 0, 0, 0, 0, 1],
     [13, 1, 0, 2, 38, 38, 26, 26, 0, 0, 0, 0, 0, 0, 1],
-    ...utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26]),
+    ...(0, utils_1.repeat)(2, [14, 1, 0, 2, 38, 38, 26, 26]),
 ], lieShadow);
 exports.sitUp = createBodyAnimation('sit-up', 24, false, [
-    ...utils_1.repeat(2, [14, 1, 0, 2, 38, 38, 26, 26]),
+    ...(0, utils_1.repeat)(2, [14, 1, 0, 2, 38, 38, 26, 26]),
     [13, 1, 0, 2, 38, 38, 26, 26],
     [12, 1, 1, 2, 37, 37, 26, 26],
     [11, 1, 1, 2, 36, 36, 26, 26],
@@ -226,7 +231,7 @@ exports.lieToTrot = createBodyAnimation('lie-to-trot', 24, false, [
     [1, 1, 0, 0, 6, 14, 6, 21, 0, 0, 0, -1],
     [1, 1, 0, 0, 7, 15, 7, 15, 0, -1, 0, -1],
     [1, 1, 0, 0, 8, 16, 8, 16, 0, -2],
-], [[2, 1], [1, 0], ...utils_1.repeat(4, [0, 0])]);
+], [[2, 1], [1, 0], ...(0, utils_1.repeat)(4, [0, 0])]);
 exports.fly = createBodyAnimation('fly', 16, true, [
     [1, 1, 3, 0, 8, 10, 6, 5, 0, -16],
     [1, 1, 4, 0, 8, 10, 6, 5, 0, -15],
@@ -406,8 +411,8 @@ exports.flyDownBug = createBodyAnimation('fly-down-bug', 16, false, [
     [1, 1, 1, 0, 8, 10, 6, 5, 0, -2]
 ]);
 exports.swing = createBodyAnimation('swing', 12, false, [
-    ...utils_1.repeat(1, [1, 1, 0, 0, 1, 1, 1, 1]),
-    ...utils_1.repeat(3, [2, 1, 0, 0, 12, 17, 11, 11, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1]),
+    ...(0, utils_1.repeat)(1, [1, 1, 0, 0, 1, 1, 1, 1]),
+    ...(0, utils_1.repeat)(3, [2, 1, 0, 0, 12, 17, 11, 11, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1]),
 ]);
 exports.flyAnims = [undefined, exports.fly, exports.fly, exports.fly, exports.flyBug];
 exports.flyUpAnims = [undefined, exports.flyUp, exports.flyUp, exports.flyUp, exports.flyUpBug];
@@ -417,27 +422,24 @@ exports.animations = [
     exports.fly, exports.flyBug, exports.flyUp, exports.flyUpBug, exports.flyDown, exports.flyDownBug, exports.sitToTrot, exports.lieToTrot, exports.flyToTrot, exports.flyToTrotBug,
     exports.swim, exports.trotToSwim, exports.swimToTrot, exports.flyToSwim, exports.swimToFly,
 ];
-exports.sitDownUp = mergeAnimations('sit', 24, false, [...utils_1.repeat(12, exports.stand), exports.sitDown, ...utils_1.repeat(12, exports.sit), exports.standUp]);
-exports.lieDownUp = mergeAnimations('lie', 24, false, [...utils_1.repeat(12, exports.sit), exports.lieDown, ...utils_1.repeat(12, exports.lie), exports.sitUp]);
+exports.sitDownUp = mergeAnimations('sit', 24, false, [...(0, utils_1.repeat)(12, exports.stand), exports.sitDown, ...(0, utils_1.repeat)(12, exports.sit), exports.standUp]);
+exports.lieDownUp = mergeAnimations('lie', 24, false, [...(0, utils_1.repeat)(12, exports.sit), exports.lieDown, ...(0, utils_1.repeat)(12, exports.lie), exports.sitUp]);
 function mergeAnimations(name, fps, loop, animations) {
     return {
         name,
         fps,
         loop,
-        frames: utils_1.flatten(animations.map(a => a.frames)),
-        shadow: utils_1.flatten(animations.map(a => a.shadow || a.frames.map(() => ({ frame: 0, offset: 0 })))),
+        frames: (0, utils_1.flatten)(animations.map(a => a.frames)),
+        shadow: (0, utils_1.flatten)(animations.map(a => a.shadow || a.frames.map(() => ({ frame: 0, offset: 0 })))),
     };
 }
-exports.mergeAnimations = mergeAnimations;
 // head animations
 function createHeadFrame([headX = 0, headY = 0, left = 0, right = 0, mouth = 0]) {
     return { headX, headY, left, right, mouth };
 }
-exports.createHeadFrame = createHeadFrame;
 function createHeadAnimation(name, fps, loop, frames) {
     return { name, fps, loop, frames: frames.map(createHeadFrame) };
 }
-exports.createHeadAnimation = createHeadAnimation;
 exports.smile = createHeadAnimation('smile', 24, true, [
     [0, 0, 1, 1, 0],
 ]);
@@ -446,31 +448,31 @@ exports.nom = createHeadAnimation('nom', 12, true, [
     [0, 0, 1, 1, 25],
 ]);
 exports.laugh = createHeadAnimation('laugh', 8, false, [
-    ...utils_1.repeat(4, [0, 0, 14, 14, 5], [0, 1, 14, 14, 5]),
+    ...(0, utils_1.repeat)(4, [0, 0, 14, 14, 5], [0, 1, 14, 14, 5]),
 ]);
 exports.yawn = createHeadAnimation('yawn', 12, false, [
     [0, 0, 3, 3, 8],
-    ...utils_1.repeat(18, [1, -1, 12, 12, 16]),
-    ...utils_1.repeat(8, [0, 0, 12, 12, 12]),
+    ...(0, utils_1.repeat)(18, [1, -1, 12, 12, 16]),
+    ...(0, utils_1.repeat)(8, [0, 0, 12, 12, 12]),
     [0, 0, 18, 18, 2],
 ]);
 exports.surprise = createHeadAnimation('surprise', 8, false, [
     [0, 1, 6, 6, 1],
-    ...utils_1.repeat(10, [0, 0, 1, 1, 12]),
+    ...(0, utils_1.repeat)(10, [0, 0, 1, 1, 12]),
 ]);
 exports.excite = createHeadAnimation('excite', 8, false, [
     [0, 1, 6, 6, 0],
-    ...utils_1.repeat(10, [0, 0, 1, 1, 5]),
+    ...(0, utils_1.repeat)(10, [0, 0, 1, 1, 5]),
 ]);
 exports.surpriseSad = createHeadAnimation('surpriseSad', 8, false, [
     [0, 1, 15, 15, 8],
-    ...utils_1.repeat(8, [0, 0, 15, 15, 8]),
+    ...(0, utils_1.repeat)(8, [0, 0, 15, 15, 8]),
 ]);
 exports.sneeze = createHeadAnimation('sneeze', 12, false, [
     [0, 0, 18, 18, 8],
-    ...utils_1.repeat(2, [1, -1, 18, 18, 16]),
-    ...utils_1.repeat(8, [-1, 1, 23, 23, 13]),
-    ...utils_1.repeat(4, [0, 0, 18, 18, 7]),
+    ...(0, utils_1.repeat)(2, [1, -1, 18, 18, 16]),
+    ...(0, utils_1.repeat)(8, [-1, 1, 23, 23, 13]),
+    ...(0, utils_1.repeat)(4, [0, 0, 18, 18, 7]),
 ]);
 exports.headAnimations = [
     exports.smile, exports.nom, exports.laugh, exports.yawn, exports.surprise, exports.surpriseSad, exports.sneeze, exports.excite,

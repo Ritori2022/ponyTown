@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AgDrag = void 0;
+exports.handleDrag = handleDrag;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -7,7 +9,7 @@ const utils_1 = require("../../../common/utils");
 function handleDrag(element, emit, options = {}) {
     // typeof PointerEvent !== 'undefined'
     const eventSets = window.navigator.pointerEnabled ? [
-        { down: 'pointerdown', move: 'pointermove', up: 'pointerup' },
+        { down: 'pointerdown', move: 'pointermove', up: 'pointerup' }, // , up2: 'pointercancel' },
     ] : [
         { down: 'mousedown', move: 'mousemove', up: 'mouseup' },
         { down: 'touchstart', move: 'touchmove', up: 'touchend', up2: 'touchcancel' },
@@ -41,8 +43,8 @@ function handleDrag(element, emit, options = {}) {
         }
     }
     function send(event, type) {
-        const x = utils_1.getX(event);
-        const y = utils_1.getY(event);
+        const x = (0, utils_1.getX)(event);
+        const y = (0, utils_1.getY)(event);
         emit({
             event,
             type,
@@ -59,7 +61,7 @@ function handleDrag(element, emit, options = {}) {
             send(e, 'drag');
         }
         function up(e) {
-            if (utils_1.getButton(e) === button) {
+            if ((0, utils_1.getButton)(e) === button) {
                 // touchend event does not have x, y coordinates, use last touchmove event instead
                 if (e.type !== 'touchend' && e.type !== 'touchcancel') {
                     lastEvent = e;
@@ -79,9 +81,9 @@ function handleDrag(element, emit, options = {}) {
             if (!dragging) {
                 setupScrollAndRect();
                 dragging = true;
-                button = utils_1.getButton(e);
-                startX = utils_1.getX(e);
-                startY = utils_1.getY(e);
+                button = (0, utils_1.getButton)(e);
+                startX = (0, utils_1.getX)(e);
+                startY = (0, utils_1.getY)(e);
                 send(e, 'start');
                 lastEvent = e;
                 window.addEventListener(events.move, move);
@@ -99,7 +101,6 @@ function handleDrag(element, emit, options = {}) {
     });
     return () => handlers.forEach(f => f());
 }
-exports.handleDrag = handleDrag;
 let AgDrag = class AgDrag {
     constructor(element) {
         this.element = element;
@@ -115,21 +116,21 @@ let AgDrag = class AgDrag {
         this.unsubscribe();
     }
 };
+exports.AgDrag = AgDrag;
 tslib_1.__decorate([
-    core_1.Input('agDragRelative'),
-    tslib_1.__metadata("design:type", Object)
+    (0, core_1.Input)('agDragRelative'),
+    tslib_1.__metadata("design:type", String)
 ], AgDrag.prototype, "relative", void 0);
 tslib_1.__decorate([
-    core_1.Input('agDragPrevent'),
+    (0, core_1.Input)('agDragPrevent'),
     tslib_1.__metadata("design:type", Object)
 ], AgDrag.prototype, "prevent", void 0);
 tslib_1.__decorate([
-    core_1.Output('agDrag'),
+    (0, core_1.Output)('agDrag'),
     tslib_1.__metadata("design:type", Object)
 ], AgDrag.prototype, "drag", void 0);
-AgDrag = tslib_1.__decorate([
-    core_1.Directive({ selector: '[agDrag]' }),
+exports.AgDrag = AgDrag = tslib_1.__decorate([
+    (0, core_1.Directive)({ selector: '[agDrag]' }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], AgDrag);
-exports.AgDrag = AgDrag;
 //# sourceMappingURL=agDrag.js.map

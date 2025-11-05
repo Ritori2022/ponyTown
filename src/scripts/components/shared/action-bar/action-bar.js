@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ActionBar = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const game_1 = require("../../../client/game");
@@ -44,7 +45,7 @@ let ActionBar = class ActionBar {
         return Math.floor(width / boxWidth);
     }
     use(action) {
-        buttonActions_1.useAction(this.game, action);
+        (0, buttonActions_1.useAction)(this.game, action);
     }
     drag(index) {
         this.actions[index].action = undefined;
@@ -55,7 +56,7 @@ let ActionBar = class ActionBar {
         this.updateFreeSlots();
     }
     save() {
-        const settings = Object.assign({}, this.settings.account, { actions: buttonActions_1.serializeActions(this.actions) });
+        const settings = { ...this.settings.account, actions: (0, buttonActions_1.serializeActions)(this.actions) };
         this.settings.saveAccountSettings(settings);
     }
     scroll(e) {
@@ -67,37 +68,37 @@ let ActionBar = class ActionBar {
     updateFreeSlots() {
         const actions = this.actions;
         if (this.editable) {
-            while (actions.length < 5 || (utils_1.last(actions).action !== undefined && actions.length < constants_1.ACTIONS_LIMIT)) {
+            while (actions.length < 5 || ((0, utils_1.last)(actions).action !== undefined && actions.length < constants_1.ACTIONS_LIMIT)) {
                 actions.push({ action: undefined });
             }
         }
         else {
-            while (actions.length > 0 && utils_1.last(actions).action === undefined) {
+            while (actions.length > 0 && (0, utils_1.last)(actions).action === undefined) {
                 actions.pop();
             }
         }
     }
 };
+exports.ActionBar = ActionBar;
 tslib_1.__decorate([
-    core_1.ViewChild('scroller', { static: true }),
+    (0, core_1.ViewChild)('scroller', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ActionBar.prototype, "scroller", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ActionBar.prototype, "blurred", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], ActionBar.prototype, "editable", null);
-ActionBar = tslib_1.__decorate([
-    core_1.Component({
+exports.ActionBar = ActionBar = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'action-bar',
         templateUrl: 'action-bar.pug',
         styleUrls: ['action-bar.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [game_1.PonyTownGame, settingsService_1.SettingsService])
 ], ActionBar);
-exports.ActionBar = ActionBar;
 //# sourceMappingURL=action-bar.js.map

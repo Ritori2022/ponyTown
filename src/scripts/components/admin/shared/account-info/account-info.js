@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccountInfo = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const modal_1 = require("ngx-bootstrap/modal");
@@ -11,8 +12,8 @@ const adminUtils_1 = require("../../../../common/adminUtils");
 const adminModel_1 = require("../../../services/adminModel");
 const icons_1 = require("../../../../client/icons");
 const EMPTY_ROLES = [];
-const oldTime = utils_1.fromNow(-14 * constants_1.DAY).getTime();
-const newTime = utils_1.fromNow(-constants_1.DAY).getTime();
+const oldTime = (0, utils_1.fromNow)(-14 * constants_1.DAY).getTime();
+const newTime = (0, utils_1.fromNow)(-constants_1.DAY).getTime();
 const accountDuplicatesIntervalTime = 10 * constants_1.MINUTE;
 const accountDuplicates = new Map();
 const predefinedAlerts = [
@@ -83,7 +84,7 @@ let AccountInfo = class AccountInfo {
         }
     }
     get age() {
-        return this.account.birthdate ? adminUtils_1.getAge(this.account.birthdate) : '-';
+        return this.account.birthdate ? (0, adminUtils_1.getAge)(this.account.birthdate) : '-';
     }
     get alert() {
         const alert = this.account.alert;
@@ -128,7 +129,7 @@ let AccountInfo = class AccountInfo {
         return this.account.note && /duplicate/i.test(this.account.note);
     }
     hasFlag(value) {
-        return utils_1.hasFlag(this.account.flags, value);
+        return (0, utils_1.hasFlag)(this.account.flags, value);
     }
     toggleFlag(value) {
         this.model.setAccountFlags(this.account._id, this.account.flags ^ value);
@@ -156,7 +157,7 @@ let AccountInfo = class AccountInfo {
     }
     getCounter(name) {
         const counters = this.account.counters;
-        return utils_1.toInt(counters && counters[name]);
+        return (0, utils_1.toInt)(counters && counters[name]);
     }
     setCounter(name, value) {
         const counters = this.account.counters || (this.account.counters = {});
@@ -183,7 +184,7 @@ let AccountInfo = class AccountInfo {
         const account = this.account;
         if (this.showDuplicates && account) {
             const cached = accountDuplicates.get(account._id);
-            const threshold = utils_1.fromNow(-accountDuplicatesIntervalTime);
+            const threshold = (0, utils_1.fromNow)(-accountDuplicatesIntervalTime);
             if (cached && cached.generatedAt > threshold.getTime()) {
                 this.duplicates = cached;
             }
@@ -206,15 +207,15 @@ let AccountInfo = class AccountInfo {
         return !!(this.account.patreon || this.account.supporter || this.account.supporterDeclinedSince);
     }
     get supporterClass() {
-        return adminUtils_1.supporterLevel(this.account) ? 'badge-success' : 'badge-warning';
+        return (0, adminUtils_1.supporterLevel)(this.account) ? 'badge-success' : 'badge-warning';
     }
     get supporterTitle() {
         const supporter = this.account.supporter;
-        const flagSupporter = (supporter & 3 /* SupporterMask */) !== 0;
-        const patreonSupporter = adminUtils_1.patreonSupporterLevel(this.account);
-        const ignorePatreon = utils_1.hasFlag(supporter, 128 /* IgnorePatreon */);
-        const pastSupporter = utils_1.hasFlag(supporter, 256 /* PastSupporter */);
-        return lodash_1.compact([
+        const flagSupporter = (supporter & 3 /* SupporterFlags.SupporterMask */) !== 0;
+        const patreonSupporter = (0, adminUtils_1.patreonSupporterLevel)(this.account);
+        const ignorePatreon = (0, utils_1.hasFlag)(supporter, 128 /* SupporterFlags.IgnorePatreon */);
+        const pastSupporter = (0, utils_1.hasFlag)(supporter, 256 /* SupporterFlags.PastSupporter */);
+        return (0, lodash_1.compact)([
             flagSupporter && 'flags',
             patreonSupporter && `patreon`,
             ignorePatreon && 'ignore',
@@ -223,82 +224,82 @@ let AccountInfo = class AccountInfo {
         ]).join(', ');
     }
     get supporterIcon() {
-        const hasPatreon = adminUtils_1.patreonSupporterLevel(this.account);
-        const hasIgnoreFlag = utils_1.hasFlag(this.account.supporter, 128 /* IgnorePatreon */);
+        const hasPatreon = (0, adminUtils_1.patreonSupporterLevel)(this.account);
+        const hasIgnoreFlag = (0, utils_1.hasFlag)(this.account.supporter, 128 /* SupporterFlags.IgnorePatreon */);
         const hasDeclined = !!this.account.supporterDeclinedSince;
         return hasPatreon ? icons_1.faPatreon : ((hasIgnoreFlag || !hasDeclined) ? icons_1.faFlag : icons_1.faClock);
     }
     get hasAnySupporter() {
-        return (this.account.supporter & 3 /* SupporterMask */) !== 0;
+        return (this.account.supporter & 3 /* SupporterFlags.SupporterMask */) !== 0;
     }
     get hasPastSupporter() {
-        return utils_1.hasFlag(this.account.supporter, 256 /* PastSupporter */);
+        return (0, utils_1.hasFlag)(this.account.supporter, 256 /* SupporterFlags.PastSupporter */);
     }
     get supporterLevel() {
-        return adminUtils_1.supporterLevel(this.account);
+        return (0, adminUtils_1.supporterLevel)(this.account);
     }
     get supporterLevelString() {
-        const level = adminUtils_1.supporterLevel(this.account);
-        return level ? level : (adminUtils_1.isPastSupporter(this.account) ? 'P' : '');
+        const level = (0, adminUtils_1.supporterLevel)(this.account);
+        return level ? level : ((0, adminUtils_1.isPastSupporter)(this.account) ? 'P' : '');
     }
     isSupporter(level) {
-        return (this.account.supporter & 3 /* SupporterMask */) === level;
+        return (this.account.supporter & 3 /* SupporterFlags.SupporterMask */) === level;
     }
     setSupporter(level) {
-        const supporter = (this.account.supporter & ~3 /* SupporterMask */) | level;
+        const supporter = (this.account.supporter & ~3 /* SupporterFlags.SupporterMask */) | level;
         this.model.setSupporterFlags(this.account._id, supporter);
     }
     hasSupporterFlag(value) {
-        return utils_1.hasFlag(this.account.supporter, value);
+        return (0, utils_1.hasFlag)(this.account.supporter, value);
     }
     toggleSupporterFlag(value) {
         this.model.setSupporterFlags(this.account._id, this.account.supporter ^ value);
     }
     // past supporter
     get isForcePastSupporter() {
-        return utils_1.hasFlag(this.account.supporter, 512 /* ForcePastSupporter */);
+        return (0, utils_1.hasFlag)(this.account.supporter, 512 /* SupporterFlags.ForcePastSupporter */);
     }
     get isIgnorePastSupporter() {
-        return utils_1.hasFlag(this.account.supporter, 1024 /* IgnorePastSupporter */);
+        return (0, utils_1.hasFlag)(this.account.supporter, 1024 /* SupporterFlags.IgnorePastSupporter */);
     }
     toggleForcePastSupporter() {
-        const has = utils_1.hasFlag(this.account.supporter, 512 /* ForcePastSupporter */);
-        const supporter = utils_1.setFlag(this.account.supporter, 512 /* ForcePastSupporter */, !has);
+        const has = (0, utils_1.hasFlag)(this.account.supporter, 512 /* SupporterFlags.ForcePastSupporter */);
+        const supporter = (0, utils_1.setFlag)(this.account.supporter, 512 /* SupporterFlags.ForcePastSupporter */, !has);
         this.model.setSupporterFlags(this.account._id, supporter);
     }
     toggleIgnorePastSupporter() {
-        const has = utils_1.hasFlag(this.account.supporter, 1024 /* IgnorePastSupporter */);
-        const supporter = utils_1.setFlag(this.account.supporter, 1024 /* IgnorePastSupporter */, !has);
+        const has = (0, utils_1.hasFlag)(this.account.supporter, 1024 /* SupporterFlags.IgnorePastSupporter */);
+        const supporter = (0, utils_1.setFlag)(this.account.supporter, 1024 /* SupporterFlags.IgnorePastSupporter */, !has);
         this.model.setSupporterFlags(this.account._id, supporter);
     }
 };
+exports.AccountInfo = AccountInfo;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfo.prototype, "account", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfo.prototype, "extendedAuths", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], AccountInfo.prototype, "popoverPlacement", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfo.prototype, "showDuplicates", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('alertModal', { static: true }),
+    (0, core_1.ViewChild)('alertModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], AccountInfo.prototype, "alertModal", void 0);
-AccountInfo = tslib_1.__decorate([
-    core_1.Component({
+exports.AccountInfo = AccountInfo = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'account-info',
         templateUrl: 'account-info.pug',
         styleUrls: ['account-info.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel, modal_1.BsModalService])
 ], AccountInfo);
-exports.AccountInfo = AccountInfo;
 //# sourceMappingURL=account-info.js.map

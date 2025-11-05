@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UpdateController = void 0;
 const timing_1 = require("../timing");
 class UpdateController {
     constructor(map) {
@@ -17,11 +18,11 @@ class UpdateController {
         }
     }
     update(delta, now) {
-        timing_1.timingStart('TorchController.update()');
+        (0, timing_1.timingStart)('TorchController.update()');
         for (const entity of this.updatables) {
             entity.serverUpdate(delta, now);
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
 }
 exports.UpdateController = UpdateController;

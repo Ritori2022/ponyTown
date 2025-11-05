@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Help = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const emoji_1 = require("../../../client/emoji");
@@ -16,12 +17,12 @@ let Help = class Help {
         this.contactEmail = data_1.contactEmail;
     }
 };
-Help = tslib_1.__decorate([
-    core_1.Component({
+exports.Help = Help;
+exports.Help = Help = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'help',
         templateUrl: 'help.pug',
         styleUrls: ['help.scss'],
     })
 ], Help);
-exports.Help = Help;
 //# sourceMappingURL=help.js.map

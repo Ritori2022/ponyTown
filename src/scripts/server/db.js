@@ -1,5 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.hasActiveSupporterInvites = exports.queryAccount = exports.queryAccounts = exports.updateAccounts = exports.updateAccount = exports.findAccount = exports.updateAuth = exports.queryAuths = exports.countAllVisibleAuths = exports.findAllVisibleAuths = exports.findAllAuths = exports.findAuth = exports.findAuthByEmail = exports.findAuthByOpenId = exports.queryCharacter = exports.updateCharacterState = exports.findAllCharacters = exports.checkAccountExists = exports.checkCharacterExists = exports.HideRequest = exports.FriendRequest = exports.SupporterInvite = exports.Account = exports.Character = exports.Session = exports.Origin = exports.Event = exports.Auth = void 0;
+exports.iterate = iterate;
+exports.nullToUndefined = nullToUndefined;
+exports.createCharacter = createCharacter;
+exports.characterCount = characterCount;
+exports.findCharacter = findCharacter;
+exports.findCharacterSafe = findCharacterSafe;
+exports.findCharacterById = findCharacterById;
+exports.findLatestCharacters = findLatestCharacters;
+exports.removeCharacter = removeCharacter;
+exports.checkIfAdmin = checkIfAdmin;
+exports.findAccountSafe = findAccountSafe;
+exports.findFriendIds = findFriendIds;
+exports.findFriends = findFriends;
+exports.findHideIds = findHideIds;
+exports.findHideIdsRev = findHideIdsRev;
+exports.findHidesForMerge = findHidesForMerge;
+exports.addHide = addHide;
 const mongoose_1 = require("mongoose");
 const logger_1 = require("./logger");
 const accountUtils_1 = require("../common/accountUtils");
@@ -44,7 +62,11 @@ const bannedMuted = {
     shadow: Number,
     ban: Number,
 };
-const originSchema = new mongoose_1.Schema(Object.assign({ ip: { type: String, index: true }, country: String }, bannedMuted), { timestamps: true });
+const originSchema = new mongoose_1.Schema({
+    ip: { type: String, index: true },
+    country: String,
+    ...bannedMuted,
+}, { timestamps: true });
 originSchema.index({ updatedAt: 1 });
 const accountSchema = new mongoose_1.Schema({
     name: String,
@@ -141,11 +163,11 @@ const sessionSchema = new mongoose_1.Schema({
     session: String,
 });
 // models
-exports.Auth = mongoose_1.model('Auth', authSchema);
-exports.Event = mongoose_1.model('Event', eventSchema);
-exports.Origin = mongoose_1.model('Origin', originSchema);
-exports.Session = mongoose_1.model('session', sessionSchema);
-exports.Character = mongoose_1.model('Character', characterSchema);
+exports.Auth = (0, mongoose_1.model)('Auth', authSchema);
+exports.Event = (0, mongoose_1.model)('Event', eventSchema);
+exports.Origin = (0, mongoose_1.model)('Origin', originSchema);
+exports.Session = (0, mongoose_1.model)('session', sessionSchema);
+exports.Character = (0, mongoose_1.model)('Character', characterSchema);
 accountSchema.post('remove', function (doc) {
     Promise.all([
         exports.Character.deleteMany({ account: doc._id }).exec(),
@@ -155,10 +177,10 @@ accountSchema.post('remove', function (doc) {
         exports.HideRequest.deleteMany({ $or: [{ target: doc._id }, { source: doc._id }] }).exec(),
     ]).catch(logger_1.logger.error);
 });
-exports.Account = mongoose_1.model('Account', accountSchema);
-exports.SupporterInvite = mongoose_1.model('SupporterInvite', supporterInviteSchema);
-exports.FriendRequest = mongoose_1.model('FriendRequest', friendRequestSchema);
-exports.HideRequest = mongoose_1.model('HideRequest', hideRequestSchema);
+exports.Account = (0, mongoose_1.model)('Account', accountSchema);
+exports.SupporterInvite = (0, mongoose_1.model)('SupporterInvite', supporterInviteSchema);
+exports.FriendRequest = (0, mongoose_1.model)('FriendRequest', friendRequestSchema);
+exports.HideRequest = (0, mongoose_1.model)('HideRequest', hideRequestSchema);
 function iterate(query, onData) {
     return new Promise(resolve => {
         query.cursor()
@@ -166,7 +188,6 @@ function iterate(query, onData) {
             .on('end', resolve);
     });
 }
-exports.iterate = iterate;
 function throwOnEmpty(message) {
     return item => {
         if (item) {
@@ -180,69 +201,76 @@ function throwOnEmpty(message) {
 function nullToUndefined(item) {
     return item === null ? undefined : item;
 }
-exports.nullToUndefined = nullToUndefined;
 exports.checkCharacterExists = throwOnEmpty('Character does not exist');
 exports.checkAccountExists = throwOnEmpty('Account does not exist');
 function createCharacter(account) {
     return new exports.Character({ account: account._id, creator: `${account.name} [${account._id}]` });
 }
-exports.createCharacter = createCharacter;
 function characterCount(account) {
     return exports.Character.countDocuments({ account }).exec();
 }
-exports.characterCount = characterCount;
 function findCharacter(pony, account) {
     return exports.Character.findOne({ _id: pony, account }).exec().then(nullToUndefined);
 }
-exports.findCharacter = findCharacter;
 function findCharacterSafe(pony, accountId) {
     return findCharacter(pony, accountId)
         .then(exports.checkCharacterExists);
 }
-exports.findCharacterSafe = findCharacterSafe;
 function findCharacterById(id) {
     return exports.Character.findById(id).exec().then(nullToUndefined);
 }
-exports.findCharacterById = findCharacterById;
-exports.findAllCharacters = (account, fields) => exports.Character.find({ account }, fields).lean().exec();
+const findAllCharacters = (account, fields) => exports.Character.find({ account }, fields).lean().exec();
+exports.findAllCharacters = findAllCharacters;
 function findLatestCharacters(account, count) {
     return exports.Character.find({ account })
         .sort('-lastUsed')
         .limit(count)
         .exec();
 }
-exports.findLatestCharacters = findLatestCharacters;
 function removeCharacter(id, account) {
     return exports.Character.findOneAndRemove({ _id: id, account }).exec().then(nullToUndefined);
 }
-exports.removeCharacter = removeCharacter;
-exports.updateCharacterState = (characterId, serverName, state) => exports.Character.updateOne({ _id: characterId }, { [`state.${serverName}`]: state }).exec().then(nullToUndefined);
-exports.queryCharacter = (query, fields) => exports.Character.findOne(query, fields).exec();
-exports.findAuthByOpenId = (openId, provider) => exports.Auth.findOne({ openId, provider }).exec().then(nullToUndefined);
-exports.findAuthByEmail = (emails) => exports.Auth.findOne({ emails: { $in: emails } }).exec().then(nullToUndefined);
-exports.findAuth = (auth, account, fields) => exports.Auth.findOne({ _id: auth, account }, fields).exec().then(nullToUndefined);
-exports.findAllAuths = (account, fields) => exports.Auth.find({ account, fields }).exec();
-exports.findAllVisibleAuths = (account, fields) => exports.Auth.find({ account, disabled: { $ne: true }, banned: { $ne: true } }, fields).lean().exec();
-exports.countAllVisibleAuths = (account) => exports.Auth.find({ account, disabled: { $ne: true }, banned: { $ne: true } }).countDocuments().exec();
-exports.queryAuths = (query, fields) => exports.Auth.find(query, fields).lean().exec();
-exports.updateAuth = (id, update) => exports.Auth.updateOne({ _id: id }, update).exec();
-exports.findAccount = (account, projection) => exports.Account.findById(account, projection).exec().then(nullToUndefined);
+const updateCharacterState = (characterId, serverName, state) => exports.Character.updateOne({ _id: characterId }, { [`state.${serverName}`]: state }).exec().then(nullToUndefined);
+exports.updateCharacterState = updateCharacterState;
+const queryCharacter = (query, fields) => exports.Character.findOne(query, fields).exec();
+exports.queryCharacter = queryCharacter;
+const findAuthByOpenId = (openId, provider) => exports.Auth.findOne({ openId, provider }).exec().then(nullToUndefined);
+exports.findAuthByOpenId = findAuthByOpenId;
+const findAuthByEmail = (emails) => exports.Auth.findOne({ emails: { $in: emails } }).exec().then(nullToUndefined);
+exports.findAuthByEmail = findAuthByEmail;
+const findAuth = (auth, account, fields) => exports.Auth.findOne({ _id: auth, account }, fields).exec().then(nullToUndefined);
+exports.findAuth = findAuth;
+const findAllAuths = (account, fields) => exports.Auth.find({ account, fields }).exec();
+exports.findAllAuths = findAllAuths;
+const findAllVisibleAuths = (account, fields) => exports.Auth.find({ account, disabled: { $ne: true }, banned: { $ne: true } }, fields).lean().exec();
+exports.findAllVisibleAuths = findAllVisibleAuths;
+const countAllVisibleAuths = (account) => exports.Auth.find({ account, disabled: { $ne: true }, banned: { $ne: true } }).countDocuments().exec();
+exports.countAllVisibleAuths = countAllVisibleAuths;
+const queryAuths = (query, fields) => exports.Auth.find(query, fields).lean().exec();
+exports.queryAuths = queryAuths;
+const updateAuth = (id, update) => exports.Auth.updateOne({ _id: id }, update).exec();
+exports.updateAuth = updateAuth;
+const findAccount = (account, projection) => exports.Account.findById(account, projection).exec().then(nullToUndefined);
+exports.findAccount = findAccount;
 function checkIfAdmin(account) {
     return exports.Account.findOne({ _id: account }, 'roles').lean().exec()
-        .then(a => a && accountUtils_1.isAdmin(a));
+        .then(a => a && (0, accountUtils_1.isAdmin)(a));
 }
-exports.checkIfAdmin = checkIfAdmin;
 function findAccountSafe(account, projection) {
-    return exports.findAccount(account, projection)
+    return (0, exports.findAccount)(account, projection)
         .then(exports.checkAccountExists);
 }
-exports.findAccountSafe = findAccountSafe;
-exports.updateAccount = (accountId, update) => exports.Account.updateOne({ _id: accountId }, update).exec();
-exports.updateAccounts = (query, update) => exports.Account.updateMany(query, update).exec();
-exports.queryAccounts = (query, fields) => exports.Account.find(query, fields).lean().exec();
-exports.queryAccount = (query, fields) => exports.Account.findOne(query, fields).exec().then(nullToUndefined);
-exports.hasActiveSupporterInvites = (accountId) => exports.SupporterInvite.countDocuments({ target: accountId, active: true }).exec()
+const updateAccount = (accountId, update) => exports.Account.updateOne({ _id: accountId }, update).exec();
+exports.updateAccount = updateAccount;
+const updateAccounts = (query, update) => exports.Account.updateMany(query, update).exec();
+exports.updateAccounts = updateAccounts;
+const queryAccounts = (query, fields) => exports.Account.find(query, fields).lean().exec();
+exports.queryAccounts = queryAccounts;
+const queryAccount = (query, fields) => exports.Account.findOne(query, fields).exec().then(nullToUndefined);
+exports.queryAccount = queryAccount;
+const hasActiveSupporterInvites = (accountId) => exports.SupporterInvite.countDocuments({ target: accountId, active: true }).exec()
     .then(count => count > 0);
+exports.hasActiveSupporterInvites = hasActiveSupporterInvites;
 // friend requests
 async function findFriendIds(accountId) {
     const accountIdString = accountId.toString();
@@ -254,7 +282,6 @@ async function findFriendIds(accountId) {
         .map((f) => f.source.toString() === accountIdString ? f.target.toString() : f.source.toString());
     return friendIds;
 }
-exports.findFriendIds = findFriendIds;
 async function findFriends(accountId, withCharacters) {
     const friendIds = await findFriendIds(accountId);
     const accounts = await exports.Account.find({ _id: { $in: friendIds } }, '_id name lastOnline lastCharacter').lean().exec();
@@ -266,8 +293,8 @@ async function findFriends(accountId, withCharacters) {
     return accounts.map(a => {
         const characterId = a.lastCharacter && a.lastCharacter.toString();
         const character = characterId && characters.find(c => c._id.toString() === characterId);
-        const name = character && characterUtils_1.filterForbidden(emoji_1.replaceEmojis(character.name));
-        const nameFiltered = name && swears_1.filterName(name);
+        const name = character && (0, characterUtils_1.filterForbidden)((0, emoji_1.replaceEmojis)(character.name));
+        const nameFiltered = name && (0, swears_1.filterName)(name);
         return {
             accountId: a._id.toString(),
             accountName: a.name,
@@ -277,18 +304,15 @@ async function findFriends(accountId, withCharacters) {
         };
     });
 }
-exports.findFriends = findFriends;
 // hide requests
 async function findHideIds(accountId) {
     const hideRequests = await exports.HideRequest.find({ source: accountId }, 'target').lean().exec();
     return hideRequests.map(f => f.target.toString());
 }
-exports.findHideIds = findHideIds;
 async function findHideIdsRev(accountId) {
     const hideRequests = await exports.HideRequest.find({ target: accountId }, 'source').lean().exec();
     return hideRequests.map(f => f.source.toString());
 }
-exports.findHideIdsRev = findHideIdsRev;
 async function findHidesForMerge(accountId) {
     const hideRequests = await exports.HideRequest
         .find({ source: accountId }, '_id name date')
@@ -300,7 +324,6 @@ async function findHidesForMerge(accountId) {
         date: f.date.toString(),
     }));
 }
-exports.findHidesForMerge = findHidesForMerge;
 async function addHide(source, target, name) {
     if (source.toString() === target.toString())
         return;
@@ -309,5 +332,4 @@ async function addHide(source, target, name) {
         await exports.HideRequest.create({ source, target, name, date: new Date() });
     }
 }
-exports.addHide = addHide;
 //# sourceMappingURL=db.js.map

@@ -10,7 +10,7 @@ require("canvas-toBlob");
 require("./client/polyfils");
 const core_1 = require("@angular/core");
 if (document.body.getAttribute('data-debug') !== 'true' || localStorage.production) {
-    core_1.enableProdMode();
+    (0, core_1.enableProdMode)();
 }
 if (typeof module !== 'undefined' && module.hot) {
     module.hot.accept();

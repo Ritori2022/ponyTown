@@ -1,5 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.codesBuffer = void 0;
+exports.randomString = randomString;
+exports.isSurrogate = isSurrogate;
+exports.isLowSurrogate = isLowSurrogate;
+exports.fromSurrogate = fromSurrogate;
+exports.charsToCodes = charsToCodes;
+exports.stringToCodes = stringToCodes;
+exports.stringToCodesTemp = stringToCodesTemp;
+exports.matcher = matcher;
+exports.isVisibleChar = isVisibleChar;
 const lowercaseCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789_';
 const uppercaseCharacters = lowercaseCharacters + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const CARRIAGERETURN = '\r'.charCodeAt(0);
@@ -11,19 +21,15 @@ function randomString(length, useUpperCase = false) {
     }
     return result;
 }
-exports.randomString = randomString;
 function isSurrogate(code) {
     return code >= 0xd800 && code <= 0xdbff;
 }
-exports.isSurrogate = isSurrogate;
 function isLowSurrogate(code) {
     return (code & 0xfc00) === 0xdc00;
 }
-exports.isLowSurrogate = isLowSurrogate;
 function fromSurrogate(high, low) {
     return (((high & 0x3ff) << 10) + (low & 0x3ff) + 0x10000) | 0;
 }
-exports.fromSurrogate = fromSurrogate;
 function charsToCodes(text) {
     const chars = [];
     for (let i = 0; i < text.length; i++) {
@@ -39,7 +45,6 @@ function charsToCodes(text) {
     }
     return chars;
 }
-exports.charsToCodes = charsToCodes;
 function stringToCodes(buffer, text) {
     const textLength = text.length | 0;
     let length = 0 | 0;
@@ -59,7 +64,6 @@ function stringToCodes(buffer, text) {
     }
     return length;
 }
-exports.stringToCodes = stringToCodes;
 exports.codesBuffer = new Uint32Array(32);
 function stringToCodesTemp(text) {
     while (text.length > exports.codesBuffer.length) {
@@ -67,13 +71,10 @@ function stringToCodesTemp(text) {
     }
     return stringToCodes(exports.codesBuffer, text);
 }
-exports.stringToCodesTemp = stringToCodesTemp;
 function matcher(regex) {
     return (text) => !!text && regex.test(text);
 }
-exports.matcher = matcher;
 function isVisibleChar(code) {
     return code !== CARRIAGERETURN && !(code >= 0xfe00 && code <= 0xfe0f);
 }
-exports.isVisibleChar = isVisibleChar;
 //# sourceMappingURL=stringUtils.js.map

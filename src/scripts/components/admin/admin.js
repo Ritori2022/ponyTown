@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminApp = void 0;
+exports.tooltipConfig = tooltipConfig;
+exports.popoverConfig = popoverConfig;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -11,11 +14,9 @@ const icons_1 = require("../../client/icons");
 function tooltipConfig() {
     return Object.assign(new tooltip_1.TooltipConfig(), { container: 'body' });
 }
-exports.tooltipConfig = tooltipConfig;
 function popoverConfig() {
     return Object.assign(new popover_1.PopoverConfig(), { container: 'body' });
 }
-exports.popoverConfig = popoverConfig;
 let AdminApp = class AdminApp {
     constructor(model, router) {
         this.model = model;
@@ -59,7 +60,7 @@ let AdminApp = class AdminApp {
         return this.model.counts.origins;
     }
     get isSuperadmin() {
-        return accountUtils_1.hasRole(this.model.account, 'superadmin');
+        return (0, accountUtils_1.hasRole)(this.model.account, 'superadmin');
     }
     goToAccount({ detail }) {
         this.router.navigate(['/accounts', detail]);
@@ -68,14 +69,15 @@ let AdminApp = class AdminApp {
         window.location.href = '/';
     }
 };
+exports.AdminApp = AdminApp;
 tslib_1.__decorate([
-    core_1.HostListener('window:go-to-account', ['$event']),
+    (0, core_1.HostListener)('window:go-to-account', ['$event']),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [CustomEvent]),
     tslib_1.__metadata("design:returntype", void 0)
 ], AdminApp.prototype, "goToAccount", null);
-AdminApp = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminApp = AdminApp = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-town-app',
         templateUrl: 'admin.pug',
         styleUrls: ['admin.scss'],
@@ -86,5 +88,4 @@ AdminApp = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel, router_1.Router])
 ], AdminApp);
-exports.AdminApp = AdminApp;
 //# sourceMappingURL=admin.js.map

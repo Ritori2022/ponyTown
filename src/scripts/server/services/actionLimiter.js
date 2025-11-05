@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ActionLimiter = exports.LimiterResult = void 0;
 const counter_1 = require("./counter");
 const playerUtils_1 = require("../playerUtils");
 var LimiterResult;
@@ -10,7 +11,7 @@ var LimiterResult;
     LimiterResult[LimiterResult["Ignored"] = 3] = "Ignored";
     LimiterResult[LimiterResult["LimitReached"] = 4] = "LimitReached";
     LimiterResult[LimiterResult["TargetOffline"] = 5] = "TargetOffline";
-})(LimiterResult = exports.LimiterResult || (exports.LimiterResult = {}));
+})(LimiterResult || (exports.LimiterResult = LimiterResult = {}));
 class ActionLimiter {
     constructor(clearTimeout, countLimit) {
         this.countLimit = countLimit;
@@ -19,16 +20,16 @@ class ActionLimiter {
     }
     canExecute(requester, target) {
         if (requester === target || requester.accountId === target.accountId)
-            return 1 /* SameAccount */;
+            return 1 /* LimiterResult.SameAccount */;
         if (target.offline)
-            return 5 /* TargetOffline */;
-        if (playerUtils_1.isMutedOrShadowed(requester))
-            return 2 /* MutedOrShadowed */;
-        if (playerUtils_1.isIgnored(requester, target) || playerUtils_1.isIgnored(target, requester))
-            return 3 /* Ignored */;
+            return 5 /* LimiterResult.TargetOffline */;
+        if ((0, playerUtils_1.isMutedOrShadowed)(requester))
+            return 2 /* LimiterResult.MutedOrShadowed */;
+        if ((0, playerUtils_1.isIgnored)(requester, target) || (0, playerUtils_1.isIgnored)(target, requester))
+            return 3 /* LimiterResult.Ignored */;
         if (this.counters.get(requester.accountId).count >= this.countLimit)
-            return 4 /* LimitReached */;
-        return 0 /* Yes */;
+            return 4 /* LimiterResult.LimitReached */;
+        return 0 /* LimiterResult.Yes */;
     }
     count(requester) {
         return this.counters.add(requester.accountId).count;

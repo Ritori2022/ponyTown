@@ -1,6 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sprites = require("../generated/sprites");
+exports.TILE_MAP = exports.TILE_MAP_MAP = exports.TILE_COUNT_MAP = void 0;
+exports.updateTileSets = updateTileSets;
+exports.createTileSets = createTileSets;
+exports.drawTiles = drawTiles;
+exports.drawTilesDebugInfo = drawTilesDebugInfo;
+exports.drawTilesNew = drawTilesNew;
+exports.updateTileIndices = updateTileIndices;
+exports.initializeTileHeightmaps = initializeTileHeightmaps;
+exports.isInWater = isInWater;
+exports.getTileHeight = getTileHeight;
+const tslib_1 = require("tslib");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const region_1 = require("../common/region");
 const worldMap_1 = require("../common/worldMap");
 const constants_1 = require("../common/constants");
@@ -30,31 +41,31 @@ for (let i = 0; i <= 47; i++) {
 // ----+----+----
 //  32 | 64 | 128
 exports.TILE_MAP = [
-    46, 46, 22, 22, 46, 46, 22, 22, 21, 21,
-    17, 11, 21, 21, 17, 11, 19, 19, 18, 18,
-    19, 19, 12, 12, 14, 14, 24, 28, 14, 14,
-    30, 6, 46, 46, 22, 22, 46, 46, 22, 22,
-    21, 21, 17, 11, 21, 21, 17, 11, 19, 19,
-    18, 18, 19, 19, 12, 12, 14, 14, 24, 28,
-    14, 14, 30, 6, 20, 20, 13, 13, 20, 20,
-    13, 13, 16, 16, 23, 32, 16, 16, 23, 32,
-    15, 15, 25, 25, 15, 15, 34, 34, 26, 26,
-    45, 41, 26, 26, 42, 36, 20, 20, 13, 13,
-    20, 20, 13, 13, 10, 10, 31, 4, 10, 10,
-    31, 4, 15, 15, 25, 25, 15, 15, 34, 34,
-    27, 27, 43, 37, 27, 27, 35, 5, 46, 46,
-    22, 22, 46, 46, 22, 22, 21, 21, 17, 11,
-    21, 21, 17, 11, 19, 19, 18, 18, 19, 19,
-    12, 12, 14, 14, 24, 28, 14, 14, 30, 6,
-    46, 46, 22, 22, 46, 46, 22, 22, 21, 21,
-    17, 11, 21, 21, 17, 11, 19, 19, 18, 18,
-    19, 19, 12, 12, 14, 14, 24, 28, 14, 14,
-    30, 6, 20, 20, 13, 13, 20, 20, 13, 13,
-    16, 16, 23, 32, 16, 16, 23, 32, 9, 9,
-    33, 33, 9, 9, 8, 8, 29, 29, 44, 39,
-    29, 29, 38, 7, 20, 20, 13, 13, 20, 20,
-    13, 13, 10, 10, 31, 4, 10, 10, 31, 4,
-    9, 9, 33, 33, 9, 9, 8, 8, 2, 2,
+    46, 46, 22, 22, 46, 46, 22, 22, 21, 21, // 0-9
+    17, 11, 21, 21, 17, 11, 19, 19, 18, 18, // 10-19
+    19, 19, 12, 12, 14, 14, 24, 28, 14, 14, // 20-29
+    30, 6, 46, 46, 22, 22, 46, 46, 22, 22, // 30-39
+    21, 21, 17, 11, 21, 21, 17, 11, 19, 19, // 40-49
+    18, 18, 19, 19, 12, 12, 14, 14, 24, 28, // 50-59
+    14, 14, 30, 6, 20, 20, 13, 13, 20, 20, // 60-69
+    13, 13, 16, 16, 23, 32, 16, 16, 23, 32, // 70-79
+    15, 15, 25, 25, 15, 15, 34, 34, 26, 26, // 80-89
+    45, 41, 26, 26, 42, 36, 20, 20, 13, 13, // 90-99
+    20, 20, 13, 13, 10, 10, 31, 4, 10, 10, // 100-109
+    31, 4, 15, 15, 25, 25, 15, 15, 34, 34, // 110-119
+    27, 27, 43, 37, 27, 27, 35, 5, 46, 46, // 120-129
+    22, 22, 46, 46, 22, 22, 21, 21, 17, 11, // 130-139
+    21, 21, 17, 11, 19, 19, 18, 18, 19, 19, // 140-149
+    12, 12, 14, 14, 24, 28, 14, 14, 30, 6, // 150-159
+    46, 46, 22, 22, 46, 46, 22, 22, 21, 21, // 160-169
+    17, 11, 21, 21, 17, 11, 19, 19, 18, 18, // 170-179
+    19, 19, 12, 12, 14, 14, 24, 28, 14, 14, // 180-189
+    30, 6, 20, 20, 13, 13, 20, 20, 13, 13, // 190-199
+    16, 16, 23, 32, 16, 16, 23, 32, 9, 9, // 200-209
+    33, 33, 9, 9, 8, 8, 29, 29, 44, 39, // 210-219
+    29, 29, 38, 7, 20, 20, 13, 13, 20, 20, // 220-229
+    13, 13, 10, 10, 31, 4, 10, 10, 31, 4, // 230-239
+    9, 9, 33, 33, 9, 9, 8, 8, 2, 2, // 240-249
     40, 3, 2, 2, 1, 0 // 250-255
 ];
 var TileTypeNumber;
@@ -74,19 +85,18 @@ var TileTypeNumber;
     TileTypeNumber[TileTypeNumber["Boat"] = 12] = "Boat";
 })(TileTypeNumber || (TileTypeNumber = {}));
 const waterFrames = [
-    2 /* Water */, 5 /* Water2 */, 6 /* Water3 */, 7 /* Water4 */
+    2 /* TileTypeNumber.Water */, 5 /* TileTypeNumber.Water2 */, 6 /* TileTypeNumber.Water3 */, 7 /* TileTypeNumber.Water4 */
 ];
 function updateTileSets(paletteManager, tileSets, season, mapType) {
     if (tileSets) {
-        tileSets.forEach(t => paletteManager_1.releasePalette(t.palette));
+        tileSets.forEach(t => (0, paletteManager_1.releasePalette)(t.palette));
     }
     return createTileSets(paletteManager, season, mapType);
 }
-exports.updateTileSets = updateTileSets;
 function createTileSets(paletteManager, season, mapType) {
-    const isWinter = season === 4 /* Winter */;
-    const isAutumn = season === 2 /* Autumn */;
-    const isCave = mapType === 3 /* Cave */;
+    const isWinter = season === 4 /* Season.Winter */;
+    const isAutumn = season === 2 /* Season.Autumn */;
+    const isCave = mapType === 3 /* MapType.Cave */;
     const grassTiles = isCave ? sprites.caveTiles : (isWinter ? sprites.snowTiles : sprites.grassTiles);
     const grassPalette = grassTiles.palettes[isCave ? 0 : (isAutumn ? 1 : 0)];
     const icePaletteIndex = isWinter ? 2 : (isAutumn ? 1 : 0);
@@ -149,17 +159,16 @@ function createTileSets(paletteManager, season, mapType) {
         },
     ];
 }
-exports.createTileSets = createTileSets;
 function drawTiles(batch, region, camera, map, tileSets, options) {
     const { tileIndices } = region;
     const { tileTime } = map;
     const regionX = region.x * constants_1.REGION_SIZE;
     const regionY = region.y * constants_1.REGION_SIZE;
-    if (camera_1.isAreaVisible(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
-        const minX = utils_1.clamp(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const minY = utils_1.clamp(Math.floor(camera.actualY / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
-        const maxX = utils_1.clamp(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const maxY = utils_1.clamp(Math.ceil((camera.actualY + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+    if ((0, camera_1.isAreaVisible)(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
+        const minX = (0, utils_1.clamp)(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const minY = (0, utils_1.clamp)(Math.floor(camera.actualY / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+        const maxX = (0, utils_1.clamp)(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const maxY = (0, utils_1.clamp)(Math.ceil((camera.actualY + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
         for (let y = minY; y < maxY; y++) {
             for (let x = minX; x < maxX; x++) {
                 const tileIndex = tileIndices[x | (y << 3)];
@@ -171,12 +180,12 @@ function drawTiles(batch, region, camera, map, tileSets, options) {
                     continue;
                 }
                 const tileTypeNumber = tileIndex >>> 8;
-                const isWater = tileTypeNumber === 2 /* Water */ || tileTypeNumber === 12 /* Boat */;
+                const isWater = tileTypeNumber === 2 /* TileTypeNumber.Water */ || tileTypeNumber === 12 /* TileTypeNumber.Boat */;
                 const tileSpriteIndex = tileIndex & 0xff;
-                const tileSetIndex = isWater ? utils_1.at(waterFrames, utils_1.toInt(tileTime) % waterFrames.length) : tileTypeNumber;
+                const tileSetIndex = isWater ? (0, utils_1.at)(waterFrames, (0, utils_1.toInt)(tileTime) % waterFrames.length) : tileTypeNumber;
                 const tileSet = tileSets[tileSetIndex];
                 if (!tileSet) {
-                    options.error(`Missing tileset: position: (${x}, ${y}) tile: (${region_1.getRegionTile(region, x, y)}) ` +
+                    options.error(`Missing tileset: position: (${x}, ${y}) tile: (${(0, region_1.getRegionTile)(region, x, y)}) ` +
                         `info: (${tileIndex}, ${tileSetIndex}, ${tileTime}, ${tileSpriteIndex}, ${JSON.stringify(waterFrames)})`);
                     tileIndices[x | (y << 3)] = -1;
                     region.tilesDirty = true;
@@ -192,16 +201,15 @@ function drawTiles(batch, region, camera, map, tileSets, options) {
         }
     }
 }
-exports.drawTiles = drawTiles;
 function drawTilesDebugInfo(batch, region, camera, options) {
     const { tileIndices } = region;
     const regionX = region.x * constants_1.REGION_SIZE;
     const regionY = region.y * constants_1.REGION_SIZE;
-    if (camera_1.isAreaVisible(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
-        const minX = utils_1.clamp(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const minY = utils_1.clamp(Math.floor(camera.actualY / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
-        const maxX = utils_1.clamp(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const maxY = utils_1.clamp(Math.ceil((camera.actualY + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+    if ((0, camera_1.isAreaVisible)(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
+        const minX = (0, utils_1.clamp)(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const minY = (0, utils_1.clamp)(Math.floor(camera.actualY / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+        const maxX = (0, utils_1.clamp)(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const maxY = (0, utils_1.clamp)(Math.ceil((camera.actualY + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
         for (let y = minY; y < maxY; y++) {
             for (let x = minX; x < maxX; x++) {
                 const tileIndex = tileIndices[x | (y << 3)];
@@ -213,8 +221,8 @@ function drawTilesDebugInfo(batch, region, camera, options) {
                 const rx = (x + regionX) * constants_1.tileWidth;
                 const ry = (y + regionY) * constants_1.tileHeight;
                 if (options.tileIndices) {
-                    graphicsUtils_1.drawPixelText(batch, rx + 2, ry + 2, 0x000000ff, `${tileTypeNumber}:${tileSpriteIndex}`);
-                    graphicsUtils_1.drawPixelText(batch, rx + 2, ry + 2 + 7, 0x555555ff, `${region.tiles[x + constants_1.REGION_SIZE * y]}`);
+                    (0, graphicsUtils_1.drawPixelText)(batch, rx + 2, ry + 2, 0x000000ff, `${tileTypeNumber}:${tileSpriteIndex}`);
+                    (0, graphicsUtils_1.drawPixelText)(batch, rx + 2, ry + 2 + 7, 0x555555ff, `${region.tiles[x + constants_1.REGION_SIZE * y]}`);
                 }
                 if (options.tileGrid) {
                     batch.drawRect(y !== 0 ? 0x00000011 : 0x00000022, rx, ry, constants_1.tileWidth, 1);
@@ -224,7 +232,6 @@ function drawTilesDebugInfo(batch, region, camera, options) {
         }
     }
 }
-exports.drawTilesDebugInfo = drawTilesDebugInfo;
 function drawTilesNew(batch, region, camera, map, tileSets, options) {
     const regionX = region.x * constants_1.REGION_SIZE;
     const regionY = region.y * constants_1.REGION_SIZE;
@@ -232,19 +239,19 @@ function drawTilesNew(batch, region, camera, map, tileSets, options) {
     const TILE_FRONT_COLOR = 0x5e5e5eff;
     const OUTLINE_2_COLOR = 0xffffff22;
     const OUTLINE_COLOR = 0x00000022;
-    if (camera_1.isAreaVisible(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
-        const minX = utils_1.clamp(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const minY = utils_1.clamp(Math.floor(camera.y / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
-        const maxX = utils_1.clamp(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
-        const maxY = utils_1.clamp(Math.ceil((camera.y + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+    if ((0, camera_1.isAreaVisible)(camera, regionX * constants_1.tileWidth, regionY * constants_1.tileHeight, constants_1.REGION_SIZE * constants_1.tileWidth, constants_1.REGION_SIZE * constants_1.tileHeight)) {
+        const minX = (0, utils_1.clamp)(Math.floor(camera.x / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const minY = (0, utils_1.clamp)(Math.floor(camera.y / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
+        const maxX = (0, utils_1.clamp)(Math.ceil((camera.x + camera.w) / constants_1.tileWidth - regionX), 0, constants_1.REGION_SIZE);
+        const maxY = (0, utils_1.clamp)(Math.ceil((camera.y + camera.h) / constants_1.tileHeight - regionY), 0, constants_1.REGION_SIZE);
         for (let y = minY; y < maxY; y++) {
             for (let x = minX; x < maxX; x++) {
-                const elevation = region_1.getRegionElevation(region, x, y);
-                const cliffTop = region_1.getRegionElevation(region, x, y - 1) < elevation;
-                const cliffLeft = region_1.getRegionElevation(region, x - 1, y) < elevation;
-                const cliffRight = region_1.getRegionElevation(region, x + 1, y) < elevation;
-                const cliffBottom = region_1.getRegionElevation(region, x, y + 1) < elevation;
-                const elevDiff = Math.max(0, elevation - region_1.getRegionElevation(region, x, y + 1));
+                const elevation = (0, region_1.getRegionElevation)(region, x, y);
+                const cliffTop = (0, region_1.getRegionElevation)(region, x, y - 1) < elevation;
+                const cliffLeft = (0, region_1.getRegionElevation)(region, x - 1, y) < elevation;
+                const cliffRight = (0, region_1.getRegionElevation)(region, x + 1, y) < elevation;
+                const cliffBottom = (0, region_1.getRegionElevation)(region, x, y + 1) < elevation;
+                const elevDiff = Math.max(0, elevation - (0, region_1.getRegionElevation)(region, x, y + 1));
                 const tx = (x + regionX) * constants_1.tileWidth;
                 const ty = (y + regionY) * constants_1.tileHeight - elevation * constants_1.tileElevation;
                 batch.drawRect(TILE_COLOR, tx, ty, constants_1.tileWidth, constants_1.tileHeight);
@@ -286,14 +293,13 @@ function drawTilesNew(batch, region, camera, map, tileSets, options) {
                 const grass = tileSets[3];
                 const baseX = (region.x * constants_1.REGION_SIZE) | 0;
                 const baseY = (region.y * constants_1.REGION_SIZE) | 0;
-                if (getTileNormal(region.tiles, baseX, baseY, x, y, map, 0 /* None */) === 2 /* Grass */) {
+                if (getTileNormal(region.tiles, baseX, baseY, x, y, map, 0 /* TileType.None */) === 2 /* TileType.Grass */) {
                     batch.drawSprite(grass.sprites[tileOffset], colors_1.WHITE, grass.palette, rx * constants_1.tileWidth, ry * constants_1.tileHeight);
                 }
             }
         }
     }
 }
-exports.drawTilesNew = drawTilesNew;
 function updateTileIndices(region, map) {
     for (let y = 0, i = 0; y < constants_1.REGION_SIZE; y++) {
         for (let x = 0; x < constants_1.REGION_SIZE; x++, i++) {
@@ -305,61 +311,60 @@ function updateTileIndices(region, map) {
     region.tilesDirty = false;
     region.lastTileUpdate = performance.now();
 }
-exports.updateTileIndices = updateTileIndices;
 function tileTypeNumber(type) {
     switch (type) {
-        case 3 /* Water */:
-        case 7 /* WalkableWater */:
-            return 2 /* Water */;
-        case 4 /* Wood */:
-            return 3 /* Wood */;
-        case 5 /* Ice */:
-        case 9 /* WalkableIce */:
-            return 8 /* Ice */;
-        case 6 /* SnowOnIce */:
-            return 9 /* SnowOnIce */;
-        case 10 /* Stone */:
-            return 10 /* Stone */;
-        case 11 /* Stone2 */:
-            return 11 /* Stone2 */;
-        case 8 /* Boat */:
-            return 12 /* Boat */;
-        case 2 /* Grass */:
-        case 1 /* Dirt */:
-        case 12 /* ElevatedDirt */:
-            return 1 /* Grass */;
-        case 0 /* None */:
-        case 100 /* WallH */:
-        case 101 /* WallV */:
-            return 0 /* None */;
+        case 3 /* TileType.Water */:
+        case 7 /* TileType.WalkableWater */:
+            return 2 /* TileTypeNumber.Water */;
+        case 4 /* TileType.Wood */:
+            return 3 /* TileTypeNumber.Wood */;
+        case 5 /* TileType.Ice */:
+        case 9 /* TileType.WalkableIce */:
+            return 8 /* TileTypeNumber.Ice */;
+        case 6 /* TileType.SnowOnIce */:
+            return 9 /* TileTypeNumber.SnowOnIce */;
+        case 10 /* TileType.Stone */:
+            return 10 /* TileTypeNumber.Stone */;
+        case 11 /* TileType.Stone2 */:
+            return 11 /* TileTypeNumber.Stone2 */;
+        case 8 /* TileType.Boat */:
+            return 12 /* TileTypeNumber.Boat */;
+        case 2 /* TileType.Grass */:
+        case 1 /* TileType.Dirt */:
+        case 12 /* TileType.ElevatedDirt */:
+            return 1 /* TileTypeNumber.Grass */;
+        case 0 /* TileType.None */:
+        case 100 /* TileType.WallH */:
+        case 101 /* TileType.WallV */:
+            return 0 /* TileTypeNumber.None */;
         default:
-            return utils_1.invalidEnumReturn(type, 0 /* None */);
+            return (0, utils_1.invalidEnumReturn)(type, 0 /* TileTypeNumber.None */);
     }
 }
 function normalizeTile(type, base) {
     switch (type) {
-        case 6 /* SnowOnIce */:
-            return base === 6 /* SnowOnIce */ ? type : 5 /* Ice */;
-        case 9 /* WalkableIce */:
-            return 5 /* Ice */;
-        case 7 /* WalkableWater */:
-        case 8 /* Boat */:
-            return 3 /* Water */;
-        case 12 /* ElevatedDirt */:
-            return 1 /* Dirt */;
+        case 6 /* TileType.SnowOnIce */:
+            return base === 6 /* TileType.SnowOnIce */ ? type : 5 /* TileType.Ice */;
+        case 9 /* TileType.WalkableIce */:
+            return 5 /* TileType.Ice */;
+        case 7 /* TileType.WalkableWater */:
+        case 8 /* TileType.Boat */:
+            return 3 /* TileType.Water */;
+        case 12 /* TileType.ElevatedDirt */:
+            return 1 /* TileType.Dirt */;
         default:
             return type;
     }
 }
 function normalizeTileBase(type) {
     switch (type) {
-        case 9 /* WalkableIce */:
-            return 5 /* Ice */;
-        case 7 /* WalkableWater */:
-        case 8 /* Boat */:
-            return 3 /* Water */;
-        case 12 /* ElevatedDirt */:
-            return 1 /* Dirt */;
+        case 9 /* TileType.WalkableIce */:
+            return 5 /* TileType.Ice */;
+        case 7 /* TileType.WalkableWater */:
+        case 8 /* TileType.Boat */:
+            return 3 /* TileType.Water */;
+        case 12 /* TileType.ElevatedDirt */:
+            return 1 /* TileType.Dirt */;
         default:
             return type;
     }
@@ -369,16 +374,16 @@ function getTileNormal(tiles, baseX, baseY, x, y, map, base) {
         return normalizeTile(tiles[x | (y << 3)], base);
     }
     else {
-        const mapX = utils_1.clamp(x + baseX, 0, map.width - 1);
-        const mapY = utils_1.clamp(y + baseY, 0, map.height - 1);
-        const region = worldMap_1.getRegionGlobal(map, mapX, mapY);
+        const mapX = (0, utils_1.clamp)(x + baseX, 0, map.width - 1);
+        const mapY = (0, utils_1.clamp)(y + baseY, 0, map.height - 1);
+        const region = (0, worldMap_1.getRegionGlobal)(map, mapX, mapY);
         if (region !== undefined) {
             const regionX = mapX - region.x * constants_1.REGION_SIZE;
             const regionY = mapY - region.y * constants_1.REGION_SIZE;
             return normalizeTile(region.tiles[regionX | (regionY << 3)], base);
         }
         else {
-            return 0 /* None */;
+            return 0 /* TileType.None */;
         }
     }
 }
@@ -387,10 +392,10 @@ function getTileIndex(region, index, x, y, map) {
     const type = tiles[x | (y << 3)];
     const tileType = tileTypeNumber(type);
     let baseTileIndex = 0;
-    if (type === 1 /* Dirt */ || type === 12 /* ElevatedDirt */) {
+    if (type === 1 /* TileType.Dirt */ || type === 12 /* TileType.ElevatedDirt */) {
         baseTileIndex = 47;
     }
-    else if (type !== 0 /* None */) {
+    else if (type !== 0 /* TileType.None */) {
         let topLeft = 0, top = 0, topRight = 0, left = 0, right = 0, bottomLeft = 0, bottom = 0, bottomRight = 0;
         if (x > 1 && y > 1 && x < (constants_1.REGION_SIZE - 1) && y < (constants_1.REGION_SIZE - 1)) {
             topLeft = normalizeTile(tiles[(x - 1) | (y - 1) << 3], type);
@@ -426,7 +431,7 @@ function getTileIndex(region, index, x, y, map) {
             | ((bottomRight === normalized) ? 128 : 0);
         baseTileIndex = exports.TILE_MAP[index];
     }
-    const tileCount = type !== 0 /* None */ ? exports.TILE_COUNT_MAP[baseTileIndex] : 1;
+    const tileCount = type !== 0 /* TileType.None */ ? exports.TILE_COUNT_MAP[baseTileIndex] : 1;
     const tileIndex = exports.TILE_MAP_MAP[baseTileIndex] + (tileCount > 1 ? region.randoms[index] % tileCount : 0);
     return (tileType << 8) | tileIndex;
 }
@@ -477,50 +482,47 @@ function initializeTileHeightmaps() {
             }
         }
     }
-    createTileHeightMaps(sprites.dirt_water_heightmap, 2 /* Water */, -0.25, 0);
-    createTileHeightMaps(sprites.dirt_ice_heightmap, 8 /* Ice */, -0.2, 0);
-    createTileHeightMaps(sprites.dirt_stone_cave_height_map, 1 /* Grass */, 0.2, 0);
+    createTileHeightMaps(sprites.dirt_water_heightmap, 2 /* TileTypeNumber.Water */, -0.25, 0);
+    createTileHeightMaps(sprites.dirt_ice_heightmap, 8 /* TileTypeNumber.Ice */, -0.2, 0);
+    createTileHeightMaps(sprites.dirt_stone_cave_height_map, 1 /* TileTypeNumber.Grass */, 0.2, 0);
 }
-exports.initializeTileHeightmaps = initializeTileHeightmaps;
 const waterHeight = constants_1.WATER_HEIGHT.map(positionUtils_1.toWorldZ);
 function isInWater(tileIndex, x, y) {
     const tileType = (tileIndex & 0xff00) >> 8;
-    if (tileType === 2 /* Water */) {
+    if (tileType === 2 /* TileTypeNumber.Water */) {
         const heightMaps = tileHeightMaps.get(tileIndex);
         if (heightMaps !== undefined) {
-            const tx = utils_1.clamp(positionUtils_1.toScreenX(x - Math.floor(x)), 0, constants_1.tileWidth - 1) | 0;
-            const ty = utils_1.clamp(positionUtils_1.toScreenY(y - Math.floor(y)), 0, constants_1.tileHeight - 1) | 0;
+            const tx = (0, utils_1.clamp)((0, positionUtils_1.toScreenX)(x - Math.floor(x)), 0, constants_1.tileWidth - 1) | 0;
+            const ty = (0, utils_1.clamp)((0, positionUtils_1.toScreenY)(y - Math.floor(y)), 0, constants_1.tileHeight - 1) | 0;
             return heightMaps[tx + ty * constants_1.tileWidth] === -0.25;
         }
     }
     return false;
 }
-exports.isInWater = isInWater;
 function getTileHeight(tileType, tileIndex, x, y, gameTime, mapType) {
     const typeNumber = (tileIndex & 0xff00) >> 8;
-    if (typeNumber === 8 /* Ice */ ||
-        typeNumber === 2 /* Water */ ||
-        (mapType === 3 /* Cave */ && tileType === 2 /* Grass */)) {
-        if (tileType !== 7 /* WalkableWater */ && tileType !== 9 /* WalkableIce */) {
+    if (typeNumber === 8 /* TileTypeNumber.Ice */ ||
+        typeNumber === 2 /* TileTypeNumber.Water */ ||
+        (mapType === 3 /* MapType.Cave */ && tileType === 2 /* TileType.Grass */)) {
+        if (tileType !== 7 /* TileType.WalkableWater */ && tileType !== 9 /* TileType.WalkableIce */) {
             const heightMaps = tileHeightMaps.get(tileIndex);
             if (heightMaps !== undefined) {
-                const tx = utils_1.clamp(positionUtils_1.toScreenX(x - Math.floor(x)), 0, constants_1.tileWidth - 1) | 0;
-                const ty = utils_1.clamp(positionUtils_1.toScreenY(y - Math.floor(y)), 0, constants_1.tileHeight - 1) | 0;
+                const tx = (0, utils_1.clamp)((0, positionUtils_1.toScreenX)(x - Math.floor(x)), 0, constants_1.tileWidth - 1) | 0;
+                const ty = (0, utils_1.clamp)((0, positionUtils_1.toScreenY)(y - Math.floor(y)), 0, constants_1.tileHeight - 1) | 0;
                 return heightMaps[tx + ty * constants_1.tileWidth];
             }
         }
     }
-    else if (typeNumber === 9 /* SnowOnIce */) {
+    else if (typeNumber === 9 /* TileTypeNumber.SnowOnIce */) {
         return -0.2;
     }
-    else if (tileType === 12 /* ElevatedDirt */) {
+    else if (tileType === 12 /* TileType.ElevatedDirt */) {
         return 0.5;
     }
-    else if (typeNumber === 12 /* Boat */) {
+    else if (typeNumber === 12 /* TileTypeNumber.Boat */) {
         const frame = ((gameTime / 1000) * constants_1.WATER_FPS) | 0;
         return waterHeight[frame % waterHeight.length];
     }
     return 0;
 }
-exports.getTileHeight = getTileHeight;
 //# sourceMappingURL=tileUtils.js.map

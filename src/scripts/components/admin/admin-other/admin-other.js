@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminOther = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -47,7 +48,7 @@ let AdminOther = class AdminOther {
     saveSuspiciousPonies() {
         this.suspiciousPoniesError = undefined;
         try {
-            lodash_1.compact(this.suspiciousPonies.split(/\n/g).map(x => x.trim())).map(x => JSON.parse(x));
+            (0, lodash_1.compact)(this.suspiciousPonies.split(/\n/g).map(x => x.trim())).map(x => JSON.parse(x));
             this.model.updateSettings({ suspiciousPonies: this.suspiciousPonies });
         }
         catch (e) {
@@ -66,19 +67,19 @@ let AdminOther = class AdminOther {
     getLastPatreonData() {
         this.model.getLastPatreonData()
             .then(data => {
-            htmlUtils_1.showTextInNewTab(JSON.stringify(data, null, 2));
+            (0, htmlUtils_1.showTextInNewTab)(JSON.stringify(data, null, 2));
         });
     }
     updatePastSupporters() {
         this.model.updatePastSupporters();
     }
 };
-AdminOther = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminOther = AdminOther;
+exports.AdminOther = AdminOther = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-other',
         templateUrl: 'admin-other.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AdminOther);
-exports.AdminOther = AdminOther;
 //# sourceMappingURL=admin-other.js.map

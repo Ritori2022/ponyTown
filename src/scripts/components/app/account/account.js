@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Account = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const constants_1 = require("../../../common/constants");
@@ -55,19 +56,19 @@ let Account = class Account {
         return this.model.supporter;
     }
     get showSupporter() {
-        return clientUtils_1.isSupporterOrPastSupporter(this.account);
+        return (0, clientUtils_1.isSupporterOrPastSupporter)(this.account);
     }
     get canSubmit() {
-        return this.account && this.data.name && !!clientUtils_1.cleanName(this.data.name).length;
+        return this.account && this.data.name && !!(0, clientUtils_1.cleanName)(this.data.name).length;
     }
     get supporterTitle() {
-        return clientUtils_1.supporterTitle(this.account);
+        return (0, clientUtils_1.supporterTitle)(this.account);
     }
     get supporterClass() {
-        return clientUtils_1.supporterClass(this.account);
+        return (0, clientUtils_1.supporterClass)(this.account);
     }
     get supporterRewards() {
-        return clientUtils_1.supporterRewards(this.account);
+        return (0, clientUtils_1.supporterRewards)(this.account);
     }
     get showSupporterInfo() {
         const account = this.account;
@@ -77,12 +78,12 @@ let Account = class Account {
         return this.model.missingBirthdate;
     }
     icon(id) {
-        return sign_in_box_1.getProviderIcon(id);
+        return (0, sign_in_box_1.getProviderIcon)(id);
     }
     submit() {
         if (this.canSubmit) {
             this.resetAllMessages();
-            this.data.name = clientUtils_1.cleanName(this.data.name).substr(0, constants_1.ACCOUNT_NAME_MAX_LENGTH);
+            this.data.name = (0, clientUtils_1.cleanName)(this.data.name).substr(0, constants_1.ACCOUNT_NAME_MAX_LENGTH);
             this.model.updateAccount(this.data)
                 .catch((e) => this.accountError = e.message)
                 .then(() => this.accountSaved = true);
@@ -116,13 +117,13 @@ let Account = class Account {
             .catch((e) => console.error(e));
     }
 };
-Account = tslib_1.__decorate([
-    core_1.Component({
+exports.Account = Account;
+exports.Account = Account = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'account',
         templateUrl: 'account.pug',
         styleUrls: ['account.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model])
 ], Account);
-exports.Account = Account;
 //# sourceMappingURL=account.js.map

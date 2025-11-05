@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createShader = createShader;
+exports.disposeShader = disposeShader;
 function createShader(gl, source) {
     if (typeof source === 'string') {
         const index = source.indexOf('// FRAGMENT');
@@ -45,7 +47,6 @@ function createShader(gl, source) {
     gl.useProgram(null);
     return { program, vertexShader, fragmentShader, uniforms };
 }
-exports.createShader = createShader;
 function disposeShader(gl, shader) {
     try {
         if (gl && shader) {
@@ -59,7 +60,6 @@ function disposeShader(gl, shader) {
     }
     return undefined;
 }
-exports.disposeShader = disposeShader;
 function createWebGLShader(gl, type, source) {
     const shader = gl.createShader(type);
     if (!shader) {

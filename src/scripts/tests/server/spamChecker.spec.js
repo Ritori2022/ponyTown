@@ -11,7 +11,7 @@ const spamChecker_1 = require("../../server/spamChecker");
 const mocks_1 = require("../mocks");
 const reporting_1 = require("../../server/reporting");
 function times(count, action) {
-    return Promise.all(utils_1.times(count, action));
+    return Promise.all((0, utils_1.times)(count, action));
 }
 describe('SpamChecker', () => {
     describe('check()', () => {
@@ -23,17 +23,17 @@ describe('SpamChecker', () => {
         let timeoutAccount;
         let spamChecker;
         beforeEach(() => {
-            client = mocks_1.mockClient();
-            client.account.createdAt = utils_1.fromNow(-2 * constants_1.DAY);
+            client = (0, mocks_1.mockClient)();
+            client.account.createdAt = (0, utils_1.fromNow)(-2 * constants_1.DAY);
             settings = {
                 reportSpam: true,
                 autoBanSpamming: true,
             };
             spamCounter = new counter_1.CounterService(1000);
             rapidCounter = new counter_1.CounterService(1000);
-            countSpamming = sinon_1.stub().resolves();
-            timeoutAccount = sinon_1.stub().resolves();
-            spamChecker = lib_1.createFunctionWithPromiseHandler(spamChecker_1.createSpamChecker, spamCounter, rapidCounter, countSpamming, timeoutAccount);
+            countSpamming = (0, sinon_1.stub)().resolves();
+            timeoutAccount = (0, sinon_1.stub)().resolves();
+            spamChecker = (0, lib_1.createFunctionWithPromiseHandler)(spamChecker_1.createSpamChecker, spamCounter, rapidCounter, countSpamming, timeoutAccount);
         });
         it('does not count spam for mods', async () => {
             client.isMod = true;
@@ -47,12 +47,12 @@ describe('SpamChecker', () => {
         });
         it('does not report if reporting is turned off', async () => {
             settings.reportSpam = false;
-            const warn = sinon_1.stub(client.reporter, 'warn');
+            const warn = (0, sinon_1.stub)(client.reporter, 'warn');
             await times(10, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.notCalled(warn);
         });
         it('reports spam', async () => {
-            const warn = sinon_1.stub(client.reporter, 'warn');
+            const warn = (0, sinon_1.stub)(client.reporter, 'warn');
             await times(spamChecker_1.REPORT_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(warn, 'Spam', 'long_spam_text');
         });
@@ -116,23 +116,23 @@ describe('SpamChecker', () => {
         });
         it(`counts spam with timeout if autoBanSpamming option is on and counter is ${spamChecker_1.MUTE_AFTER_LIMIT}`, async () => {
             settings.autoBanSpamming = true;
-            sinon_1.stub(spamCounter, 'add').returns({ count: spamChecker_1.MUTE_AFTER_LIMIT, items: ['long_spam_text'], date: 0 });
+            (0, sinon_1.stub)(spamCounter, 'add').returns({ count: spamChecker_1.MUTE_AFTER_LIMIT, items: ['long_spam_text'], date: 0 });
             await times(spamChecker_1.REPORT_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(countSpamming, client.accountId);
         });
         it('adds entry to spam counter', async () => {
-            const add = sinon_1.stub(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
+            const add = (0, sinon_1.stub)(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
             await times(spamChecker_1.REPORT_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(add, client.accountId, 'long_spam_text', 1);
         });
         it('adds entry to spam counter with increment of 2 for max length message', async () => {
-            const add = sinon_1.stub(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
-            const message = stringUtils_1.randomString(constants_1.SAY_MAX_LENGTH);
+            const add = (0, sinon_1.stub)(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
+            const message = (0, stringUtils_1.randomString)(constants_1.SAY_MAX_LENGTH);
             await times(spamChecker_1.REPORT_AFTER_LIMIT, () => spamChecker(client, message, {}));
             sinon_1.assert.calledWith(add, client.accountId, message, 2);
         });
         it('adds entry to spam counter with increment of 2 for long messages', async () => {
-            const add = sinon_1.stub(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
+            const add = (0, sinon_1.stub)(spamCounter, 'add').returns({ count: 0, items: [], date: 0 });
             const message = 'AAAAALGIRNGLRINGLISAHGLEISRHGLISRHGLISRHGLISRHGISRXY';
             await times(spamChecker_1.REPORT_AFTER_LIMIT, () => spamChecker(client, message, {}));
             sinon_1.assert.calledWith(add, client.accountId, message, 2);
@@ -165,17 +165,17 @@ describe('SpamChecker', () => {
             settings.doubleTimeouts = true;
             await times(spamChecker_1.REPORT_AFTER_LIMIT * spamChecker_1.MUTE_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(timeoutAccount, client.accountId);
-            chai_1.expect(timeoutAccount.args[0][1].getTime()).greaterThan(utils_1.fromNow(reporting_1.SPAM_TIMEOUT * 1.9).getTime());
+            (0, chai_1.expect)(timeoutAccount.args[0][1].getTime()).greaterThan((0, utils_1.fromNow)(reporting_1.SPAM_TIMEOUT * 1.9).getTime());
         });
         it('reports timing out', async () => {
-            const system = sinon_1.stub(client.reporter, 'system');
+            const system = (0, sinon_1.stub)(client.reporter, 'system');
             await times(spamChecker_1.REPORT_AFTER_LIMIT * spamChecker_1.MUTE_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(system, 'Timed out for spamming');
         });
         it('logs timing out if reporting is turned off', async () => {
             settings.reportSpam = false;
-            const system = sinon_1.stub(client.reporter, 'system');
-            const systemLog = sinon_1.stub(client.reporter, 'systemLog');
+            const system = (0, sinon_1.stub)(client.reporter, 'system');
+            const systemLog = (0, sinon_1.stub)(client.reporter, 'systemLog');
             await times(spamChecker_1.REPORT_AFTER_LIMIT * spamChecker_1.MUTE_AFTER_LIMIT, () => spamChecker(client, 'long_spam_text', settings));
             sinon_1.assert.calledWith(systemLog, 'Timed out for spamming');
             sinon_1.assert.notCalled(system);

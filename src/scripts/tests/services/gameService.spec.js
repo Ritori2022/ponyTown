@@ -9,22 +9,22 @@ const game_1 = require("../../client/game");
 const errorReporter_1 = require("../../components/services/errorReporter");
 const storageService_1 = require("../../components/services/storageService");
 describe('GameService', () => {
-    let model = lib_1.stubClass(model_1.Model);
-    let game = lib_1.stubClass(game_1.PonyTownGame);
-    let errorHandler = lib_1.stubClass(core_1.ErrorHandler);
-    let errorReporter = lib_1.stubClass(errorReporter_1.ErrorReporter);
-    let storage = lib_1.stubClass(storageService_1.StorageService);
-    let window = lib_1.stubFromInstance({ addEventListener() { } });
+    let model = (0, lib_1.stubClass)(model_1.Model);
+    let game = (0, lib_1.stubClass)(game_1.PonyTownGame);
+    let errorHandler = (0, lib_1.stubClass)(core_1.ErrorHandler);
+    let errorReporter = (0, lib_1.stubClass)(errorReporter_1.ErrorReporter);
+    let storage = (0, lib_1.stubClass)(storageService_1.StorageService);
+    let window = (0, lib_1.stubFromInstance)({ addEventListener() { } });
     let gameService;
     // let connectSocket: SinonStub;
     // let startLoop: SinonStub;
     beforeEach(() => {
-        lib_1.resetStubMethods(model);
-        lib_1.resetStubMethods(game, 'leave');
-        lib_1.resetStubMethods(errorHandler);
-        lib_1.resetStubMethods(errorReporter);
-        lib_1.resetStubMethods(window);
-        lib_1.resetStubMethods(storage);
+        (0, lib_1.resetStubMethods)(model);
+        (0, lib_1.resetStubMethods)(game, 'leave');
+        (0, lib_1.resetStubMethods)(errorHandler);
+        (0, lib_1.resetStubMethods)(errorReporter);
+        (0, lib_1.resetStubMethods)(window);
+        (0, lib_1.resetStubMethods)(storage);
         const zone = {
             run: (f) => f(),
             runOutsideAngular: (f) => f(),
@@ -50,7 +50,7 @@ describe('GameService', () => {
         // 	assert.calledOnce(game.leave);
         // });
         it('calls left()', () => {
-            const left = sinon_1.stub(gameService, 'left');
+            const left = (0, sinon_1.stub)(gameService, 'left');
             gameService.leave('test');
             sinon_1.assert.calledOnce(left);
         });

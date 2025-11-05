@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.urlRegexTexts = exports.urlExceptionRegex = exports.ipExceptionRegex = exports.ipRegexText = void 0;
+exports.trimRepeatedLetters = trimRepeatedLetters;
 const MAX_REPEATS = 16; // needs to be even for emoji
 exports.ipRegexText = '(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})';
 exports.ipExceptionRegex = /\d\.\d\.\d\.\d/i;
@@ -19,5 +21,4 @@ function trimRepeatedLetters(test) {
         return test;
     }
 }
-exports.trimRepeatedLetters = trimRepeatedLetters;
 //# sourceMappingURL=filterUtils.js.map

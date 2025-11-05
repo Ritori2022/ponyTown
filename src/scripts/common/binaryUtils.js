@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.writeBinary = writeBinary;
 const browser_1 = require("ag-sockets/dist/browser");
 function writeBinary(write) {
-    const writer = browser_1.createBinaryWriter();
+    const writer = (0, browser_1.createBinaryWriter)();
     do {
         try {
             write(writer);
@@ -10,14 +11,13 @@ function writeBinary(write) {
         }
         catch (e) {
             if (e instanceof RangeError || /DataView/.test(e.message)) {
-                browser_1.resizeWriter(writer);
+                (0, browser_1.resizeWriter)(writer);
             }
             else {
                 throw e;
             }
         }
     } while (true);
-    return browser_1.getWriterBuffer(writer);
+    return (0, browser_1.getWriterBuffer)(writer);
 }
-exports.writeBinary = writeBinary;
 //# sourceMappingURL=binaryUtils.js.map

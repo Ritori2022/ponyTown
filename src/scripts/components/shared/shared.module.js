@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SharedModule = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const platform_browser_1 = require("@angular/platform-browser");
@@ -142,8 +143,9 @@ const declarations = [
 ];
 let SharedModule = class SharedModule {
 };
-SharedModule = tslib_1.__decorate([
-    core_1.NgModule({
+exports.SharedModule = SharedModule;
+exports.SharedModule = SharedModule = tslib_1.__decorate([
+    (0, core_1.NgModule)({
         imports: [
             platform_browser_1.BrowserModule,
             router_1.RouterModule,
@@ -153,10 +155,10 @@ SharedModule = tslib_1.__decorate([
             buttons_1.ButtonsModule,
             modal_1.ModalModule.forRoot(),
             angular_fontawesome_1.FontAwesomeModule,
+            // ScrollingModule,
         ],
         declarations: declarations,
         exports: declarations,
     })
 ], SharedModule);
-exports.SharedModule = SharedModule;
 //# sourceMappingURL=shared.module.js.map

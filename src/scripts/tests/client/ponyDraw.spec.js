@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 /* tslint:disable:max-line-length */
 const lib_1 = require("../lib");
-const path = require("path");
+const path = tslib_1.__importStar(require("path"));
 const colors_1 = require("../../common/colors");
 const ponyHelpers_1 = require("../../client/ponyHelpers");
 const ponyInfo_1 = require("../../common/ponyInfo");
@@ -15,29 +16,32 @@ const sprites_1 = require("../../generated/sprites");
 const ponyDraw_1 = require("../../client/ponyDraw");
 const paths_1 = require("../../server/paths");
 const canvasUtilsNode_1 = require("../../server/canvasUtilsNode");
-const baseFilePath = paths_1.pathTo('src', 'tests', 'pony');
+const baseFilePath = (0, paths_1.pathTo)('src', 'tests', 'pony');
 function createTests() {
-    const state = ponyHelpers_1.defaultPonyState();
-    const sitting = Object.assign({}, state, { animation: ponyAnimations_1.sit, animationFrame: 0 });
-    const sittingDown = Object.assign({}, state, { animation: ponyAnimations_1.sitDown, animationFrame: 0 });
-    const wingOpen = Object.assign({}, state, { animation: ponyAnimations_1.fly, animationFrame: 0 });
+    const state = (0, ponyHelpers_1.defaultPonyState)();
+    const sitting = { ...state, animation: ponyAnimations_1.sit, animationFrame: 0 };
+    const sittingDown = { ...state, animation: ponyAnimations_1.sitDown, animationFrame: 0 };
+    const wingOpen = { ...state, animation: ponyAnimations_1.fly, animationFrame: 0 };
     // const lying: PonyState = { ...state, animation: lie, animationFrame: 0 };
-    const trotting = Object.assign({}, state, { animation: ponyAnimations_1.trot, animationFrame: 10 });
-    const blushing = Object.assign({}, state, { expression: expressionUtils_1.parseExpression('o//o') });
+    const trotting = { ...state, animation: ponyAnimations_1.trot, animationFrame: 10 };
+    const blushing = { ...state, expression: (0, expressionUtils_1.parseExpression)('o//o') };
     //const turned: PonyState = { ...defaultState, headTurned: true };
-    const holding = Object.assign({}, state, { holding: entities_1.apple(0, 0) });
-    const holdingLantern = Object.assign({}, state, { holding: entities_1.jackoLanternOn(0, 0) });
-    const holdingLetter = Object.assign({}, state, { holding: entities_1.letter(0, 0) });
-    const laughing = Object.assign({}, state, { headAnimation: ponyAnimations_1.laugh });
-    const blinking = Object.assign({}, state, { blinkFrame: 4 });
-    const blinkingAngry = Object.assign({}, state, { expression: expressionUtils_1.parseExpression('|B)'), blinkFrame: 5 });
-    const blinkingSkip = Object.assign({}, state, { expression: expressionUtils_1.parseExpression('|B)'), blinkFrame: 2 });
-    const faceExtra = Object.assign({}, state, { drawFaceExtra: batch => batch.drawSprite(sprites_1.candy.color, colors_1.WHITE, ponyInfo_1.mockPaletteManager.addArray(sprites_1.candy.palettes[0]), 25, 40) });
-    const faceExtraHoldingLetter = Object.assign({}, faceExtra, { holding: entities_1.letter(0, 0) });
-    const options = Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { shadow: true });
-    const flipped = Object.assign({}, options, { flipped: true });
-    const selected = Object.assign({}, options, { selected: true });
-    const extra = Object.assign({}, options, { extra: true });
+    const holding = { ...state, holding: (0, entities_1.apple)(0, 0) };
+    const holdingLantern = { ...state, holding: (0, entities_1.jackoLanternOn)(0, 0) };
+    const holdingLetter = { ...state, holding: (0, entities_1.letter)(0, 0) };
+    const laughing = { ...state, headAnimation: ponyAnimations_1.laugh };
+    const blinking = { ...state, blinkFrame: 4 };
+    const blinkingAngry = { ...state, expression: (0, expressionUtils_1.parseExpression)('|B)'), blinkFrame: 5 };
+    const blinkingSkip = { ...state, expression: (0, expressionUtils_1.parseExpression)('|B)'), blinkFrame: 2 };
+    const faceExtra = {
+        ...state,
+        drawFaceExtra: batch => batch.drawSprite(sprites_1.candy.color, colors_1.WHITE, ponyInfo_1.mockPaletteManager.addArray(sprites_1.candy.palettes[0]), 25, 40),
+    };
+    const faceExtraHoldingLetter = { ...faceExtra, holding: (0, entities_1.letter)(0, 0) };
+    const options = { ...(0, ponyHelpers_1.defaultDrawPonyOptions)(), shadow: true };
+    const flipped = { ...options, flipped: true };
+    const selected = { ...options, selected: true };
+    const extra = { ...options, extra: true };
     const base = 'CAP////apSDaICA2QAJpDhAvAAwAIA==';
     const baseWing = 'CAP////apSDaICA2QAJpIhAvAAwAIQgIAA==';
     const whitePetal = 'CAiidXWCfnZaUERMTEzb29vl5eXj4diysrI2oIIAAhiBVgCfgAYAGoAOEBpAYQFCAJCAkwAoQgDIgB4AG4AgACQgJAQgJCAAIA==';
@@ -60,7 +64,7 @@ function createTests() {
         ['sit.png', sitting, options, base],
         ['sit-wing.png', sitting, options, baseWing],
         ['sit-socks.png', sitting, options, cmSocks],
-        ['sit-socks-cm.png', Object.assign({}, sittingDown, { animationFrame: 8 }), options, cmSocks],
+        ['sit-socks-cm.png', { ...sittingDown, animationFrame: 8 }, options, cmSocks],
         ['sit-fetlocks.png', sitting, options, whitePetal],
         ['sit-paws.png', sitting, options, 'CAmmno3apSD/1wDdrljp6ellX1JQODDb29v///82QCZiBVgCBIzOEASQBvAFtAcQIKowBowKkQDCAgEQoPEQDdZgAA=='],
         ['sit-sword.png', sitting, options, 'CAf////apSDaICCVhW9nS0NPT09SUlI2QAJkKcIFcADAAgACIGEu4A=='],
@@ -85,46 +89,50 @@ function createTests() {
         ['hair-in-front-of-wing.png', state, options, 'CAOMx+LapSD04HY2QAJpIgCfgAYAGIA6AGEBQgIA'],
         ['hair-behind-neck-accessory.png', state, options, 'CAb///9xcXHaICDbQEBra2t+fn42oAIAAhkJ8IFcADAA5AEqAcgQNgBYAYA='],
         // TEMP: gryphon wing pattern ['lie.png', lying, options, 'CAb///9xcXHaICDHx8eqqqq9vb02QAJkJEIFcADAAwgEnAcgQNiMS4A='],
-        ['no-body.png', state, Object.assign({}, options, { no: 32 /* Body */ }), baseWing],
+        ['no-body.png', state, { ...options, no: 32 /* NoDraw.Body */ }, baseWing],
         ['wing-open.png', wingOpen, options, griffon],
         ['sitting-with-skirt-and-socks.png', sitting, options, 'DAb////CwsL/pQAjVdk9ySPugu42QAJkKsAT8ADAAnAASAAcICBCASIAqIA0ACA='],
         ['cape.png', state, options, 'DASmlJTX19fHwJxbVVU2QAJkKkAT8ADAAxADhAYQEABCAQA='],
+        // ['no-behind.png', state, { ...options, noBehind: true }, baseWing],
+        // ['no-behind-leg.png', state, { ...options, noBehindLeg: true }, baseWing],
+        // ['no-behind-body.png', state, { ...options, noBehindBody: true }, baseWing],
+        // ['no-front.png', state, { ...options, noFront: true }, baseWing],
     ];
 }
 function createOtherTests() {
-    const state = ponyHelpers_1.defaultPonyState();
-    const options = Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { shadow: true });
+    const state = (0, ponyHelpers_1.defaultPonyState)();
+    const options = { ...(0, ponyHelpers_1.defaultDrawPonyOptions)(), shadow: true };
     return [
         ['eyes-0.png', `doesn't allow 0 value for eyes`, { eyeOpennessLeft: 0, eyeOpennessRight: 0, lockEyes: false }, state, options],
     ];
 }
 describe('ponyUtils', () => {
     before(lib_1.loadSprites);
-    before(() => lib_1.clearCompareResults('pony'));
+    before(() => (0, lib_1.clearCompareResults)('pony'));
     describe('drawPony()', () => {
         createTests().forEach(([file, state, options, data]) => it(`correct for ${file}`, () => {
             const filePath = path.join(baseFilePath, file);
-            const expected = lib_1.loadImageAsCanvas(filePath);
-            const info = compressPony_1.decodePonyInfo(data, ponyInfo_1.mockPaletteManager);
+            const expected = (0, lib_1.loadImageAsCanvas)(filePath);
+            const info = (0, compressPony_1.decodePonyInfo)(data, ponyInfo_1.mockPaletteManager);
             const actual = drawPonyCanvas(colors_1.TRANSPARENT, info, state, options);
-            lib_1.compareCanvases(expected, actual, filePath, 'pony');
+            (0, lib_1.compareCanvases)(expected, actual, filePath, 'pony');
         }));
         createOtherTests().forEach(([file, name, data, state, options]) => it(name, () => {
             const filePath = path.join(baseFilePath, file);
-            const expected = lib_1.loadImageAsCanvas(filePath);
-            const ponyInfo = Object.assign({}, ponyInfo_1.createDefaultPony(), data);
-            const compressed = compressPony_1.compressPonyString(ponyInfo);
-            const info = compressPony_1.decodePonyInfo(compressed, ponyInfo_1.mockPaletteManager);
+            const expected = (0, lib_1.loadImageAsCanvas)(filePath);
+            const ponyInfo = { ...(0, ponyInfo_1.createDefaultPony)(), ...data };
+            const compressed = (0, compressPony_1.compressPonyString)(ponyInfo);
+            const info = (0, compressPony_1.decodePonyInfo)(compressed, ponyInfo_1.mockPaletteManager);
             const actual = drawPonyCanvas(colors_1.TRANSPARENT, info, state, options);
-            lib_1.compareCanvases(expected, actual, filePath, 'pony');
+            (0, lib_1.compareCanvases)(expected, actual, filePath, 'pony');
         }));
     });
 });
 function drawPonyCanvas(bg, info, state, options) {
-    state.blushColor = colors_1.blushColor(info.coatPalette.colors[1]);
-    const canvas = contextSpriteBatch_1.drawCanvas(80, 80, sprites_1.paletteSpriteSheet, bg, batch => ponyDraw_1.drawPony(batch, info, state, 40, 70, options));
+    state.blushColor = (0, colors_1.blushColor)(info.coatPalette.colors[1]);
+    const canvas = (0, contextSpriteBatch_1.drawCanvas)(80, 80, sprites_1.paletteSpriteSheet, bg, batch => (0, ponyDraw_1.drawPony)(batch, info, state, 40, 70, options));
     if (options.flipped) {
-        const flipped = canvasUtilsNode_1.createCanvas(canvas.width, canvas.height);
+        const flipped = (0, canvasUtilsNode_1.createCanvas)(canvas.width, canvas.height);
         const context = flipped.getContext('2d');
         context.scale(-1, 1);
         context.drawImage(canvas, -canvas.width, 0);

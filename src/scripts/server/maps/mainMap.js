@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+exports.updateMainMapSeason = updateMainMapSeason;
+exports.createMainMap = createMainMap;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
 const lodash_1 = require("lodash");
 const paths_1 = require("../paths");
 const world_1 = require("../world");
 const serverMap_1 = require("../serverMap");
 const rect_1 = require("../../common/rect");
-const entities = require("../../common/entities");
+const entities = tslib_1.__importStar(require("../../common/entities"));
 const mapUtils_1 = require("../mapUtils");
 const controllerUtils_1 = require("../controllerUtils");
 const logger_1 = require("../logger");
@@ -19,10 +22,10 @@ const constants_1 = require("../../common/constants");
 const entityUtils_1 = require("../entityUtils");
 const positionUtils_1 = require("../../common/positionUtils");
 const compress_1 = require("../../common/compress");
-const ctrl = require("../controllers");
+const ctrl = tslib_1.__importStar(require("../controllers"));
 const timeUtils_1 = require("../../common/timeUtils");
-const mainMapData = JSON.parse(fs.readFileSync(paths_1.pathTo('src', 'maps', 'main.json'), 'utf8'));
-const mainMapTiles = compress_1.deserializeTiles(mainMapData.tiles);
+const mainMapData = JSON.parse(fs.readFileSync((0, paths_1.pathTo)('src', 'maps', 'main.json'), 'utf8'));
+const mainMapTiles = (0, compress_1.deserializeTiles)(mainMapData.tiles);
 function createCookieTable(x, y) {
     return entities.cookieTable(x, y + 0.5);
 }
@@ -32,38 +35,38 @@ function createCookieTable2(x, y) {
 function createToyStash(x, y) {
     return [
         entities.giftPileSign(x, y - 0.1),
-        controllerUtils_1.createSign(x, y, 'Toy Stash', (_, client) => entityUtils_1.updateEntityOptions(client.pony, playerUtils_1.getNextToyOrExtra(client)), entities.sign),
+        (0, controllerUtils_1.createSign)(x, y, 'Toy Stash', (_, client) => (0, entityUtils_1.updateEntityOptions)(client.pony, (0, playerUtils_1.getNextToyOrExtra)(client)), entities.sign),
     ];
 }
 function donateGift(_, client) {
     if (client.account.state && client.account.state.gifts) {
         let count = 0;
-        accountUtils_1.updateAccountState(client.account, state => state.gifts = count = Math.max(0, utils_1.toInt(state.gifts) - 1));
-        chat_1.saySystem(client, `${count} 🎁`);
+        (0, accountUtils_1.updateAccountState)(client.account, state => state.gifts = count = Math.max(0, (0, utils_1.toInt)(state.gifts) - 1));
+        (0, chat_1.saySystem)(client, `${count} 🎁`);
     }
-    if (playerUtils_1.isGift(client.pony.options && client.pony.options.hold)) {
-        playerUtils_1.unholdItem(client.pony);
+    if ((0, playerUtils_1.isGift)(client.pony.options && client.pony.options.hold)) {
+        (0, playerUtils_1.unholdItem)(client.pony);
     }
 }
 function donateCandy(_, client) {
     if (client.account.state && client.account.state.candies) {
         let count = 0;
-        accountUtils_1.updateAccountState(client.account, state => state.candies = count = Math.max(0, utils_1.toInt(state.candies) - 1));
-        chat_1.saySystem(client, `${count} 🍬`);
+        (0, accountUtils_1.updateAccountState)(client.account, state => state.candies = count = Math.max(0, (0, utils_1.toInt)(state.candies) - 1));
+        (0, chat_1.saySystem)(client, `${count} 🍬`);
     }
 }
 function donateEgg(_, client) {
     if (client.account.state && client.account.state.eggs) {
         let count = 0;
-        accountUtils_1.updateAccountState(client.account, state => state.eggs = count = Math.max(0, utils_1.toInt(state.eggs) - 1));
-        chat_1.saySystem(client, `${count} 🥚`);
+        (0, accountUtils_1.updateAccountState)(client.account, state => state.eggs = count = Math.max(0, (0, utils_1.toInt)(state.eggs) - 1));
+        (0, chat_1.saySystem)(client, `${count} 🥚`);
     }
 }
 function removeSeasonalObjects(world, map) {
     const remove = [];
     for (const region of map.regions) {
         for (const entity of region.entities) {
-            if (utils_1.hasFlag(entity.serverFlags, 4 /* Seasonal */)) {
+            if ((0, utils_1.hasFlag)(entity.serverFlags, 4 /* ServerFlags.Seasonal */)) {
                 remove.push(entity);
             }
         }
@@ -73,15 +76,15 @@ function removeSeasonalObjects(world, map) {
     }
 }
 function addSeasonalObjects(world, map, season, holiday) {
-    const isWinter = season === 4 /* Winter */;
-    const isAutumn = season === 2 /* Autumn */;
-    const isSpring = season === 8 /* Spring */;
-    const isSummer = season === 1 /* Summer */;
-    const isHalloween = holiday === 2 /* Halloween */;
-    const isChristmas = holiday === 1 /* Christmas */;
-    const isEaster = holiday === 4 /* Easter */;
+    const isWinter = season === 4 /* Season.Winter */;
+    const isAutumn = season === 2 /* Season.Autumn */;
+    const isSpring = season === 8 /* Season.Spring */;
+    const isSummer = season === 1 /* Season.Summer */;
+    const isHalloween = holiday === 2 /* Holiday.Halloween */;
+    const isChristmas = holiday === 1 /* Holiday.Christmas */;
+    const isEaster = holiday === 4 /* Holiday.Easter */;
     function add(entity) {
-        entity.serverFlags |= 4 /* Seasonal */;
+        entity.serverFlags |= 4 /* ServerFlags.Seasonal */;
         return world.addEntity(entity, map);
     }
     function addEntities(entities) {
@@ -682,30 +685,30 @@ function addSeasonalObjects(world, map, season, holiday) {
     function addSnowpony(x, y, type) {
         const snowpony = entities.snowponies[type - 1];
         const entity = add(snowpony(x, y + 0.5));
-        serverMap_1.lockTile(map, entity.x - 0.5, entity.y);
-        serverMap_1.lockTile(map, entity.x + 0.5, entity.y);
+        (0, serverMap_1.lockTile)(map, entity.x - 0.5, entity.y);
+        (0, serverMap_1.lockTile)(map, entity.x + 0.5, entity.y);
     }
     function addSnowPile(entity) {
         add(entity);
-        serverMap_1.lockTile(map, entity.x - 0.5, entity.y);
-        serverMap_1.lockTile(map, entity.x + 0.5, entity.y);
+        (0, serverMap_1.lockTile)(map, entity.x - 0.5, entity.y);
+        (0, serverMap_1.lockTile)(map, entity.x + 0.5, entity.y);
         if (entity.type === entities.snowPileSmall.type ||
             entity.type === entities.snowPileMedium.type ||
             entity.type === entities.snowPileBig.type) {
-            serverMap_1.lockTile(map, entity.x - 0.5, entity.y - 1);
-            serverMap_1.lockTile(map, entity.x + 0.5, entity.y - 1);
+            (0, serverMap_1.lockTile)(map, entity.x - 0.5, entity.y - 1);
+            (0, serverMap_1.lockTile)(map, entity.x + 0.5, entity.y - 1);
         }
         if (entity.type === entities.snowPileMedium.type ||
             entity.type === entities.snowPileBig.type) {
-            serverMap_1.lockTile(map, entity.x - 1, entity.y);
-            serverMap_1.lockTile(map, entity.x - 0.5, entity.y + 1);
-            serverMap_1.lockTile(map, entity.x + 0.5, entity.y + 1);
+            (0, serverMap_1.lockTile)(map, entity.x - 1, entity.y);
+            (0, serverMap_1.lockTile)(map, entity.x - 0.5, entity.y + 1);
+            (0, serverMap_1.lockTile)(map, entity.x + 0.5, entity.y + 1);
         }
         if (entity.type === entities.snowPileBig.type) {
-            serverMap_1.lockTile(map, entity.x + 1, entity.y);
-            serverMap_1.lockTile(map, entity.x - 1.5, entity.y);
-            serverMap_1.lockTile(map, entity.x - 1, entity.y + 1);
-            serverMap_1.lockTile(map, entity.x + 1, entity.y + 1);
+            (0, serverMap_1.lockTile)(map, entity.x + 1, entity.y);
+            (0, serverMap_1.lockTile)(map, entity.x - 1.5, entity.y);
+            (0, serverMap_1.lockTile)(map, entity.x - 1, entity.y + 1);
+            (0, serverMap_1.lockTile)(map, entity.x + 1, entity.y + 1);
         }
     }
     if (isWinter) {
@@ -957,13 +960,13 @@ function addSeasonalObjects(world, map, season, holiday) {
         const tomb = add(tombs[tombType](x, y));
         const createGhost = tombType === 0 ? entities.ghost1 : entities.ghost2;
         const createGhostHooves = tombType === 0 ? entities.ghostHooves1 : entities.ghostHooves2;
-        const ghost = add(createGhost(x + positionUtils_1.toWorldX(1), y));
-        const hooves = add(createGhostHooves(x + positionUtils_1.toWorldX(1), y));
+        const ghost = add(createGhost(x + (0, positionUtils_1.toWorldX)(1), y));
+        const hooves = add(createGhostHooves(x + (0, positionUtils_1.toWorldX)(1), y));
         return { tomb, ghost, hooves };
     }
     const addGhost = (x, y, tombType, anims) => {
         const { ghost, hooves, tomb } = addGraveWithGhost(x, y, tombType);
-        const randomDelay = () => lodash_1.random(1 * 60, 5 * 60, true);
+        const randomDelay = () => (0, lodash_1.random)(1 * 60, 5 * 60, true);
         let delay = randomDelay();
         let resetDelay = 0;
         let reset = true;
@@ -972,16 +975,16 @@ function addSeasonalObjects(world, map, season, holiday) {
             resetDelay -= delta;
             if (delay < 0) {
                 const flip = Math.random() > 0.5;
-                const anim = lodash_1.sample(anims || (tomb.type === entities.tombstone1.type ? [1, 3] : [1, 2, 3]));
-                entityUtils_1.setEntityAnimation(ghost, anim, flip);
-                entityUtils_1.setEntityAnimation(hooves, anim, flip);
+                const anim = (0, lodash_1.sample)(anims || (tomb.type === entities.tombstone1.type ? [1, 3] : [1, 2, 3]));
+                (0, entityUtils_1.setEntityAnimation)(ghost, anim, flip);
+                (0, entityUtils_1.setEntityAnimation)(hooves, anim, flip);
                 delay = randomDelay();
                 reset = false;
                 resetDelay = 5;
             }
             else if (!reset && resetDelay < 0) {
-                entityUtils_1.setEntityAnimation(ghost, 0 /* None */);
-                entityUtils_1.setEntityAnimation(hooves, 0 /* None */);
+                (0, entityUtils_1.setEntityAnimation)(ghost, 0 /* GhostAnimation.None */);
+                (0, entityUtils_1.setEntityAnimation)(hooves, 0 /* GhostAnimation.None */);
                 reset = true;
             }
         };
@@ -994,13 +997,13 @@ function addSeasonalObjects(world, map, season, holiday) {
             delay -= delta;
             if (delay < 0) {
                 if (open) {
-                    entityUtils_1.setEntityAnimation(entity, 1);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 1);
                     delay = 0.2;
                     open = false;
                 }
                 else {
-                    entityUtils_1.setEntityAnimation(entity, 0);
-                    delay = lodash_1.random(5, 10, true);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 0);
+                    delay = (0, lodash_1.random)(5, 10, true);
                     open = true;
                 }
             }
@@ -1010,8 +1013,8 @@ function addSeasonalObjects(world, map, season, holiday) {
         add(entities.jacko(x, y)).boop = controllerUtils_1.boopLight;
     };
     const addJackoLanternSpot = (x, y) => {
-        const giveLantern = controllerUtils_1.give(entities.jackoLanternOn.type, 'Now go collect some candies!');
-        add(controllerUtils_1.createSign(x, y, 'Jack-o-Lanterns', giveLantern, entities.signQuest));
+        const giveLantern = (0, controllerUtils_1.give)(entities.jackoLanternOn.type, 'Now go collect some candies!');
+        add((0, controllerUtils_1.createSign)(x, y, 'Jack-o-Lanterns', giveLantern, entities.signQuest));
         addJacko(x + 0.5, y - 0.3);
         addJacko(x - 0.3, y + 0.3);
         add(entities.jackoLanternOff(x + 0.2, 17.7 + y - 18.5));
@@ -1024,7 +1027,7 @@ function addSeasonalObjects(world, map, season, holiday) {
     };
     if (isHalloween) {
         const donateX = 64, donateY = 79;
-        add(controllerUtils_1.createSign(donateX, donateY, 'Donate candies', donateCandy, entities.signDonate));
+        add((0, controllerUtils_1.createSign)(donateX, donateY, 'Donate candies', donateCandy, entities.signDonate));
         add(entities.box(donateX + 0.1, donateY + 1.2)).interact = donateCandy;
         add(entities.jackoOn(132.69, 108.79));
         add(entities.jackoOn(131.31, 134.79));
@@ -1231,7 +1234,7 @@ function addSeasonalObjects(world, map, season, holiday) {
     if (isChristmas) {
         addEntities(createToyStash(103.87, 86.12));
         const donateX = 64, donateY = 79;
-        add(controllerUtils_1.createSign(donateX, donateY, 'Donate gifts', donateGift, entities.signDonate));
+        add((0, controllerUtils_1.createSign)(donateX, donateY, 'Donate gifts', donateGift, entities.signDonate));
         add(entities.boxGifts(donateX + 0.1, donateY + 1.2)).interact = donateGift;
         const xmasTreeY = 49.5, xmasTreeX = 40.25;
         addXmasTree(33 + xmasTreeX, 24 + xmasTreeY);
@@ -1351,93 +1354,92 @@ function addSeasonalObjects(world, map, season, holiday) {
         add(createCookieTable(146.47, 145.21));
     }
     if (isEaster) {
-        const giveBasket = controllerUtils_1.give(entities.basket.type);
+        const giveBasket = (0, controllerUtils_1.give)(entities.basket.type);
         // spot 1
         add(entities.basketBin(73.00, 74.00)).interact = giveBasket;
         add(entities.eggBasket2(73.53, 74.88));
         add(entities.eggBasket3(74.41, 73.92));
         add(entities.eggBasket4(74.16, 74.17));
-        add(controllerUtils_1.createSign(74.00, 73.80, 'Egg baskets', giveBasket, entities.signQuest));
+        add((0, controllerUtils_1.createSign)(74.00, 73.80, 'Egg baskets', giveBasket, entities.signQuest));
         // spot 2
         add(entities.basketBin(33 + 70, 34 + 53)).interact = giveBasket;
         add(entities.eggBasket2(33.53 + 70, 34.88 + 53));
         add(entities.eggBasket3(34.41 + 70, 33.92 + 53));
         add(entities.eggBasket4(34.16 + 70, 34.17 + 53));
-        add(controllerUtils_1.createSign(34 + 70, 33.8 + 53, 'Egg baskets', giveBasket, entities.signQuest));
+        add((0, controllerUtils_1.createSign)(34 + 70, 33.8 + 53, 'Egg baskets', giveBasket, entities.signQuest));
         // donation spot
-        add(controllerUtils_1.createSign(62.00, 78.00, 'Donate eggs', donateEgg, entities.signDonate));
+        add((0, controllerUtils_1.createSign)(62.00, 78.00, 'Donate eggs', donateEgg, entities.signDonate));
         add(entities.barrel(62.15, 78.87)).interact = donateEgg;
     }
 }
 function updateMainMapSeason(world, map, season, holiday) {
     removeSeasonalObjects(world, map);
     addSeasonalObjects(world, map, season, holiday);
-    const isWinter = season === 4 /* Winter */;
+    const isWinter = season === 4 /* Season.Winter */;
     for (let y = 0, i = 0; y < map.height; y++) {
         for (let x = 0; x < map.width; x++, i++) {
             const tile = mainMapTiles[i];
             if (isWinter) {
-                if (x > 18 && (tile === 3 /* Water */ || tile === 7 /* WalkableWater */ || tile === 8 /* Boat */)) {
-                    serverMap_1.setTile(map, x, y, tile === 3 /* Water */ ? 5 /* Ice */ : 9 /* WalkableIce */);
+                if (x > 18 && (tile === 3 /* TileType.Water */ || tile === 7 /* TileType.WalkableWater */ || tile === 8 /* TileType.Boat */)) {
+                    (0, serverMap_1.setTile)(map, x, y, tile === 3 /* TileType.Water */ ? 5 /* TileType.Ice */ : 9 /* TileType.WalkableIce */);
                 }
                 else {
-                    serverMap_1.setTile(map, x, y, tile);
+                    (0, serverMap_1.setTile)(map, x, y, tile);
                 }
             }
             else {
-                if (tile === 5 /* Ice */ || tile === 6 /* SnowOnIce */) {
-                    serverMap_1.setTile(map, x, y, 3 /* Water */);
+                if (tile === 5 /* TileType.Ice */ || tile === 6 /* TileType.SnowOnIce */) {
+                    (0, serverMap_1.setTile)(map, x, y, 3 /* TileType.Water */);
                 }
-                else if (tile === 9 /* WalkableIce */) {
-                    serverMap_1.setTile(map, x, y, 7 /* WalkableWater */);
+                else if (tile === 9 /* TileType.WalkableIce */) {
+                    (0, serverMap_1.setTile)(map, x, y, 7 /* TileType.WalkableWater */);
                 }
                 else {
-                    serverMap_1.setTile(map, x, y, tile);
+                    (0, serverMap_1.setTile)(map, x, y, tile);
                 }
             }
         }
     }
-    serverMap_1.snapshotTiles(map);
+    (0, serverMap_1.snapshotTiles)(map);
     for (const controller of map.controllers) {
         controller.initialize(world.now / 1000);
     }
 }
-exports.updateMainMapSeason = updateMainMapSeason;
 function createMainMap(world) {
     const mapSize = 20;
-    const map = serverMap_1.createServerMap('', 0 /* None */, mapSize, mapSize, 2 /* Grass */);
-    map.flags |= 8 /* EdibleGrass */;
+    const map = (0, serverMap_1.createServerMap)('', 0 /* MapType.None */, mapSize, mapSize, 2 /* TileType.Grass */);
+    map.flags |= 8 /* MapFlags.EdibleGrass */;
     // spawns
-    map.spawnArea = rect_1.rect(51, 21, 8, 8);
-    map.spawns.set('harbor', rect_1.rect(5.2, 72.2, 3.4, 2.6));
-    map.spawns.set('cave', rect_1.rect(75.5, 27, 2, 2));
-    map.spawns.set('lake', rect_1.rect(134, 68, 2, 1));
-    map.spawns.set('bridge', rect_1.rect(107, 37, 2, 2));
-    map.spawns.set('forest', rect_1.rect(105, 91, 3, 3));
-    map.spawns.set('graveyard', rect_1.rect(146, 101, 3, 3));
-    map.spawns.set('pumpkins', rect_1.rect(71, 125, 3, 3));
-    map.spawns.set('center', rect_1.rect(74, 74, 2, 2));
-    map.spawns.set('topleft', rect_1.rect(17, 10, 3, 3));
-    map.spawns.set('topright', rect_1.rect(131, 17, 3, 3));
-    map.spawns.set('bottomleft', rect_1.rect(17, 149, 3, 3));
-    map.spawns.set('bottomright', rect_1.rect(154, 140, 3, 3));
+    map.spawnArea = (0, rect_1.rect)(51, 21, 8, 8);
+    map.spawns.set('harbor', (0, rect_1.rect)(5.2, 72.2, 3.4, 2.6));
+    map.spawns.set('cave', (0, rect_1.rect)(75.5, 27, 2, 2));
+    map.spawns.set('lake', (0, rect_1.rect)(134, 68, 2, 1));
+    map.spawns.set('bridge', (0, rect_1.rect)(107, 37, 2, 2));
+    map.spawns.set('forest', (0, rect_1.rect)(105, 91, 3, 3));
+    map.spawns.set('graveyard', (0, rect_1.rect)(146, 101, 3, 3));
+    map.spawns.set('pumpkins', (0, rect_1.rect)(71, 125, 3, 3));
+    map.spawns.set('center', (0, rect_1.rect)(74, 74, 2, 2));
+    map.spawns.set('topleft', (0, rect_1.rect)(17, 10, 3, 3));
+    map.spawns.set('topright', (0, rect_1.rect)(131, 17, 3, 3));
+    map.spawns.set('bottomleft', (0, rect_1.rect)(17, 149, 3, 3));
+    map.spawns.set('bottomright', (0, rect_1.rect)(154, 140, 3, 3));
     // tiles
-    serverMap_1.deserializeMap(map, mainMapData);
+    (0, serverMap_1.deserializeMap)(map, mainMapData);
     if (!DEVELOPMENT) {
-        serverMap_1.snapshotTiles(map);
+        (0, serverMap_1.snapshotTiles)(map);
     }
     if (DEVELOPMENT) {
-        mapUtils_1.addSpawnPointIndicators(world, map);
+        (0, mapUtils_1.addSpawnPointIndicators)(world, map);
     }
-    const giveLantern = controllerUtils_1.give(entities.lanternOn.type);
-    const isWinter = world.season === 4 /* Winter */;
-    const isHalloween = world.holiday === 2 /* Halloween */;
-    const addWoodenFence = controllerUtils_1.createWoodenFenceMaker(world, map);
-    const addStoneWall = controllerUtils_1.createStoneWallFenceMaker(world, map);
+    const giveLantern = (0, controllerUtils_1.give)(entities.lanternOn.type);
+    const isWinter = world.season === 4 /* Season.Winter */;
+    const isHalloween = world.holiday === 2 /* Holiday.Halloween */;
+    const addWoodenFence = (0, controllerUtils_1.createWoodenFenceMaker)(world, map);
+    const addStoneWall = (0, controllerUtils_1.createStoneWallFenceMaker)(world, map);
     function add(entity) {
         if (entity.x < 0 || entity.x > map.width || entity.y < 0 || entity.y > map.height) {
             if (DEVELOPMENT) {
-                logger_1.logger.warn(`skipped entity (${entities_1.getEntityTypeName(entity.type)}) outside map (${entity.x} ${entity.y})`);
+                logger_1.logger.warn(`skipped entity (${(0, entities_1.getEntityTypeName)(entity.type)}) outside map (${entity.x} ${entity.y})`);
             }
             return { x: entity.x, y: entity.y };
         }
@@ -1451,7 +1453,7 @@ function createMainMap(world) {
     }
     function cliffNE(x, y) {
         add(entities.cliffTopNE(x + 0.5, y));
-        serverMap_1.lockTiles(map, x - 1, y - 1, 3, 3);
+        (0, serverMap_1.lockTiles)(map, x - 1, y - 1, 3, 3);
     }
     const cliffDecals = [entities.cliffDecal1, entities.cliffDecal3, entities.cliffDecal2];
     function cracksS(x, y) {
@@ -1475,37 +1477,37 @@ function createMainMap(world) {
     }
     function cliffSW(x, y) {
         add(entities.cliffSW(x + 0.5, y - 2));
-        serverMap_1.lockTiles(map, x - 1, y - 4, 3, 7);
+        (0, serverMap_1.lockTiles)(map, x - 1, y - 4, 3, 7);
         cracksSLeft(x, y);
     }
     function cliffSE(x, y) {
         add(entities.cliffSE(x + 0.5, y - 2));
-        serverMap_1.lockTiles(map, x - 1, y - 3, 3, 6);
+        (0, serverMap_1.lockTiles)(map, x - 1, y - 3, 3, 6);
         cracksSRight(x, y);
     }
     function cliffS(x, y) {
         add(entities.cliffS2(x + 0.5, y - 1));
-        serverMap_1.lockTiles(map, x, y - 2, 1, 5);
+        (0, serverMap_1.lockTiles)(map, x, y - 2, 1, 5);
         cracksS(x, y);
     }
     function cliffSStart(x, y) {
         add(entities.cliffS1(x + 0.5, y - 1));
-        serverMap_1.lockTiles(map, x, y - 2, 1, 5);
+        (0, serverMap_1.lockTiles)(map, x, y - 2, 1, 5);
         cracksS(x, y);
     }
     function cliffSEnd(x, y) {
         add(entities.cliffS3(x + 0.5, y - 1));
-        serverMap_1.lockTiles(map, x, y - 2, 1, 5);
+        (0, serverMap_1.lockTiles)(map, x, y - 2, 1, 5);
         cracksS(x, y);
     }
     function cliffS1(x, y) {
         add(entities.cliffSb(x + 0.5, y - 1));
-        serverMap_1.lockTiles(map, x, y - 2, 1, 5);
+        (0, serverMap_1.lockTiles)(map, x, y - 2, 1, 5);
         cracksS(x, y);
     }
     function cliffS1Entrance(x, y) {
         add(entities.cliffSbEntrance(x + 0.5, y - 1));
-        serverMap_1.lockTiles(map, x, y - 2, 1, 5);
+        (0, serverMap_1.lockTiles)(map, x, y - 2, 1, 5);
     }
     function cliffRightWithTrimNoEdge(x, y, h) {
         cliffRight(x, y, h);
@@ -1522,13 +1524,13 @@ function createMainMap(world) {
     function cliffLeft(x, y, h) {
         for (let i = 0; i < h; i++) {
             add(entities.cliffTopW(x + 0.5, y - i));
-            serverMap_1.lockTiles(map, x, y - i - 1, 2, 3);
+            (0, serverMap_1.lockTiles)(map, x, y - i - 1, 2, 3);
         }
     }
     function cliffRight(x, y, h) {
         for (let i = 0; i < h; i++) {
             add(entities.cliffTopE(x + 0.5, y - i));
-            serverMap_1.lockTiles(map, x - 1, y - i - 1, 2, 3);
+            (0, serverMap_1.lockTiles)(map, x - 1, y - i - 1, 2, 3);
         }
     }
     function cliffTrimLeft(x, y, h) {
@@ -1672,8 +1674,8 @@ function createMainMap(world) {
     cliffRightWithTrim(110, 3, 4);
     const plankWidth = 78 / constants_1.tileWidth;
     const plankHeight = 12 / constants_1.tileHeight;
-    const plank = () => lodash_1.sample(entities.planks);
-    const shortPlank = () => lodash_1.sample(entities.planksShort);
+    const plank = () => (0, lodash_1.sample)(entities.planks);
+    const shortPlank = () => (0, lodash_1.sample)(entities.planksShort);
     // barrel storage
     addWoodenFence(100, 24, 6);
     addWoodenFence(100, 24, 2, false, true, false);
@@ -1708,8 +1710,8 @@ function createMainMap(world) {
     if (true) {
         add(entities.collider1x1(74.50, 25.17));
         add(entities.collider1x1(77.50, 25.21));
-        mineEntrance.interact = (_, client) => world_1.goToMap(world, client, 'cave');
-        add(entities.triggerHouseDoor(76.50, 25.88)).trigger = (_, client) => world_1.goToMap(world, client, 'cave');
+        mineEntrance.interact = (_, client) => (0, world_1.goToMap)(world, client, 'cave');
+        add(entities.triggerHouseDoor(76.50, 25.88)).trigger = (_, client) => (0, world_1.goToMap)(world, client, 'cave');
         add(entities.mineRailsFadeUp(76.5, 25));
         add(entities.mineRailsV(76.5, 26));
         add(entities.mineRailsV(76.5, 27));
@@ -1726,7 +1728,7 @@ function createMainMap(world) {
     add(entities.rock2(73.88, 27.42));
     add(entities.lanternOn(74.59, 29.20));
     add(entities.lanternOn(78.88, 27.67));
-    add(controllerUtils_1.createBoxOfLanterns(79.84, 29.00));
+    add((0, controllerUtils_1.createBoxOfLanterns)(79.84, 29.00));
     // addEntities(entities.tree5(74.25, 30.00, 0));
     // addEntities(entities.tree5(78.53, 30.04, 0));
     // addEntities(entities.tree5(76.34, 33.00, 1));
@@ -1772,8 +1774,8 @@ function createMainMap(world) {
     // pier
     const pierX = 0;
     const pierY = 8 / constants_1.tileHeight;
-    add(controllerUtils_1.createSignWithText(pierX + 8.5, pierY + 71.1, 'Party Island', `Hop on the boat to travel to an island, that is unique to your party`));
-    add(entities.triggerBoat(7.5, 70)).trigger = (_, client) => world_1.goToMap(world, client, 'island');
+    add((0, controllerUtils_1.createSignWithText)(pierX + 8.5, pierY + 71.1, 'Party Island', `Hop on the boat to travel to an island, that is unique to your party`));
+    add(entities.triggerBoat(7.5, 70)).trigger = (_, client) => (0, world_1.goToMap)(world, client, 'island');
     addEntities(entities.fullBoat(7, 69.66));
     add(entities.pierLeg(pierX + 10, pierY + 72.6));
     add(entities.pierLeg(pierX + 11.9, pierY + 72.6));
@@ -2412,7 +2414,7 @@ function createMainMap(world) {
     add(entities.rock(108.53, 24.21));
     add(entities.rock(98.63, 38.04));
     add(entities.rock(117.22, 24.63));
-    add(controllerUtils_1.createSignWithText(70.5, 70.5, 'Pony Town', '      Pony Town\n[under construction]', entities.sign));
+    add((0, controllerUtils_1.createSignWithText)(70.5, 70.5, 'Pony Town', '      Pony Town\n[under construction]', entities.sign));
     addEntities(createToyStash(47.00, 55.00));
     addEntities(entities.pine3(72.78, 64.13, 0));
     const addCat = (x, y) => {
@@ -2424,8 +2426,8 @@ function createMainMap(world) {
         entity.boopY = -0.1;
         entity.boop = () => {
             if (!hidden && boopDelay < 0) {
-                setTimeout(() => chat_1.sayToAll(entity, '😠', '😠', 5 /* Thinking */, {}), 500);
-                boopDelay = lodash_1.random(5, 10, true);
+                setTimeout(() => (0, chat_1.sayToAll)(entity, '😠', '😠', 5 /* MessageType.Thinking */, {}), 500);
+                boopDelay = (0, lodash_1.random)(5, 10, true);
             }
         };
         entity.serverUpdate = delta => {
@@ -2435,34 +2437,34 @@ function createMainMap(world) {
             if (hideDelay < 0 && delay < 0) {
                 if (hidden) {
                     hidden = false;
-                    entityUtils_1.setEntityAnimation(entity, 1 /* Enter */);
-                    hideDelay = lodash_1.random(30, 60, true);
-                    delay = lodash_1.random(2, 4, true);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 1 /* CatAnimation.Enter */);
+                    hideDelay = (0, lodash_1.random)(30, 60, true);
+                    delay = (0, lodash_1.random)(2, 4, true);
                 }
                 else {
                     hidden = true;
-                    entityUtils_1.setEntityAnimation(entity, 2 /* Exit */);
-                    hideDelay = lodash_1.random(15, 30, true);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 2 /* CatAnimation.Exit */);
+                    hideDelay = (0, lodash_1.random)(15, 30, true);
                 }
             }
             else if (!hidden && delay < 0) {
                 const rand = Math.random();
                 if (rand < 0.1) {
-                    chat_1.sayToAll(entity, 'meow', 'meow', 1 /* System */, {});
-                    delay = lodash_1.random(2, 4, true);
+                    (0, chat_1.sayToAll)(entity, 'meow', 'meow', 1 /* MessageType.System */, {});
+                    delay = (0, lodash_1.random)(2, 4, true);
                 }
                 else if (rand < 0.5) {
-                    entityUtils_1.setEntityAnimation(entity, 4 /* Wag */);
-                    delay = lodash_1.random(2, 4, true);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 4 /* CatAnimation.Wag */);
+                    delay = (0, lodash_1.random)(2, 4, true);
                 }
                 else {
-                    entityUtils_1.setEntityAnimation(entity, 3 /* Blink */);
-                    delay = lodash_1.random(2, 4, true);
+                    (0, entityUtils_1.setEntityAnimation)(entity, 3 /* CatAnimation.Blink */);
+                    delay = (0, lodash_1.random)(2, 4, true);
                 }
             }
         };
     };
-    add(controllerUtils_1.createSign(70, 61.5, 'Letter Sign', controllerUtils_1.give(entities.letter.type, `Here's your letter!`), entities.sign));
+    add((0, controllerUtils_1.createSign)(70, 61.5, 'Letter Sign', (0, controllerUtils_1.give)(entities.letter.type, `Here's your letter!`), entities.sign));
     add(entities.mistletoe(43.00, 48.00));
     add(entities.mistletoe(78.00, 85.70));
     add(entities.fence3(46.50, 53.00));
@@ -2903,8 +2905,8 @@ function createMainMap(world) {
     add(entities.pumpkin(69.70, 61.80));
     addCat(67.06, 71);
     // lights
-    const addJacko = controllerUtils_1.createAddLight(world, map, entities.jacko);
-    const addTorch = controllerUtils_1.createAddLight(world, map, entities.torch);
+    const addJacko = (0, controllerUtils_1.createAddLight)(world, map, entities.jacko);
+    const addTorch = (0, controllerUtils_1.createAddLight)(world, map, entities.torch);
     // jack-o-lanterns
     // top left
     addJacko(45, 48);
@@ -3230,24 +3232,24 @@ function createMainMap(world) {
     addTorch(14.97, 94.67);
     addTorch(17.16, 90.21);
     addTorch(22.25, 92.71);
-    add(controllerUtils_1.createSign(77.06, 60.16, 'Rose sign', controllerUtils_1.give(entities.rose.type, `Here's your rose!`), entities.sign));
+    add((0, controllerUtils_1.createSign)(77.06, 60.16, 'Rose sign', (0, controllerUtils_1.give)(entities.rose.type, `Here's your rose!`), entities.sign));
     if (world.featureFlags.test) {
-        add(controllerUtils_1.createSign(14.5, 70, 'Public Island', (_, client) => world_1.goToMap(world, client, 'public-island'), entities.signDebug));
-        add(controllerUtils_1.createSignWithText(60.7, 60.2, 'Pickable items', `Click on the item to carry it around`, entities.signDebug));
-        add(entities.flower3Pickable(60, 60)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.flowerPick.type);
-        add(entities.apple(61, 61)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.apple.type);
-        add(entities.appleGreen2(61.3, 61.4)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.appleGreen2.type);
-        add(entities.orange(60.3, 61.2)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.orange.type);
-        add(entities.grapesPurple[0](60.67, 61.63)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.grapesPurple[0].type);
+        add((0, controllerUtils_1.createSign)(14.5, 70, 'Public Island', (_, client) => (0, world_1.goToMap)(world, client, 'public-island'), entities.signDebug));
+        add((0, controllerUtils_1.createSignWithText)(60.7, 60.2, 'Pickable items', `Click on the item to carry it around`, entities.signDebug));
+        add(entities.flower3Pickable(60, 60)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.flowerPick.type);
+        add(entities.apple(61, 61)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.apple.type);
+        add(entities.appleGreen2(61.3, 61.4)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.appleGreen2.type);
+        add(entities.orange(60.3, 61.2)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.orange.type);
+        add(entities.grapesPurple[0](60.67, 61.63)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.grapesPurple[0].type);
     }
     if (BETA) {
         const objects = [
             entities.fence1, entities.box, entities.boxLanterns, entities.gift3, entities.pumpkin, entities.sign,
             entities.rope,
         ].map(e => e.type);
-        add(controllerUtils_1.createSign(62.7, 58.2, 'Jack-o-Lanterns', controllerUtils_1.give(entities.jackoLanternOn.type, 'Have a lantern'), entities.signDebug));
-        add(controllerUtils_1.createSign(62.7, 60.2, 'Pickable objects', (_, client) => playerUtils_1.holdItem(client.pony, lodash_1.sample(objects)), entities.signDebug));
-        add(controllerUtils_1.createSign(77.0, 69.0, 'Palette', (_, client) => world_1.goToMap(world, client, 'palette'), entities.signDebug));
+        add((0, controllerUtils_1.createSign)(62.7, 58.2, 'Jack-o-Lanterns', (0, controllerUtils_1.give)(entities.jackoLanternOn.type, 'Have a lantern'), entities.signDebug));
+        add((0, controllerUtils_1.createSign)(62.7, 60.2, 'Pickable objects', (_, client) => (0, playerUtils_1.holdItem)(client.pony, (0, lodash_1.sample)(objects)), entities.signDebug));
+        add((0, controllerUtils_1.createSign)(77.0, 69.0, 'Palette', (_, client) => (0, world_1.goToMap)(world, client, 'palette'), entities.signDebug));
     }
     // new added on Halloween
     addEntities(entities.tree4(155.18, 100.04, 1));
@@ -3487,826 +3489,826 @@ function createMainMap(world) {
     add(entities.benchBackH(128.85, 153.96));
     add(entities.benchBackH2(137.16, 153.96));
     updateMainMapSeason(world, map, world.season, world.holiday);
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(72.34, 56.79),
-        utils_1.point(70.69, 56.08),
-        utils_1.point(69.56, 55.67),
-        utils_1.point(68.03, 57.67),
-        utils_1.point(70.28, 57.96),
-        utils_1.point(71.28, 58.79),
-        utils_1.point(70.00, 59.54),
-        utils_1.point(68.72, 58.67),
-        utils_1.point(67.22, 59.96),
-        utils_1.point(65.38, 61.17),
-        utils_1.point(65.31, 62.50),
-        utils_1.point(64.25, 64.25),
-        utils_1.point(65.69, 66.00),
-        utils_1.point(68.47, 69.50),
-        utils_1.point(69.59, 69.79),
-        utils_1.point(69.56, 68.21),
-        utils_1.point(71.06, 68.79),
-        utils_1.point(72.94, 64.67),
-        utils_1.point(74.31, 63.13),
-        utils_1.point(74.41, 60.79),
-        utils_1.point(75.50, 60.13),
-        utils_1.point(76.03, 57.75),
-        utils_1.point(78.19, 54.42),
-        utils_1.point(77.47, 52.75),
-        utils_1.point(78.38, 50.46),
-        utils_1.point(79.03, 51.67),
-        utils_1.point(80.50, 50.96),
-        utils_1.point(81.69, 50.42),
-        utils_1.point(82.75, 51.54),
-        utils_1.point(83.75, 51.96),
-        utils_1.point(83.75, 52.96),
-        utils_1.point(86.13, 54.25),
-        utils_1.point(87.28, 54.04),
-        utils_1.point(87.59, 55.13),
-        utils_1.point(86.31, 55.50),
-        utils_1.point(84.22, 56.38),
-        utils_1.point(82.06, 56.25),
-        utils_1.point(81.47, 54.71),
-        utils_1.point(80.84, 54.71),
-        utils_1.point(81.41, 56.13),
-        utils_1.point(82.19, 59.58),
-        utils_1.point(84.03, 62.25),
-        utils_1.point(86.44, 63.92),
-        utils_1.point(88.00, 63.21),
-        utils_1.point(87.16, 64.29),
-        utils_1.point(85.78, 65.13),
-        utils_1.point(82.50, 65.42),
-        utils_1.point(81.47, 66.38),
-        utils_1.point(80.25, 66.58),
-        utils_1.point(79.47, 68.04),
-        utils_1.point(77.84, 68.04),
-        utils_1.point(75.91, 67.92),
-        utils_1.point(75.16, 66.58),
-        utils_1.point(74.72, 64.96),
-        utils_1.point(73.16, 63.54),
-        utils_1.point(71.97, 62.25),
-        utils_1.point(72.56, 60.79),
-        utils_1.point(71.16, 59.83),
-        utils_1.point(72.19, 58.17),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(72.34, 56.79),
+        (0, utils_1.point)(70.69, 56.08),
+        (0, utils_1.point)(69.56, 55.67),
+        (0, utils_1.point)(68.03, 57.67),
+        (0, utils_1.point)(70.28, 57.96),
+        (0, utils_1.point)(71.28, 58.79),
+        (0, utils_1.point)(70.00, 59.54),
+        (0, utils_1.point)(68.72, 58.67),
+        (0, utils_1.point)(67.22, 59.96),
+        (0, utils_1.point)(65.38, 61.17),
+        (0, utils_1.point)(65.31, 62.50),
+        (0, utils_1.point)(64.25, 64.25),
+        (0, utils_1.point)(65.69, 66.00),
+        (0, utils_1.point)(68.47, 69.50),
+        (0, utils_1.point)(69.59, 69.79),
+        (0, utils_1.point)(69.56, 68.21),
+        (0, utils_1.point)(71.06, 68.79),
+        (0, utils_1.point)(72.94, 64.67),
+        (0, utils_1.point)(74.31, 63.13),
+        (0, utils_1.point)(74.41, 60.79),
+        (0, utils_1.point)(75.50, 60.13),
+        (0, utils_1.point)(76.03, 57.75),
+        (0, utils_1.point)(78.19, 54.42),
+        (0, utils_1.point)(77.47, 52.75),
+        (0, utils_1.point)(78.38, 50.46),
+        (0, utils_1.point)(79.03, 51.67),
+        (0, utils_1.point)(80.50, 50.96),
+        (0, utils_1.point)(81.69, 50.42),
+        (0, utils_1.point)(82.75, 51.54),
+        (0, utils_1.point)(83.75, 51.96),
+        (0, utils_1.point)(83.75, 52.96),
+        (0, utils_1.point)(86.13, 54.25),
+        (0, utils_1.point)(87.28, 54.04),
+        (0, utils_1.point)(87.59, 55.13),
+        (0, utils_1.point)(86.31, 55.50),
+        (0, utils_1.point)(84.22, 56.38),
+        (0, utils_1.point)(82.06, 56.25),
+        (0, utils_1.point)(81.47, 54.71),
+        (0, utils_1.point)(80.84, 54.71),
+        (0, utils_1.point)(81.41, 56.13),
+        (0, utils_1.point)(82.19, 59.58),
+        (0, utils_1.point)(84.03, 62.25),
+        (0, utils_1.point)(86.44, 63.92),
+        (0, utils_1.point)(88.00, 63.21),
+        (0, utils_1.point)(87.16, 64.29),
+        (0, utils_1.point)(85.78, 65.13),
+        (0, utils_1.point)(82.50, 65.42),
+        (0, utils_1.point)(81.47, 66.38),
+        (0, utils_1.point)(80.25, 66.58),
+        (0, utils_1.point)(79.47, 68.04),
+        (0, utils_1.point)(77.84, 68.04),
+        (0, utils_1.point)(75.91, 67.92),
+        (0, utils_1.point)(75.16, 66.58),
+        (0, utils_1.point)(74.72, 64.96),
+        (0, utils_1.point)(73.16, 63.54),
+        (0, utils_1.point)(71.97, 62.25),
+        (0, utils_1.point)(72.56, 60.79),
+        (0, utils_1.point)(71.16, 59.83),
+        (0, utils_1.point)(72.19, 58.17),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(111.84, 63.92),
-        utils_1.point(114.81, 64.79),
-        utils_1.point(111.50, 67.54),
-        utils_1.point(115.94, 69.58),
-        utils_1.point(112.09, 75.42),
-        utils_1.point(105.78, 79.75),
-        utils_1.point(111.13, 80.96),
-        utils_1.point(117.09, 80.29),
-        utils_1.point(120.88, 87.38),
-        utils_1.point(124.22, 91.50),
-        utils_1.point(128.81, 88.71),
-        utils_1.point(125.81, 85.21),
-        utils_1.point(131.44, 91.17),
-        utils_1.point(129.19, 95.38),
-        utils_1.point(132.38, 96.21),
-        utils_1.point(137.06, 96.50),
-        utils_1.point(142.28, 95.75),
-        utils_1.point(140.19, 89.46),
-        utils_1.point(145.56, 87.33),
-        utils_1.point(150.13, 89.83),
-        utils_1.point(151.75, 84.92),
-        utils_1.point(148.28, 82.29),
-        utils_1.point(150.13, 80.04),
-        utils_1.point(153.78, 79.17),
-        utils_1.point(150.44, 70.71),
-        utils_1.point(153.19, 67.96),
-        utils_1.point(152.38, 65.08),
-        utils_1.point(154.38, 62.63),
-        utils_1.point(152.44, 58.17),
-        utils_1.point(148.56, 57.00),
-        utils_1.point(149.56, 53.58),
-        utils_1.point(152.41, 51.21),
-        utils_1.point(151.03, 47.79),
-        utils_1.point(148.66, 45.25),
-        utils_1.point(143.31, 46.46),
-        utils_1.point(140.75, 49.58),
-        utils_1.point(141.78, 54.04),
-        utils_1.point(140.94, 56.08),
-        utils_1.point(139.19, 57.33),
-        utils_1.point(137.41, 55.13),
-        utils_1.point(134.91, 55.88),
-        utils_1.point(131.03, 52.08),
-        utils_1.point(128.63, 48.67),
-        utils_1.point(124.88, 49.25),
-        utils_1.point(124.56, 44.46),
-        utils_1.point(122.47, 45.83),
-        utils_1.point(121.50, 42.83),
-        utils_1.point(117.72, 45.63),
-        utils_1.point(115.34, 46.13),
-        utils_1.point(114.97, 43.25),
-        utils_1.point(115.94, 40.38),
-        utils_1.point(114.19, 37.83),
-        utils_1.point(108.16, 37.75),
-        utils_1.point(108.66, 40.25),
-        utils_1.point(108.53, 41.63),
-        utils_1.point(107.59, 42.67),
-        utils_1.point(101.91, 44.00),
-        utils_1.point(102.09, 46.67),
-        utils_1.point(100.34, 46.08),
-        utils_1.point(100.56, 48.25),
-        utils_1.point(102.28, 51.83),
-        utils_1.point(105.06, 52.92),
-        utils_1.point(104.75, 55.75),
-        utils_1.point(108.25, 55.67),
-        utils_1.point(106.88, 57.92),
-        utils_1.point(106.97, 62.38),
-        utils_1.point(111.09, 60.42),
-        utils_1.point(112.84, 62.63),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(111.84, 63.92),
+        (0, utils_1.point)(114.81, 64.79),
+        (0, utils_1.point)(111.50, 67.54),
+        (0, utils_1.point)(115.94, 69.58),
+        (0, utils_1.point)(112.09, 75.42),
+        (0, utils_1.point)(105.78, 79.75),
+        (0, utils_1.point)(111.13, 80.96),
+        (0, utils_1.point)(117.09, 80.29),
+        (0, utils_1.point)(120.88, 87.38),
+        (0, utils_1.point)(124.22, 91.50),
+        (0, utils_1.point)(128.81, 88.71),
+        (0, utils_1.point)(125.81, 85.21),
+        (0, utils_1.point)(131.44, 91.17),
+        (0, utils_1.point)(129.19, 95.38),
+        (0, utils_1.point)(132.38, 96.21),
+        (0, utils_1.point)(137.06, 96.50),
+        (0, utils_1.point)(142.28, 95.75),
+        (0, utils_1.point)(140.19, 89.46),
+        (0, utils_1.point)(145.56, 87.33),
+        (0, utils_1.point)(150.13, 89.83),
+        (0, utils_1.point)(151.75, 84.92),
+        (0, utils_1.point)(148.28, 82.29),
+        (0, utils_1.point)(150.13, 80.04),
+        (0, utils_1.point)(153.78, 79.17),
+        (0, utils_1.point)(150.44, 70.71),
+        (0, utils_1.point)(153.19, 67.96),
+        (0, utils_1.point)(152.38, 65.08),
+        (0, utils_1.point)(154.38, 62.63),
+        (0, utils_1.point)(152.44, 58.17),
+        (0, utils_1.point)(148.56, 57.00),
+        (0, utils_1.point)(149.56, 53.58),
+        (0, utils_1.point)(152.41, 51.21),
+        (0, utils_1.point)(151.03, 47.79),
+        (0, utils_1.point)(148.66, 45.25),
+        (0, utils_1.point)(143.31, 46.46),
+        (0, utils_1.point)(140.75, 49.58),
+        (0, utils_1.point)(141.78, 54.04),
+        (0, utils_1.point)(140.94, 56.08),
+        (0, utils_1.point)(139.19, 57.33),
+        (0, utils_1.point)(137.41, 55.13),
+        (0, utils_1.point)(134.91, 55.88),
+        (0, utils_1.point)(131.03, 52.08),
+        (0, utils_1.point)(128.63, 48.67),
+        (0, utils_1.point)(124.88, 49.25),
+        (0, utils_1.point)(124.56, 44.46),
+        (0, utils_1.point)(122.47, 45.83),
+        (0, utils_1.point)(121.50, 42.83),
+        (0, utils_1.point)(117.72, 45.63),
+        (0, utils_1.point)(115.34, 46.13),
+        (0, utils_1.point)(114.97, 43.25),
+        (0, utils_1.point)(115.94, 40.38),
+        (0, utils_1.point)(114.19, 37.83),
+        (0, utils_1.point)(108.16, 37.75),
+        (0, utils_1.point)(108.66, 40.25),
+        (0, utils_1.point)(108.53, 41.63),
+        (0, utils_1.point)(107.59, 42.67),
+        (0, utils_1.point)(101.91, 44.00),
+        (0, utils_1.point)(102.09, 46.67),
+        (0, utils_1.point)(100.34, 46.08),
+        (0, utils_1.point)(100.56, 48.25),
+        (0, utils_1.point)(102.28, 51.83),
+        (0, utils_1.point)(105.06, 52.92),
+        (0, utils_1.point)(104.75, 55.75),
+        (0, utils_1.point)(108.25, 55.67),
+        (0, utils_1.point)(106.88, 57.92),
+        (0, utils_1.point)(106.97, 62.38),
+        (0, utils_1.point)(111.09, 60.42),
+        (0, utils_1.point)(112.84, 62.63),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(85.00, 88.54),
-        utils_1.point(81.91, 89.75),
-        utils_1.point(77.06, 88.46),
-        utils_1.point(75.75, 90.58),
-        utils_1.point(78.06, 92.46),
-        utils_1.point(76.88, 92.96),
-        utils_1.point(78.59, 94.13),
-        utils_1.point(76.72, 95.29),
-        utils_1.point(79.94, 95.71),
-        utils_1.point(82.34, 93.63),
-        utils_1.point(85.81, 95.04),
-        utils_1.point(88.88, 93.58),
-        utils_1.point(92.66, 94.04),
-        utils_1.point(95.06, 92.21),
-        utils_1.point(98.00, 92.96),
-        utils_1.point(98.25, 94.92),
-        utils_1.point(98.13, 100.46),
-        utils_1.point(96.94, 102.71),
-        utils_1.point(96.09, 104.46),
-        utils_1.point(98.00, 106.46),
-        utils_1.point(100.41, 103.96),
-        utils_1.point(102.25, 107.50),
-        utils_1.point(103.97, 109.42),
-        utils_1.point(105.66, 108.04),
-        utils_1.point(107.19, 106.13),
-        utils_1.point(107.69, 102.42),
-        utils_1.point(108.78, 101.96),
-        utils_1.point(109.88, 104.42),
-        utils_1.point(108.53, 106.38),
-        utils_1.point(111.22, 109.50),
-        utils_1.point(114.34, 109.58),
-        utils_1.point(114.75, 112.63),
-        utils_1.point(114.28, 116.50),
-        utils_1.point(117.38, 118.50),
-        utils_1.point(117.88, 123.04),
-        utils_1.point(119.38, 124.38),
-        utils_1.point(119.25, 127.21),
-        utils_1.point(117.72, 129.13),
-        utils_1.point(114.41, 133.63),
-        utils_1.point(115.28, 134.75),
-        utils_1.point(115.03, 137.63),
-        utils_1.point(117.81, 145.83),
-        utils_1.point(122.03, 148.08),
-        utils_1.point(120.56, 151.42),
-        utils_1.point(119.28, 154.29),
-        utils_1.point(121.28, 154.71),
-        utils_1.point(123.44, 152.13),
-        utils_1.point(123.34, 150.17),
-        utils_1.point(126.38, 150.25),
-        utils_1.point(125.91, 154.08),
-        utils_1.point(124.91, 155.33),
-        utils_1.point(131.81, 157.13),
-        utils_1.point(139.19, 156.83),
-        utils_1.point(144.88, 153.63),
-        utils_1.point(147.00, 150.38),
-        utils_1.point(145.63, 149.13),
-        utils_1.point(150.34, 148.50),
-        utils_1.point(150.78, 151.04),
-        utils_1.point(149.28, 154.17),
-        utils_1.point(145.00, 151.04),
-        utils_1.point(150.50, 145.29),
-        utils_1.point(150.56, 138.17),
-        utils_1.point(153.09, 136.33),
-        utils_1.point(156.03, 136.29),
-        utils_1.point(154.78, 133.42),
-        utils_1.point(151.63, 134.08),
-        utils_1.point(148.56, 133.21),
-        utils_1.point(146.16, 129.38),
-        utils_1.point(146.34, 124.08),
-        utils_1.point(148.03, 119.42),
-        utils_1.point(145.09, 113.92),
-        utils_1.point(142.81, 110.83),
-        utils_1.point(140.09, 109.42),
-        utils_1.point(135.94, 105.75),
-        utils_1.point(138.91, 98.96),
-        utils_1.point(141.97, 94.92),
-        utils_1.point(143.66, 92.50),
-        utils_1.point(141.00, 91.29),
-        utils_1.point(144.03, 89.58),
-        utils_1.point(141.38, 87.79),
-        utils_1.point(138.75, 90.54),
-        utils_1.point(134.84, 89.50),
-        utils_1.point(131.41, 88.00),
-        utils_1.point(131.38, 90.63),
-        utils_1.point(128.03, 88.46),
-        utils_1.point(125.25, 88.08),
-        utils_1.point(125.50, 84.13),
-        utils_1.point(122.72, 84.42),
-        utils_1.point(119.22, 87.17),
-        utils_1.point(113.50, 83.25),
-        utils_1.point(110.56, 80.33),
-        utils_1.point(105.22, 79.96),
-        utils_1.point(102.34, 77.04),
-        utils_1.point(100.69, 78.54),
-        utils_1.point(98.09, 78.04),
-        utils_1.point(99.97, 75.92),
-        utils_1.point(95.53, 76.25),
-        utils_1.point(94.31, 78.00),
-        utils_1.point(91.00, 75.92),
-        utils_1.point(86.34, 77.46),
-        utils_1.point(87.31, 80.75),
-        utils_1.point(86.19, 83.83),
-        utils_1.point(89.47, 84.04),
-        utils_1.point(86.28, 86.33),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(85.00, 88.54),
+        (0, utils_1.point)(81.91, 89.75),
+        (0, utils_1.point)(77.06, 88.46),
+        (0, utils_1.point)(75.75, 90.58),
+        (0, utils_1.point)(78.06, 92.46),
+        (0, utils_1.point)(76.88, 92.96),
+        (0, utils_1.point)(78.59, 94.13),
+        (0, utils_1.point)(76.72, 95.29),
+        (0, utils_1.point)(79.94, 95.71),
+        (0, utils_1.point)(82.34, 93.63),
+        (0, utils_1.point)(85.81, 95.04),
+        (0, utils_1.point)(88.88, 93.58),
+        (0, utils_1.point)(92.66, 94.04),
+        (0, utils_1.point)(95.06, 92.21),
+        (0, utils_1.point)(98.00, 92.96),
+        (0, utils_1.point)(98.25, 94.92),
+        (0, utils_1.point)(98.13, 100.46),
+        (0, utils_1.point)(96.94, 102.71),
+        (0, utils_1.point)(96.09, 104.46),
+        (0, utils_1.point)(98.00, 106.46),
+        (0, utils_1.point)(100.41, 103.96),
+        (0, utils_1.point)(102.25, 107.50),
+        (0, utils_1.point)(103.97, 109.42),
+        (0, utils_1.point)(105.66, 108.04),
+        (0, utils_1.point)(107.19, 106.13),
+        (0, utils_1.point)(107.69, 102.42),
+        (0, utils_1.point)(108.78, 101.96),
+        (0, utils_1.point)(109.88, 104.42),
+        (0, utils_1.point)(108.53, 106.38),
+        (0, utils_1.point)(111.22, 109.50),
+        (0, utils_1.point)(114.34, 109.58),
+        (0, utils_1.point)(114.75, 112.63),
+        (0, utils_1.point)(114.28, 116.50),
+        (0, utils_1.point)(117.38, 118.50),
+        (0, utils_1.point)(117.88, 123.04),
+        (0, utils_1.point)(119.38, 124.38),
+        (0, utils_1.point)(119.25, 127.21),
+        (0, utils_1.point)(117.72, 129.13),
+        (0, utils_1.point)(114.41, 133.63),
+        (0, utils_1.point)(115.28, 134.75),
+        (0, utils_1.point)(115.03, 137.63),
+        (0, utils_1.point)(117.81, 145.83),
+        (0, utils_1.point)(122.03, 148.08),
+        (0, utils_1.point)(120.56, 151.42),
+        (0, utils_1.point)(119.28, 154.29),
+        (0, utils_1.point)(121.28, 154.71),
+        (0, utils_1.point)(123.44, 152.13),
+        (0, utils_1.point)(123.34, 150.17),
+        (0, utils_1.point)(126.38, 150.25),
+        (0, utils_1.point)(125.91, 154.08),
+        (0, utils_1.point)(124.91, 155.33),
+        (0, utils_1.point)(131.81, 157.13),
+        (0, utils_1.point)(139.19, 156.83),
+        (0, utils_1.point)(144.88, 153.63),
+        (0, utils_1.point)(147.00, 150.38),
+        (0, utils_1.point)(145.63, 149.13),
+        (0, utils_1.point)(150.34, 148.50),
+        (0, utils_1.point)(150.78, 151.04),
+        (0, utils_1.point)(149.28, 154.17),
+        (0, utils_1.point)(145.00, 151.04),
+        (0, utils_1.point)(150.50, 145.29),
+        (0, utils_1.point)(150.56, 138.17),
+        (0, utils_1.point)(153.09, 136.33),
+        (0, utils_1.point)(156.03, 136.29),
+        (0, utils_1.point)(154.78, 133.42),
+        (0, utils_1.point)(151.63, 134.08),
+        (0, utils_1.point)(148.56, 133.21),
+        (0, utils_1.point)(146.16, 129.38),
+        (0, utils_1.point)(146.34, 124.08),
+        (0, utils_1.point)(148.03, 119.42),
+        (0, utils_1.point)(145.09, 113.92),
+        (0, utils_1.point)(142.81, 110.83),
+        (0, utils_1.point)(140.09, 109.42),
+        (0, utils_1.point)(135.94, 105.75),
+        (0, utils_1.point)(138.91, 98.96),
+        (0, utils_1.point)(141.97, 94.92),
+        (0, utils_1.point)(143.66, 92.50),
+        (0, utils_1.point)(141.00, 91.29),
+        (0, utils_1.point)(144.03, 89.58),
+        (0, utils_1.point)(141.38, 87.79),
+        (0, utils_1.point)(138.75, 90.54),
+        (0, utils_1.point)(134.84, 89.50),
+        (0, utils_1.point)(131.41, 88.00),
+        (0, utils_1.point)(131.38, 90.63),
+        (0, utils_1.point)(128.03, 88.46),
+        (0, utils_1.point)(125.25, 88.08),
+        (0, utils_1.point)(125.50, 84.13),
+        (0, utils_1.point)(122.72, 84.42),
+        (0, utils_1.point)(119.22, 87.17),
+        (0, utils_1.point)(113.50, 83.25),
+        (0, utils_1.point)(110.56, 80.33),
+        (0, utils_1.point)(105.22, 79.96),
+        (0, utils_1.point)(102.34, 77.04),
+        (0, utils_1.point)(100.69, 78.54),
+        (0, utils_1.point)(98.09, 78.04),
+        (0, utils_1.point)(99.97, 75.92),
+        (0, utils_1.point)(95.53, 76.25),
+        (0, utils_1.point)(94.31, 78.00),
+        (0, utils_1.point)(91.00, 75.92),
+        (0, utils_1.point)(86.34, 77.46),
+        (0, utils_1.point)(87.31, 80.75),
+        (0, utils_1.point)(86.19, 83.83),
+        (0, utils_1.point)(89.47, 84.04),
+        (0, utils_1.point)(86.28, 86.33),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(60.94, 119.21),
-        utils_1.point(60.44, 116.92),
-        utils_1.point(57.34, 117.92),
-        utils_1.point(58.25, 114.08),
-        utils_1.point(57.41, 111.25),
-        utils_1.point(55.63, 109.79),
-        utils_1.point(53.94, 104.42),
-        utils_1.point(51.97, 105.04),
-        utils_1.point(53.31, 101.04),
-        utils_1.point(51.34, 96.96),
-        utils_1.point(49.16, 96.54),
-        utils_1.point(43.22, 97.79),
-        utils_1.point(43.47, 99.42),
-        utils_1.point(40.50, 99.17),
-        utils_1.point(41.00, 96.54),
-        utils_1.point(38.16, 98.25),
-        utils_1.point(33.91, 98.88),
-        utils_1.point(30.03, 101.04),
-        utils_1.point(29.25, 102.17),
-        utils_1.point(26.34, 102.71),
-        utils_1.point(24.63, 102.96),
-        utils_1.point(23.81, 106.83),
-        utils_1.point(21.50, 108.38),
-        utils_1.point(22.63, 110.17),
-        utils_1.point(20.72, 111.79),
-        utils_1.point(23.06, 113.33),
-        utils_1.point(24.44, 117.58),
-        utils_1.point(25.19, 120.79),
-        utils_1.point(28.19, 121.92),
-        utils_1.point(26.88, 123.79),
-        utils_1.point(32.19, 126.29),
-        utils_1.point(31.97, 128.25),
-        utils_1.point(34.28, 130.54),
-        utils_1.point(35.91, 130.00),
-        utils_1.point(38.59, 129.88),
-        utils_1.point(37.25, 125.92),
-        utils_1.point(40.75, 123.96),
-        utils_1.point(42.25, 128.00),
-        utils_1.point(45.91, 129.33),
-        utils_1.point(46.59, 132.08),
-        utils_1.point(48.53, 129.29),
-        utils_1.point(52.03, 126.50),
-        utils_1.point(47.31, 122.00),
-        utils_1.point(50.09, 118.42),
-        utils_1.point(52.94, 119.54),
-        utils_1.point(55.59, 119.38),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(60.94, 119.21),
+        (0, utils_1.point)(60.44, 116.92),
+        (0, utils_1.point)(57.34, 117.92),
+        (0, utils_1.point)(58.25, 114.08),
+        (0, utils_1.point)(57.41, 111.25),
+        (0, utils_1.point)(55.63, 109.79),
+        (0, utils_1.point)(53.94, 104.42),
+        (0, utils_1.point)(51.97, 105.04),
+        (0, utils_1.point)(53.31, 101.04),
+        (0, utils_1.point)(51.34, 96.96),
+        (0, utils_1.point)(49.16, 96.54),
+        (0, utils_1.point)(43.22, 97.79),
+        (0, utils_1.point)(43.47, 99.42),
+        (0, utils_1.point)(40.50, 99.17),
+        (0, utils_1.point)(41.00, 96.54),
+        (0, utils_1.point)(38.16, 98.25),
+        (0, utils_1.point)(33.91, 98.88),
+        (0, utils_1.point)(30.03, 101.04),
+        (0, utils_1.point)(29.25, 102.17),
+        (0, utils_1.point)(26.34, 102.71),
+        (0, utils_1.point)(24.63, 102.96),
+        (0, utils_1.point)(23.81, 106.83),
+        (0, utils_1.point)(21.50, 108.38),
+        (0, utils_1.point)(22.63, 110.17),
+        (0, utils_1.point)(20.72, 111.79),
+        (0, utils_1.point)(23.06, 113.33),
+        (0, utils_1.point)(24.44, 117.58),
+        (0, utils_1.point)(25.19, 120.79),
+        (0, utils_1.point)(28.19, 121.92),
+        (0, utils_1.point)(26.88, 123.79),
+        (0, utils_1.point)(32.19, 126.29),
+        (0, utils_1.point)(31.97, 128.25),
+        (0, utils_1.point)(34.28, 130.54),
+        (0, utils_1.point)(35.91, 130.00),
+        (0, utils_1.point)(38.59, 129.88),
+        (0, utils_1.point)(37.25, 125.92),
+        (0, utils_1.point)(40.75, 123.96),
+        (0, utils_1.point)(42.25, 128.00),
+        (0, utils_1.point)(45.91, 129.33),
+        (0, utils_1.point)(46.59, 132.08),
+        (0, utils_1.point)(48.53, 129.29),
+        (0, utils_1.point)(52.03, 126.50),
+        (0, utils_1.point)(47.31, 122.00),
+        (0, utils_1.point)(50.09, 118.42),
+        (0, utils_1.point)(52.94, 119.54),
+        (0, utils_1.point)(55.59, 119.38),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(65.28, 127.13),
-        utils_1.point(62.63, 129.54),
-        utils_1.point(67.25, 130.13),
-        utils_1.point(64.53, 130.38),
-        utils_1.point(62.81, 133.17),
-        utils_1.point(67.31, 133.25),
-        utils_1.point(69.09, 134.88),
-        utils_1.point(64.97, 136.25),
-        utils_1.point(67.03, 139.29),
-        utils_1.point(64.94, 141.13),
-        utils_1.point(64.66, 143.71),
-        utils_1.point(66.75, 144.08),
-        utils_1.point(67.56, 141.71),
-        utils_1.point(69.50, 142.04),
-        utils_1.point(68.16, 144.79),
-        utils_1.point(66.25, 147.50),
-        utils_1.point(64.25, 146.58),
-        utils_1.point(62.41, 148.42),
-        utils_1.point(59.22, 150.04),
-        utils_1.point(59.88, 151.33),
-        utils_1.point(58.94, 153.00),
-        utils_1.point(57.66, 151.92),
-        utils_1.point(55.47, 149.42),
-        utils_1.point(55.91, 147.79),
-        utils_1.point(53.06, 147.25),
-        utils_1.point(50.38, 144.21),
-        utils_1.point(47.00, 145.54),
-        utils_1.point(44.06, 145.33),
-        utils_1.point(42.84, 143.79),
-        utils_1.point(43.78, 142.50),
-        utils_1.point(42.38, 140.29),
-        utils_1.point(44.84, 138.46),
-        utils_1.point(45.84, 133.29),
-        utils_1.point(48.72, 132.13),
-        utils_1.point(50.16, 128.92),
-        utils_1.point(52.63, 129.42),
-        utils_1.point(54.78, 127.42),
-        utils_1.point(56.31, 129.00),
-        utils_1.point(56.22, 130.42),
-        utils_1.point(59.56, 130.38),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(65.28, 127.13),
+        (0, utils_1.point)(62.63, 129.54),
+        (0, utils_1.point)(67.25, 130.13),
+        (0, utils_1.point)(64.53, 130.38),
+        (0, utils_1.point)(62.81, 133.17),
+        (0, utils_1.point)(67.31, 133.25),
+        (0, utils_1.point)(69.09, 134.88),
+        (0, utils_1.point)(64.97, 136.25),
+        (0, utils_1.point)(67.03, 139.29),
+        (0, utils_1.point)(64.94, 141.13),
+        (0, utils_1.point)(64.66, 143.71),
+        (0, utils_1.point)(66.75, 144.08),
+        (0, utils_1.point)(67.56, 141.71),
+        (0, utils_1.point)(69.50, 142.04),
+        (0, utils_1.point)(68.16, 144.79),
+        (0, utils_1.point)(66.25, 147.50),
+        (0, utils_1.point)(64.25, 146.58),
+        (0, utils_1.point)(62.41, 148.42),
+        (0, utils_1.point)(59.22, 150.04),
+        (0, utils_1.point)(59.88, 151.33),
+        (0, utils_1.point)(58.94, 153.00),
+        (0, utils_1.point)(57.66, 151.92),
+        (0, utils_1.point)(55.47, 149.42),
+        (0, utils_1.point)(55.91, 147.79),
+        (0, utils_1.point)(53.06, 147.25),
+        (0, utils_1.point)(50.38, 144.21),
+        (0, utils_1.point)(47.00, 145.54),
+        (0, utils_1.point)(44.06, 145.33),
+        (0, utils_1.point)(42.84, 143.79),
+        (0, utils_1.point)(43.78, 142.50),
+        (0, utils_1.point)(42.38, 140.29),
+        (0, utils_1.point)(44.84, 138.46),
+        (0, utils_1.point)(45.84, 133.29),
+        (0, utils_1.point)(48.72, 132.13),
+        (0, utils_1.point)(50.16, 128.92),
+        (0, utils_1.point)(52.63, 129.42),
+        (0, utils_1.point)(54.78, 127.42),
+        (0, utils_1.point)(56.31, 129.00),
+        (0, utils_1.point)(56.22, 130.42),
+        (0, utils_1.point)(59.56, 130.38),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(62.75, 128.29),
-        utils_1.point(62.50, 130.54),
-        utils_1.point(66.16, 128.46),
-        utils_1.point(67.94, 129.42),
-        utils_1.point(67.47, 133.38),
-        utils_1.point(63.84, 132.25),
-        utils_1.point(65.50, 130.67),
-        utils_1.point(67.78, 136.50),
-        utils_1.point(66.28, 139.96),
-        utils_1.point(64.69, 141.96),
-        utils_1.point(65.88, 146.08),
-        utils_1.point(68.63, 143.75),
-        utils_1.point(65.88, 143.08),
-        utils_1.point(68.34, 141.58),
-        utils_1.point(68.00, 140.38),
-        utils_1.point(67.41, 144.13),
-        utils_1.point(67.22, 139.92),
-        utils_1.point(67.41, 134.38),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(62.75, 128.29),
+        (0, utils_1.point)(62.50, 130.54),
+        (0, utils_1.point)(66.16, 128.46),
+        (0, utils_1.point)(67.94, 129.42),
+        (0, utils_1.point)(67.47, 133.38),
+        (0, utils_1.point)(63.84, 132.25),
+        (0, utils_1.point)(65.50, 130.67),
+        (0, utils_1.point)(67.78, 136.50),
+        (0, utils_1.point)(66.28, 139.96),
+        (0, utils_1.point)(64.69, 141.96),
+        (0, utils_1.point)(65.88, 146.08),
+        (0, utils_1.point)(68.63, 143.75),
+        (0, utils_1.point)(65.88, 143.08),
+        (0, utils_1.point)(68.34, 141.58),
+        (0, utils_1.point)(68.00, 140.38),
+        (0, utils_1.point)(67.41, 144.13),
+        (0, utils_1.point)(67.22, 139.92),
+        (0, utils_1.point)(67.41, 134.38),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(66.56, 130.17),
-        utils_1.point(67.41, 128.33),
-        utils_1.point(66.25, 127.21),
-        utils_1.point(64.41, 128.00),
-        utils_1.point(62.97, 128.46),
-        utils_1.point(63.53, 130.92),
-        utils_1.point(62.16, 131.96),
-        utils_1.point(64.66, 133.42),
-        utils_1.point(67.34, 134.13),
-        utils_1.point(68.25, 134.83),
-        utils_1.point(64.47, 137.50),
-        utils_1.point(65.09, 139.58),
-        utils_1.point(64.59, 142.83),
-        utils_1.point(66.56, 144.63),
-        utils_1.point(67.75, 141.71),
-        utils_1.point(69.63, 142.79),
-        utils_1.point(68.34, 144.83),
-        utils_1.point(63.63, 146.50),
-        utils_1.point(62.03, 148.67),
-        utils_1.point(58.63, 149.83),
-        utils_1.point(58.78, 152.63),
-        utils_1.point(60.06, 150.38),
-        utils_1.point(62.19, 146.71),
-        utils_1.point(65.66, 146.75),
-        utils_1.point(69.34, 144.58),
-        utils_1.point(71.59, 143.54),
-        utils_1.point(72.19, 141.54),
-        utils_1.point(68.09, 141.21),
-        utils_1.point(66.75, 138.88),
-        utils_1.point(67.09, 135.96),
-        utils_1.point(63.63, 133.46),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(66.56, 130.17),
+        (0, utils_1.point)(67.41, 128.33),
+        (0, utils_1.point)(66.25, 127.21),
+        (0, utils_1.point)(64.41, 128.00),
+        (0, utils_1.point)(62.97, 128.46),
+        (0, utils_1.point)(63.53, 130.92),
+        (0, utils_1.point)(62.16, 131.96),
+        (0, utils_1.point)(64.66, 133.42),
+        (0, utils_1.point)(67.34, 134.13),
+        (0, utils_1.point)(68.25, 134.83),
+        (0, utils_1.point)(64.47, 137.50),
+        (0, utils_1.point)(65.09, 139.58),
+        (0, utils_1.point)(64.59, 142.83),
+        (0, utils_1.point)(66.56, 144.63),
+        (0, utils_1.point)(67.75, 141.71),
+        (0, utils_1.point)(69.63, 142.79),
+        (0, utils_1.point)(68.34, 144.83),
+        (0, utils_1.point)(63.63, 146.50),
+        (0, utils_1.point)(62.03, 148.67),
+        (0, utils_1.point)(58.63, 149.83),
+        (0, utils_1.point)(58.78, 152.63),
+        (0, utils_1.point)(60.06, 150.38),
+        (0, utils_1.point)(62.19, 146.71),
+        (0, utils_1.point)(65.66, 146.75),
+        (0, utils_1.point)(69.34, 144.58),
+        (0, utils_1.point)(71.59, 143.54),
+        (0, utils_1.point)(72.19, 141.54),
+        (0, utils_1.point)(68.09, 141.21),
+        (0, utils_1.point)(66.75, 138.88),
+        (0, utils_1.point)(67.09, 135.96),
+        (0, utils_1.point)(63.63, 133.46),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(77.28, 149.21),
-        utils_1.point(77.44, 150.83),
-        utils_1.point(79.34, 151.38),
-        utils_1.point(77.00, 153.88),
-        utils_1.point(82.84, 153.00),
-        utils_1.point(83.47, 155.21),
-        utils_1.point(86.59, 154.17),
-        utils_1.point(85.94, 151.04),
-        utils_1.point(84.69, 149.54),
-        utils_1.point(85.44, 147.92),
-        utils_1.point(81.41, 149.38),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(77.28, 149.21),
+        (0, utils_1.point)(77.44, 150.83),
+        (0, utils_1.point)(79.34, 151.38),
+        (0, utils_1.point)(77.00, 153.88),
+        (0, utils_1.point)(82.84, 153.00),
+        (0, utils_1.point)(83.47, 155.21),
+        (0, utils_1.point)(86.59, 154.17),
+        (0, utils_1.point)(85.94, 151.04),
+        (0, utils_1.point)(84.69, 149.54),
+        (0, utils_1.point)(85.44, 147.92),
+        (0, utils_1.point)(81.41, 149.38),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(77.59, 149.08),
-        utils_1.point(78.03, 152.38),
-        utils_1.point(76.63, 152.13),
-        utils_1.point(76.81, 154.54),
-        utils_1.point(79.34, 153.75),
-        utils_1.point(81.22, 154.71),
-        utils_1.point(83.19, 154.54),
-        utils_1.point(84.56, 152.42),
-        utils_1.point(81.09, 151.25),
-        utils_1.point(81.94, 149.46),
-        utils_1.point(80.09, 149.46),
-        utils_1.point(84.00, 153.17),
-        utils_1.point(85.91, 149.29),
-        utils_1.point(86.34, 153.42),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(77.59, 149.08),
+        (0, utils_1.point)(78.03, 152.38),
+        (0, utils_1.point)(76.63, 152.13),
+        (0, utils_1.point)(76.81, 154.54),
+        (0, utils_1.point)(79.34, 153.75),
+        (0, utils_1.point)(81.22, 154.71),
+        (0, utils_1.point)(83.19, 154.54),
+        (0, utils_1.point)(84.56, 152.42),
+        (0, utils_1.point)(81.09, 151.25),
+        (0, utils_1.point)(81.94, 149.46),
+        (0, utils_1.point)(80.09, 149.46),
+        (0, utils_1.point)(84.00, 153.17),
+        (0, utils_1.point)(85.91, 149.29),
+        (0, utils_1.point)(86.34, 153.42),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(86.09, 148.13),
-        utils_1.point(84.44, 149.13),
-        utils_1.point(86.25, 152.13),
-        utils_1.point(86.78, 150.29),
-        utils_1.point(84.63, 151.46),
-        utils_1.point(86.00, 153.79),
-        utils_1.point(84.03, 154.88),
-        utils_1.point(81.81, 152.25),
-        utils_1.point(82.19, 150.88),
-        utils_1.point(80.19, 149.42),
-        utils_1.point(78.09, 149.42),
-        utils_1.point(77.72, 152.25),
-        utils_1.point(80.28, 152.54),
-        utils_1.point(77.63, 154.33),
-        utils_1.point(79.22, 155.21),
-        utils_1.point(82.78, 153.58),
-        utils_1.point(83.75, 150.38),
-        utils_1.point(82.97, 149.04),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(86.09, 148.13),
+        (0, utils_1.point)(84.44, 149.13),
+        (0, utils_1.point)(86.25, 152.13),
+        (0, utils_1.point)(86.78, 150.29),
+        (0, utils_1.point)(84.63, 151.46),
+        (0, utils_1.point)(86.00, 153.79),
+        (0, utils_1.point)(84.03, 154.88),
+        (0, utils_1.point)(81.81, 152.25),
+        (0, utils_1.point)(82.19, 150.88),
+        (0, utils_1.point)(80.19, 149.42),
+        (0, utils_1.point)(78.09, 149.42),
+        (0, utils_1.point)(77.72, 152.25),
+        (0, utils_1.point)(80.28, 152.54),
+        (0, utils_1.point)(77.63, 154.33),
+        (0, utils_1.point)(79.22, 155.21),
+        (0, utils_1.point)(82.78, 153.58),
+        (0, utils_1.point)(83.75, 150.38),
+        (0, utils_1.point)(82.97, 149.04),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(86.09, 148.13),
-        utils_1.point(84.44, 149.13),
-        utils_1.point(86.25, 152.13),
-        utils_1.point(86.78, 150.29),
-        utils_1.point(84.63, 151.46),
-        utils_1.point(86.00, 153.79),
-        utils_1.point(84.03, 154.88),
-        utils_1.point(81.81, 152.25),
-        utils_1.point(82.19, 150.88),
-        utils_1.point(80.19, 149.42),
-        utils_1.point(78.09, 149.42),
-        utils_1.point(77.72, 152.25),
-        utils_1.point(80.28, 152.54),
-        utils_1.point(77.63, 154.33),
-        utils_1.point(79.22, 155.21),
-        utils_1.point(82.78, 153.58),
-        utils_1.point(83.75, 150.38),
-        utils_1.point(82.97, 149.04),
-        utils_1.point(9.09, 102.54),
-        utils_1.point(6.84, 104.00),
-        utils_1.point(8.75, 105.00),
-        utils_1.point(6.94, 106.58),
-        utils_1.point(8.59, 110.33),
-        utils_1.point(7.56, 112.79),
-        utils_1.point(6.00, 114.46),
-        utils_1.point(4.63, 113.46),
-        utils_1.point(2.34, 113.75),
-        utils_1.point(1.19, 116.25),
-        utils_1.point(2.50, 117.54),
-        utils_1.point(5.00, 115.92),
-        utils_1.point(6.16, 119.08),
-        utils_1.point(7.44, 123.25),
-        utils_1.point(6.53, 124.42),
-        utils_1.point(7.13, 128.13),
-        utils_1.point(6.00, 131.71),
-        utils_1.point(7.56, 136.38),
-        utils_1.point(10.88, 139.00),
-        utils_1.point(10.91, 140.54),
-        utils_1.point(12.69, 141.08),
-        utils_1.point(14.06, 141.92),
-        utils_1.point(16.09, 141.42),
-        utils_1.point(14.59, 140.08),
-        utils_1.point(14.78, 137.63),
-        utils_1.point(12.34, 137.79),
-        utils_1.point(10.38, 138.25),
-        utils_1.point(7.97, 136.75),
-        utils_1.point(6.69, 131.33),
-        utils_1.point(8.56, 127.42),
-        utils_1.point(7.25, 123.58),
-        utils_1.point(7.00, 119.13),
-        utils_1.point(4.34, 117.67),
-        utils_1.point(3.53, 114.75),
-        utils_1.point(4.75, 114.58),
-        utils_1.point(6.34, 115.63),
-        utils_1.point(7.19, 113.21),
-        utils_1.point(7.81, 108.46),
-        utils_1.point(9.22, 106.58),
-        utils_1.point(11.47, 104.83),
-        utils_1.point(11.63, 102.63),
-        utils_1.point(10.34, 103.17),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(86.09, 148.13),
+        (0, utils_1.point)(84.44, 149.13),
+        (0, utils_1.point)(86.25, 152.13),
+        (0, utils_1.point)(86.78, 150.29),
+        (0, utils_1.point)(84.63, 151.46),
+        (0, utils_1.point)(86.00, 153.79),
+        (0, utils_1.point)(84.03, 154.88),
+        (0, utils_1.point)(81.81, 152.25),
+        (0, utils_1.point)(82.19, 150.88),
+        (0, utils_1.point)(80.19, 149.42),
+        (0, utils_1.point)(78.09, 149.42),
+        (0, utils_1.point)(77.72, 152.25),
+        (0, utils_1.point)(80.28, 152.54),
+        (0, utils_1.point)(77.63, 154.33),
+        (0, utils_1.point)(79.22, 155.21),
+        (0, utils_1.point)(82.78, 153.58),
+        (0, utils_1.point)(83.75, 150.38),
+        (0, utils_1.point)(82.97, 149.04),
+        (0, utils_1.point)(9.09, 102.54),
+        (0, utils_1.point)(6.84, 104.00),
+        (0, utils_1.point)(8.75, 105.00),
+        (0, utils_1.point)(6.94, 106.58),
+        (0, utils_1.point)(8.59, 110.33),
+        (0, utils_1.point)(7.56, 112.79),
+        (0, utils_1.point)(6.00, 114.46),
+        (0, utils_1.point)(4.63, 113.46),
+        (0, utils_1.point)(2.34, 113.75),
+        (0, utils_1.point)(1.19, 116.25),
+        (0, utils_1.point)(2.50, 117.54),
+        (0, utils_1.point)(5.00, 115.92),
+        (0, utils_1.point)(6.16, 119.08),
+        (0, utils_1.point)(7.44, 123.25),
+        (0, utils_1.point)(6.53, 124.42),
+        (0, utils_1.point)(7.13, 128.13),
+        (0, utils_1.point)(6.00, 131.71),
+        (0, utils_1.point)(7.56, 136.38),
+        (0, utils_1.point)(10.88, 139.00),
+        (0, utils_1.point)(10.91, 140.54),
+        (0, utils_1.point)(12.69, 141.08),
+        (0, utils_1.point)(14.06, 141.92),
+        (0, utils_1.point)(16.09, 141.42),
+        (0, utils_1.point)(14.59, 140.08),
+        (0, utils_1.point)(14.78, 137.63),
+        (0, utils_1.point)(12.34, 137.79),
+        (0, utils_1.point)(10.38, 138.25),
+        (0, utils_1.point)(7.97, 136.75),
+        (0, utils_1.point)(6.69, 131.33),
+        (0, utils_1.point)(8.56, 127.42),
+        (0, utils_1.point)(7.25, 123.58),
+        (0, utils_1.point)(7.00, 119.13),
+        (0, utils_1.point)(4.34, 117.67),
+        (0, utils_1.point)(3.53, 114.75),
+        (0, utils_1.point)(4.75, 114.58),
+        (0, utils_1.point)(6.34, 115.63),
+        (0, utils_1.point)(7.19, 113.21),
+        (0, utils_1.point)(7.81, 108.46),
+        (0, utils_1.point)(9.22, 106.58),
+        (0, utils_1.point)(11.47, 104.83),
+        (0, utils_1.point)(11.63, 102.63),
+        (0, utils_1.point)(10.34, 103.17),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(21.72, 63.50),
-        utils_1.point(23.09, 65.46),
-        utils_1.point(24.53, 63.54),
-        utils_1.point(25.59, 65.13),
-        utils_1.point(25.28, 66.71),
-        utils_1.point(27.69, 67.92),
-        utils_1.point(30.22, 67.58),
-        utils_1.point(32.94, 67.79),
-        utils_1.point(36.38, 68.92),
-        utils_1.point(37.16, 67.83),
-        utils_1.point(35.88, 65.79),
-        utils_1.point(38.34, 65.25),
-        utils_1.point(39.50, 67.38),
-        utils_1.point(40.19, 64.96),
-        utils_1.point(39.34, 62.88),
-        utils_1.point(37.28, 64.04),
-        utils_1.point(34.44, 62.67),
-        utils_1.point(32.44, 61.17),
-        utils_1.point(32.53, 59.63),
-        utils_1.point(29.41, 58.88),
-        utils_1.point(29.22, 61.79),
-        utils_1.point(26.50, 61.83),
-        utils_1.point(24.53, 61.58),
-        utils_1.point(22.88, 61.50),
-        utils_1.point(23.00, 63.38),
-        utils_1.point(25.78, 62.88),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(21.72, 63.50),
+        (0, utils_1.point)(23.09, 65.46),
+        (0, utils_1.point)(24.53, 63.54),
+        (0, utils_1.point)(25.59, 65.13),
+        (0, utils_1.point)(25.28, 66.71),
+        (0, utils_1.point)(27.69, 67.92),
+        (0, utils_1.point)(30.22, 67.58),
+        (0, utils_1.point)(32.94, 67.79),
+        (0, utils_1.point)(36.38, 68.92),
+        (0, utils_1.point)(37.16, 67.83),
+        (0, utils_1.point)(35.88, 65.79),
+        (0, utils_1.point)(38.34, 65.25),
+        (0, utils_1.point)(39.50, 67.38),
+        (0, utils_1.point)(40.19, 64.96),
+        (0, utils_1.point)(39.34, 62.88),
+        (0, utils_1.point)(37.28, 64.04),
+        (0, utils_1.point)(34.44, 62.67),
+        (0, utils_1.point)(32.44, 61.17),
+        (0, utils_1.point)(32.53, 59.63),
+        (0, utils_1.point)(29.41, 58.88),
+        (0, utils_1.point)(29.22, 61.79),
+        (0, utils_1.point)(26.50, 61.83),
+        (0, utils_1.point)(24.53, 61.58),
+        (0, utils_1.point)(22.88, 61.50),
+        (0, utils_1.point)(23.00, 63.38),
+        (0, utils_1.point)(25.78, 62.88),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(21.38, 28.04),
-        utils_1.point(19.81, 26.08),
-        utils_1.point(21.22, 23.75),
-        utils_1.point(23.19, 25.29),
-        utils_1.point(25.09, 22.92),
-        utils_1.point(25.81, 25.79),
-        utils_1.point(26.56, 22.83),
-        utils_1.point(28.31, 19.92),
-        utils_1.point(29.41, 16.79),
-        utils_1.point(31.00, 15.25),
-        utils_1.point(32.41, 16.83),
-        utils_1.point(32.72, 18.38),
-        utils_1.point(34.63, 16.67),
-        utils_1.point(33.53, 15.50),
-        utils_1.point(38.81, 13.92),
-        utils_1.point(41.16, 14.88),
-        utils_1.point(43.09, 13.96),
-        utils_1.point(46.19, 12.46),
-        utils_1.point(45.22, 7.96),
-        utils_1.point(46.31, 5.96),
-        utils_1.point(45.34, 5.08),
-        utils_1.point(47.00, 4.50),
-        utils_1.point(47.41, 5.58),
-        utils_1.point(55.22, 4.75),
-        utils_1.point(56.09, 7.83),
-        utils_1.point(57.91, 8.00),
-        utils_1.point(60.94, 7.58),
-        utils_1.point(62.13, 6.50),
-        utils_1.point(63.09, 7.38),
-        utils_1.point(64.34, 6.42),
-        utils_1.point(65.09, 6.96),
-        utils_1.point(67.06, 11.17),
-        utils_1.point(65.78, 12.29),
-        utils_1.point(67.66, 13.33),
-        utils_1.point(70.09, 12.71),
-        utils_1.point(71.13, 14.67),
-        utils_1.point(70.22, 16.04),
-        utils_1.point(73.09, 16.75),
-        utils_1.point(74.78, 14.00),
-        utils_1.point(74.47, 17.83),
-        utils_1.point(73.19, 21.04),
-        utils_1.point(74.38, 21.50),
-        utils_1.point(77.09, 20.13),
-        utils_1.point(77.72, 19.17),
-        utils_1.point(79.22, 20.88),
-        utils_1.point(80.19, 22.88),
-        utils_1.point(81.84, 22.71),
-        utils_1.point(82.47, 21.67),
-        utils_1.point(82.50, 20.08),
-        utils_1.point(81.47, 19.25),
-        utils_1.point(81.00, 17.58),
-        utils_1.point(82.47, 16.08),
-        utils_1.point(80.63, 15.42),
-        utils_1.point(78.59, 15.88),
-        utils_1.point(78.50, 14.38),
-        utils_1.point(79.78, 13.00),
-        utils_1.point(81.81, 12.54),
-        utils_1.point(83.19, 12.29),
-        utils_1.point(84.22, 10.38),
-        utils_1.point(87.00, 10.83),
-        utils_1.point(87.91, 10.08),
-        utils_1.point(89.41, 11.38),
-        utils_1.point(90.38, 8.83),
-        utils_1.point(91.91, 6.96),
-        utils_1.point(97.44, 8.38),
-        utils_1.point(99.56, 9.46),
-        utils_1.point(98.50, 10.83),
-        utils_1.point(97.28, 10.46),
-        utils_1.point(97.72, 7.42),
-        utils_1.point(95.28, 7.83),
-        utils_1.point(95.06, 11.75),
-        utils_1.point(94.84, 16.21),
-        utils_1.point(96.50, 17.17),
-        utils_1.point(98.66, 17.71),
-        utils_1.point(99.00, 19.54),
-        utils_1.point(97.06, 20.92),
-        utils_1.point(95.50, 20.63),
-        utils_1.point(90.22, 21.67),
-        utils_1.point(89.28, 24.21),
-        utils_1.point(89.22, 26.50),
-        utils_1.point(88.66, 26.50),
-        utils_1.point(88.38, 28.63),
-        utils_1.point(85.84, 28.46),
-        utils_1.point(85.31, 30.67),
-        utils_1.point(83.59, 31.71),
-        utils_1.point(81.63, 31.25),
-        utils_1.point(79.53, 31.88),
-        utils_1.point(73.91, 31.63),
-        utils_1.point(71.19, 31.08),
-        utils_1.point(69.97, 32.08),
-        utils_1.point(66.94, 31.63),
-        utils_1.point(65.47, 34.58),
-        utils_1.point(62.72, 36.08),
-        utils_1.point(60.00, 34.92),
-        utils_1.point(57.09, 32.92),
-        utils_1.point(52.00, 32.50),
-        utils_1.point(52.59, 36.88),
-        utils_1.point(50.75, 39.54),
-        utils_1.point(48.63, 39.33),
-        utils_1.point(48.72, 41.38),
-        utils_1.point(47.03, 40.46),
-        utils_1.point(43.28, 41.63),
-        utils_1.point(40.88, 44.96),
-        utils_1.point(35.88, 44.00),
-        utils_1.point(32.72, 46.67),
-        utils_1.point(32.13, 50.00),
-        utils_1.point(33.47, 52.88),
-        utils_1.point(32.91, 54.71),
-        utils_1.point(30.38, 55.67),
-        utils_1.point(28.06, 54.71),
-        utils_1.point(25.66, 53.38),
-        utils_1.point(24.03, 54.21),
-        utils_1.point(22.78, 53.50),
-        utils_1.point(21.19, 56.54),
-        utils_1.point(18.25, 56.83),
-        utils_1.point(15.22, 57.00),
-        utils_1.point(13.69, 55.83),
-        utils_1.point(14.88, 55.08),
-        utils_1.point(16.47, 55.33),
-        utils_1.point(18.31, 53.42),
-        utils_1.point(19.25, 51.54),
-        utils_1.point(19.38, 49.29),
-        utils_1.point(21.84, 44.83),
-        utils_1.point(22.34, 43.04),
-        utils_1.point(24.00, 43.04),
-        utils_1.point(25.31, 44.71),
-        utils_1.point(25.03, 45.83),
-        utils_1.point(26.38, 46.88),
-        utils_1.point(27.28, 45.67),
-        utils_1.point(26.94, 43.83),
-        utils_1.point(26.88, 41.58),
-        utils_1.point(28.31, 39.96),
-        utils_1.point(27.81, 37.63),
-        utils_1.point(25.72, 35.71),
-        utils_1.point(24.16, 35.54),
-        utils_1.point(22.50, 30.58),
-        utils_1.point(23.81, 29.88),
-        utils_1.point(24.13, 27.54),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(21.38, 28.04),
+        (0, utils_1.point)(19.81, 26.08),
+        (0, utils_1.point)(21.22, 23.75),
+        (0, utils_1.point)(23.19, 25.29),
+        (0, utils_1.point)(25.09, 22.92),
+        (0, utils_1.point)(25.81, 25.79),
+        (0, utils_1.point)(26.56, 22.83),
+        (0, utils_1.point)(28.31, 19.92),
+        (0, utils_1.point)(29.41, 16.79),
+        (0, utils_1.point)(31.00, 15.25),
+        (0, utils_1.point)(32.41, 16.83),
+        (0, utils_1.point)(32.72, 18.38),
+        (0, utils_1.point)(34.63, 16.67),
+        (0, utils_1.point)(33.53, 15.50),
+        (0, utils_1.point)(38.81, 13.92),
+        (0, utils_1.point)(41.16, 14.88),
+        (0, utils_1.point)(43.09, 13.96),
+        (0, utils_1.point)(46.19, 12.46),
+        (0, utils_1.point)(45.22, 7.96),
+        (0, utils_1.point)(46.31, 5.96),
+        (0, utils_1.point)(45.34, 5.08),
+        (0, utils_1.point)(47.00, 4.50),
+        (0, utils_1.point)(47.41, 5.58),
+        (0, utils_1.point)(55.22, 4.75),
+        (0, utils_1.point)(56.09, 7.83),
+        (0, utils_1.point)(57.91, 8.00),
+        (0, utils_1.point)(60.94, 7.58),
+        (0, utils_1.point)(62.13, 6.50),
+        (0, utils_1.point)(63.09, 7.38),
+        (0, utils_1.point)(64.34, 6.42),
+        (0, utils_1.point)(65.09, 6.96),
+        (0, utils_1.point)(67.06, 11.17),
+        (0, utils_1.point)(65.78, 12.29),
+        (0, utils_1.point)(67.66, 13.33),
+        (0, utils_1.point)(70.09, 12.71),
+        (0, utils_1.point)(71.13, 14.67),
+        (0, utils_1.point)(70.22, 16.04),
+        (0, utils_1.point)(73.09, 16.75),
+        (0, utils_1.point)(74.78, 14.00),
+        (0, utils_1.point)(74.47, 17.83),
+        (0, utils_1.point)(73.19, 21.04),
+        (0, utils_1.point)(74.38, 21.50),
+        (0, utils_1.point)(77.09, 20.13),
+        (0, utils_1.point)(77.72, 19.17),
+        (0, utils_1.point)(79.22, 20.88),
+        (0, utils_1.point)(80.19, 22.88),
+        (0, utils_1.point)(81.84, 22.71),
+        (0, utils_1.point)(82.47, 21.67),
+        (0, utils_1.point)(82.50, 20.08),
+        (0, utils_1.point)(81.47, 19.25),
+        (0, utils_1.point)(81.00, 17.58),
+        (0, utils_1.point)(82.47, 16.08),
+        (0, utils_1.point)(80.63, 15.42),
+        (0, utils_1.point)(78.59, 15.88),
+        (0, utils_1.point)(78.50, 14.38),
+        (0, utils_1.point)(79.78, 13.00),
+        (0, utils_1.point)(81.81, 12.54),
+        (0, utils_1.point)(83.19, 12.29),
+        (0, utils_1.point)(84.22, 10.38),
+        (0, utils_1.point)(87.00, 10.83),
+        (0, utils_1.point)(87.91, 10.08),
+        (0, utils_1.point)(89.41, 11.38),
+        (0, utils_1.point)(90.38, 8.83),
+        (0, utils_1.point)(91.91, 6.96),
+        (0, utils_1.point)(97.44, 8.38),
+        (0, utils_1.point)(99.56, 9.46),
+        (0, utils_1.point)(98.50, 10.83),
+        (0, utils_1.point)(97.28, 10.46),
+        (0, utils_1.point)(97.72, 7.42),
+        (0, utils_1.point)(95.28, 7.83),
+        (0, utils_1.point)(95.06, 11.75),
+        (0, utils_1.point)(94.84, 16.21),
+        (0, utils_1.point)(96.50, 17.17),
+        (0, utils_1.point)(98.66, 17.71),
+        (0, utils_1.point)(99.00, 19.54),
+        (0, utils_1.point)(97.06, 20.92),
+        (0, utils_1.point)(95.50, 20.63),
+        (0, utils_1.point)(90.22, 21.67),
+        (0, utils_1.point)(89.28, 24.21),
+        (0, utils_1.point)(89.22, 26.50),
+        (0, utils_1.point)(88.66, 26.50),
+        (0, utils_1.point)(88.38, 28.63),
+        (0, utils_1.point)(85.84, 28.46),
+        (0, utils_1.point)(85.31, 30.67),
+        (0, utils_1.point)(83.59, 31.71),
+        (0, utils_1.point)(81.63, 31.25),
+        (0, utils_1.point)(79.53, 31.88),
+        (0, utils_1.point)(73.91, 31.63),
+        (0, utils_1.point)(71.19, 31.08),
+        (0, utils_1.point)(69.97, 32.08),
+        (0, utils_1.point)(66.94, 31.63),
+        (0, utils_1.point)(65.47, 34.58),
+        (0, utils_1.point)(62.72, 36.08),
+        (0, utils_1.point)(60.00, 34.92),
+        (0, utils_1.point)(57.09, 32.92),
+        (0, utils_1.point)(52.00, 32.50),
+        (0, utils_1.point)(52.59, 36.88),
+        (0, utils_1.point)(50.75, 39.54),
+        (0, utils_1.point)(48.63, 39.33),
+        (0, utils_1.point)(48.72, 41.38),
+        (0, utils_1.point)(47.03, 40.46),
+        (0, utils_1.point)(43.28, 41.63),
+        (0, utils_1.point)(40.88, 44.96),
+        (0, utils_1.point)(35.88, 44.00),
+        (0, utils_1.point)(32.72, 46.67),
+        (0, utils_1.point)(32.13, 50.00),
+        (0, utils_1.point)(33.47, 52.88),
+        (0, utils_1.point)(32.91, 54.71),
+        (0, utils_1.point)(30.38, 55.67),
+        (0, utils_1.point)(28.06, 54.71),
+        (0, utils_1.point)(25.66, 53.38),
+        (0, utils_1.point)(24.03, 54.21),
+        (0, utils_1.point)(22.78, 53.50),
+        (0, utils_1.point)(21.19, 56.54),
+        (0, utils_1.point)(18.25, 56.83),
+        (0, utils_1.point)(15.22, 57.00),
+        (0, utils_1.point)(13.69, 55.83),
+        (0, utils_1.point)(14.88, 55.08),
+        (0, utils_1.point)(16.47, 55.33),
+        (0, utils_1.point)(18.31, 53.42),
+        (0, utils_1.point)(19.25, 51.54),
+        (0, utils_1.point)(19.38, 49.29),
+        (0, utils_1.point)(21.84, 44.83),
+        (0, utils_1.point)(22.34, 43.04),
+        (0, utils_1.point)(24.00, 43.04),
+        (0, utils_1.point)(25.31, 44.71),
+        (0, utils_1.point)(25.03, 45.83),
+        (0, utils_1.point)(26.38, 46.88),
+        (0, utils_1.point)(27.28, 45.67),
+        (0, utils_1.point)(26.94, 43.83),
+        (0, utils_1.point)(26.88, 41.58),
+        (0, utils_1.point)(28.31, 39.96),
+        (0, utils_1.point)(27.81, 37.63),
+        (0, utils_1.point)(25.72, 35.71),
+        (0, utils_1.point)(24.16, 35.54),
+        (0, utils_1.point)(22.50, 30.58),
+        (0, utils_1.point)(23.81, 29.88),
+        (0, utils_1.point)(24.13, 27.54),
     ]));
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(133.75, 6.38),
-        utils_1.point(131.81, 5.29),
-        utils_1.point(128.88, 5.42),
-        utils_1.point(128.69, 7.00),
-        utils_1.point(131.72, 8.96),
-        utils_1.point(133.38, 8.13),
-        utils_1.point(133.09, 10.63),
-        utils_1.point(129.16, 9.33),
-        utils_1.point(128.84, 8.25),
-        utils_1.point(125.84, 9.96),
-        utils_1.point(124.91, 8.96),
-        utils_1.point(122.41, 10.83),
-        utils_1.point(119.44, 10.46),
-        utils_1.point(117.00, 10.25),
-        utils_1.point(115.16, 10.67),
-        utils_1.point(114.88, 11.58),
-        utils_1.point(113.97, 13.88),
-        utils_1.point(114.66, 15.33),
-        utils_1.point(114.34, 16.33),
-        utils_1.point(115.09, 17.75),
-        utils_1.point(115.41, 19.83),
-        utils_1.point(115.47, 24.79),
-        utils_1.point(116.84, 25.92),
-        utils_1.point(117.34, 28.17),
-        utils_1.point(120.56, 29.50),
-        utils_1.point(122.09, 30.50),
-        utils_1.point(121.28, 32.08),
-        utils_1.point(123.25, 29.92),
-        utils_1.point(126.31, 29.46),
-        utils_1.point(128.69, 33.00),
-        utils_1.point(131.22, 32.67),
-        utils_1.point(132.50, 31.25),
-        utils_1.point(134.47, 32.13),
-        utils_1.point(135.31, 29.88),
-        utils_1.point(136.41, 29.75),
-        utils_1.point(136.25, 28.25),
-        utils_1.point(134.59, 27.75),
-        utils_1.point(135.84, 25.38),
-        utils_1.point(136.22, 23.29),
-        utils_1.point(137.22, 23.25),
-        utils_1.point(137.78, 20.25),
-        utils_1.point(138.69, 19.29),
-        utils_1.point(137.34, 17.00),
-        utils_1.point(137.31, 14.21),
-        utils_1.point(134.41, 13.25),
-        utils_1.point(131.91, 11.83),
-        utils_1.point(132.34, 9.88),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(133.75, 6.38),
+        (0, utils_1.point)(131.81, 5.29),
+        (0, utils_1.point)(128.88, 5.42),
+        (0, utils_1.point)(128.69, 7.00),
+        (0, utils_1.point)(131.72, 8.96),
+        (0, utils_1.point)(133.38, 8.13),
+        (0, utils_1.point)(133.09, 10.63),
+        (0, utils_1.point)(129.16, 9.33),
+        (0, utils_1.point)(128.84, 8.25),
+        (0, utils_1.point)(125.84, 9.96),
+        (0, utils_1.point)(124.91, 8.96),
+        (0, utils_1.point)(122.41, 10.83),
+        (0, utils_1.point)(119.44, 10.46),
+        (0, utils_1.point)(117.00, 10.25),
+        (0, utils_1.point)(115.16, 10.67),
+        (0, utils_1.point)(114.88, 11.58),
+        (0, utils_1.point)(113.97, 13.88),
+        (0, utils_1.point)(114.66, 15.33),
+        (0, utils_1.point)(114.34, 16.33),
+        (0, utils_1.point)(115.09, 17.75),
+        (0, utils_1.point)(115.41, 19.83),
+        (0, utils_1.point)(115.47, 24.79),
+        (0, utils_1.point)(116.84, 25.92),
+        (0, utils_1.point)(117.34, 28.17),
+        (0, utils_1.point)(120.56, 29.50),
+        (0, utils_1.point)(122.09, 30.50),
+        (0, utils_1.point)(121.28, 32.08),
+        (0, utils_1.point)(123.25, 29.92),
+        (0, utils_1.point)(126.31, 29.46),
+        (0, utils_1.point)(128.69, 33.00),
+        (0, utils_1.point)(131.22, 32.67),
+        (0, utils_1.point)(132.50, 31.25),
+        (0, utils_1.point)(134.47, 32.13),
+        (0, utils_1.point)(135.31, 29.88),
+        (0, utils_1.point)(136.41, 29.75),
+        (0, utils_1.point)(136.25, 28.25),
+        (0, utils_1.point)(134.59, 27.75),
+        (0, utils_1.point)(135.84, 25.38),
+        (0, utils_1.point)(136.22, 23.29),
+        (0, utils_1.point)(137.22, 23.25),
+        (0, utils_1.point)(137.78, 20.25),
+        (0, utils_1.point)(138.69, 19.29),
+        (0, utils_1.point)(137.34, 17.00),
+        (0, utils_1.point)(137.31, 14.21),
+        (0, utils_1.point)(134.41, 13.25),
+        (0, utils_1.point)(131.91, 11.83),
+        (0, utils_1.point)(132.34, 9.88),
     ]));
     if (true) {
-        const toLake = { icon: 8 /* Lake */, name: 'Lake' };
-        const toHarbor = { icon: 4 /* Boat */, name: 'Harbor' };
-        const toSpawn = { icon: 0 /* Spawn */, name: 'Spawn' };
-        const toTownCenter = { icon: 2 /* TownCenter */, name: 'Town Center' };
-        const toPineForest = { icon: 3 /* PineForest */, name: 'Pine Forest' };
-        const toPartyIsland = { icon: 4 /* Boat */, name: 'Party Island' };
-        const toGiftPile = { icon: 6 /* GiftPile */, name: 'Gift Pile' };
-        const toMountains = { icon: 5 /* Mountains */, name: 'Mountains' };
-        const toForest = { icon: 7 /* Forest */, name: 'Forest' };
-        const toPumpkinFarm = { icon: 1 /* Pumpkins */, name: 'Pumpkin Farm' };
-        const toFlowerField = { icon: 12 /* Fields */, name: 'Flower Field' };
-        const toBarrelStorage = { icon: 11 /* Barrels */, name: 'Barrel Storage' };
-        const toMines = { icon: 10 /* Mines */, name: 'Mines' };
-        const toBridge = { icon: 9 /* Bridge */, name: 'Bridge' };
-        const toCarrots = { icon: 13 /* Carrots */, name: 'Carrot farm' };
-        addEntities(mapUtils_1.createDirectionSign(77, 72, {
+        const toLake = { icon: 8 /* SignIcon.Lake */, name: 'Lake' };
+        const toHarbor = { icon: 4 /* SignIcon.Boat */, name: 'Harbor' };
+        const toSpawn = { icon: 0 /* SignIcon.Spawn */, name: 'Spawn' };
+        const toTownCenter = { icon: 2 /* SignIcon.TownCenter */, name: 'Town Center' };
+        const toPineForest = { icon: 3 /* SignIcon.PineForest */, name: 'Pine Forest' };
+        const toPartyIsland = { icon: 4 /* SignIcon.Boat */, name: 'Party Island' };
+        const toGiftPile = { icon: 6 /* SignIcon.GiftPile */, name: 'Gift Pile' };
+        const toMountains = { icon: 5 /* SignIcon.Mountains */, name: 'Mountains' };
+        const toForest = { icon: 7 /* SignIcon.Forest */, name: 'Forest' };
+        const toPumpkinFarm = { icon: 1 /* SignIcon.Pumpkins */, name: 'Pumpkin Farm' };
+        const toFlowerField = { icon: 12 /* SignIcon.Fields */, name: 'Flower Field' };
+        const toBarrelStorage = { icon: 11 /* SignIcon.Barrels */, name: 'Barrel Storage' };
+        const toMines = { icon: 10 /* SignIcon.Mines */, name: 'Mines' };
+        const toBridge = { icon: 9 /* SignIcon.Bridge */, name: 'Bridge' };
+        const toCarrots = { icon: 13 /* SignIcon.Carrots */, name: 'Carrot farm' };
+        addEntities((0, mapUtils_1.createDirectionSign)(77, 72, {
             w: [toSpawn, toGiftPile, toHarbor, toPineForest, undefined],
             e: [toLake, toCarrots, toMines, toBarrelStorage],
             s: [toForest, toPumpkinFarm],
         }));
-        addEntities(mapUtils_1.createDirectionSign(54.33, 70.58, {
+        addEntities((0, mapUtils_1.createDirectionSign)(54.33, 70.58, {
             r: 1,
             n: [toSpawn, toMines],
             w: [toPineForest, toHarbor, toMountains],
             e: [toTownCenter, toLake],
         }));
-        addEntities(mapUtils_1.createDirectionSign(36.00, 75.98, {
+        addEntities((0, mapUtils_1.createDirectionSign)(36.00, 75.98, {
             w: [toHarbor, toMountains],
             e: [toSpawn, toTownCenter, toMines, toLake],
             s: [toPineForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(19.34, 71.00, {
+        addEntities((0, mapUtils_1.createDirectionSign)(19.34, 71.00, {
             n: [toMountains],
             w: [undefined, toPartyIsland],
             e: [toSpawn, toTownCenter, toPineForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(24.86, 9.98, {
+        addEntities((0, mapUtils_1.createDirectionSign)(24.86, 9.98, {
             r: 1,
             e: [toBridge, toMines, toLake],
             s: [toHarbor, toPineForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(58.66, 54.88, {
+        addEntities((0, mapUtils_1.createDirectionSign)(58.66, 54.88, {
             w: [toGiftPile],
         }));
-        addEntities(mapUtils_1.createDirectionSign(54.38, 39.29, {
+        addEntities((0, mapUtils_1.createDirectionSign)(54.38, 39.29, {
             r: 1,
             n: [toSpawn],
             e: [toMines, toBridge, toLake],
             s: [toTownCenter, toHarbor],
         }));
-        addEntities(mapUtils_1.createDirectionSign(99.00, 40.15, {
+        addEntities((0, mapUtils_1.createDirectionSign)(99.00, 40.15, {
             n: [toMountains, toBarrelStorage],
             w: [toSpawn, toMines, toHarbor],
             e: [toBridge, toCarrots],
             s: [toLake, toTownCenter, toForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(122.75, 37.00, {
+        addEntities((0, mapUtils_1.createDirectionSign)(122.75, 37.00, {
             r: 1,
             w: [toTownCenter, toSpawn, toMines],
             n: [toCarrots],
         }));
-        addEntities(mapUtils_1.createDirectionSign(103.75, 70.10, {
+        addEntities((0, mapUtils_1.createDirectionSign)(103.75, 70.10, {
             r: 1,
             n: [toBridge, toMountains, toCarrots],
             w: [toTownCenter, toHarbor],
             e: [toLake, toForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(128.16, 102.13, {
+        addEntities((0, mapUtils_1.createDirectionSign)(128.16, 102.13, {
             w: [toSpawn, toTownCenter, toHarbor],
             e: [toLake],
             s: [toFlowerField],
         }));
-        addEntities(mapUtils_1.createDirectionSign(129.53, 140.75, {
+        addEntities((0, mapUtils_1.createDirectionSign)(129.53, 140.75, {
             w: [toPumpkinFarm, toPineForest, toHarbor],
             e: [toFlowerField],
             n: [toForest, toLake, toTownCenter],
         }));
-        addEntities(mapUtils_1.createDirectionSign(70.98, 135.85, {
+        addEntities((0, mapUtils_1.createDirectionSign)(70.98, 135.85, {
             r: 1,
             n: [toSpawn, toTownCenter, toHarbor, toMines],
             w: [undefined, toPineForest],
             e: [toForest, undefined, toFlowerField],
         }));
-        addEntities(mapUtils_1.createDirectionSign(54.91, 7.92, {
+        addEntities((0, mapUtils_1.createDirectionSign)(54.91, 7.92, {
             w: [toHarbor, toPineForest],
             e: [toBridge, toMines, toLake],
         }));
-        addEntities(mapUtils_1.createDirectionSign(90.17, 5.35, {
+        addEntities((0, mapUtils_1.createDirectionSign)(90.17, 5.35, {
             w: [toHarbor, toPineForest],
             s: [toBridge, toMines, toLake],
         }));
-        addEntities(mapUtils_1.createDirectionSign(78.41, 96.46, {
+        addEntities((0, mapUtils_1.createDirectionSign)(78.41, 96.46, {
             w: [toTownCenter, toHarbor],
             e: [toForest, toLake],
             s: [toPumpkinFarm, toPineForest],
         }));
-        addEntities(mapUtils_1.createDirectionSign(95.84, 25.33, {
+        addEntities((0, mapUtils_1.createDirectionSign)(95.84, 25.33, {
             e: [toBarrelStorage],
         }));
-        addEntities(mapUtils_1.createDirectionSign(77.15, 39.20, {
+        addEntities((0, mapUtils_1.createDirectionSign)(77.15, 39.20, {
             n: [toMines],
             w: [undefined, toSpawn],
             e: [toBridge, toCarrots, toLake],
         }));
-        addEntities(mapUtils_1.createDirectionSign(106.80, 95.46, {
+        addEntities((0, mapUtils_1.createDirectionSign)(106.80, 95.46, {
             r: 1,
             w: [toTownCenter, toPumpkinFarm, toHarbor],
             n: [toLake, toMines, toCarrots],
             e: [undefined, toFlowerField],
         }));
-        addEntities(mapUtils_1.createDirectionSign(17.67, 138.90, {
+        addEntities((0, mapUtils_1.createDirectionSign)(17.67, 138.90, {
             n: [toHarbor, toMountains, toTownCenter],
         }));
     }
@@ -4318,12 +4320,12 @@ function createMainMap(world) {
     ctrls.push(new ctrl.CloudController(world, map, 5));
     ctrls.push(new ctrl.CollectableController(world, map, apples, 8, mapUtils_1.pickEntity, mapUtils_1.checkNotCollecting));
     ctrls.push(new ctrl.CollectableController(world, map, otherFruits, 3, mapUtils_1.pickEntity, mapUtils_1.checkNotCollecting));
-    ctrls.push(new ctrl.CollectableController(world, map, [entities.gift1, entities.gift2], 50, mapUtils_1.pickGift, undefined, undefined, undefined, () => world.holiday === 1 /* Christmas */));
-    ctrls.push(new ctrl.CollectableController(world, map, [entities.candy], 60, mapUtils_1.pickCandy, mapUtils_1.checkLantern, undefined, undefined, () => world.holiday === 2 /* Halloween */));
-    ctrls.push(new ctrl.CollectableController(world, map, entities.eggs, 200, mapUtils_1.pickEgg, mapUtils_1.checkBasket, 5, undefined, () => world.holiday === 4 /* Easter */));
-    ctrls.push(new ctrl.CollectableController(world, map, [entities.fourLeafClover], 2, mapUtils_1.pickClover, mapUtils_1.checkNotCollecting, 1, mapUtils_1.positionClover, () => world.season === 8 /* Spring */ || world.season === 1 /* Summer */));
+    ctrls.push(new ctrl.CollectableController(world, map, [entities.gift1, entities.gift2], 50, mapUtils_1.pickGift, undefined, undefined, undefined, () => world.holiday === 1 /* Holiday.Christmas */));
+    ctrls.push(new ctrl.CollectableController(world, map, [entities.candy], 60, mapUtils_1.pickCandy, mapUtils_1.checkLantern, undefined, undefined, () => world.holiday === 2 /* Holiday.Halloween */));
+    ctrls.push(new ctrl.CollectableController(world, map, entities.eggs, 200, mapUtils_1.pickEgg, mapUtils_1.checkBasket, 5, undefined, () => world.holiday === 4 /* Holiday.Easter */));
+    ctrls.push(new ctrl.CollectableController(world, map, [entities.fourLeafClover], 2, mapUtils_1.pickClover, mapUtils_1.checkNotCollecting, 1, mapUtils_1.positionClover, () => world.season === 8 /* Season.Spring */ || world.season === 1 /* Season.Summer */));
     ctrls.push(new ctrl.PlantController(world, map, {
-        area: rect_1.rect(116.2, 14.2, 7.8, 9.6),
+        area: (0, rect_1.rect)(116.2, 14.2, 7.8, 9.6),
         count: 100,
         stages: [
             [entities.carrot4],
@@ -4331,19 +4333,18 @@ function createMainMap(world) {
             [entities.carrot2, entities.carrot2b],
             [entities.carrot1, entities.carrot1b],
         ],
-        growOnlyOn: 1 /* Dirt */,
-        onPick: (_, client) => playerUtils_1.holdItem(client.pony, entities.carrotHeld.type),
-        isActive: () => world.season !== 4 /* Winter */,
+        growOnlyOn: 1 /* TileType.Dirt */,
+        onPick: (_, client) => (0, playerUtils_1.holdItem)(client.pony, entities.carrotHeld.type),
+        isActive: () => world.season !== 4 /* Season.Winter */,
     }));
     if (!DEVELOPMENT) {
-        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.bat, 2, 20, () => timeUtils_1.isNightTime(world.time)));
-        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.firefly, 1, 40, () => world.season !== 4 /* Winter */ && timeUtils_1.isNightTime(world.time)));
-        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.butterfly, 1.5, 40, () => world.season !== 4 /* Winter */ && timeUtils_1.isDayTime(world.time)));
+        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.bat, 2, 20, () => (0, timeUtils_1.isNightTime)(world.time)));
+        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.firefly, 1, 40, () => world.season !== 4 /* Season.Winter */ && (0, timeUtils_1.isNightTime)(world.time)));
+        ctrls.push(new ctrl.FlyingCritterController(world, map, entities.butterfly, 1.5, 40, () => world.season !== 4 /* Season.Winter */ && (0, timeUtils_1.isDayTime)(world.time)));
     }
     if (BETA) {
         ctrls.push(new ctrl.WallController(world, map, entities.woodenWalls));
     }
     return map;
 }
-exports.createMainMap = createMainMap;
 //# sourceMappingURL=mainMap.js.map

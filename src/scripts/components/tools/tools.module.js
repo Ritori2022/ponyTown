@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsAppModule = exports.routes = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -53,8 +54,9 @@ exports.routes = [
 ];
 let ToolsAppModule = class ToolsAppModule {
 };
-ToolsAppModule = tslib_1.__decorate([
-    core_1.NgModule({
+exports.ToolsAppModule = ToolsAppModule;
+exports.ToolsAppModule = ToolsAppModule = tslib_1.__decorate([
+    (0, core_1.NgModule)({
         imports: [
             platform_browser_1.BrowserModule,
             router_1.RouterModule,
@@ -96,5 +98,4 @@ ToolsAppModule = tslib_1.__decorate([
         bootstrap: [tools_1.ToolsApp],
     })
 ], ToolsAppModule);
-exports.ToolsAppModule = ToolsAppModule;
 //# sourceMappingURL=tools.module.js.map

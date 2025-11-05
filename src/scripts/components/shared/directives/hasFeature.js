@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HasFeature = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const clientUtils_1 = require("../../../client/clientUtils");
@@ -41,7 +42,7 @@ let HasFeature = class HasFeature {
         }
     }
     update() {
-        const show = this._alsoIf && (clientUtils_1.hasFeatureFlag(this._flag) || (this._orMod && this.model.isMod));
+        const show = this._alsoIf && ((0, clientUtils_1.hasFeatureFlag)(this._flag) || (this._orMod && this.model.isMod));
         if (this.showing !== show) {
             this.showing = show;
             if (show) {
@@ -54,26 +55,26 @@ let HasFeature = class HasFeature {
         }
     }
 };
+exports.HasFeature = HasFeature;
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], HasFeature.prototype, "hasFeature", null);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Boolean),
     tslib_1.__metadata("design:paramtypes", [Boolean])
 ], HasFeature.prototype, "hasFeatureOrMod", null);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Boolean),
     tslib_1.__metadata("design:paramtypes", [Boolean])
 ], HasFeature.prototype, "hasFeatureAlso", null);
-HasFeature = tslib_1.__decorate([
-    core_1.Directive({
+exports.HasFeature = HasFeature = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[hasFeature]',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.TemplateRef, core_1.ViewContainerRef, model_1.Model])
 ], HasFeature);
-exports.HasFeature = HasFeature;
 //# sourceMappingURL=hasFeature.js.map

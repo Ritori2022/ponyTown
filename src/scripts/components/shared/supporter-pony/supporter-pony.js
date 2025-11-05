@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SupporterPony = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const ponyUtils_1 = require("../../../client/ponyUtils");
@@ -9,14 +10,24 @@ const ponyAnimations_1 = require("../../../client/ponyAnimations");
 const frameService_1 = require("../../services/frameService");
 const character_preview_1 = require("../character-preview/character-preview");
 const compressPony_1 = require("../../../common/compressPony");
-const BLEP = Object.assign({}, ponyUtils_1.defaultExpression, { muzzle: 4 /* Blep */ });
-const EXCITED = Object.assign({}, ponyUtils_1.defaultExpression, { muzzle: 5 /* SmileOpen */ });
-const DERP = Object.assign({}, ponyUtils_1.defaultExpression, { muzzle: 5 /* SmileOpen */, leftIris: 1 /* Up */ });
+const BLEP = {
+    ...ponyUtils_1.defaultExpression,
+    muzzle: 4 /* Muzzle.Blep */,
+};
+const EXCITED = {
+    ...ponyUtils_1.defaultExpression,
+    muzzle: 5 /* Muzzle.SmileOpen */,
+};
+const DERP = {
+    ...ponyUtils_1.defaultExpression,
+    muzzle: 5 /* Muzzle.SmileOpen */,
+    leftIris: 1 /* Iris.Up */,
+};
 let SupporterPony = class SupporterPony {
     constructor(frameService) {
         this.scale = 3;
-        this.pony = compressPony_1.decompressPonyString(constants_1.SUPPORTER_PONY);
-        this.state = ponyHelpers_1.defaultPonyState();
+        this.pony = (0, compressPony_1.decompressPonyString)(constants_1.SUPPORTER_PONY);
+        this.state = (0, ponyHelpers_1.defaultPonyState)();
         this.headTime = 0;
         this.loop = frameService.create(delta => this.tick(delta));
     }
@@ -65,20 +76,20 @@ let SupporterPony = class SupporterPony {
         this.state.expression = this.expression;
     }
 };
+exports.SupporterPony = SupporterPony;
 tslib_1.__decorate([
-    core_1.ViewChild('characterPreview', { static: true }),
+    (0, core_1.ViewChild)('characterPreview', { static: true }),
     tslib_1.__metadata("design:type", character_preview_1.CharacterPreview)
 ], SupporterPony.prototype, "characterPreview", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SupporterPony.prototype, "scale", void 0);
-SupporterPony = tslib_1.__decorate([
-    core_1.Component({
+exports.SupporterPony = SupporterPony = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'supporter-pony',
         templateUrl: 'supporter-pony.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [frameService_1.FrameService])
 ], SupporterPony);
-exports.SupporterPony = SupporterPony;
 //# sourceMappingURL=supporter-pony.js.map

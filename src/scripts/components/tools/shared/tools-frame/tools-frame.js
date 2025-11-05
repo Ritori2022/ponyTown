@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsFrame = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let openedPopover;
@@ -62,45 +63,45 @@ let ToolsFrame = class ToolsFrame {
         }
     }
 };
+exports.ToolsFrame = ToolsFrame;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsFrame.prototype, "x", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsFrame.prototype, "y", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], ToolsFrame.prototype, "sprites", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Number)
 ], ToolsFrame.prototype, "frame", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsFrame.prototype, "pony", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsFrame.prototype, "reverseExtra", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], ToolsFrame.prototype, "circle", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsFrame.prototype, "frameChange", void 0);
-ToolsFrame = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsFrame = ToolsFrame = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-frame',
         templateUrl: 'tools-frame.pug',
         styleUrls: ['tools-frame.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], ToolsFrame);
-exports.ToolsFrame = ToolsFrame;
 //# sourceMappingURL=tools-frame.js.map

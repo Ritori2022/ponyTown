@@ -1,22 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+exports.createCaveMap = createCaveMap;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
 const paths_1 = require("../paths");
 const world_1 = require("../world");
 const mapUtils_1 = require("../mapUtils");
 const serverMap_1 = require("../serverMap");
 const rect_1 = require("../../common/rect");
 const controllers_1 = require("../controllers");
-const entities = require("../../common/entities");
+const entities = tslib_1.__importStar(require("../../common/entities"));
 const wallController_1 = require("../controllers/wallController");
 const controllerUtils_1 = require("../controllerUtils");
 const playerUtils_1 = require("../playerUtils");
-const mapData = JSON.parse(fs.readFileSync(paths_1.pathTo('src', 'maps', 'cave.json'), 'utf8'));
+const mapData = JSON.parse(fs.readFileSync((0, paths_1.pathTo)('src', 'maps', 'cave.json'), 'utf8'));
 function createCaveMap(world) {
-    const map = serverMap_1.createServerMap('cave', 3 /* Cave */, 7, 7, 0 /* None */, 0 /* Public */);
-    map.spawnArea = rect_1.rect(27, 52, 1, 2);
+    const map = (0, serverMap_1.createServerMap)('cave', 3 /* MapType.Cave */, 7, 7, 0 /* TileType.None */, 0 /* MapUsage.Public */);
+    map.spawnArea = (0, rect_1.rect)(27, 52, 1, 2);
     map.tilesLocked = true;
-    serverMap_1.deserializeMap(map, mapData);
+    (0, serverMap_1.deserializeMap)(map, mapData);
     // for (let y = 0; y < map.height; y++) {
     // 	for (let x = 0; x < map.width; x++) {
     // 		const tile = getTile(map, x, y);
@@ -460,7 +462,7 @@ function createCaveMap(world) {
     add(entities.caveFill(24, 9));
     add(entities.caveFill(25, 12));
     add(entities.caveFill(21, 27));
-    add(entities.trigger3x1(27.5, 55)).trigger = (_, client) => world_1.goToMap(world, client, '', 'cave');
+    add(entities.trigger3x1(27.5, 55)).trigger = (_, client) => (0, world_1.goToMap)(world, client, '', 'cave');
     add(entities.lanternOn(10.38, 18.38));
     add(entities.lanternOn(12.66, 18.38));
     add(entities.lanternOn(18.41, 12.00));
@@ -517,16 +519,16 @@ function createCaveMap(world) {
     add(entities.waterRock9(46.50, 11.46));
     add(entities.waterRock4(46.38, 11.63));
     add(entities.box(32.03, 49.13));
-    add(controllerUtils_1.createBoxOfLanterns(30.97, 49.63)).interact = (_, client) => {
+    add((0, controllerUtils_1.createBoxOfLanterns)(30.97, 49.63)).interact = (_, client) => {
         if (client.pony.options.hold === entities.crystalHeld.type) {
-            playerUtils_1.holdItem(client.pony, entities.crystalLantern.type);
+            (0, playerUtils_1.holdItem)(client.pony, entities.crystalLantern.type);
         }
         else {
-            playerUtils_1.holdItem(client.pony, entities.lanternOn.type);
+            (0, playerUtils_1.holdItem)(client.pony, entities.lanternOn.type);
         }
     };
     // top rooms
-    add(controllerUtils_1.createBoxOfLanterns(9.34, 11.46));
+    add((0, controllerUtils_1.createBoxOfLanterns)(9.34, 11.46));
     add(entities.crate1A(17.78, 11.21));
     add(entities.crate1A(18.84, 11.29));
     add(entities.crate1A(7.69, 4.13));
@@ -564,9 +566,9 @@ function createCaveMap(world) {
     railsV(18, 43, 1);
     add(entities.mineRailsSW(18.5, 42));
     add(entities.mineCart(49, 40));
-    add(entities.crystalsCartPile(49, 40)).interact = controllerUtils_1.give(entities.crystalHeld.type);
+    add(entities.crystalsCartPile(49, 40)).interact = (0, controllerUtils_1.give)(entities.crystalHeld.type);
     add(entities.mineCart(31.5, 46));
-    add(entities.crystalsCartPile(31.5, 46)).interact = controllerUtils_1.give(entities.crystalHeld.type);
+    add(entities.crystalsCartPile(31.5, 46)).interact = (0, controllerUtils_1.give)(entities.crystalHeld.type);
     add(entities.mineRailsEndRight(50.5, 40.5));
     railsH(38, 40, 9);
     add(entities.mineRailsNWE(47.5, 40));
@@ -786,15 +788,15 @@ function createCaveMap(world) {
     add(entities.barrel(38.41, 27.04));
     add(entities.barrel(37.78, 26.38));
     add(entities.barrel(31.94, 26.96));
-    add(entities.toolboxFull(34.28, 22.96)).interact = controllerUtils_1.give(entities.pickaxe.type);
+    add(entities.toolboxFull(34.28, 22.96)).interact = (0, controllerUtils_1.give)(entities.pickaxe.type);
     add(entities.box(38.22, 29.96));
-    add(entities.ropeRack(34.31, 22.20)).interact = controllerUtils_1.give(entities.rope.type);
-    add(entities.boxLanterns(35.63, 24.04)).interact = controllerUtils_1.give(entities.lanternOn.type);
+    add(entities.ropeRack(34.31, 22.20)).interact = (0, controllerUtils_1.give)(entities.rope.type);
+    add(entities.boxLanterns(35.63, 24.04)).interact = (0, controllerUtils_1.give)(entities.lanternOn.type);
     add(entities.crate1A(38.19, 28.79));
     add(entities.crate1A(34.81, 28.58));
     add(entities.crate1A(34.72, 29.88));
     add(entities.crate2A(34.81, 30.67));
-    add(entities.ropeRack(34.31, 39.91)).interact = controllerUtils_1.give(entities.rope.type);
+    add(entities.ropeRack(34.31, 39.91)).interact = (0, controllerUtils_1.give)(entities.rope.type);
     add(entities.crate1A(34.22, 43.38));
     add(entities.crate1A(33.91, 44.50));
     function placeMineCart(x, y) {
@@ -825,79 +827,78 @@ function createCaveMap(world) {
     if (wallController.toggleWall) {
         // large crypt
         for (let x = 7; x <= 15; x++) {
-            wallController.toggleWall(x, 3, 100 /* WallH */);
+            wallController.toggleWall(x, 3, 100 /* TileType.WallH */);
         }
         for (let y = 3; y <= 10; y++) {
-            wallController.toggleWall(16, y, 101 /* WallV */);
+            wallController.toggleWall(16, y, 101 /* TileType.WallV */);
         }
         for (let x = 13; x <= 15; x++) {
-            wallController.toggleWall(x, 11, 100 /* WallH */);
+            wallController.toggleWall(x, 11, 100 /* TileType.WallH */);
         }
-        wallController.toggleWall(13, 11, 101 /* WallV */);
+        wallController.toggleWall(13, 11, 101 /* TileType.WallV */);
         for (let x = 13; x <= 16; x++) {
-            wallController.toggleWall(x, 12, 100 /* WallH */);
+            wallController.toggleWall(x, 12, 100 /* TileType.WallH */);
         }
-        wallController.toggleWall(17, 10, 101 /* WallV */);
-        wallController.toggleWall(17, 11, 101 /* WallV */);
+        wallController.toggleWall(17, 10, 101 /* TileType.WallV */);
+        wallController.toggleWall(17, 11, 101 /* TileType.WallV */);
         for (let x = 17; x <= 22; x++) {
-            wallController.toggleWall(x, 10, 100 /* WallH */);
+            wallController.toggleWall(x, 10, 100 /* TileType.WallH */);
         }
         for (let y = 10; y <= 15; y++) {
-            wallController.toggleWall(23, y, 101 /* WallV */);
+            wallController.toggleWall(23, y, 101 /* TileType.WallV */);
         }
         for (let x = 17; x <= 22; x++) {
-            wallController.toggleWall(x, 16, 100 /* WallH */);
+            wallController.toggleWall(x, 16, 100 /* TileType.WallH */);
         }
-        wallController.toggleWall(17, 15, 101 /* WallV */);
+        wallController.toggleWall(17, 15, 101 /* TileType.WallV */);
         for (let x = 13; x <= 16; x++) {
-            wallController.toggleWall(x, 15, 100 /* WallH */);
+            wallController.toggleWall(x, 15, 100 /* TileType.WallH */);
         }
         // small crypt
-        wallController.toggleWall(33, 31, 100 /* WallH */);
-        wallController.toggleWall(34, 30, 101 /* WallV */);
-        wallController.toggleWall(34, 29, 101 /* WallV */);
-        wallController.toggleWall(34, 28, 101 /* WallV */);
-        wallController.toggleWall(34, 27, 101 /* WallV */);
-        wallController.toggleWall(33, 27, 100 /* WallH */);
-        wallController.toggleWall(32, 27, 100 /* WallH */);
-        wallController.toggleWall(31, 27, 100 /* WallH */);
-        wallController.toggleWall(31, 26, 101 /* WallV */);
-        wallController.toggleWall(31, 25, 101 /* WallV */);
-        wallController.toggleWall(31, 24, 101 /* WallV */);
-        wallController.toggleWall(31, 24, 100 /* WallH */);
-        wallController.toggleWall(32, 23, 101 /* WallV */);
-        wallController.toggleWall(32, 22, 101 /* WallV */);
-        wallController.toggleWall(32, 22, 100 /* WallH */);
-        wallController.toggleWall(33, 22, 100 /* WallH */);
-        wallController.toggleWall(34, 22, 100 /* WallH */);
-        wallController.toggleWall(35, 22, 101 /* WallV */);
-        wallController.toggleWall(35, 23, 100 /* WallH */);
-        wallController.toggleWall(36, 23, 100 /* WallH */);
-        wallController.toggleWall(37, 23, 100 /* WallH */);
-        wallController.toggleWall(38, 23, 101 /* WallV */);
-        wallController.toggleWall(38, 24, 101 /* WallV */);
-        wallController.toggleWall(38, 25, 100 /* WallH */);
-        wallController.toggleWall(39, 25, 101 /* WallV */);
-        wallController.toggleWall(39, 26, 101 /* WallV */);
-        wallController.toggleWall(39, 27, 101 /* WallV */);
-        wallController.toggleWall(39, 28, 101 /* WallV */);
-        wallController.toggleWall(39, 29, 101 /* WallV */);
-        wallController.toggleWall(38, 30, 100 /* WallH */);
-        wallController.toggleWall(38, 30, 101 /* WallV */);
-        wallController.toggleWall(38, 31, 101 /* WallV */);
-        wallController.toggleWall(38, 32, 101 /* WallV */);
-        wallController.toggleWall(38, 33, 101 /* WallV */);
-        wallController.toggleWall(37, 34, 100 /* WallH */);
-        wallController.toggleWall(36, 34, 100 /* WallH */);
-        wallController.toggleWall(35, 34, 100 /* WallH */);
-        wallController.toggleWall(34, 34, 100 /* WallH */);
-        wallController.toggleWall(33, 34, 100 /* WallH */);
-        wallController.toggleWall(33, 34, 101 /* WallV */);
+        wallController.toggleWall(33, 31, 100 /* TileType.WallH */);
+        wallController.toggleWall(34, 30, 101 /* TileType.WallV */);
+        wallController.toggleWall(34, 29, 101 /* TileType.WallV */);
+        wallController.toggleWall(34, 28, 101 /* TileType.WallV */);
+        wallController.toggleWall(34, 27, 101 /* TileType.WallV */);
+        wallController.toggleWall(33, 27, 100 /* TileType.WallH */);
+        wallController.toggleWall(32, 27, 100 /* TileType.WallH */);
+        wallController.toggleWall(31, 27, 100 /* TileType.WallH */);
+        wallController.toggleWall(31, 26, 101 /* TileType.WallV */);
+        wallController.toggleWall(31, 25, 101 /* TileType.WallV */);
+        wallController.toggleWall(31, 24, 101 /* TileType.WallV */);
+        wallController.toggleWall(31, 24, 100 /* TileType.WallH */);
+        wallController.toggleWall(32, 23, 101 /* TileType.WallV */);
+        wallController.toggleWall(32, 22, 101 /* TileType.WallV */);
+        wallController.toggleWall(32, 22, 100 /* TileType.WallH */);
+        wallController.toggleWall(33, 22, 100 /* TileType.WallH */);
+        wallController.toggleWall(34, 22, 100 /* TileType.WallH */);
+        wallController.toggleWall(35, 22, 101 /* TileType.WallV */);
+        wallController.toggleWall(35, 23, 100 /* TileType.WallH */);
+        wallController.toggleWall(36, 23, 100 /* TileType.WallH */);
+        wallController.toggleWall(37, 23, 100 /* TileType.WallH */);
+        wallController.toggleWall(38, 23, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 24, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 25, 100 /* TileType.WallH */);
+        wallController.toggleWall(39, 25, 101 /* TileType.WallV */);
+        wallController.toggleWall(39, 26, 101 /* TileType.WallV */);
+        wallController.toggleWall(39, 27, 101 /* TileType.WallV */);
+        wallController.toggleWall(39, 28, 101 /* TileType.WallV */);
+        wallController.toggleWall(39, 29, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 30, 100 /* TileType.WallH */);
+        wallController.toggleWall(38, 30, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 31, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 32, 101 /* TileType.WallV */);
+        wallController.toggleWall(38, 33, 101 /* TileType.WallV */);
+        wallController.toggleWall(37, 34, 100 /* TileType.WallH */);
+        wallController.toggleWall(36, 34, 100 /* TileType.WallH */);
+        wallController.toggleWall(35, 34, 100 /* TileType.WallH */);
+        wallController.toggleWall(34, 34, 100 /* TileType.WallH */);
+        wallController.toggleWall(33, 34, 100 /* TileType.WallH */);
+        wallController.toggleWall(33, 34, 101 /* TileType.WallV */);
     }
     if (DEVELOPMENT) {
-        mapUtils_1.addSpawnPointIndicators(world, map);
+        (0, mapUtils_1.addSpawnPointIndicators)(world, map);
     }
     return map;
 }
-exports.createCaveMap = createCaveMap;
 //# sourceMappingURL=caveMap.js.map

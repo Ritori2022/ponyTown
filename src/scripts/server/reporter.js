@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.create = create;
+exports.createFromRequest = createFromRequest;
 const lodash_1 = require("lodash");
 const db_1 = require("./db");
 const logger_1 = require("./logger");
@@ -9,7 +11,7 @@ const maxDescLength = 300;
 const createLogEvent = (config) => (account, pony, originInfo, type, message, desc) => {
     const server = config.id;
     if (desc) {
-        desc = lodash_1.truncate(desc, { length: maxDescLength });
+        desc = (0, lodash_1.truncate)(desc, { length: maxDescLength });
     }
     const origin = originInfo && { ip: originInfo.ip, country: originInfo.country };
     db_1.Event.findOne({ server, account, pony, type, message, origin }).exec()
@@ -45,7 +47,7 @@ function create(server, account, pony, originInfo) {
         warn(message, desc) {
             log('warning', message, desc);
             if (ignoreWarnings.indexOf(message) === -1) {
-                logger_1.system(accountId, message);
+                (0, logger_1.system)(accountId, message);
             }
         },
         warnLog(message) {
@@ -63,10 +65,10 @@ function create(server, account, pony, originInfo) {
             if (logEvent) {
                 log('info', message, desc);
             }
-            logger_1.system(accountId, message);
+            (0, logger_1.system)(accountId, message);
         },
         systemLog(message) {
-            logger_1.system(accountId, message);
+            (0, logger_1.system)(accountId, message);
             DEVELOPMENT && logger_1.logger.log(message);
         },
         setPony(newPony) {
@@ -74,13 +76,11 @@ function create(server, account, pony, originInfo) {
         },
     };
 }
-exports.create = create;
 /* istanbul ignore next */
 function createFromRequest(server, req, pony) {
     const user = req && req.user;
     const account = user ? user.id : undefined;
-    const origin = req ? originUtils_1.getOrigin(req) : undefined;
+    const origin = req ? (0, originUtils_1.getOrigin)(req) : undefined;
     return create(server, account, pony, origin);
 }
-exports.createFromRequest = createFromRequest;
 //# sourceMappingURL=reporter.js.map

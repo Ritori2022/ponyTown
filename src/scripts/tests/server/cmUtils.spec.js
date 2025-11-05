@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 require("../lib");
-const fs = require("fs");
+const fs = tslib_1.__importStar(require("fs"));
 const chai_1 = require("chai");
 const cmUtils_1 = require("../../server/cmUtils");
 const lib_1 = require("../lib");
@@ -378,7 +379,7 @@ const negatives = {
         ]],
 };
 function createCMCanvas(coat, cm) {
-    const canvas = canvasUtilsNode_1.createCanvas(7, 7);
+    const canvas = (0, canvasUtilsNode_1.createCanvas)(7, 7);
     const context = canvas.getContext('2d');
     context.fillStyle = `#${coat}`;
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -393,18 +394,18 @@ function createCMCanvas(coat, cm) {
     return canvas;
 }
 function check(name, [coat, cm], expected) {
-    const result = cmUtils_1.isBadCM(cm.map(x => x.trim()), coat);
+    const result = (0, cmUtils_1.isBadCM)(cm.map(x => x.trim()), coat);
     if (!!result !== expected) {
         const canvas = createCMCanvas(coat, cm);
-        fs.writeFileSync(paths_1.pathTo('tools', 'temp', 'cms', `${name}-${expected ? 'bad' : 'good'}.png`), canvas.toBuffer());
+        fs.writeFileSync((0, paths_1.pathTo)('tools', 'temp', 'cms', `${name}-${expected ? 'bad' : 'good'}.png`), canvas.toBuffer());
     }
-    chai_1.expect(!!result).equal(expected, result);
+    (0, chai_1.expect)(!!result).equal(expected, result);
 }
 function checkColor(a, b) {
-    return cmUtils_1.theSameColor(cmUtils_1.hexToLab(a), cmUtils_1.hexToLab(b));
+    return (0, cmUtils_1.theSameColor)((0, cmUtils_1.hexToLab)(a), (0, cmUtils_1.hexToLab)(b));
 }
 describe('cmUtils', () => {
-    before(() => lib_1.clearCompareResults('cms'));
+    before(() => (0, lib_1.clearCompareResults)('cms'));
     describe('isBadCM()', () => {
         Object.keys(positives).forEach(key => {
             it(`returns true for positive (${key})`, () => {
@@ -419,18 +420,18 @@ describe('cmUtils', () => {
     });
     describe('checkColor()', () => {
         it('returns false for 000000 and ffffff', () => {
-            chai_1.expect(checkColor('000000', 'ffffff')).false;
+            (0, chai_1.expect)(checkColor('000000', 'ffffff')).false;
         });
         it('returns true for 000000 and 000000', () => {
-            chai_1.expect(checkColor('000000', '000000')).true;
+            (0, chai_1.expect)(checkColor('000000', '000000')).true;
         });
         it('returns true for 000000 and 52004e', () => {
             //console.log('000000', '52004e', getDeltaE00(hexToLab('000000'), hexToLab('52004e')));
-            chai_1.expect(checkColor('000000', '52004e')).true;
+            (0, chai_1.expect)(checkColor('000000', '52004e')).true;
         });
         it('returns false for eb7db2 and d7d8ef', () => {
             //console.log('eb7db2', 'd7d8ef', getDeltaE00(hexToLab('eb7db2'), hexToLab('d7d8ef')));
-            chai_1.expect(checkColor('eb7db2', 'd7d8ef')).false;
+            (0, chai_1.expect)(checkColor('eb7db2', 'd7d8ef')).false;
         });
     });
 });

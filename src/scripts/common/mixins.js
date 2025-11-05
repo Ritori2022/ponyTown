@@ -1,7 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ponyCollidersBounds = exports.ponyColliders = void 0;
+exports.createPalette = createPalette;
+exports.setPaletteManager = setPaletteManager;
+exports.fakePaletteManager = fakePaletteManager;
+exports.getRenderableBounds = getRenderableBounds;
+exports.pickable = pickable;
+exports.mixPickable = mixPickable;
+exports.mixTrigger = mixTrigger;
+exports.collider = collider;
+exports.mixColliderRect = mixColliderRect;
+exports.mixColliderRounded = mixColliderRounded;
+exports.mixColliders = mixColliders;
+exports.taperColliderSE = taperColliderSE;
+exports.taperColliderSW = taperColliderSW;
+exports.taperColliderNW = taperColliderNW;
+exports.taperColliderNE = taperColliderNE;
+exports.skewColliderNW = skewColliderNW;
+exports.skewColliderNE = skewColliderNE;
+exports.triangleColliderNW = triangleColliderNW;
+exports.triangleColliderNE = triangleColliderNE;
+exports.mixInteract = mixInteract;
+exports.mixInteractAt = mixInteractAt;
+exports.mixMinimap = mixMinimap;
+exports.mixAnimation = mixAnimation;
+exports.mixDrawWindow = mixDrawWindow;
+exports.mixDraw = mixDraw;
+exports.mixDrawSeasonal = mixDrawSeasonal;
+exports.mixDrawDirectionSign = mixDrawDirectionSign;
+exports.mixLight = mixLight;
+exports.mixLightSprite = mixLightSprite;
+exports.mixDrawRain = mixDrawRain;
+exports.mixDrawShadow = mixDrawShadow;
+exports.mixBobbing = mixBobbing;
+exports.toggleWalls = toggleWalls;
+exports.mixDrawWall = mixDrawWall;
+exports.mixDrawSpider = mixDrawSpider;
+const tslib_1 = require("tslib");
 const lodash_1 = require("lodash");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const interfaces_1 = require("./interfaces");
 const utils_1 = require("./utils");
 const colors_1 = require("./colors");
@@ -24,11 +61,9 @@ let paletteManager;
 function createPalette(palette) {
     return palette && paletteManager && paletteManager.addArray(palette);
 }
-exports.createPalette = createPalette;
 function setPaletteManager(manager) {
     paletteManager = manager;
 }
-exports.setPaletteManager = setPaletteManager;
 function fakePaletteManager(action) {
     const tempPaletteManager = paletteManager;
     paletteManager = ponyInfo_1.mockPaletteManager;
@@ -36,13 +71,12 @@ function fakePaletteManager(action) {
     paletteManager = tempPaletteManager;
     return result;
 }
-exports.fakePaletteManager = fakePaletteManager;
 function getBounds(sprite, ox, oy) {
-    return sprite ? rect_1.rect(sprite.ox + ox, sprite.oy + oy, sprite.w, sprite.h) : rect_1.rect(0, 0, 0, 0);
+    return sprite ? (0, rect_1.rect)(sprite.ox + ox, sprite.oy + oy, sprite.w, sprite.h) : (0, rect_1.rect)(0, 0, 0, 0);
 }
 function getRenderableBounds({ color, shadow }, dx, dy) {
     if (color && shadow) {
-        return rect_1.addRects(getBounds(color, -dx, -dy), getBounds(shadow, -dx, -dy));
+        return (0, rect_1.addRects)(getBounds(color, -dx, -dy), getBounds(shadow, -dx, -dy));
     }
     else if (color) {
         return getBounds(color, -dx, -dy);
@@ -51,47 +85,42 @@ function getRenderableBounds({ color, shadow }, dx, dy) {
         return getBounds(shadow, -dx, -dy);
     }
     else {
-        return rect_1.rect(0, 0, 0, 0);
+        return (0, rect_1.rect)(0, 0, 0, 0);
     }
 }
-exports.getRenderableBounds = getRenderableBounds;
 function getBoundsForFrames(frames, dx, dy) {
-    return frames.reduce((bounds, f) => f ? rect_1.addRects(bounds, getBounds(f, dx, dy)) : bounds, rect_1.rect(0, 0, 0, 0));
+    return frames.reduce((bounds, f) => f ? (0, rect_1.addRects)(bounds, getBounds(f, dx, dy)) : bounds, (0, rect_1.rect)(0, 0, 0, 0));
 }
 function pickable(pickableX, pickableY) {
     return { pickableX, pickableY };
 }
-exports.pickable = pickable;
 function mixPickable(pickableX, pickableY) {
     return base => {
         base.pickableX = pickableX;
         base.pickableY = pickableY;
     };
 }
-exports.mixPickable = mixPickable;
 function mixTrigger(tileX, tileY, tileW, tileH, tall) {
-    const x = positionUtils_1.toWorldX(tileX);
-    const y = positionUtils_1.toWorldY(tileY);
-    const w = positionUtils_1.toWorldX(tileW);
-    const h = positionUtils_1.toWorldY(tileH);
-    const bounds = rect_1.rect(x, y, w, h);
+    const x = (0, positionUtils_1.toWorldX)(tileX);
+    const y = (0, positionUtils_1.toWorldY)(tileY);
+    const w = (0, positionUtils_1.toWorldX)(tileW);
+    const h = (0, positionUtils_1.toWorldY)(tileH);
+    const bounds = (0, rect_1.rect)(x, y, w, h);
     return base => {
         base.triggerBounds = bounds;
         base.triggerTall = tall;
         base.triggerOn = false;
     };
 }
-exports.mixTrigger = mixTrigger;
 function collider(x, y, w, h, tall = true, exact = false) {
     return { x, y, w, h, tall, exact };
 }
-exports.collider = collider;
 exports.ponyColliders = roundedColliderList(-12, -4, 25, 7, 2);
 exports.ponyCollidersBounds = getColliderBounds(exports.ponyColliders);
 function getColliderBounds(colliders) {
-    const bounds = rect_1.rect(0, 0, 0, 0);
+    const bounds = (0, rect_1.rect)(0, 0, 0, 0);
     for (const collider of colliders) {
-        rect_1.addRect(bounds, collider);
+        (0, rect_1.addRect)(bounds, collider);
     }
     return bounds;
 }
@@ -114,20 +143,17 @@ function roundedColliderList(x, y, w, h, stepsCount, tall = true) {
 function mixColliderRect(x, y, w, h, tall = true, exact = false) {
     return mixColliders(collider(x, y, w, h, tall, exact));
 }
-exports.mixColliderRect = mixColliderRect;
 function mixColliderRounded(x, y, w, h, stepsCount, tall = true) {
     return mixColliders(...roundedColliderList(x, y, w, h, stepsCount, tall));
 }
-exports.mixColliderRounded = mixColliderRounded;
 function mixColliders(...list) {
     const bounds = getColliderBounds(list);
     return base => {
-        base.flags |= 128 /* CanCollideWith */;
+        base.flags |= 128 /* EntityFlags.CanCollideWith */;
         base.colliders = list;
         base.collidersBounds = bounds;
     };
 }
-exports.mixColliders = mixColliders;
 function taperColliderSE(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = w - 2; iy < h; iy++, ix -= ((iy % 3) ? 1 : 2)) {
@@ -135,7 +161,6 @@ function taperColliderSE(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.taperColliderSE = taperColliderSE;
 function taperColliderSW(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = w - 2; iy < h; iy++, ix -= ((iy % 3) ? 1 : 2)) {
@@ -143,7 +168,6 @@ function taperColliderSW(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.taperColliderSW = taperColliderSW;
 function taperColliderNW(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -151,7 +175,6 @@ function taperColliderNW(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.taperColliderNW = taperColliderNW;
 function taperColliderNE(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -159,7 +182,6 @@ function taperColliderNE(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.taperColliderNE = taperColliderNE;
 function skewColliderNW(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -167,7 +189,6 @@ function skewColliderNW(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.skewColliderNW = skewColliderNW;
 function skewColliderNE(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -175,7 +196,6 @@ function skewColliderNE(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.skewColliderNE = skewColliderNE;
 function triangleColliderNW(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -183,7 +203,6 @@ function triangleColliderNW(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.triangleColliderNW = triangleColliderNW;
 function triangleColliderNE(x, y, w, h, tall) {
     const colliders = [];
     for (let iy = 0, ix = 2; iy < h; iy++, ix += ((iy % 3) ? 1 : 2)) {
@@ -191,31 +210,27 @@ function triangleColliderNE(x, y, w, h, tall) {
     }
     return colliders;
 }
-exports.triangleColliderNE = triangleColliderNE;
 function mixInteract(x, y, w, h, interactRange) {
-    const interactBounds = rect_1.rect(x, y, w, h);
+    const interactBounds = (0, rect_1.rect)(x, y, w, h);
     return base => {
-        base.flags |= 256 /* Interactive */;
+        base.flags |= 256 /* EntityFlags.Interactive */;
         base.interactBounds = interactBounds;
         base.interactRange = interactRange;
     };
 }
-exports.mixInteract = mixInteract;
 function mixInteractAt(interactRange) {
     return base => {
-        base.flags |= 256 /* Interactive */;
+        base.flags |= 256 /* EntityFlags.Interactive */;
         base.interactRange = interactRange;
     };
 }
-exports.mixInteractAt = mixInteractAt;
 function mixMinimap(color, rect, order = 1) {
     const minimap = { color, rect, order };
     return base => base.minimap = minimap;
 }
-exports.mixMinimap = mixMinimap;
 function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true, animations, lightSprite, useGameTime, flipped = false } = {}) {
     const bounds = getBoundsForFrames(anim.frames, -dx, -dy);
-    const lightSpriteBounds = lightSprite ? getBoundsForFrames(lightSprite.frames, -dx, -dy) : rect_1.rect(0, 0, 0, 0);
+    const lightSpriteBounds = lightSprite ? getBoundsForFrames(lightSprite.frames, -dx, -dy) : (0, rect_1.rect)(0, 0, 0, 0);
     if (SERVER && !TESTS) {
         return base => base.bounds = bounds;
     }
@@ -234,7 +249,7 @@ function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true
                 if (repeat) {
                     frameNumber = frameNumber % animations[animation].length;
                 }
-                return utils_1.at(animations[animation], frameNumber) || 0;
+                return (0, utils_1.at)(animations[animation], frameNumber) || 0;
             }
             else {
                 return repeat ? (frameNumber % anim.frames.length) : Math.min(frameNumber, anim.frames.length - 1);
@@ -246,7 +261,7 @@ function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true
         palette && base.palettes.push(palette);
         base.update = function (delta) {
             time += delta;
-            const anim = interfaces_1.getAnimationFromEntityState(this.state);
+            const anim = (0, interfaces_1.getAnimationFromEntityState)(this.state);
             if (animations && anim !== animation) {
                 animation = anim;
                 time = 0;
@@ -263,11 +278,11 @@ function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true
         base.draw = function (batch, options) {
             const frame = getFrame(options);
             const frameSprite = anim.frames[frame];
-            const x = positionUtils_1.toScreenX(this.x);
-            const y = positionUtils_1.toScreenYWithZ(this.y, this.z);
+            const x = (0, positionUtils_1.toScreenX)(this.x);
+            const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z);
             batch.save();
             batch.translate(x, y);
-            if (utils_1.hasFlag(this.state, 2 /* FacingRight */) || flipped) {
+            if ((0, utils_1.hasFlag)(this.state, 2 /* EntityState.FacingRight */) || flipped) {
                 batch.scale(-1, 1);
             }
             batch.translate(-dx, -dy);
@@ -281,11 +296,11 @@ function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true
             base.drawLightSprite = function (batch, options) {
                 const frame = getFrame(options);
                 const frameSprite = lightSprite.frames[frame];
-                const x = positionUtils_1.toScreenX(this.x);
-                const y = positionUtils_1.toScreenYWithZ(this.y, this.z);
+                const x = (0, positionUtils_1.toScreenX)(this.x);
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z);
                 batch.save();
                 batch.translate(x, y);
-                if (utils_1.hasFlag(this.state, 2 /* FacingRight */) || flipped) {
+                if ((0, utils_1.hasFlag)(this.state, 2 /* EntityState.FacingRight */) || flipped) {
                     batch.scale(-1, 1);
                 }
                 batch.translate(-dx, -dy);
@@ -295,20 +310,19 @@ function mixAnimation(anim, fps, dx, dy, { color = colors_1.WHITE, repeat = true
         }
     };
 }
-exports.mixAnimation = mixAnimation;
 function mixDrawWindow(sprite, dx, dy, paletteIndex, padLeft, padTop, padRight, padBottom) {
     const bounds = getRenderableBounds(sprite, dx, dy);
     return base => {
         base.bounds = bounds;
         if (!SERVER || TESTS) {
             const defaultPalette = sprite.shadow && createPalette(sprites.defaultPalette);
-            const palette = createPalette(utils_1.att(sprite.palettes, paletteIndex));
+            const palette = createPalette((0, utils_1.att)(sprite.palettes, paletteIndex));
             base.palettes = [];
             defaultPalette && base.palettes.push(defaultPalette);
             palette && base.palettes.push(palette);
             base.draw = function (batch, options) {
-                const baseX = positionUtils_1.toScreenX(this.x + (this.ox || 0));
-                const baseY = positionUtils_1.toScreenYWithZ(this.y + (this.oy || 0), this.z + (this.oz || 0));
+                const baseX = (0, positionUtils_1.toScreenX)(this.x + (this.ox || 0));
+                const baseY = (0, positionUtils_1.toScreenYWithZ)(this.y + (this.oy || 0), this.z + (this.oz || 0));
                 const x = baseX - dx;
                 const y = baseY - dy;
                 if (sprite.shadow !== undefined) {
@@ -322,20 +336,19 @@ function mixDrawWindow(sprite, dx, dy, paletteIndex, padLeft, padTop, padRight, 
         }
     };
 }
-exports.mixDrawWindow = mixDrawWindow;
 function mixDraw(sprite, dx, dy, paletteIndex = 0) {
     const bounds = getRenderableBounds(sprite, dx, dy);
     return base => {
         base.bounds = bounds;
         if (!SERVER || TESTS) {
             const defaultPalette = sprite.shadow && createPalette(sprites.defaultPalette);
-            const palette = createPalette(utils_1.att(sprite.palettes, paletteIndex));
+            const palette = createPalette((0, utils_1.att)(sprite.palettes, paletteIndex));
             base.palettes = [];
             defaultPalette && base.palettes.push(defaultPalette);
             palette && base.palettes.push(palette);
             base.draw = function (batch, options) {
-                const x = positionUtils_1.toScreenX(this.x + (this.ox || 0)) - dx;
-                const y = positionUtils_1.toScreenYWithZ(this.y + (this.oy || 0), this.z + (this.oz || 0)) - dy;
+                const x = (0, positionUtils_1.toScreenX)(this.x + (this.ox || 0)) - dx;
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y + (this.oy || 0), this.z + (this.oz || 0)) - dy;
                 const opacity = 1 - 0.6 * (this.coverLifting || 0);
                 if (sprite.shadow !== undefined) {
                     batch.drawSprite(sprite.shadow, options.shadowColor, defaultPalette, x, y);
@@ -349,16 +362,15 @@ function mixDraw(sprite, dx, dy, paletteIndex = 0) {
         }
     };
 }
-exports.mixDraw = mixDraw;
 function addBounds(bounds, setup) {
-    rect_1.addRect(bounds, getRenderableBounds(setup.sprite, setup.dx, setup.dy));
+    (0, rect_1.addRect)(bounds, getRenderableBounds(setup.sprite, setup.dx, setup.dy));
 }
 function mixDrawSeasonal(setup) {
-    const bounds = rect_1.rect(0, 0, 0, 0);
+    const bounds = (0, rect_1.rect)(0, 0, 0, 0);
     const summer = setup.summer;
-    const autumn = Object.assign({}, summer, setup.autumn);
-    const winter = Object.assign({}, summer, setup.winter);
-    const spring = Object.assign({}, summer, setup.spring);
+    const autumn = { ...summer, ...setup.autumn };
+    const winter = { ...summer, ...setup.winter };
+    const spring = { ...summer, ...setup.spring };
     addBounds(bounds, summer);
     addBounds(bounds, autumn);
     addBounds(bounds, winter);
@@ -366,7 +378,7 @@ function mixDrawSeasonal(setup) {
     return (base, _, worldState) => {
         base.bounds = bounds;
         if (!SERVER || TESTS) {
-            let season = 1 /* Summer */;
+            let season = 1 /* Season.Summer */;
             let { sprite, dx, dy, palette: paletteIndex } = setup.summer;
             let defaultPalette = undefined;
             let palette = undefined;
@@ -374,20 +386,20 @@ function mixDrawSeasonal(setup) {
                 season = newSeason;
                 let set;
                 switch (season) {
-                    case 1 /* Summer */:
+                    case 1 /* Season.Summer */:
                         set = summer;
                         break;
-                    case 2 /* Autumn */:
+                    case 2 /* Season.Autumn */:
                         set = autumn;
                         break;
-                    case 4 /* Winter */:
+                    case 4 /* Season.Winter */:
                         set = winter;
                         break;
-                    case 8 /* Spring */:
+                    case 8 /* Season.Spring */:
                         set = spring;
                         break;
                     default:
-                        utils_1.invalidEnum(season);
+                        (0, utils_1.invalidEnum)(season);
                         return;
                 }
                 sprite = set.sprite;
@@ -396,19 +408,19 @@ function mixDrawSeasonal(setup) {
                 paletteIndex = set.palette;
                 if (base.palettes) {
                     for (const palette of base.palettes) {
-                        paletteManager_1.releasePalette(palette);
+                        (0, paletteManager_1.releasePalette)(palette);
                     }
                 }
                 defaultPalette = sprite.shadow && createPalette(sprites.defaultPalette);
-                palette = createPalette(utils_1.att(sprite.palettes, paletteIndex));
+                palette = createPalette((0, utils_1.att)(sprite.palettes, paletteIndex));
                 base.palettes = [];
                 defaultPalette && base.palettes.push(defaultPalette);
                 palette && base.palettes.push(palette);
             };
             setupSeason(worldState.season);
             base.draw = function (batch, options) {
-                const x = positionUtils_1.toScreenX(this.x + (this.ox || 0)) - dx;
-                const y = positionUtils_1.toScreenYWithZ(this.y + (this.oy || 0), this.z + (this.oz || 0)) - dy;
+                const x = (0, positionUtils_1.toScreenX)(this.x + (this.ox || 0)) - dx;
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y + (this.oy || 0), this.z + (this.oz || 0)) - dy;
                 const opacity = 1 - 0.6 * (this.coverLifting || 0);
                 if (sprite.shadow !== undefined) {
                     batch.drawSprite(sprite.shadow, options.shadowColor, defaultPalette, x, y);
@@ -425,7 +437,6 @@ function mixDrawSeasonal(setup) {
         }
     };
 }
-exports.mixDrawSeasonal = mixDrawSeasonal;
 function splitSprite(sprite, x, w, h) {
     const result = [];
     for (let y = 0; y < sprite.h; y += h) {
@@ -473,9 +484,9 @@ function mixDrawDirectionSign() {
     const upDownStep = 11;
     return (base, options = {}) => {
         const { sign: { r = 0, w = [], e = [], s = [], n = [] } = {} } = options;
-        const max = lodash_1.clamp(Math.max(w.length, e.length, s.length, n.length), 3, 5);
+        const max = (0, lodash_1.clamp)(Math.max(w.length, e.length, s.length, n.length), 3, 5);
         const boundsH = 7 + max * 11;
-        base.bounds = rect_1.rect(-20, -boundsH, 40, boundsH);
+        base.bounds = (0, rect_1.rect)(-20, -boundsH, 40, boundsH);
         base.options = options;
         if (SERVER && !TESTS)
             return;
@@ -486,13 +497,13 @@ function mixDrawDirectionSign() {
         const downShadow = !!s.length;
         const pole = poles[max - 3];
         const defaultPalette = pole.sprite.shadow && createPalette(sprites.defaultPalette);
-        const palette = createPalette(utils_1.att(pole.sprite.palettes, 0));
+        const palette = createPalette((0, utils_1.att)(pole.sprite.palettes, 0));
         base.palettes = [];
         defaultPalette && base.palettes.push(defaultPalette);
         palette && base.palettes.push(palette);
         base.draw = function (batch, options) {
-            const x = positionUtils_1.toScreenX(this.x);
-            const y = positionUtils_1.toScreenYWithZ(this.y, this.z);
+            const x = (0, positionUtils_1.toScreenX)(this.x);
+            const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z);
             batch.drawSprite(pole.sprite.shadow, options.shadowColor, defaultPalette, x + poleDX, y + pole.dy);
             leftShadow && batch.drawSprite(shadowLeft, options.shadowColor, defaultPalette, x - 18, y - 1);
             rightShadow && batch.drawSprite(shadowRight, options.shadowColor, defaultPalette, x + 4, y - 1);
@@ -524,7 +535,6 @@ function mixDrawDirectionSign() {
         };
     };
 }
-exports.mixDrawDirectionSign = mixDrawDirectionSign;
 function mixLight(color, dx, dy, w, h) {
     return base => {
         if (!SERVER || TESTS) {
@@ -533,12 +543,12 @@ function mixLight(color, dx, dy, w, h) {
             base.lightScale = 1;
             base.lightTarget = 1;
             base.lightScaleAdjust = 1;
-            base.lightBounds = rect_1.rect(-(dx + w / 2), -(dy + h / 2), w, h);
+            base.lightBounds = (0, rect_1.rect)(-(dx + w / 2), -(dy + h / 2), w, h);
             base.drawLight = function (batch) {
                 if (!this.lightOn)
                     return;
-                const x = positionUtils_1.toScreenX(this.x);
-                const y = positionUtils_1.toScreenYWithZ(this.y, this.z);
+                const x = (0, positionUtils_1.toScreenX)(this.x);
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z);
                 const s = this.lightScale * this.lightScaleAdjust;
                 const width = w * s;
                 const height = h * s;
@@ -548,7 +558,6 @@ function mixLight(color, dx, dy, w, h) {
         }
     };
 }
-exports.mixLight = mixLight;
 function mixLightSprite(sprite, color, dx, dy) {
     return base => {
         if (!SERVER || TESTS) {
@@ -560,17 +569,16 @@ function mixLightSprite(sprite, color, dx, dy) {
             base.drawLightSprite = function (batch) {
                 if (!this.lightSpriteOn)
                     return;
-                const x = positionUtils_1.toScreenX(this.x) - this.lightSpriteX;
-                const y = positionUtils_1.toScreenYWithZ(this.y, this.z) - this.lightSpriteY;
+                const x = (0, positionUtils_1.toScreenX)(this.x) - this.lightSpriteX;
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z) - this.lightSpriteY;
                 batch.drawSprite(sprite, this.lightSpriteColor || colors_1.BLACK, x, y);
             };
         }
     };
 }
-exports.mixLightSprite = mixLightSprite;
 function mixDrawRain() {
     const sprite = sprites.rainfall.color; // 110x477
-    const bounds = rect_1.rect(positionUtils_1.toScreenX(-4), -sprite.h, positionUtils_1.toScreenX(8), sprite.h);
+    const bounds = (0, rect_1.rect)((0, positionUtils_1.toScreenX)(-4), -sprite.h, (0, positionUtils_1.toScreenX)(8), sprite.h);
     return base => {
         base.bounds = bounds;
         if (SERVER && !TESTS)
@@ -585,13 +593,12 @@ function mixDrawRain() {
         // 	}
         // },
         base.draw = function (batch) {
-            const x = positionUtils_1.toScreenX(this.x) + bounds.x;
-            const y = positionUtils_1.toScreenYWithZ(this.y, this.z) - sprite.h + Math.floor(time);
+            const x = (0, positionUtils_1.toScreenX)(this.x) + bounds.x;
+            const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z) - sprite.h + Math.floor(time);
             batch.drawImage(sprite.type, colors_1.RED, palette, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h);
         };
     };
 }
-exports.mixDrawRain = mixDrawRain;
 function mixDrawShadow(sprite, dx, dy, shadowColor) {
     const bounds = getRenderableBounds(sprite, dx, dy);
     return base => {
@@ -600,28 +607,25 @@ function mixDrawShadow(sprite, dx, dy, shadowColor) {
             const defaultPalette = createPalette(sprites.defaultPalette);
             base.palettes = [defaultPalette];
             base.draw = function (batch, options) {
-                const x = positionUtils_1.toScreenX(this.x + (this.ox || 0)) - dx;
-                const y = positionUtils_1.toScreenYWithZ(this.y + (this.oy || 0), this.z) - dy;
+                const x = (0, positionUtils_1.toScreenX)(this.x + (this.ox || 0)) - dx;
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y + (this.oy || 0), this.z) - dy;
                 const color = shadowColor === undefined ? options.shadowColor : shadowColor;
                 sprite.shadow && batch.drawSprite(sprite.shadow, color, defaultPalette, x, y);
             };
         }
     };
 }
-exports.mixDrawShadow = mixDrawShadow;
 function mixBobbing(bobsFps, bobs) {
     return base => {
-        base.flags |= 2048 /* Bobbing */;
+        base.flags |= 2048 /* EntityFlags.Bobbing */;
         base.bobsFps = bobsFps;
         base.bobs = bobs;
     };
 }
-exports.mixBobbing = mixBobbing;
 let fullWalls = true;
 function toggleWalls() {
     fullWalls = !fullWalls;
 }
-exports.toggleWalls = toggleWalls;
 function mixDrawWall(full, half, dx, dy, dy2) {
     const fullBounds = getRenderableBounds(full, dx, dy);
     // const halfBounds = getRenderableBounds(half, dx, dy2);
@@ -629,21 +633,20 @@ function mixDrawWall(full, half, dx, dy, dy2) {
         base.bounds = fullBounds; // fullWalls ? fullBounds : halfBounds
         if (SERVER && !TESTS)
             return;
-        const fullPalette = createPalette(utils_1.att(full.palettes, 0));
-        const halfPalette = createPalette(utils_1.att(half.palettes, 0));
+        const fullPalette = createPalette((0, utils_1.att)(full.palettes, 0));
+        const halfPalette = createPalette((0, utils_1.att)(half.palettes, 0));
         base.palettes = [];
         fullPalette && base.palettes.push(fullPalette);
         halfPalette && base.palettes.push(halfPalette);
         base.draw = function (batch) {
             const sprite = fullWalls ? full : half;
             const palette = fullWalls ? fullPalette : halfPalette;
-            const x = positionUtils_1.toScreenX(this.x) - dx;
-            const y = positionUtils_1.toScreenYWithZ(this.y, this.z) - (fullWalls ? dy : dy2);
+            const x = (0, positionUtils_1.toScreenX)(this.x) - dx;
+            const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z) - (fullWalls ? dy : dy2);
             sprite.color && batch.drawSprite(sprite.color, colors_1.WHITE, palette, x, y);
         };
     };
 }
-exports.mixDrawWall = mixDrawWall;
 function mixDrawSpider(sprite, dx, dy) {
     const heightOffset = 30;
     const spriteColor = sprite.color;
@@ -652,7 +655,7 @@ function mixDrawSpider(sprite, dx, dy) {
         throw new Error('Missing sprite');
     return base => {
         const { height, time } = base.options;
-        const bounds = Object.assign({}, baseBounds);
+        const bounds = { ...baseBounds };
         bounds.y -= (height + heightOffset);
         bounds.h += height;
         base.bounds = bounds;
@@ -662,16 +665,15 @@ function mixDrawSpider(sprite, dx, dy) {
         base.palettes = [palette];
         base.draw = function (batch, options) {
             const t = options.gameTime / constants_1.SECOND - time;
-            const h = lodash_1.clamp(Math.sin(t / 4) * 4, 0, 1) * height;
+            const h = (0, lodash_1.clamp)(Math.sin(t / 4) * 4, 0, 1) * height;
             if (h < height) {
                 const lineLength = height - h - 4;
-                const x = positionUtils_1.toScreenX(this.x) - dx;
-                const y = positionUtils_1.toScreenYWithZ(this.y, this.z) - dy - heightOffset - h;
+                const x = (0, positionUtils_1.toScreenX)(this.x) - dx;
+                const y = (0, positionUtils_1.toScreenYWithZ)(this.y, this.z) - dy - heightOffset - h;
                 batch.drawRect(0x181818ff, x + 2, y - lineLength, 1, lineLength + 1);
                 batch.drawSprite(spriteColor, colors_1.WHITE, palette, x, y);
             }
         };
     };
 }
-exports.mixDrawSpider = mixDrawSpider;
 //# sourceMappingURL=mixins.js.map

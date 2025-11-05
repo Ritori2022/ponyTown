@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SpriteBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const color_1 = require("../../../common/color");
@@ -37,10 +38,10 @@ let SpriteBox = class SpriteBox {
         return this._circle;
     }
     set circle(value) {
-        this._circle = color_1.colorToCSS(color_1.parseColor(value || ''));
+        this._circle = (0, color_1.colorToCSS)((0, color_1.parseColor)(value || ''));
     }
     ngAfterViewInit() {
-        spriteUtils_1.loadAndInitSpriteSheets().then(() => this.redraw());
+        (0, spriteUtils_1.loadAndInitSpriteSheets)().then(() => this.redraw());
     }
     ngDoCheck() {
         const fillChanges = this.fill && Array.isArray(this.fill) && this.fillDiffer.diff(this.fill);
@@ -84,17 +85,17 @@ let SpriteBox = class SpriteBox {
                 context.fill();
             }
             const bufferSize = size / scale;
-            const batch = this.batch = this.batch || new contextSpriteBatch_1.ContextSpriteBatch(canvasUtils_1.createCanvas(bufferSize, bufferSize));
-            canvasUtils_1.resizeCanvas(batch.canvas, bufferSize, bufferSize);
+            const batch = this.batch = this.batch || new contextSpriteBatch_1.ContextSpriteBatch((0, canvasUtils_1.createCanvas)(bufferSize, bufferSize));
+            (0, canvasUtils_1.resizeCanvas)(batch.canvas, bufferSize, bufferSize);
             const fills = Array.isArray(this.fill) ? this.fill : [this.fill];
             const outlines = Array.isArray(this.outline) ? this.outline : [this.outline];
-            const paletteColors = ponyInfo_1.toColorList(ponyInfo_1.getColorsFromSet({ fills, outlines }, '000000', this.darken));
+            const paletteColors = (0, ponyInfo_1.toColorList)((0, ponyInfo_1.getColorsFromSet)({ fills, outlines }, '000000', this.darken));
             const palette = ponyInfo_1.mockPaletteManager.addArray(paletteColors);
             const extraPalette = sprite.palettes && ponyInfo_1.mockPaletteManager.addArray(sprite.palettes[0]);
             let x = this.x;
             let y = this.y;
             if (this.center) {
-                const bounds = rect_1.rect(0, 0, 0, 0);
+                const bounds = (0, rect_1.rect)(0, 0, 0, 0);
                 addRect(bounds, sprite.color);
                 addRect(bounds, sprite.extra);
                 if (sprite.colorMany) {
@@ -119,87 +120,87 @@ let SpriteBox = class SpriteBox {
                 batch.drawSprite(sprite.extra, colors_1.WHITE, extraPalette, x, y);
             }
             batch.end();
-            canvasUtils_1.disableImageSmoothing(context);
+            (0, canvasUtils_1.disableImageSmoothing)(context);
             context.scale(scale, scale);
             context.drawImage(batch.canvas, 0, 0);
         }
         context.restore();
     }
 };
+exports.SpriteBox = SpriteBox;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "size", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "scale", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "x", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "y", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "center", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Number)
 ], SpriteBox.prototype, "index", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "sprite", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "palette", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "fill", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "outline", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Boolean)
 ], SpriteBox.prototype, "reverseExtra", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "timestamp", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "invisible", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteBox.prototype, "darken", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], SpriteBox.prototype, "canvas", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], SpriteBox.prototype, "circle", null);
-SpriteBox = tslib_1.__decorate([
-    core_1.Component({
+exports.SpriteBox = SpriteBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'sprite-box',
         templateUrl: 'sprite-box.pug',
         styleUrls: ['sprite-box.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone, core_1.IterableDiffers])
 ], SpriteBox);
-exports.SpriteBox = SpriteBox;
 function addRect(rect, sprite) {
     if (sprite && sprite.w && sprite.h) {
         if (rect.w === 0 || rect.h === 0) {

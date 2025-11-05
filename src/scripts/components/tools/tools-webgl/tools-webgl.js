@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsWebgl = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 // import { range, sample } from 'lodash';
@@ -32,21 +33,21 @@ let ToolsWebgl = class ToolsWebgl {
         // testSpriteBatch(this.canvasElement.nativeElement);
     }
 };
+exports.ToolsWebgl = ToolsWebgl;
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ToolsWebgl.prototype, "canvasElement", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('canvas2', { static: true }),
+    (0, core_1.ViewChild)('canvas2', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ToolsWebgl.prototype, "canvasElement2", void 0);
-ToolsWebgl = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsWebgl = ToolsWebgl = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-webgl',
         templateUrl: 'tools-webgl.pug',
     })
 ], ToolsWebgl);
-exports.ToolsWebgl = ToolsWebgl;
 // export function testLightsShader(canvas: HTMLCanvasElement) {
 // 	const gl = getWebGLContext(canvas);
 // 	const shader = createShader(gl, lightShader);

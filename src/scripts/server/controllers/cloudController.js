@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CloudController = void 0;
+const tslib_1 = require("tslib");
 const constants_1 = require("../../common/constants");
 const utils_1 = require("../../common/utils");
 const entities_1 = require("../../common/entities");
-const sprites = require("../../generated/sprites");
+const sprites = tslib_1.__importStar(require("../../generated/sprites"));
 const entityUtils_1 = require("../entityUtils");
 const timing_1 = require("../timing");
 const spriteWidth = sprites.cloud.shadow.w / constants_1.tileWidth;
@@ -25,7 +27,7 @@ class CloudController {
         this.initialized = true;
     }
     update(_, now) {
-        timing_1.timingStart('CloudController.update()');
+        (0, timing_1.timingStart)('CloudController.update()');
         for (let i = this.clouds.length - 1; i >= 0; i--) {
             const cloud = this.clouds[i];
             if (cloud.x < -spriteWidth) {
@@ -36,15 +38,15 @@ class CloudController {
         if (this.clouds.length < this.cloudCount) {
             this.addCloud(true, now);
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
     addCloud(end, timestamp) {
         const x = end ? this.map.width + spriteWidth : this.map.width * Math.random();
         const y = this.map.height * Math.random();
-        const entity = entities_1.cloud(x, y);
-        if (!this.clouds.some(c => utils_1.entitiesIntersect(c, entity))) {
+        const entity = (0, entities_1.cloud)(x, y);
+        if (!this.clouds.some(c => (0, utils_1.entitiesIntersect)(c, entity))) {
             this.clouds.push(this.world.addEntity(entity, this.map));
-            entityUtils_1.updateEntityVelocity(entity, cloudVX, 0, timestamp);
+            (0, entityUtils_1.updateEntityVelocity)(entity, cloudVX, 0, timestamp);
         }
     }
 }

@@ -1,6 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sprites = require("../generated/sprites");
+exports.createToPaletteSet = exports.getColorsForSetNumber = exports.getColorsForSet = exports.mockPaletteManager = void 0;
+exports.spriteSet = spriteSet;
+exports.createDefaultPony = createDefaultPony;
+exports.createBasePony = createBasePony;
+exports.getBaseFill = getBaseFill;
+exports.getBaseOutline = getBaseOutline;
+exports.syncLockedSpriteSet = syncLockedSpriteSet;
+exports.syncLockedPonyInfo = syncLockedPonyInfo;
+exports.syncLockedPonyInfoNumber = syncLockedPonyInfoNumber;
+exports.toColorList = toColorList;
+exports.darkenForOutline = darkenForOutline;
+exports.getColorsFromSet = getColorsFromSet;
+exports.toColorListNumber = toColorListNumber;
+exports.toPaletteSet = toPaletteSet;
+exports.toPaletteGeneric = toPaletteGeneric;
+exports.toPalette = toPalette;
+exports.toPaletteNumber = toPaletteNumber;
+exports.releasePalettes = releasePalettes;
+const tslib_1 = require("tslib");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const paletteManager_1 = require("../graphics/paletteManager");
 const utils_1 = require("./utils");
 const constants_1 = require("./constants");
@@ -19,7 +38,7 @@ exports.mockPaletteManager = {
         return this.addArray(new Uint32Array(colors));
     },
     addArray(colors) {
-        return paletteManager_1.createPalette(colors);
+        return (0, paletteManager_1.createPalette)(colors);
     },
     init() {
     }
@@ -34,11 +53,10 @@ function spriteSet(type, lockFirstFill = true, fill = 'ffd700', otherFills = FIL
         pattern: 0,
         fills,
         outlines,
-        lockFills: [lockFirstFill, ...utils_1.array(MAX_COLORS - 1, false)],
-        lockOutlines: utils_1.array(MAX_COLORS, true),
+        lockFills: [lockFirstFill, ...(0, utils_1.array)(MAX_COLORS - 1, false)],
+        lockOutlines: (0, utils_1.array)(MAX_COLORS, true),
     };
 }
-exports.spriteSet = spriteSet;
 function createDefaultPony() {
     const pony = createBasePony();
     pony.mane.type = 2;
@@ -46,7 +64,6 @@ function createDefaultPony() {
     pony.tail.type = 1;
     return pony;
 }
-exports.createDefaultPony = createDefaultPony;
 function createBasePony() {
     return syncLockedPonyInfo({
         head: spriteSet(0, true, 'ff0000', ['800000', '32cd32', 'da70d6', 'dc143c', '7fffd4']),
@@ -75,7 +92,10 @@ function createBasePony() {
         waistAccessory: spriteSet(0, false, '95856f', ['674b43', '4f4f4f', '525252', 'c37850', '8a3d34']),
         chestAccessory: spriteSet(0, false, 'ee82ee'),
         sleeveAccessory: spriteSet(0, true, 'ee82ee'),
-        extraAccessory: Object.assign({}, spriteSet(0, true, 'ff0000', ['daa520', 'ffd700', 'ffd700', 'ffd700', 'ffd700']), { lockFills: utils_1.array(5, true) }),
+        extraAccessory: {
+            ...spriteSet(0, true, 'ff0000', ['daa520', 'ffd700', 'ffd700', 'ffd700', 'ffd700']),
+            lockFills: (0, utils_1.array)(5, true),
+        },
         coatFill: 'ff0000',
         coatOutline: '8b0000',
         lockCoatOutline: true,
@@ -106,15 +126,12 @@ function createBasePony() {
         darkenLockedOutlines: false,
     });
 }
-exports.createBasePony = createBasePony;
 function getBaseFill(set) {
     return set && set.fills && set.fills[0];
 }
-exports.getBaseFill = getBaseFill;
 function getBaseOutline(set) {
     return set && set.outlines && set.outlines[0];
 }
-exports.getBaseOutline = getBaseOutline;
 function syncLockedSpriteSet(set, customOutlines, fillToOutline, baseFill, baseOutline) {
     if (set === undefined)
         return;
@@ -147,7 +164,6 @@ function syncLockedSpriteSet(set, customOutlines, fillToOutline, baseFill, baseO
         }
     }
 }
-exports.syncLockedSpriteSet = syncLockedSpriteSet;
 function syncLockedSpritesSet2(set, fillToOutline, baseFills, baseOutlines) {
     if (set && set.fills && set.lockFills) {
         set.lockFills.forEach((locked, i) => {
@@ -216,14 +232,14 @@ function syncLockedBasePonyInfo(info, fillToOutline, defaultColor) {
     syncLockedSpriteSet(info.backAccessory, customOutlines, fillToOutline);
     syncLockedSpriteSet(info.waistAccessory, customOutlines, fillToOutline);
     syncLockedSpriteSet(info.chestAccessory, customOutlines, fillToOutline);
-    if (info.chestAccessory && !info.sleeveAccessory && utils_1.includes(ponyUtils_1.SLEEVED_ACCESSORIES, info.chestAccessory.type)) {
+    if (info.chestAccessory && !info.sleeveAccessory && (0, utils_1.includes)(ponyUtils_1.SLEEVED_ACCESSORIES, info.chestAccessory.type)) {
         info.sleeveAccessory = {
             type: 0,
             pattern: 0,
             fills: [],
             outlines: [],
-            lockFills: utils_1.array(MAX_COLORS, true),
-            lockOutlines: utils_1.array(MAX_COLORS, true),
+            lockFills: (0, utils_1.array)(MAX_COLORS, true),
+            lockOutlines: (0, utils_1.array)(MAX_COLORS, true),
         };
     }
     syncLockedSpriteSet(info.sleeveAccessory, customOutlines, fillToOutline, getBaseFill(info.chestAccessory), getBaseOutline(info.chestAccessory));
@@ -247,25 +263,23 @@ function syncLockedPonyInfo(info) {
     const fillToOutlineFunc = darkenLocked ? colors_1.fillToOutlineWithDarken : colors_1.fillToOutline;
     return syncLockedBasePonyInfo(info, fillToOutlineFunc, '000000');
 }
-exports.syncLockedPonyInfo = syncLockedPonyInfo;
 function fillToOutlineSafe(color) {
-    return colors_1.fillToOutlineColor((color === undefined || color === 0) ? colors_1.BLACK : color);
+    return (0, colors_1.fillToOutlineColor)((color === undefined || color === 0) ? colors_1.BLACK : color);
 }
 function fillToOutlineSafeWithDarken(color) {
-    return darkenForOutline(colors_1.fillToOutlineColor((color === undefined || color === 0) ? colors_1.BLACK : color));
+    return darkenForOutline((0, colors_1.fillToOutlineColor)((color === undefined || color === 0) ? colors_1.BLACK : color));
 }
 function syncLockedPonyInfoNumber(info) {
     const darkenLocked = !!info.freeOutlines && !!info.darkenLockedOutlines;
     const fillToOutlineFunc = darkenLocked ? fillToOutlineSafeWithDarken : fillToOutlineSafe;
     return syncLockedBasePonyInfo(info, fillToOutlineFunc, colors_1.BLACK);
 }
-exports.syncLockedPonyInfoNumber = syncLockedPonyInfoNumber;
 // PalettePonyInfo
 function parseFast(color) {
-    return color ? color_1.parseColorFast(color) : colors_1.BLACK;
+    return color ? (0, color_1.parseColorFast)(color) : colors_1.BLACK;
 }
 function parseCMColor(color) {
-    return color ? color_1.parseColorFast(color) : colors_1.TRANSPARENT;
+    return color ? (0, color_1.parseColorFast)(color) : colors_1.TRANSPARENT;
 }
 function toColorList(colors) {
     const result = new Uint32Array(colors.length + 1);
@@ -274,24 +288,22 @@ function toColorList(colors) {
     }
     return result;
 }
-exports.toColorList = toColorList;
 function darkenForOutline(color) {
     const mult = (159 / 255);
-    const r = (mult * color_1.getR(color)) | 0;
-    const g = (mult * color_1.getG(color)) | 0;
-    const b = (mult * color_1.getB(color)) | 0;
-    const a = color_1.getAlpha(color);
-    return color_1.colorFromRGBA(r, g, b, a);
+    const r = (mult * (0, color_1.getR)(color)) | 0;
+    const g = (mult * (0, color_1.getG)(color)) | 0;
+    const b = (mult * (0, color_1.getB)(color)) | 0;
+    const a = (0, color_1.getAlpha)(color);
+    return (0, color_1.colorFromRGBA)(r, g, b, a);
 }
-exports.darkenForOutline = darkenForOutline;
 function getColorsGeneric(fillColors, outlineColors, defaultColor, length, darken) {
     const fills = fillColors || [];
     const outlines = outlineColors || [];
-    const colors = utils_1.array(length * 2, defaultColor);
+    const colors = (0, utils_1.array)(length * 2, defaultColor);
     for (let i = 0; i < length; i++) {
         colors[i * 2] = fills[i] || defaultColor;
         if (darken) {
-            colors[i * 2 + 1] = outlines[i] ? color_1.colorToHexRGB(darkenForOutline(color_1.parseColorFast(outlines[i]))) : defaultColor;
+            colors[i * 2 + 1] = outlines[i] ? (0, color_1.colorToHexRGB)(darkenForOutline((0, color_1.parseColorFast)(outlines[i]))) : defaultColor;
         }
         else {
             colors[i * 2 + 1] = outlines[i] || defaultColor;
@@ -303,7 +315,6 @@ function getColorsFromSet({ fills, outlines }, defaultColor, darken) {
     const length = Math.max(fills ? fills.length : 0, outlines ? outlines.length : 0);
     return getColorsGeneric(fills, outlines, defaultColor, length, darken);
 }
-exports.getColorsFromSet = getColorsFromSet;
 function toColorListNumber(colors) {
     const result = new Uint32Array(colors.length + 1);
     for (let i = 0; i < colors.length; i++) {
@@ -311,13 +322,13 @@ function toColorListNumber(colors) {
     }
     return result;
 }
-exports.toColorListNumber = toColorListNumber;
-exports.getColorsForSet = (set, count, darken) => {
+const getColorsForSet = (set, count, darken) => {
     const t = getColorsGeneric(set.fills, set.outlines, '000000', count, darken);
     return toColorList(t);
 };
+exports.getColorsForSet = getColorsForSet;
 const emptyArray = [];
-exports.getColorsForSetNumber = (set, length, darken) => {
+const getColorsForSetNumber = (set, length, darken) => {
     const fills = set.fills || emptyArray;
     const outlines = set.outlines || emptyArray;
     const result = new Uint32Array(length * 2 + 1);
@@ -332,22 +343,22 @@ exports.getColorsForSetNumber = (set, length, darken) => {
     }
     return result;
 };
+exports.getColorsForSetNumber = getColorsForSetNumber;
 function getExtraPalette(pattern, manager) {
     const extraPalette = pattern && pattern.palettes && pattern.palettes[0];
     return extraPalette && manager.addArray(new Uint32Array(extraPalette));
 }
 function toPaletteSet(set, sets, manager, getColorsForSet, hasExtra, darken) {
-    const pattern = utils_1.att(utils_1.att(sets, set.type), set.pattern);
+    const pattern = (0, utils_1.att)((0, utils_1.att)(sets, set.type), set.pattern);
     const colorCount = pattern !== undefined && pattern.colors !== undefined ? ((pattern.colors - 1) >> 1) : 0;
     const colors = getColorsForSet(set, colorCount, darken);
     return {
-        type: utils_1.toInt(set.type),
-        pattern: utils_1.toInt(set.pattern),
+        type: (0, utils_1.toInt)(set.type),
+        pattern: (0, utils_1.toInt)(set.pattern),
         palette: manager.addArray(colors),
         extraPalette: hasExtra ? getExtraPalette(pattern, manager) : undefined,
     };
 }
-exports.toPaletteSet = toPaletteSet;
 function createCMPalette(cm, manager, parseColor) {
     const size = constants_1.CM_SIZE * constants_1.CM_SIZE;
     if (cm === undefined || cm.length === 0 || cm.length > size)
@@ -359,11 +370,12 @@ function createCMPalette(cm, manager, parseColor) {
     return manager.addArray(result);
 }
 const defaultPalette = new Uint32Array(sprites.defaultPalette);
-exports.createToPaletteSet = (manager, getColorsForSet, extra, darken) => (set, sets) => set === undefined ? undefined : toPaletteSet(set, sets, manager, getColorsForSet, extra, darken);
+const createToPaletteSet = (manager, getColorsForSet, extra, darken) => (set, sets) => set === undefined ? undefined : toPaletteSet(set, sets, manager, getColorsForSet, extra, darken);
+exports.createToPaletteSet = createToPaletteSet;
 function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColor, whiteColor, parseCMColor) {
     const darken = !info.freeOutlines;
-    const toSet = exports.createToPaletteSet(manager, getColorsForSet, false, darken);
-    const toSetExtra = exports.createToPaletteSet(manager, getColorsForSet, true, darken);
+    const toSet = (0, exports.createToPaletteSet)(manager, getColorsForSet, false, darken);
+    const toSetExtra = (0, exports.createToPaletteSet)(manager, getColorsForSet, true, darken);
     const defaultSet = { type: 0, pattern: 0, fills: [info.coatFill], outlines: [info.coatOutline] };
     // const defaultSet = { type: 0, pattern: 1, fills: [info.coatFill, whiteColor], outlines: [info.coatOutline, blackColor] };
     return {
@@ -404,7 +416,7 @@ function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColo
         coatFill: undefined,
         coatOutline: undefined,
         lockCoatOutline: !!info.lockCoatOutline,
-        eyelashes: utils_1.toInt(info.eyelashes),
+        eyelashes: (0, utils_1.toInt)(info.eyelashes),
         eyePaletteLeft: manager.addArray(toColorList([
             info.eyeWhitesLeft || whiteColor,
             info.eyelashColor || blackColor
@@ -417,8 +429,8 @@ function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColo
         eyeColorRight: manager.addArray(toColorList([info.eyeColorRight])),
         eyeWhitesLeft: undefined,
         eyeWhites: undefined,
-        eyeOpennessLeft: utils_1.toInt(info.eyeOpennessLeft),
-        eyeOpennessRight: utils_1.toInt(info.eyeOpennessRight),
+        eyeOpennessLeft: (0, utils_1.toInt)(info.eyeOpennessLeft),
+        eyeOpennessRight: (0, utils_1.toInt)(info.eyeOpennessRight),
         eyeshadow: info.eyeshadow,
         eyeshadowColor: manager.addArray(toColorList([info.eyeshadowColor])),
         lockEyes: !!info.lockEyes,
@@ -427,12 +439,12 @@ function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColo
         unlockEyelashColor: !!info.unlockEyelashColor,
         eyelashColor: undefined,
         eyelashColorLeft: undefined,
-        fangs: utils_1.toInt(info.fangs),
-        muzzle: utils_1.toInt(info.muzzle),
-        freckles: 0,
-        frecklesColor: undefined,
+        fangs: (0, utils_1.toInt)(info.fangs),
+        muzzle: (0, utils_1.toInt)(info.muzzle),
+        freckles: 0, // remove
+        frecklesColor: undefined, // TODO: remove
         magicColor: undefined,
-        magicColorValue: typeof info.magicColor === 'string' ? color_1.parseColorFast(info.magicColor) : utils_1.toInt(info.magicColor),
+        magicColorValue: typeof info.magicColor === 'string' ? (0, color_1.parseColorFast)(info.magicColor) : (0, utils_1.toInt)(info.magicColor),
         cm: undefined,
         cmFlip: !!info.cmFlip,
         cmPalette: createCMPalette(info.cm, manager, parseCMColor),
@@ -443,30 +455,26 @@ function toPaletteGeneric(info, manager, toColorList, getColorsForSet, blackColo
         waterPalette: manager.addArray(sprites.pony_wake_1.palette),
     };
 }
-exports.toPaletteGeneric = toPaletteGeneric;
 function toPalette(info, manager = exports.mockPaletteManager) {
     return toPaletteGeneric(info, manager, toColorList, exports.getColorsForSet, '000000', 'ffffff', parseCMColor);
 }
-exports.toPalette = toPalette;
 function toPaletteNumber(info, manager = exports.mockPaletteManager) {
     return toPaletteGeneric(info, manager, toColorListNumber, exports.getColorsForSetNumber, colors_1.BLACK, colors_1.WHITE, x => x);
 }
-exports.toPaletteNumber = toPaletteNumber;
 function releasePalettes(info) {
     for (const key of Object.keys(info)) {
         const value = info[key]; // undefined | number | string | PaletteSpriteSet | Palette;
         if (value && typeof value === 'object') {
             if ('refs' in value) {
                 const palette = value;
-                paletteManager_1.releasePalette(palette);
+                (0, paletteManager_1.releasePalette)(palette);
             }
             else if ('palette' in value) {
                 const set = value;
-                paletteManager_1.releasePalette(set.palette);
-                paletteManager_1.releasePalette(set.extraPalette);
+                (0, paletteManager_1.releasePalette)(set.palette);
+                (0, paletteManager_1.releasePalette)(set.extraPalette);
             }
         }
     }
 }
-exports.releasePalettes = releasePalettes;
 //# sourceMappingURL=ponyInfo.js.map

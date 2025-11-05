@@ -1,9 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
-const moment = require("moment");
-const ExpressBrute = require("express-brute");
+exports.admin = exports.auth = exports.internal = exports.offline = exports.hash = exports.blockMaps = exports.validAccount = exports.notFound = void 0;
+exports.limit = limit;
+exports.handleError = handleError;
+exports.initLogRequest = initLogRequest;
+exports.handleJSON = handleJSON;
+exports.wrap = wrap;
+exports.wrapApi = wrapApi;
+exports.inMemoryStaticFiles = inMemoryStaticFiles;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
+const moment = tslib_1.__importStar(require("moment"));
+const ExpressBrute = tslib_1.__importStar(require("express-brute"));
 const lodash_1 = require("lodash");
 const hash_1 = require("../generated/hash");
 const accountUtils_1 = require("../common/accountUtils");
@@ -13,17 +22,18 @@ const reporter_1 = require("./reporter");
 const userError_1 = require("./userError");
 const originUtils_1 = require("./originUtils");
 const ROLLBAR_IP = '35.184.69.251';
-exports.notFound = (_, res) => {
+const notFound = (_, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0');
     res.sendStatus(404);
 };
-exports.validAccount = (server) => (req, res, next) => {
+exports.notFound = notFound;
+const validAccount = (server) => (req, res, next) => {
     const account = req.user;
     const accountId = req.body.accountId;
     const accountName = req.body.accountName;
     if (!account || account.id !== accountId) {
         if (!/#$/.test(accountId)) {
-            reporter_1.createFromRequest(server, req).warn(errors_1.ACCOUNT_ERROR, `${accountName} [${accountId}] (${req.path})`);
+            (0, reporter_1.createFromRequest)(server, req).warn(errors_1.ACCOUNT_ERROR, `${accountName} [${accountId}] (${req.path})`);
         }
         //logger.warn(ACCOUNT_ERROR, `${accountName} [${accountId}] (${req.path})`);
         res.status(403).json({ error: errors_1.ACCOUNT_ERROR });
@@ -32,15 +42,17 @@ exports.validAccount = (server) => (req, res, next) => {
         next(null);
     }
 };
-exports.blockMaps = (debug, local) => (req, res, next) => {
-    if (!debug && !local && /\.map$/.test(req.path) && originUtils_1.getIP(req) !== ROLLBAR_IP) {
+exports.validAccount = validAccount;
+const blockMaps = (debug, local) => (req, res, next) => {
+    if (!debug && !local && /\.map$/.test(req.path) && (0, originUtils_1.getIP)(req) !== ROLLBAR_IP) {
         res.sendStatus(404);
     }
     else {
         next(null);
     }
 };
-exports.hash = (req, res, next) => {
+exports.blockMaps = blockMaps;
+const hash = (req, res, next) => {
     const apiVersion = req.get('api-version');
     if (apiVersion !== hash_1.HASH) {
         res.status(400).json({ error: errors_1.VERSION_ERROR });
@@ -49,7 +61,8 @@ exports.hash = (req, res, next) => {
         next(null);
     }
 };
-exports.offline = (settings) => (_req, res, next) => {
+exports.hash = hash;
+const offline = (settings) => (_req, res, next) => {
     if (settings.isPageOffline) {
         res.status(503).send(errors_1.OFFLINE_ERROR);
     }
@@ -57,16 +70,18 @@ exports.offline = (settings) => (_req, res, next) => {
         next(null);
     }
 };
-exports.internal = (config, server) => (req, res, next) => {
+exports.offline = offline;
+const internal = (config, server) => (req, res, next) => {
     if (req.get('api-token') === config.token) {
         next(null);
     }
     else {
-        reporter_1.createFromRequest(server, req).warn('Unauthorized internal api call', req.originalUrl);
+        (0, reporter_1.createFromRequest)(server, req).warn('Unauthorized internal api call', req.originalUrl);
         res.sendStatus(403);
     }
 };
-exports.auth = (req, res, next) => {
+exports.internal = internal;
+const auth = (req, res, next) => {
     if (req.isAuthenticated()) {
         next(null);
     }
@@ -76,18 +91,20 @@ exports.auth = (req, res, next) => {
         res.sendStatus(403);
     }
 };
-exports.admin = (server) => (req, res, next) => {
-    if (req.isAuthenticated() && req.user && accountUtils_1.isAdmin(req.user)) {
+exports.auth = auth;
+const admin = (server) => (req, res, next) => {
+    if (req.isAuthenticated() && req.user && (0, accountUtils_1.isAdmin)(req.user)) {
         next(null);
     }
     else {
         if (!/Googlebot/.test(req.get('User-Agent'))) {
-            reporter_1.createFromRequest(server, req).warn(`Unauthorized access (admin)`, req.originalUrl);
+            (0, reporter_1.createFromRequest)(server, req).warn(`Unauthorized access (admin)`, req.originalUrl);
         }
         res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         res.sendStatus(403);
     }
 };
+exports.admin = admin;
 const store = new ExpressBrute.MemoryStore();
 function limit(freeRetries, lifetime) {
     const options = {
@@ -100,15 +117,14 @@ function limit(freeRetries, lifetime) {
     };
     return (new ExpressBrute(store, options)).prevent;
 }
-exports.limit = limit;
 function reportError(e, server, req) {
-    reporter_1.createFromRequest(server, req).danger(`Req error: ${e.message}`, `${req.method.toUpperCase()} ${req.originalUrl}`);
+    (0, reporter_1.createFromRequest)(server, req).danger(`Req error: ${e.message}`, `${req.method.toUpperCase()} ${req.originalUrl}`);
     logger_1.logger.error(e);
 }
 function handleError(server, req, res) {
     return (e) => {
-        if (userError_1.isUserError(e)) {
-            userError_1.reportUserError(e, server, req);
+        if ((0, userError_1.isUserError)(e)) {
+            (0, userError_1.reportUserError)(e, server, req);
             res.status(422).json({ error: e.message, userError: true });
         }
         else {
@@ -117,12 +133,10 @@ function handleError(server, req, res) {
         }
     };
 }
-exports.handleError = handleError;
 let logRequest = lodash_1.noop;
 function initLogRequest(func) {
     logRequest = func;
 }
-exports.initLogRequest = initLogRequest;
 function handleJSON(server, req, res, result) {
     Promise.resolve(result)
         .then(result => {
@@ -133,11 +147,9 @@ function handleJSON(server, req, res, result) {
         .then(result => logRequest(req, result))
         .catch(handleError(server, req, res));
 }
-exports.handleJSON = handleJSON;
 function wrap(server, handle) {
     return (req, res) => handleJSON(server, req, res, handle(req));
 }
-exports.wrap = wrap;
 function wrapApi(server, api) {
     return wrap(server, ({ body: { method, args = [] } }) => {
         if (api[method]) {
@@ -148,7 +160,6 @@ function wrapApi(server, api) {
         }
     });
 }
-exports.wrapApi = wrapApi;
 function readFiles(files, dir, url) {
     const mimeTypes = {
         '.js': 'application/javascript; charset=utf-8',
@@ -194,5 +205,4 @@ function inMemoryStaticFiles(assetsPath, assetsUrl, maxAge) {
         }
     };
 }
-exports.inMemoryStaticFiles = inMemoryStaticFiles;
 //# sourceMappingURL=requestUtils.js.map

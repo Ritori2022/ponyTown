@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminEvents = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../../common/utils");
@@ -62,7 +63,7 @@ let AdminEvents = class AdminEvents extends base_table_1.BaseTable {
         this.model.checkDuplicateEntries(true);
     }
     removeEvents(olderThan) {
-        const date = utils_1.fromNow(-olderThan);
+        const date = (0, utils_1.fromNow)(-olderThan);
         const oldEvents = this.items.filter(e => e.updatedAt.getTime() < date.getTime());
         return Promise.all(oldEvents.map(e => this.model.removeEvent(e._id).then(() => this.removedEvent(e))));
     }
@@ -90,16 +91,16 @@ let AdminEvents = class AdminEvents extends base_table_1.BaseTable {
         super.updatePage();
     }
 };
+exports.AdminEvents = AdminEvents;
 tslib_1.__decorate([
-    core_1.ViewChild('chatLog', { static: true }),
+    (0, core_1.ViewChild)('chatLog', { static: true }),
     tslib_1.__metadata("design:type", admin_chat_log_1.AdminChatLog)
 ], AdminEvents.prototype, "chatLog", void 0);
-AdminEvents = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminEvents = AdminEvents = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-events',
         templateUrl: 'admin-events.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AdminEvents);
-exports.AdminEvents = AdminEvents;
 //# sourceMappingURL=admin-events.js.map

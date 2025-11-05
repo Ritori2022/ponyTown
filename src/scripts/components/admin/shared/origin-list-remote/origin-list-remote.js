@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.OriginListRemote = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -25,25 +26,25 @@ let OriginListRemote = class OriginListRemote {
         this.subscription && this.subscription.unsubscribe();
     }
 };
+exports.OriginListRemote = OriginListRemote;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], OriginListRemote.prototype, "limit", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], OriginListRemote.prototype, "extended", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], OriginListRemote.prototype, "accountId", null);
-OriginListRemote = tslib_1.__decorate([
-    core_1.Component({
+exports.OriginListRemote = OriginListRemote = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'origin-list-remote',
         templateUrl: 'origin-list-remote.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], OriginListRemote);
-exports.OriginListRemote = OriginListRemote;
 //# sourceMappingURL=origin-list-remote.js.map

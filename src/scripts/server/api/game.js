@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createJoinGame = void 0;
 const url_1 = require("url");
 const errors_1 = require("../../common/errors");
 const userError_1 = require("../userError");
@@ -7,7 +8,7 @@ const accountUtils_1 = require("../../common/accountUtils");
 const adminUtils_1 = require("../../common/adminUtils");
 const serverUtils_1 = require("../serverUtils");
 const accountUtils_2 = require("../accountUtils");
-exports.createJoinGame = (findServer, { version, host, debug, local }, findCharacter, join, addOrigin, hasInvites) => {
+const createJoinGame = (findServer, { version, host, debug, local }, findCharacter, join, addOrigin, hasInvites) => {
     const waiting = new Map();
     return async (account, characterId, serverId, clientVersion, url, hasAlert, origin) => {
         const accountId = account._id.toString();
@@ -18,15 +19,15 @@ exports.createJoinGame = (findServer, { version, host, debug, local }, findChara
             ]);
             if (clientVersion !== version)
                 throw new userError_1.UserError(errors_1.VERSION_ERROR);
-            if (url_1.parse(url).host !== url_1.parse(host).host && !debug && !local)
+            if ((0, url_1.parse)(url).host !== (0, url_1.parse)(host).host && !debug && !local)
                 throw new userError_1.UserError('Invalid data', { message: 'Invalid host', desc: url });
             if (!server)
                 throw new userError_1.UserError('Invalid data');
-            if (serverUtils_1.isServerOffline(server))
+            if ((0, serverUtils_1.isServerOffline)(server))
                 throw new userError_1.UserError('Server is offline');
             if (server.state.settings.blockJoining)
                 throw new userError_1.UserError('Cannot join to the server');
-            if (!accountUtils_1.meetsRequirement({ roles: account.roles, supporter: adminUtils_1.supporterLevel(account), supporterInvited }, server.state.require))
+            if (!(0, accountUtils_1.meetsRequirement)({ roles: account.roles, supporter: (0, adminUtils_1.supporterLevel)(account), supporterInvited }, server.state.require))
                 throw new userError_1.UserError('Server is restricted');
             if (!characterId || typeof characterId !== 'string')
                 throw new userError_1.UserError('Invalid data', { message: 'Invalid pony ID', desc: `"${characterId}"` });
@@ -35,7 +36,7 @@ exports.createJoinGame = (findServer, { version, host, debug, local }, findChara
             if (req) {
                 throw new userError_1.UserError('Already waiting for join request');
             }
-            const alert = accountUtils_2.getAccountAlertMessage(account);
+            const alert = (0, accountUtils_2.getAccountAlertMessage)(account);
             if (alert && !hasAlert) {
                 return { alert };
             }
@@ -55,4 +56,5 @@ exports.createJoinGame = (findServer, { version, host, debug, local }, findChara
         }
     };
 };
+exports.createJoinGame = createJoinGame;
 //# sourceMappingURL=game.js.map

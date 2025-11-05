@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HEAD_ACCESSORY_OFFSETS = exports.EXTRA_ACCESSORY_OFFSETS = exports.EAR_ACCESSORY_OFFSETS = exports.chestAccessoryOffsets = exports.waistAccessoryOffsets = exports.backAccessoryOffsets = exports.neckAccessoryOffsets = exports.backLegOffsets = exports.frontLegOffsets = exports.wingOffsets = exports.tailOffsets = exports.headOffsets = exports.cmOffsets = void 0;
 const createPoint = ([x, y]) => ({ x, y });
 const createPoints = (pts) => pts.map(createPoint);
 exports.cmOffsets = [];
@@ -45,79 +46,79 @@ offsets(14, [8, 11], [7, 12], [9, 14], [7, 11], [6, 9], [8, 11], /***/ [7, 12], 
 offsets(15, [8, 11], [7, 11], [9, 14], [7, 11], [6, 9], [8, 11], /***/ [7, 11], [8, 8], [6, 10], [7, 9]);
 offsets(16, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], /***/ [0, 0], [0, 0], [0, 0], [0, 0]);
 exports.EAR_ACCESSORY_OFFSETS = createPoints([
+    [0, 0], // 0
     [0, 0],
     [0, 0],
     [0, 0],
     [0, 0],
-    [0, 0],
-    [0, 0],
+    [0, 0], // 5
 ]);
 exports.EXTRA_ACCESSORY_OFFSETS = createPoints([
-    [0, 9],
+    [0, 9], // 0
     [0, 0],
     [0, 0],
     [0, 1],
     [0, 2],
-    [0, 2],
+    [0, 2], // 5
     [0, 1],
     [0, 1],
     [0, 2],
     [0, 3],
-    [0, 2],
+    [0, 2], // 10
     [0, 2],
     [0, 3],
     [0, 1],
     [0, 1],
-    [0, 1],
+    [0, 1], // 15
     [0, 9],
     [0, 3],
     [0, 3],
     [0, 3],
-    [0, 3],
+    [0, 3], // 20
     [0, 3],
     [0, 2],
     [0, 3],
     [0, 3],
-    [0, 3],
+    [0, 3], // 25
     [0, 2],
     [0, 3],
     [-1, 3],
     [0, 3],
-    [0, 3],
+    [0, 3], // 30
     [0, 3],
 ]);
 exports.HEAD_ACCESSORY_OFFSETS = createPoints([
-    [0, 0],
+    [0, 0], // 0
     [0, -5],
     [0, -5],
     [0, -4],
     [0, -4],
-    [0, -4],
+    [0, -4], // 5
     [0, -4],
     [1, -4],
     [0, -4],
     [0, -3],
-    [0, -4],
+    [0, -4], // 10
     [0, -4],
     [0, -3],
     [1, -5],
     [0, -4],
-    [0, -4],
+    [0, -4], // 15
     [0, 0],
     [0, -4],
     [0, -4],
     [0, -4],
-    [0, -4],
+    [0, -4], // 20
     [0, -4],
     [0, -5],
     [0, -5],
     [0, -4],
-    [1, -3],
+    [1, -3], // 25
     [0, -4],
     [0, -4],
     [0, -4],
     [0, -4],
-    [0, -4],
+    [0, -4], // 30
     [0, -3],
 ]);
 //# sourceMappingURL=offsets.js.map

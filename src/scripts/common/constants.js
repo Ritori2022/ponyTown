@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SEASON = 1 /* Summer */;
-exports.HOLIDAY = 0 /* None */;
+exports.HIDES_PER_PAGE = exports.MAP_LOAD_SAVE_TIMEOUT = exports.SWAP_TIMEOUT = exports.MAX_HIDE_TIME = exports.MIN_HIDE_TIME = exports.UNHIDE_TIMEOUT = exports.HIDE_LIMIT = exports.FRIENDS_LIMIT = exports.PARTY_LIMIT = exports.MAX_FILTER_WORDS_LENGTH = exports.ACCOUNT_NAME_MAX_LENGTH = exports.ACCOUNT_NAME_MIN_LENGTH = exports.PLAYER_DESC_MAX_LENGTH = exports.PLAYER_NAME_MAX_LENGTH = exports.SAY_MAX_LENGTH = exports.MAX_SCALE = exports.MIN_SCALE = exports.CM_SIZE = exports.WATER_HEIGHT = exports.WATER_FPS = exports.MIN_CHATLOG_RANGE = exports.MAX_CHATLOG_RANGE = exports.DEFAULT_CHATLOG_OPACITY = exports.JOINS_PER_UPDATE = exports.MAP_SWITCHES_PER_UPDATE = exports.MAP_SWITCH_DELAY = exports.MAP_DISCARD_TIMEOUT = exports.REMOVE_INTERVAL = exports.REMOVE_TIMEOUT = exports.AFK_TIMEOUT = exports.SERVER_FPS = exports.FLY_DELAY = exports.EXPRESSION_TIMEOUT = exports.TILE_CHANGE_RANGE = exports.SAYS_TIME_MAX = exports.SAYS_TIME_MIN = exports.PONY_SPEED_WALK = exports.PONY_SPEED_TROT = exports.PONY_TYPE = exports.MAX_VELOCITY = exports.BATCH_SIZE_MAX = exports.YEAR = exports.MONTH = exports.WEEK = exports.DAY = exports.HOUR = exports.MINUTE = exports.SECOND = exports.HOLIDAY = exports.SEASON = void 0;
+exports.GENERAL_RULES = exports.PAST_SUPPORTER_REWARDS = exports.SUPPORTER_REWARDS_LIST = exports.SUPPORTER_REWARDS = exports.rewardLevel3 = exports.rewardLevel2 = exports.rewardLevel1 = exports.SUPPORTER_PONY = exports.OFFLINE_PONY = exports.MONTH_NAMES_EN = exports.TIMEOUTS = exports.REQUEST_DATE_OF_BIRTH = exports.MIN_ADULT_AGE = exports.PONY_INFO_KEY = exports.TILES_RESTORE_MAX_SEC = exports.TILES_RESTORE_MIN_SEC = exports.REGION_BORDER = exports.REGION_HEIGHT = exports.REGION_WIDTH = exports.REGION_SIZE = exports.tileElevation = exports.tileHeight = exports.tileWidth = exports.blinkFps = exports.CAMERA_HEIGHT_MAX = exports.CAMERA_HEIGHT_MIN = exports.CAMERA_WIDTH_MAX = exports.CAMERA_WIDTH_MIN = exports.HOUSE_ENTITY_LIMIT = exports.ENTITY_TYPE_LIMIT = exports.COMMAND_ACTION_TIME_DELAY = exports.ACTIONS_LIMIT = exports.ADDITIONAL_CHARACTERS_PAST_SUPPORTER = exports.ADDITIONAL_CHARACTERS_SUPPORTER3 = exports.ADDITIONAL_CHARACTERS_SUPPORTER2 = exports.ADDITIONAL_CHARACTERS_SUPPORTER1 = exports.BASE_CHARACTER_LIMIT = exports.LATEST_CHARACTER_LIMIT = void 0;
+exports.isChatlogRangeUnlimited = isChatlogRangeUnlimited;
+exports.SEASON = 1 /* Season.Summer */;
+exports.HOLIDAY = 0 /* Holiday.None */;
 exports.SECOND = 1000;
 exports.MINUTE = exports.SECOND * 60;
 exports.HOUR = exports.MINUTE * 60;
@@ -33,7 +36,6 @@ exports.MIN_CHATLOG_RANGE = 2;
 function isChatlogRangeUnlimited(range) {
     return !range || range < exports.MIN_CHATLOG_RANGE || range >= exports.MAX_CHATLOG_RANGE;
 }
-exports.isChatlogRangeUnlimited = isChatlogRangeUnlimited;
 exports.WATER_FPS = 6;
 exports.WATER_HEIGHT = [0, -1, -2, -1];
 exports.CM_SIZE = 5;

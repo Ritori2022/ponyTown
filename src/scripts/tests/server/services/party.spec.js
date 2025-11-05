@@ -21,7 +21,7 @@ describe('PartyService', () => {
     let reportInviteLimit;
     let clock;
     function createClient(id, characterId, accountId) {
-        return mocks_1.mockClient({
+        return (0, mocks_1.mockClient)({
             accountId,
             characterId,
             pony: { id },
@@ -41,14 +41,14 @@ describe('PartyService', () => {
         return party;
     }
     beforeEach(() => {
-        clock = sinon_1.useFakeTimers(Date.now());
+        clock = (0, sinon_1.useFakeTimers)(Date.now());
         leader = createClient(1, 'foo', 'foofoo');
         client = createClient(2, 'bar', 'barbar');
-        leaderUpdateParty = sinon_1.stub(leader, 'updateParty');
-        clientUpdateParty = sinon_1.stub(client, 'updateParty');
-        reportInviteLimit = sinon_1.stub();
+        leaderUpdateParty = (0, sinon_1.stub)(leader, 'updateParty');
+        clientUpdateParty = (0, sinon_1.stub)(client, 'updateParty');
+        reportInviteLimit = (0, sinon_1.stub)();
         notificationService = new notification_1.NotificationService();
-        addNotification = sinon_1.stub(notificationService, 'addNotification').returns(1);
+        addNotification = (0, sinon_1.stub)(notificationService, 'addNotification').returns(1);
         partyService = new party_1.PartyService(notificationService, reportInviteLimit);
     });
     afterEach(() => {
@@ -68,21 +68,21 @@ describe('PartyService', () => {
             it('replaces matching client', () => {
                 const newClient = createClient(5, 'bar', 'barbar');
                 partyService.clientConnected(newClient);
-                chai_1.expect(leader.party.clients[1]).equal(newClient);
+                (0, chai_1.expect)(leader.party.clients[1]).equal(newClient);
             });
             it('replaces matching client for the same account', () => {
                 const newClient = createClient(5, 'abc', 'barbar');
                 partyService.clientConnected(newClient);
-                chai_1.expect(leader.party.clients[1]).equal(newClient);
+                (0, chai_1.expect)(leader.party.clients[1]).equal(newClient);
             });
             it('updates leader if leader reconnected', () => {
                 const newLeader = createClient(5, 'foo', 'foofoo');
                 partyService.clientConnected(newLeader);
-                chai_1.expect(client.party.leader).equal(newLeader);
+                (0, chai_1.expect)(client.party.leader).equal(newLeader);
             });
             it('sends party update', () => {
                 const newClient = createClient(5, 'bar', 'barbar');
-                const updateParty = sinon_1.stub(newClient, 'updateParty');
+                const updateParty = (0, sinon_1.stub)(newClient, 'updateParty');
                 leaderUpdateParty.reset();
                 partyService.clientConnected(newClient);
                 sinon_1.assert.calledOnce(updateParty);
@@ -91,29 +91,29 @@ describe('PartyService', () => {
             it('sets party for new client', () => {
                 const newClient = createClient(5, 'bar', 'barbar');
                 partyService.clientConnected(newClient);
-                chai_1.expect(newClient.party).equal(leader.party);
+                (0, chai_1.expect)(newClient.party).equal(leader.party);
             });
             it('unsets party for old client', () => {
                 const newClient = createClient(5, 'bar', 'barbar');
                 partyService.clientConnected(newClient);
-                chai_1.expect(client.party).undefined;
+                (0, chai_1.expect)(client.party).undefined;
             });
             it('sets offlineAt to current time', () => {
                 const newClient = createClient(5, 'bar', 'barbar');
                 clock.setSystemTime(100);
                 partyService.clientConnected(newClient);
-                chai_1.expect(client.offlineAt.getTime()).equal(new Date().getTime());
+                (0, chai_1.expect)(client.offlineAt.getTime()).equal(new Date().getTime());
             });
         });
         it('cancels new leader promotion', () => {
             const party = createParty(leader, [client, createClient(9, 'x', 'xx')]);
-            const promoteLeader = sinon_1.stub(partyService, 'promoteLeader');
+            const promoteLeader = (0, sinon_1.stub)(partyService, 'promoteLeader');
             const newLeader = createClient(10, 'foo', 'foofoo');
             leader.offline = true;
             partyService.clientDisconnected(leader);
             partyService.clientConnected(newLeader);
             clock.tick(party_1.LEADER_TIMEOUT + 100);
-            chai_1.expect(party.leader).equal(newLeader);
+            (0, chai_1.expect)(party.leader).equal(newLeader);
             sinon_1.assert.notCalled(promoteLeader);
         });
     });
@@ -123,8 +123,8 @@ describe('PartyService', () => {
             client.offline = true;
             partyService.clientDisconnected(client);
             sinon_1.assert.calledWith(leaderUpdateParty, [
-                [1, 1 /* Leader */],
-                [2, 4 /* Offline */],
+                [1, 1 /* PartyFlags.Leader */],
+                [2, 4 /* PartyFlags.Offline */],
             ]);
         });
         it('does not send party update to disconnected client', () => {
@@ -141,7 +141,7 @@ describe('PartyService', () => {
         });
         it('promotes new leader after timeout', () => {
             createParty(leader, [client, createClient(9)]);
-            const promoteLeader = sinon_1.stub(partyService, 'promoteLeader');
+            const promoteLeader = (0, sinon_1.stub)(partyService, 'promoteLeader');
             leader.offline = true;
             partyService.clientDisconnected(leader);
             clock.tick(party_1.LEADER_TIMEOUT + 100);
@@ -150,7 +150,7 @@ describe('PartyService', () => {
         it('does not promote offline player as the new leader', () => {
             const anotherClient = createClient(9);
             createParty(leader, [client, anotherClient]);
-            const promoteLeader = sinon_1.stub(partyService, 'promoteLeader');
+            const promoteLeader = (0, sinon_1.stub)(partyService, 'promoteLeader');
             leader.offline = true;
             client.offline = true;
             partyService.clientDisconnected(leader);
@@ -161,7 +161,7 @@ describe('PartyService', () => {
             const party = createParty(leader, [createClient(9)], [client]);
             client.offline = true;
             partyService.clientDisconnected(client);
-            chai_1.expect(party.pending).empty;
+            (0, chai_1.expect)(party.pending).empty;
         });
         it('sends party update (pending)', () => {
             createParty(leader, [createClient(9)], [client]);
@@ -174,35 +174,35 @@ describe('PartyService', () => {
             leader.offline = true;
             partyService.clientDisconnected(leader);
             clock.tick(party_1.LEADER_TIMEOUT + 100);
-            chai_1.expect(partyService.parties).not.include(party);
+            (0, chai_1.expect)(partyService.parties).not.include(party);
         });
     });
     describe('invite()', () => {
         it('creates new party on the leader if none exists', () => {
             partyService.invite(leader, client);
-            chai_1.expect(leader.party).not.empty;
-            chai_1.expect(leader.party.leader).equal(leader);
-            chai_1.expect(leader.party.clients).eql([leader]);
-            chai_1.expect(leader.party.pending).eql([{ client, notificationId: 1 }]);
-            chai_1.expect(partyService.parties).contain(leader.party);
+            (0, chai_1.expect)(leader.party).not.empty;
+            (0, chai_1.expect)(leader.party.leader).equal(leader);
+            (0, chai_1.expect)(leader.party.clients).eql([leader]);
+            (0, chai_1.expect)(leader.party.pending).eql([{ client, notificationId: 1 }]);
+            (0, chai_1.expect)(partyService.parties).contain(leader.party);
         });
         it('adds client to pending members', () => {
             partyService.invite(leader, client);
-            chai_1.expect(leader.party.pending[0].client).equal(client);
+            (0, chai_1.expect)(leader.party.pending[0].client).equal(client);
         });
         it('logs party invitation', () => {
-            const systemLog = sinon_1.stub(leader.reporter, 'systemLog');
+            const systemLog = (0, sinon_1.stub)(leader.reporter, 'systemLog');
             partyService.invite(leader, client);
             sinon_1.assert.calledWith(systemLog, 'Invite to party [barbar]');
         });
         it('sends invite notice the the client', () => {
             leader.pony.name = 'foo';
             partyService.invite(leader, client);
-            sinon_1.assert.calledWith(addNotification, client, sinon_1.match({
+            sinon_1.assert.calledWith(addNotification, client, (0, sinon_1.match)({
                 name: 'foo',
                 entityId: leader.pony.id,
                 message: '<div class="text-party"><b>Party invite</b></div><b>#NAME#</b> invited you to a party',
-                flags: 8 /* Accept */ | 16 /* Reject */ | 64 /* Ignore */,
+                flags: 8 /* NotificationFlags.Accept */ | 16 /* NotificationFlags.Reject */ | 64 /* NotificationFlags.Ignore */,
             }));
         });
         it('sends invite notice the the client (existing party)', () => {
@@ -213,8 +213,8 @@ describe('PartyService', () => {
         it('sends party update to the leader', () => {
             partyService.invite(leader, client);
             sinon_1.assert.calledWithMatch(leaderUpdateParty, [
-                [1, 1 /* Leader */],
-                [2, 2 /* Pending */],
+                [1, 1 /* PartyFlags.Leader */],
+                [2, 2 /* PartyFlags.Pending */],
             ]);
         });
         it('does nothing if already is in party and not a leader', () => {
@@ -237,20 +237,20 @@ describe('PartyService', () => {
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('does nothing if party is already at member limit', () => {
-            leader.party = createParty(leader, lodash_1.range(0, constants_1.PARTY_LIMIT - 1).map(i => createClient(i + 10)));
+            leader.party = createParty(leader, (0, lodash_1.range)(0, constants_1.PARTY_LIMIT - 1).map(i => createClient(i + 10)));
             partyService.invite(leader, client);
             sinon_1.assert.notCalled(addNotification);
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('does nothing if party is already at member limit (pending)', () => {
-            leader.party = createParty(leader, [], lodash_1.range(0, constants_1.PARTY_LIMIT - 1).map(i => createClient(i + 10)));
+            leader.party = createParty(leader, [], (0, lodash_1.range)(0, constants_1.PARTY_LIMIT - 1).map(i => createClient(i + 10)));
             partyService.invite(leader, client);
             sinon_1.assert.notCalled(addNotification);
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('does nothing if leader is ignored', () => {
             leader.party = createParty(leader, [createClient(9)], []);
-            playerUtils_1.addIgnore(leader, client.accountId);
+            (0, playerUtils_1.addIgnore)(leader, client.accountId);
             partyService.invite(leader, client);
             sinon_1.assert.notCalled(addNotification);
             sinon_1.assert.notCalled(leaderUpdateParty);
@@ -292,7 +292,7 @@ describe('PartyService', () => {
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         function setupRejectLimit() {
-            lodash_1.range(0, party_1.INVITE_REJECTED_LIMIT).forEach(i => {
+            (0, lodash_1.range)(0, party_1.INVITE_REJECTED_LIMIT).forEach(i => {
                 const c = createClient(10 + i);
                 partyService.invite(leader, c);
                 addNotification.firstCall.args[1].reject();
@@ -325,7 +325,7 @@ describe('PartyService', () => {
         });
         it('does nothing if leader has party invites blocked', () => {
             leader.party = createParty(leader, [createClient(9)], []);
-            leader.account.flags = 1 /* BlockPartyInvites */;
+            leader.account.flags = 1 /* AccountFlags.BlockPartyInvites */;
             partyService.invite(leader, client);
             sinon_1.assert.notCalled(addNotification);
             sinon_1.assert.notCalled(leaderUpdateParty);
@@ -338,7 +338,7 @@ describe('PartyService', () => {
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('does nothing if user already reached party request limit', () => {
-            lodash_1.range(0, party_1.INVITE_LIMIT).forEach(i => partyService.invite(createClient(10 + i), client));
+            (0, lodash_1.range)(0, party_1.INVITE_LIMIT).forEach(i => partyService.invite(createClient(10 + i), client));
             addNotification.reset();
             partyService.invite(leader, client);
             sinon_1.assert.notCalled(addNotification);
@@ -346,7 +346,7 @@ describe('PartyService', () => {
         it('does nothing if add notification returns 0', () => {
             addNotification.returns(0);
             partyService.invite(leader, client);
-            chai_1.expect(leader.party).undefined;
+            (0, chai_1.expect)(leader.party).undefined;
             sinon_1.assert.notCalled(leaderUpdateParty);
             sinon_1.assert.notCalled(clientUpdateParty);
         });
@@ -355,7 +355,7 @@ describe('PartyService', () => {
             leader.party = party;
             addNotification.returns(0);
             partyService.invite(leader, client);
-            chai_1.expect(leader.party).equal(party);
+            (0, chai_1.expect)(leader.party).equal(party);
             sinon_1.assert.notCalled(clientUpdateParty);
         });
         describe('notification.accept()', () => {
@@ -365,10 +365,10 @@ describe('PartyService', () => {
             it('removes client from pending', () => {
                 partyService.invite(leader, client);
                 accept();
-                chai_1.expect(leader.party.pending).empty;
+                (0, chai_1.expect)(leader.party.pending).empty;
             });
             it('removes notification', () => {
-                const removeNotification = sinon_1.stub(notificationService, 'removeNotification');
+                const removeNotification = (0, sinon_1.stub)(notificationService, 'removeNotification');
                 partyService.invite(leader, client);
                 accept();
                 sinon_1.assert.calledWith(removeNotification, client, 1);
@@ -376,12 +376,12 @@ describe('PartyService', () => {
             it('adds client to clients', () => {
                 partyService.invite(leader, client);
                 accept();
-                chai_1.expect(leader.party.clients).contain(client);
+                (0, chai_1.expect)(leader.party.clients).contain(client);
             });
             it('sets party for client', () => {
                 partyService.invite(leader, client);
                 accept();
-                chai_1.expect(client.party).equal(leader.party);
+                (0, chai_1.expect)(client.party).equal(leader.party);
             });
             it('sends party update', () => {
                 partyService.invite(leader, client);
@@ -392,7 +392,7 @@ describe('PartyService', () => {
                 sinon_1.assert.calledOnce(clientUpdateParty);
             });
             it('logs accept', () => {
-                const systemLog = sinon_1.stub(leader.reporter, 'systemLog');
+                const systemLog = (0, sinon_1.stub)(leader.reporter, 'systemLog');
                 partyService.invite(leader, client);
                 accept();
                 sinon_1.assert.calledWith(systemLog, 'Invite accepted by [barbar]');
@@ -404,8 +404,8 @@ describe('PartyService', () => {
                 partyService.invite(leader2, client);
                 partyService.invite(leader3, client);
                 accept();
-                chai_1.expect(leader2.party).undefined;
-                chai_1.expect(leader3.party).undefined;
+                (0, chai_1.expect)(leader2.party).undefined;
+                (0, chai_1.expect)(leader3.party).undefined;
             });
             it('does nothing if not in pending', () => {
                 createParty(leader, [createClient(9)]);
@@ -431,10 +431,10 @@ describe('PartyService', () => {
                 createParty(leader, [createClient(9)]);
                 partyService.invite(leader, client);
                 reject();
-                chai_1.expect(leader.party.pending).empty;
+                (0, chai_1.expect)(leader.party.pending).empty;
             });
             it('removes notification', () => {
-                const removeNotification = sinon_1.stub(notificationService, 'removeNotification');
+                const removeNotification = (0, sinon_1.stub)(notificationService, 'removeNotification');
                 partyService.invite(leader, client);
                 reject();
                 sinon_1.assert.calledWith(removeNotification, client, 1);
@@ -447,7 +447,7 @@ describe('PartyService', () => {
                 sinon_1.assert.calledOnce(leaderUpdateParty);
             });
             it('logs rejection', () => {
-                const systemLog = sinon_1.stub(leader.reporter, 'systemLog');
+                const systemLog = (0, sinon_1.stub)(leader.reporter, 'systemLog');
                 partyService.invite(leader, client);
                 reject();
                 sinon_1.assert.calledWith(systemLog, 'Invite rejected by [barbar]');
@@ -456,7 +456,7 @@ describe('PartyService', () => {
                 partyService.invite(leader, client);
                 leaderUpdateParty.reset();
                 reject();
-                chai_1.expect(leader.party).undefined;
+                (0, chai_1.expect)(leader.party).undefined;
             });
             it('does nothing if client is not pending anymore', () => {
                 createParty(leader, [createClient(9)]);
@@ -473,22 +473,22 @@ describe('PartyService', () => {
             const party = createParty(leader, [client, createClient(3)]);
             client.party = party;
             partyService.remove(leader, client);
-            chai_1.expect(party.clients).not.include(client);
+            (0, chai_1.expect)(party.clients).not.include(client);
         });
         it('removes party from the client', () => {
             const party = createParty(leader, [client, createClient(3)]);
             client.party = party;
             partyService.remove(leader, client);
-            chai_1.expect(client.party).undefined;
+            (0, chai_1.expect)(client.party).undefined;
         });
         it('removes pending client from the party', () => {
             const party = createParty(leader, [createClient(3)], [client]);
             client.party = party;
             partyService.remove(leader, client);
-            chai_1.expect(party.pending).empty;
+            (0, chai_1.expect)(party.pending).empty;
         });
         it('logs cancel if removed pending client', () => {
-            const systemLog = sinon_1.stub(leader.reporter, 'systemLog');
+            const systemLog = (0, sinon_1.stub)(leader.reporter, 'systemLog');
             const party = createParty(leader, [createClient(3)], [client]);
             client.party = party;
             partyService.remove(leader, client);
@@ -496,7 +496,7 @@ describe('PartyService', () => {
         });
         it('counts invite limit for cancels', () => {
             const party = createParty(leader, [createClient(3)], []);
-            utils_1.times(party_1.INVITE_REJECTED_LIMIT, () => {
+            (0, utils_1.times)(party_1.INVITE_REJECTED_LIMIT, () => {
                 client.party = party;
                 party.pending.push({ client, notificationId: 0 });
                 partyService.remove(leader, client);
@@ -504,7 +504,7 @@ describe('PartyService', () => {
             sinon_1.assert.calledWith(reportInviteLimit, leader);
         });
         it('removes pending client notification', () => {
-            const removeNotification = sinon_1.stub(notificationService, 'removeNotification');
+            const removeNotification = (0, sinon_1.stub)(notificationService, 'removeNotification');
             const party = createParty(leader, [createClient(3)], [client]);
             client.party = party;
             partyService.remove(leader, client);
@@ -532,47 +532,47 @@ describe('PartyService', () => {
             const party = createParty(leader, [client, createClient(3)]);
             client.party = party;
             partyService.remove(createClient(4), client);
-            chai_1.expect(party.clients).include(client);
+            (0, chai_1.expect)(party.clients).include(client);
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('does nothing if given client is not in the party', () => {
             const party = createParty(leader, [createClient(3), createClient(4)]);
             partyService.remove(leader, client);
-            chai_1.expect(party.clients).not.include(client);
+            (0, chai_1.expect)(party.clients).not.include(client);
             sinon_1.assert.notCalled(leaderUpdateParty);
         });
         it('selects new party leader', () => {
             const party = createParty(leader, [client, createClient(3)]);
             partyService.remove(leader, leader);
-            chai_1.expect(party.leader).equal(client);
+            (0, chai_1.expect)(party.leader).equal(client);
         });
         it('disbands party if less than 2 members are left', () => {
             createParty(leader, [client]);
             partyService.remove(leader, client);
-            chai_1.expect(leader.party).undefined;
-            chai_1.expect(client.party).undefined;
+            (0, chai_1.expect)(leader.party).undefined;
+            (0, chai_1.expect)(client.party).undefined;
         });
         it('disbands party if cannot find new leader', () => {
             const party = createParty(leader, [], [createClient(9), createClient(10)]);
             partyService.remove(leader, leader);
-            chai_1.expect(partyService.parties).not.include(party);
+            (0, chai_1.expect)(partyService.parties).not.include(party);
         });
         it('disbands party and clear all its fields', () => {
             const party = createParty(leader, [client], []);
             partyService.remove(leader, leader);
-            chai_1.expect(party.clients).empty;
-            chai_1.expect(party.pending).empty;
+            (0, chai_1.expect)(party.clients).empty;
+            (0, chai_1.expect)(party.pending).empty;
         });
     });
     describe('leave()', () => {
         it('calls removeFromParty', () => {
             createParty(leader, [client]);
-            const remove = sinon_1.stub(partyService, 'remove');
+            const remove = (0, sinon_1.stub)(partyService, 'remove');
             partyService.leave(client);
             sinon_1.assert.calledWith(remove, leader, client);
         });
         it('does not call removeFromParty if not in party', () => {
-            const remove = sinon_1.stub(partyService, 'remove');
+            const remove = (0, sinon_1.stub)(partyService, 'remove');
             partyService.leave(client);
             sinon_1.assert.notCalled(remove);
         });
@@ -581,14 +581,14 @@ describe('PartyService', () => {
         it('sets client as leader', () => {
             const party = createParty(leader, [client]);
             partyService.promoteLeader(leader, client);
-            chai_1.expect(party.leader).equal(client);
+            (0, chai_1.expect)(party.leader).equal(client);
         });
         it('sends party update', () => {
             createParty(leader, [client]);
             partyService.promoteLeader(leader, client);
             sinon_1.assert.calledWithMatch(leaderUpdateParty, [
-                [1, 0 /* None */],
-                [2, 1 /* Leader */],
+                [1, 0 /* PartyFlags.None */],
+                [2, 1 /* PartyFlags.Leader */],
             ]);
         });
         it('does nothing if client is already the leader', () => {

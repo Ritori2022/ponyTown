@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+exports.HidingService = void 0;
+exports.hidingDataPath = hidingDataPath;
+exports.saveHidingData = saveHidingData;
+exports.pollHidingDataSave = pollHidingDataSave;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
 const rxjs_1 = require("rxjs");
 const constants_1 = require("../../common/constants");
 const logger_1 = require("../logger");
@@ -19,12 +24,11 @@ function clientInfo({ accountId, account, characterName }) {
     return `${characterName} (${account.name}) [${accountId}]`;
 }
 function simpleNotification(message, note) {
-    return { id: 0, name: '', message, note, flags: 1 /* Ok */ };
+    return { id: 0, name: '', message, note, flags: 1 /* NotificationFlags.Ok */ };
 }
 function hidingDataPath(serverId) {
-    return paths_1.pathTo('settings', `hiding-${serverId}.json`);
+    return (0, paths_1.pathTo)('settings', `hiding-${serverId}.json`);
 }
-exports.hidingDataPath = hidingDataPath;
 async function saveHidingData(hiding, serverId) {
     if (!TESTS) {
         try {
@@ -36,11 +40,9 @@ async function saveHidingData(hiding, serverId) {
         }
     }
 }
-exports.saveHidingData = saveHidingData;
 function pollHidingDataSave(hiding, serverId) {
     setInterval(() => saveHidingData(hiding, serverId), 10 * constants_1.MINUTE);
 }
-exports.pollHidingDataSave = pollHidingDataSave;
 class HidingService {
     constructor(clearUnhides, notifications, findClient, log) {
         this.clearUnhides = clearUnhides;
@@ -105,12 +107,12 @@ class HidingService {
         const hides = this.hides.get(requester.accountId);
         const count = hides && hides.size || 0;
         if (requester.accountId === target.accountId) {
-            chat_1.saySystem(requester, `Cannot hide yourself`);
+            (0, chat_1.saySystem)(requester, `Cannot hide yourself`);
         }
-        else if (requester.party && utils_1.includes(requester.party.clients, target)) {
+        else if (requester.party && (0, utils_1.includes)(requester.party.clients, target)) {
             this.notifications.addNotification(requester, simpleNotification(cannotHidePlayerInParty));
         }
-        else if (friends_1.isFriend(requester, target)) {
+        else if ((0, friends_1.isFriend)(requester, target)) {
             this.notifications.addNotification(requester, simpleNotification(cannotHideFriends));
         }
         else if (count >= constants_1.HIDE_LIMIT) {
@@ -122,7 +124,7 @@ class HidingService {
                 name: target.pony.name || '',
                 entityId: target.pony.id,
                 message: `Are you sure you want to hide <b>#NAME#</b> ?`,
-                flags: 2 /* Yes */ | 4 /* No */ | (target.pony.nameBad ? 128 /* NameBad */ : 0),
+                flags: 2 /* NotificationFlags.Yes */ | 4 /* NotificationFlags.No */ | (target.pony.nameBad ? 128 /* NotificationFlags.NameBad */ : 0),
                 accept: () => this.confirmHide(requester, target, timeout),
             });
         }
@@ -138,7 +140,7 @@ class HidingService {
                 name: '',
                 message: 'Are you sure you want to unhide all temporarily hidden players ?',
                 note: 'You can only do this once per hour. This action will require re-joining the game.',
-                flags: 2 /* Yes */ | 4 /* No */,
+                flags: 2 /* NotificationFlags.Yes */ | 4 /* NotificationFlags.No */,
                 accept: () => this.unhideAll(requester),
             });
         }
@@ -149,7 +151,7 @@ class HidingService {
             if (timeout === 0) {
                 message += ' (permanent)';
             }
-            this.log(logger_1.systemMessage(requester.accountId, message));
+            this.log((0, logger_1.systemMessage)(requester.accountId, message));
         }
     }
     isHiddenInner(who, from) {
@@ -166,7 +168,7 @@ class HidingService {
         const by = byClient.accountId;
         const who = whoClient.accountId;
         if (timeout === 0) { // permanent
-            db_1.addHide(by, who, entityUtils_1.getEntityName(whoClient.pony, byClient) || '[none]')
+            (0, db_1.addHide)(by, who, (0, entityUtils_1.getEntityName)(whoClient.pony, byClient) || '[none]')
                 .then(() => {
                 byClient.permaHides.add(who);
                 this.notify([{ by, who }]);
@@ -217,7 +219,7 @@ class HidingService {
             this.notify(notify);
             this.unhidesAll.next(by);
         }
-        this.log(logger_1.systemMessage(by, 'unhide all'));
+        this.log((0, logger_1.systemMessage)(by, 'unhide all'));
     }
     merged(target, merge) {
         const targetHides = this.hides.get(target);

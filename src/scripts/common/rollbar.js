@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isIgnoredMessage = isIgnoredMessage;
+exports.isIgnoredError = isIgnoredError;
+exports.rollbarCheckIgnore = rollbarCheckIgnore;
 const lodash_1 = require("lodash");
 const errors_1 = require("./errors");
 const IGNORE = new RegExp([
@@ -50,11 +53,11 @@ const IGNORE = new RegExp([
     'Not enough storage is available',
     'Failed to initialize graphics device',
     'Not enough memory resources',
-    'Ikke nok minneressurser tilgjengelig',
+    'Ikke nok minneressurser tilgjengelig', // out of memory
     'suficientes recursos de memoria',
     'Onvoldoende geheugenbronnen',
     `Cannot read property 'version' of undefined`,
-    'Maximum call stack size exceeded',
+    'Maximum call stack size exceeded', // howler error on chrome mobile
     // user errors
     errors_1.CHARACTER_LIMIT_ERROR,
     'Too many requests',
@@ -78,15 +81,12 @@ function getLabel(arg) {
 function isIgnoredMessage(message) {
     return IGNORE.test(message);
 }
-exports.isIgnoredMessage = isIgnoredMessage;
 function isIgnoredError(error) {
     return isIgnoredMessage(error.message || `${error}` || '') || isIgnoredMessage(error.stack || '');
 }
-exports.isIgnoredError = isIgnoredError;
 function rollbarCheckIgnore(_isUncaught, args, _payload) {
     return (Array.isArray(args) ? args : [args])
         .map(getLabel)
         .some(isIgnoredMessage);
 }
-exports.rollbarCheckIgnore = rollbarCheckIgnore;
 //# sourceMappingURL=rollbar.js.map

@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+exports.createIslandMap = createIslandMap;
+exports.resetIslandMap = resetIslandMap;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
 const lodash_1 = require("lodash");
-const entities = require("../../common/entities");
+const entities = tslib_1.__importStar(require("../../common/entities"));
 const paths_1 = require("../paths");
 const world_1 = require("../world");
 const mapUtils_1 = require("../mapUtils");
@@ -15,43 +18,43 @@ const constants_1 = require("../../common/constants");
 const controllers_1 = require("../controllers");
 const serverRegion_1 = require("../serverRegion");
 const utils_1 = require("../../common/utils");
-const islandMapData = JSON.parse(fs.readFileSync(paths_1.pathTo('src', 'maps', 'island.json'), 'utf8'));
+const islandMapData = JSON.parse(fs.readFileSync((0, paths_1.pathTo)('src', 'maps', 'island.json'), 'utf8'));
 let islandMapTemplate;
 function createIslandMap(world, instanced, template = false) {
     if (!template && !islandMapTemplate) {
         islandMapTemplate = createIslandMap(mapUtils_1.worldForTemplates, false, true);
     }
     const map = (instanced && islandMapTemplate) ?
-        serverMap_1.serverMapInstanceFromTemplate(islandMapTemplate) :
-        serverMap_1.createServerMap('island', 1 /* Island */, 7, 7, 3 /* Water */, instanced ? 1 /* Party */ : 0 /* Public */);
-    map.usage = instanced ? 1 /* Party */ : 0 /* Public */;
-    map.spawnArea = rect_1.rect(43.4, 20, 3.3, 2.5);
-    map.spawns.set('house', rect_1.rect(27, 24, 2, 2));
+        (0, serverMap_1.serverMapInstanceFromTemplate)(islandMapTemplate) :
+        (0, serverMap_1.createServerMap)('island', 1 /* MapType.Island */, 7, 7, 3 /* TileType.Water */, instanced ? 1 /* MapUsage.Party */ : 0 /* MapUsage.Public */);
+    map.usage = instanced ? 1 /* MapUsage.Party */ : 0 /* MapUsage.Public */;
+    map.spawnArea = (0, rect_1.rect)(43.4, 20, 3.3, 2.5);
+    map.spawns.set('house', (0, rect_1.rect)(27, 24, 2, 2));
     if (islandMapTemplate) {
-        serverMap_1.copyMapTiles(map, islandMapTemplate);
+        (0, serverMap_1.copyMapTiles)(map, islandMapTemplate);
     }
     else {
-        serverMap_1.deserializeMap(map, islandMapData);
+        (0, serverMap_1.deserializeMap)(map, islandMapData);
     }
     const goto = instanced ? 'house' : 'public-house';
     const add = (entity) => world.addEntity(entity, map);
     const addEntities = (entities) => entities.map(add);
-    add(entities.house(28, 23)).interact = (_, client) => world_1.goToMap(world, client, goto);
-    add(entities.triggerHouseDoor(27.40, 22.87)).trigger = (_, client) => world_1.goToMap(world, client, goto);
-    add(controllerUtils_1.createBoxOfLanterns(25.5, 25.5));
+    add(entities.house(28, 23)).interact = (_, client) => (0, world_1.goToMap)(world, client, goto);
+    add(entities.triggerHouseDoor(27.40, 22.87)).trigger = (_, client) => (0, world_1.goToMap)(world, client, goto);
+    add((0, controllerUtils_1.createBoxOfLanterns)(25.5, 25.5));
     const boxOfFruits = add(entities.boxFruits(20.72, 20.88));
-    entityUtils_1.setEntityName(boxOfFruits, 'Box of fruits');
+    (0, entityUtils_1.setEntityName)(boxOfFruits, 'Box of fruits');
     const giftPile = add(entities.giftPileInteractive(37.66, 18.21));
-    giftPile.interact = (_, client) => entityUtils_1.updateEntityOptions(client.pony, playerUtils_1.getNextToyOrExtra(client));
-    entityUtils_1.setEntityName(giftPile, 'Toy stash');
+    giftPile.interact = (_, client) => (0, entityUtils_1.updateEntityOptions)(client.pony, (0, playerUtils_1.getNextToyOrExtra)(client));
+    (0, entityUtils_1.setEntityName)(giftPile, 'Toy stash');
     const types = entities.stashEntities.map(e => e.type);
     const itemSign = add(entities.signQuest(24.41, 25.00));
     itemSign.interact = (_, client) => {
         const index = types.indexOf(client.pony.options.hold || 0);
-        playerUtils_1.holdItem(client.pony, types[(index + 1) % types.length]);
+        (0, playerUtils_1.holdItem)(client.pony, types[(index + 1) % types.length]);
     };
-    entityUtils_1.setEntityName(itemSign, 'Item stash');
-    const addTorch = controllerUtils_1.createAddLight(world, map, entities.torch);
+    (0, entityUtils_1.setEntityName)(itemSign, 'Item stash');
+    const addTorch = (0, controllerUtils_1.createAddLight)(world, map, entities.torch);
     addTorch(25.00, 24.00);
     addTorch(39.69, 18.38);
     addTorch(39.66, 21.67);
@@ -80,8 +83,8 @@ function createIslandMap(world, instanced, template = false) {
     add(entities.lanternOn(46.19, 23.38));
     add(entities.lanternOn(42.63, 21.42));
     add(entities.lanternOn(47.00, 18.96));
-    add(entities.triggerBoat(45.5, 24.8)).interact = (_, client) => world_1.goToMap(world, client, '', 'harbor');
-    add(controllerUtils_1.createSignWithText(43, 23.5, 'Return to land', `Hop on the boat to return to the mainland`));
+    add(entities.triggerBoat(45.5, 24.8)).interact = (_, client) => (0, world_1.goToMap)(world, client, '', 'harbor');
+    add((0, controllerUtils_1.createSignWithText)(43, 23.5, 'Return to land', `Hop on the boat to return to the mainland`));
     for (let y = 0; y < 10; y++) {
         const minX = y < 5 ? 0 : 1;
         const maxX = (y % 2) ? 4 : 3;
@@ -90,11 +93,11 @@ function createIslandMap(world, instanced, template = false) {
         for (let x = minX; x < maxX; x++) {
             if ((x === minX && (y % 2)) || (x === (maxX - 1) && (y % 2))) {
                 const ox = x === minX ? (18 / constants_1.tileWidth) : (-18 / constants_1.tileWidth);
-                const plank = lodash_1.sample(entities.planksShort);
+                const plank = (0, lodash_1.sample)(entities.planksShort);
                 add(plank(baseX + ox + x * plankWidth, baseY + y * plankHeight));
             }
             else {
-                const plank = lodash_1.sample(entities.planks);
+                const plank = (0, lodash_1.sample)(entities.planks);
                 add(plank(baseX + x * plankWidth, baseY + y * plankHeight));
             }
         }
@@ -149,7 +152,7 @@ function createIslandMap(world, instanced, template = false) {
     add(entities.collider1x1(29, 42));
     add(entities.collider1x3(29.7, 41));
     add(entities.collider1x3(23.5, 41));
-    const addWoodenFence = controllerUtils_1.createWoodenFenceMaker(world, map);
+    const addWoodenFence = (0, controllerUtils_1.createWoodenFenceMaker)(world, map);
     addWoodenFence(20, 20, 4);
     addWoodenFence(20, 20, 4, false, true);
     addWoodenFence(24, 20, 4, false, true);
@@ -229,7 +232,7 @@ function createIslandMap(world, instanced, template = false) {
     add(entities.waterRock1(25.50, 17.79));
     add(entities.waterRock9(25.66, 18.13));
     add(entities.waterRock4(25.97, 17.79));
-    add(entities.flower3Pickable(30.25, 24.92)).interact = (_, { pony }) => playerUtils_1.holdItem(pony, entities.flowerPick.type);
+    add(entities.flower3Pickable(30.25, 24.92)).interact = (_, { pony }) => (0, playerUtils_1.holdItem)(pony, entities.flowerPick.type);
     add(entities.bench1(37.78, 24.96));
     add(entities.benchSeat(37.75, 28.29));
     add(entities.benchBack(37.75, 29.17));
@@ -250,7 +253,7 @@ function createIslandMap(world, instanced, template = false) {
     add(entities.torch(9.31, 17.83));
     add(entities.torch(9.44, 21.67));
     add(entities.torch(12.75, 18.29));
-    if (world.season === 1 /* Summer */ || world.season === 8 /* Spring */) {
+    if (world.season === 1 /* Season.Summer */ || world.season === 8 /* Season.Spring */) {
         add(entities.flowerPatch1(21.16, 26.04));
         add(entities.flowerPatch3(35.81, 34.75));
         add(entities.flowerPatch3(23.09, 32.29));
@@ -265,7 +268,7 @@ function createIslandMap(world, instanced, template = false) {
         add(entities.flowerPatch6(11.09, 17.79));
         add(entities.flowerPatch7(8.63, 21.67));
     }
-    if (world.season === 2 /* Autumn */) {
+    if (world.season === 2 /* Season.Autumn */) {
         add(entities.leafpileStickRed(31.00, 22.75));
         add(entities.leaves5(18.41, 21.46));
         add(entities.leaves2(21.59, 18.17));
@@ -282,65 +285,63 @@ function createIslandMap(world, instanced, template = false) {
         add(entities.leaves2(8.91, 15.25));
         add(entities.leaves1(10.44, 16.46));
     }
-    addEntities(mapUtils_1.createBunny([
-        utils_1.point(22.19, 27.25),
-        utils_1.point(19.75, 26.13),
-        utils_1.point(18.44, 29.04),
-        utils_1.point(20.41, 31.42),
-        utils_1.point(19.94, 33.04),
-        utils_1.point(22.88, 33.67),
-        utils_1.point(24.91, 31.25),
-        utils_1.point(26.09, 32.50),
-        utils_1.point(26.34, 34.83),
-        utils_1.point(32.50, 35.46),
-        utils_1.point(34.03, 34.67),
-        utils_1.point(36.06, 36.50),
-        utils_1.point(36.47, 35.33),
-        utils_1.point(36.22, 34.63),
-        utils_1.point(33.63, 34.83),
-        utils_1.point(31.88, 33.25),
-        utils_1.point(32.00, 28.46),
-        utils_1.point(33.22, 25.75),
-        utils_1.point(35.09, 24.75),
-        utils_1.point(36.13, 25.67),
-        utils_1.point(36.72, 27.38),
-        utils_1.point(38.31, 27.42),
-        utils_1.point(38.63, 26.54),
-        utils_1.point(37.31, 26.63),
-        utils_1.point(36.06, 26.42),
-        utils_1.point(35.34, 24.29),
-        utils_1.point(33.13, 25.83),
-        utils_1.point(30.06, 25.13),
-        utils_1.point(26.50, 26.38),
-        utils_1.point(24.66, 28.25),
-        utils_1.point(22.25, 28.50),
-        utils_1.point(20.97, 27.00),
-        utils_1.point(19.13, 27.13),
-        utils_1.point(20.69, 29.25),
-        utils_1.point(22.34, 29.42),
-        utils_1.point(21.53, 31.46),
-        utils_1.point(23.50, 31.54),
-        utils_1.point(23.81, 29.71),
+    addEntities((0, mapUtils_1.createBunny)([
+        (0, utils_1.point)(22.19, 27.25),
+        (0, utils_1.point)(19.75, 26.13),
+        (0, utils_1.point)(18.44, 29.04),
+        (0, utils_1.point)(20.41, 31.42),
+        (0, utils_1.point)(19.94, 33.04),
+        (0, utils_1.point)(22.88, 33.67),
+        (0, utils_1.point)(24.91, 31.25),
+        (0, utils_1.point)(26.09, 32.50),
+        (0, utils_1.point)(26.34, 34.83),
+        (0, utils_1.point)(32.50, 35.46),
+        (0, utils_1.point)(34.03, 34.67),
+        (0, utils_1.point)(36.06, 36.50),
+        (0, utils_1.point)(36.47, 35.33),
+        (0, utils_1.point)(36.22, 34.63),
+        (0, utils_1.point)(33.63, 34.83),
+        (0, utils_1.point)(31.88, 33.25),
+        (0, utils_1.point)(32.00, 28.46),
+        (0, utils_1.point)(33.22, 25.75),
+        (0, utils_1.point)(35.09, 24.75),
+        (0, utils_1.point)(36.13, 25.67),
+        (0, utils_1.point)(36.72, 27.38),
+        (0, utils_1.point)(38.31, 27.42),
+        (0, utils_1.point)(38.63, 26.54),
+        (0, utils_1.point)(37.31, 26.63),
+        (0, utils_1.point)(36.06, 26.42),
+        (0, utils_1.point)(35.34, 24.29),
+        (0, utils_1.point)(33.13, 25.83),
+        (0, utils_1.point)(30.06, 25.13),
+        (0, utils_1.point)(26.50, 26.38),
+        (0, utils_1.point)(24.66, 28.25),
+        (0, utils_1.point)(22.25, 28.50),
+        (0, utils_1.point)(20.97, 27.00),
+        (0, utils_1.point)(19.13, 27.13),
+        (0, utils_1.point)(20.69, 29.25),
+        (0, utils_1.point)(22.34, 29.42),
+        (0, utils_1.point)(21.53, 31.46),
+        (0, utils_1.point)(23.50, 31.54),
+        (0, utils_1.point)(23.81, 29.71),
     ]));
     map.controllers.push(new controllers_1.TorchController(world, map));
     map.controllers.push(new controllers_1.UpdateController(map));
     if (DEVELOPMENT) {
-        mapUtils_1.addSpawnPointIndicators(world, map);
+        (0, mapUtils_1.addSpawnPointIndicators)(world, map);
     }
     if (!islandMapTemplate) {
-        mapUtils_1.generateTileIndicesAndColliders(map);
+        (0, mapUtils_1.generateTileIndicesAndColliders)(map);
     }
     return map;
 }
-exports.createIslandMap = createIslandMap;
 function resetIslandMap(map) {
-    serverMap_1.copyMapTiles(map, islandMapTemplate);
+    (0, serverMap_1.copyMapTiles)(map, islandMapTemplate);
     for (const region of map.regions) {
         region.clients = [];
-        mapUtils_1.removePonies(region.entities);
-        mapUtils_1.removePonies(region.movables);
-        serverRegion_1.resetRegionUpdates(region);
+        (0, mapUtils_1.removePonies)(region.entities);
+        (0, mapUtils_1.removePonies)(region.movables);
+        (0, serverRegion_1.resetRegionUpdates)(region);
     }
 }
-exports.resetIslandMap = resetIslandMap;
 //# sourceMappingURL=islandMap.js.map

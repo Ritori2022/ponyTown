@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FillOutline = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../client/icons");
@@ -40,68 +41,68 @@ let FillOutline = class FillOutline {
         this.onChange();
     }
 };
+exports.FillOutline = FillOutline;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "label", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "indicatorColor", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], FillOutline.prototype, "base", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], FillOutline.prototype, "fill", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "fillChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], FillOutline.prototype, "outline", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "outlineChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Boolean)
 ], FillOutline.prototype, "locked", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "lockedChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "nonLockable", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "outlineLocked", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "outlineLockedChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "outlineHidden", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FillOutline.prototype, "change", void 0);
-FillOutline = tslib_1.__decorate([
-    core_1.Component({
+exports.FillOutline = FillOutline = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'fill-outline',
         templateUrl: 'fill-outline.pug',
         styleUrls: ['fill-outline.scss'],
     })
 ], FillOutline);
-exports.FillOutline = FillOutline;
 //# sourceMappingURL=fill-outline.js.map

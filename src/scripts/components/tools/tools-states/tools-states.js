@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsStates = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -74,12 +75,12 @@ let ToolsStates = class ToolsStates {
         this.updateArrows();
     }
     logPositions() {
-        const positions = lodash_1.fromPairs(this.states.map(({ name, x, y }) => [name, { x, y }]));
+        const positions = (0, lodash_1.fromPairs)(this.states.map(({ name, x, y }) => [name, { x, y }]));
         console.log(JSON.stringify(positions).replace(/"/g, `'`).replace(/},/g, '},\n'));
     }
     updateArrows() {
         this.times = [];
-        this.arrows = utils_1.flatten(this.states.map(s => s.state.from.map(f => ({
+        this.arrows = (0, utils_1.flatten)(this.states.map(s => s.state.from.map(f => ({
             to: s,
             from: this.findState(f.state),
             color: f.exitAfter === 0 ? (f.keepTime ? 'orange' : 'red') : 'lime',
@@ -89,7 +90,7 @@ let ToolsStates = class ToolsStates {
         }))))
             .filter(({ from, to }) => from && to)
             .map(({ from, to, color, exitAfter, enterTime, onlyDirectTo }) => {
-            const length = utils_1.distance(from, to) || 1;
+            const length = (0, utils_1.distance)(from, to) || 1;
             const r1 = 50;
             const nx1 = ((to.x - from.x) / length) * r1;
             const ny1 = ((to.y - from.y) / length) * r1;
@@ -122,13 +123,13 @@ let ToolsStates = class ToolsStates {
         return this.states.find(s => s.state === state);
     }
 };
-ToolsStates = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsStates = ToolsStates;
+exports.ToolsStates = ToolsStates = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-states',
         templateUrl: 'tools-states.pug',
         styleUrls: ['tools-states.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], ToolsStates);
-exports.ToolsStates = ToolsStates;
 //# sourceMappingURL=tools-states.js.map

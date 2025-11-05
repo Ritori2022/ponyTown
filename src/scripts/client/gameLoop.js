@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.startGameLoop = startGameLoop;
 let gameLoop = undefined;
 function startGameLoop(game, onError = (e) => console.error(e)) {
     let handle;
@@ -63,5 +64,4 @@ function startGameLoop(game, onError = (e) => console.error(e)) {
     gameLoop = { started, cancel };
     return gameLoop;
 }
-exports.startGameLoop = startGameLoop;
 //# sourceMappingURL=gameLoop.js.map

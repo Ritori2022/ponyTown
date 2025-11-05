@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsVariants = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const canvasUtils_1 = require("../../../client/canvasUtils");
@@ -20,8 +21,8 @@ let ToolsVariants = class ToolsVariants {
         this.hair = 'gold';
         this.justHead = false;
         this.scale = 2;
-        this.pony = ponyInfo_1.createDefaultPony();
-        this.state = ponyHelpers_1.defaultPonyState();
+        this.pony = (0, ponyInfo_1.createDefaultPony)();
+        this.state = (0, ponyHelpers_1.defaultPonyState)();
         this.fields = Object.keys(this.pony)
             .filter(key => {
             const value = this.pony[key];
@@ -29,7 +30,7 @@ let ToolsVariants = class ToolsVariants {
         });
     }
     ngOnInit() {
-        spriteUtils_1.loadAndInitSpriteSheets()
+        (0, spriteUtils_1.loadAndInitSpriteSheets)()
             .then(() => this.redraw());
     }
     redraw() {
@@ -38,24 +39,24 @@ let ToolsVariants = class ToolsVariants {
     draw() {
         this.pony.coatFill = this.coat;
         this.pony.mane.fills[0] = this.hair;
-        ponyInfo_1.syncLockedPonyInfo(this.pony);
+        (0, ponyInfo_1.syncLockedPonyInfo)(this.pony);
         this.fields.forEach(f => this.pony[f].type = 0);
         this.pony[this.vertical].type = 999;
         this.pony[this.horizontal].type = 999;
-        const fixed = compressPony_1.decompressPony(compressPony_1.compressPonyString(this.pony));
+        const fixed = (0, compressPony_1.decompressPony)((0, compressPony_1.compressPonyString)(this.pony));
         const maxX = fixed[this.horizontal].type;
         const maxY = fixed[this.vertical].type;
         const scale = this.scale;
-        const info = ponyInfo_1.toPalette(this.pony);
-        const buffer = canvasUtils_1.createCanvas(80, 80);
+        const info = (0, ponyInfo_1.toPalette)(this.pony);
+        const buffer = (0, canvasUtils_1.createCanvas)(80, 80);
         const batch = new contextSpriteBatch_1.ContextSpriteBatch(buffer);
-        const options = ponyHelpers_1.defaultDrawPonyOptions();
+        const options = (0, ponyHelpers_1.defaultDrawPonyOptions)();
         const canvas = this.canvas.nativeElement;
         canvas.width = ((maxX + 1) * (this.justHead ? 45 : 60) + 10) * scale;
         canvas.height = ((maxY + 1) * (this.justHead ? 45 : 60) + 10) * scale;
         const viewContext = canvas.getContext('2d');
         viewContext.save();
-        canvasUtils_1.disableImageSmoothing(viewContext);
+        (0, canvasUtils_1.disableImageSmoothing)(viewContext);
         viewContext.scale(scale, scale);
         viewContext.fillStyle = 'LightGreen';
         viewContext.fillRect(0, 0, canvas.width, canvas.height);
@@ -64,7 +65,7 @@ let ToolsVariants = class ToolsVariants {
             for (let x = 0; x <= maxX; x++) {
                 batch.start(sprites_1.paletteSpriteSheet, 0);
                 info[this.horizontal].type = x;
-                ponyDraw_1.drawPony(batch, info, this.state, 40, 60, options);
+                (0, ponyDraw_1.drawPony)(batch, info, this.state, 40, 60, options);
                 batch.end();
                 if (this.justHead) {
                     viewContext.drawImage(buffer, 0, 0, 55, 45, x * 45 - 10, y * 45, 55, 45);
@@ -77,17 +78,17 @@ let ToolsVariants = class ToolsVariants {
         viewContext.restore();
     }
 };
+exports.ToolsVariants = ToolsVariants;
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ToolsVariants.prototype, "canvas", void 0);
-ToolsVariants = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsVariants = ToolsVariants = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-variants',
         templateUrl: 'tools-variants.pug',
         styleUrls: ['tools-variants.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], ToolsVariants);
-exports.ToolsVariants = ToolsVariants;
 //# sourceMappingURL=tools-variants.js.map

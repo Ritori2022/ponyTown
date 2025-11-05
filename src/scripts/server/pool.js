@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createPool = createPool;
 function createPool(count, createNew, reset) {
     const pool = [];
     const create = () => {
@@ -23,5 +24,4 @@ function createPool(count, createNew, reset) {
     };
     return { create, dispose };
 }
-exports.createPool = createPool;
 //# sourceMappingURL=pool.js.map

@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EMPTY_EXPRESSION = void 0;
+exports.encodeExpression = encodeExpression;
+exports.decodeExpression = decodeExpression;
+exports.isCancellableExpression = isCancellableExpression;
 const utils_1 = require("../utils");
 exports.EMPTY_EXPRESSION = 0x1fffffff;
 function encodeExpression(expression) {
@@ -9,7 +13,6 @@ function encodeExpression(expression) {
     // bits: 5 | 4 | 4 | 5 | 5 | 5 = 28/32
     return ((extra << 23) | (rightIris << 19) | (leftIris << 15) | (right << 10) | (left << 5) | muzzle) >>> 0;
 }
-exports.encodeExpression = encodeExpression;
 function decodeExpression(value) {
     value = value >>> 0;
     if (value === exports.EMPTY_EXPRESSION)
@@ -22,9 +25,7 @@ function decodeExpression(value) {
     const extra = (value >> 23) & 0x1f;
     return { muzzle, left, right, leftIris, rightIris, extra };
 }
-exports.decodeExpression = decodeExpression;
 function isCancellableExpression(expression) {
-    return utils_1.hasFlag(expression.extra, 2 /* Zzz */);
+    return (0, utils_1.hasFlag)(expression.extra, 2 /* ExpressionExtra.Zzz */);
 }
-exports.isCancellableExpression = isCancellableExpression;
 //# sourceMappingURL=expressionEncoder.js.map

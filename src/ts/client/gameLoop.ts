@@ -44,7 +44,7 @@ export function startGameLoop(game: Game, onError = (e: Error) => console.error(
 				game.draw();
 			}
 		} catch (e) {
-			onError(e);
+			onError(e as Error);
 		}
 
 		last = now;

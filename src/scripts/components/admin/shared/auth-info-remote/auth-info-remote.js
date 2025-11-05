@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthInfoRemote = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -23,21 +24,21 @@ let AuthInfoRemote = class AuthInfoRemote {
         this.subscription && this.subscription.unsubscribe();
     }
 };
+exports.AuthInfoRemote = AuthInfoRemote;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AuthInfoRemote.prototype, "showName", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], AuthInfoRemote.prototype, "authId", null);
-AuthInfoRemote = tslib_1.__decorate([
-    core_1.Component({
+exports.AuthInfoRemote = AuthInfoRemote = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'auth-info-remote',
         templateUrl: 'auth-info-remote.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AuthInfoRemote);
-exports.AuthInfoRemote = AuthInfoRemote;
 //# sourceMappingURL=auth-info-remote.js.map

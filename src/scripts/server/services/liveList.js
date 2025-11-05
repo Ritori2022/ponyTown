@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LiveList = void 0;
 const utils_1 = require("../../common/utils");
 const logger_1 = require("../logger");
 const db_1 = require("../db");
@@ -63,7 +64,7 @@ class LiveList {
         if (item) {
             this.trigger(id, undefined);
             this.itemsMap.delete(id);
-            utils_1.removeItem(this.items, item);
+            (0, utils_1.removeItem)(this.items, item);
             this.config.onDelete && this.config.onDelete(item);
         }
     }
@@ -71,7 +72,7 @@ class LiveList {
         const item = this.get(id);
         if (item) {
             this.itemsMap.delete(id);
-            utils_1.removeItem(this.items, item);
+            (0, utils_1.removeItem)(this.items, item);
         }
     }
     trigger(id, item) {
@@ -95,7 +96,7 @@ class LiveList {
         return {
             unsubscribe: () => {
                 const listeners = this.listeners.get(id) || [];
-                utils_1.removeItem(listeners, listener);
+                (0, utils_1.removeItem)(listeners, listener);
                 if (listeners.length === 0) {
                     this.listeners.delete(id);
                 }
@@ -129,14 +130,14 @@ class LiveList {
         const query = this.model.find(search, this.fieldsString);
         const applyUpdate = this.config.onUpdate || Object.assign;
         let addedOrUpdated = false;
-        await db_1.iterate(query.lean(), update => {
+        await (0, db_1.iterate)(query.lean(), update => {
             try {
                 fixDocumentId(update);
                 if (this.config.fix) {
                     this.config.fix(update);
                 }
                 if (!fetching) {
-                    this.timestamp = utils_1.maxDate(this.timestamp, update.updatedAt);
+                    this.timestamp = (0, utils_1.maxDate)(this.timestamp, update.updatedAt);
                 }
                 const doc = this.get(this.getId(update));
                 if (doc !== undefined) {

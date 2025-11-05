@@ -1,5 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createAnimationPlayer = createAnimationPlayer;
+exports.isAnimationPlaying = isAnimationPlaying;
+exports.playOneOfAnimations = playOneOfAnimations;
+exports.playAnimation = playAnimation;
+exports.updateAnimation = updateAnimation;
+exports.drawAnimation = drawAnimation;
 const lodash_1 = require("lodash");
 const graphicsUtils_1 = require("../graphics/graphicsUtils");
 const utils_1 = require("./utils");
@@ -16,57 +22,53 @@ function createAnimationPlayer(palette) {
         currentAnimation: undefined,
         time: 0,
         frame: 0,
-        phase: 0 /* Starting */,
+        phase: 0 /* AnimationPhase.Starting */,
         dirty: true,
         palette,
     };
 }
-exports.createAnimationPlayer = createAnimationPlayer;
 function isAnimationPlaying(player) {
     return player.currentAnimation !== undefined;
 }
-exports.isAnimationPlaying = isAnimationPlaying;
 function playOneOfAnimations(player, animations) {
-    if (player.phase === 2 /* Ending */ || !utils_1.includes(animations, player.currentAnimation)) {
-        playAnimation(player, lodash_1.sample(animations));
+    if (player.phase === 2 /* AnimationPhase.Ending */ || !(0, utils_1.includes)(animations, player.currentAnimation)) {
+        playAnimation(player, (0, lodash_1.sample)(animations));
     }
 }
-exports.playOneOfAnimations = playOneOfAnimations;
 function playAnimation(player, animation) {
     if (player.currentAnimation !== animation) {
         if (player.currentAnimation) {
-            if (player.nextAnimation !== animation || player.phase !== 2 /* Ending */) {
+            if (player.nextAnimation !== animation || player.phase !== 2 /* AnimationPhase.Ending */) {
                 player.nextAnimation = animation;
                 player.time = (player.frame + 1) / player.currentAnimation.fps;
-                player.phase = 2 /* Ending */;
+                player.phase = 2 /* AnimationPhase.Ending */;
             }
         }
         else {
             player.currentAnimation = animation;
             player.time = 0;
-            player.phase = 0 /* Starting */;
+            player.phase = 0 /* AnimationPhase.Starting */;
         }
         player.dirty = true;
     }
-    else if (player.phase === 2 /* Ending */) {
+    else if (player.phase === 2 /* AnimationPhase.Ending */) {
         player.nextAnimation = animation;
         player.dirty = true;
     }
 }
-exports.playAnimation = playAnimation;
 function updateAnimation(player, delta) {
     if (player.currentAnimation !== undefined) {
         player.time += delta;
         const { start, middle, end, fps, loop } = player.currentAnimation;
         let extraFrame = Math.floor(player.time * fps);
-        if (player.phase === 0 /* Starting */ && extraFrame > start) {
-            player.phase = loop ? 1 /* Playing */ : 2 /* Ending */;
+        if (player.phase === 0 /* AnimationPhase.Starting */ && extraFrame > start) {
+            player.phase = loop ? 1 /* AnimationPhase.Playing */ : 2 /* AnimationPhase.Ending */;
             player.dirty = true;
         }
-        if (player.phase === 1 /* Playing */) {
+        if (player.phase === 1 /* AnimationPhase.Playing */) {
             extraFrame = start + ((extraFrame - start) % middle);
         }
-        if (player.phase === 2 /* Ending */ && extraFrame > (start + middle + end)) {
+        if (player.phase === 2 /* AnimationPhase.Ending */ && extraFrame > (start + middle + end)) {
             player.currentAnimation = undefined;
             player.dirty = true;
             if (player.nextAnimation !== undefined) {
@@ -81,7 +83,6 @@ function updateAnimation(player, delta) {
         }
     }
 }
-exports.updateAnimation = updateAnimation;
 function drawAnimation(batch, player, x, y, color = colors_1.WHITE, flip = false, maxY = 0) {
     const animation = player.currentAnimation;
     if (animation !== undefined) {
@@ -97,10 +98,9 @@ function drawAnimation(batch, player, x, y, color = colors_1.WHITE, flip = false
                 batch.drawSprite(frame, color, player.palette, x, y);
             }
             else {
-                graphicsUtils_1.drawSpriteCropped(batch, frame, color, player.palette, x, y, maxY);
+                (0, graphicsUtils_1.drawSpriteCropped)(batch, frame, color, player.palette, x, y, maxY);
             }
         }
     }
 }
-exports.drawAnimation = drawAnimation;
 //# sourceMappingURL=animationPlayer.js.map

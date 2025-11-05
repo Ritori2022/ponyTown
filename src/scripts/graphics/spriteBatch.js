@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SpriteBatch = void 0;
 const baseSpriteBatch_1 = require("./baseSpriteBatch");
 function vertex(vertices, _verticesUint32, index, x, y, u, v, c, transform) {
     vertices[index++] = transform[0] * x + transform[2] * y + transform[4];
@@ -15,7 +16,7 @@ class SpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
     constructor(gl, capacity, buffer, vertexBuffer, indexBuffer) {
         super(gl, capacity, buffer, vertexBuffer, indexBuffer, [
             { name: 'position', size: 2 },
-            { name: 'texcoord0', size: 2 },
+            { name: 'texcoord0', size: 2 }, // , type: gl.UNSIGNED_SHORT },
             { name: 'color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
         ]);
         this.palette = false;
@@ -25,7 +26,7 @@ class SpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
         if (this.capacity <= this.spritesCount) {
             this.flush();
         }
-        const c = baseSpriteBatch_1.getColorFloat(color, this.globalAlpha);
+        const c = (0, baseSpriteBatch_1.getColorFloat)(color, this.globalAlpha);
         const x2 = dx + dw;
         const y2 = dy + dh;
         const u1 = sx;

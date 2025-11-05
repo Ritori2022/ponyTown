@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PartyService = exports.INVITE_REJECTED_TIMEOUT = exports.INVITE_REJECTED_LIMIT = exports.INVITE_LIMIT = exports.LEADER_TIMEOUT = void 0;
 const rxjs_1 = require("rxjs");
 const lodash_1 = require("lodash");
 const utils_1 = require("../../common/utils");
@@ -12,9 +13,9 @@ exports.INVITE_LIMIT = 5;
 exports.INVITE_REJECTED_LIMIT = 5;
 exports.INVITE_REJECTED_TIMEOUT = 1 * constants_1.HOUR;
 function toPartyMember(client, pending, leader) {
-    const flags = (pending ? 2 /* Pending */ : 0)
-        | (leader ? 1 /* Leader */ : 0)
-        | (client.offline ? 4 /* Offline */ : 0);
+    const flags = (pending ? 2 /* PartyFlags.Pending */ : 0)
+        | (leader ? 1 /* PartyFlags.Leader */ : 0)
+        | (client.offline ? 4 /* PartyFlags.Offline */ : 0);
     return [client.pony.id, flags];
 }
 function findClientInParties(parties, accountId) {
@@ -71,7 +72,7 @@ class PartyService {
         else {
             const pendingParty = this.parties.find(p => p.pending.some(x => x.client === client));
             if (pendingParty) {
-                lodash_1.remove(pendingParty.pending, x => x.client === client);
+                (0, lodash_1.remove)(pendingParty.pending, x => x.client === client);
                 this.sendPartyUpdateToAll(pendingParty);
             }
         }
@@ -80,8 +81,8 @@ class PartyService {
         const party = leader.party;
         if (!party || party.leader !== leader)
             return;
-        if (utils_1.includes(party.clients, client)) {
-            utils_1.removeItem(party.clients, client);
+        if ((0, utils_1.includes)(party.clients, client)) {
+            (0, utils_1.removeItem)(party.clients, client);
             client.party = undefined;
             if (party.leader === client && party.clients[0]) {
                 party.leader = party.clients[0];
@@ -94,7 +95,7 @@ class PartyService {
             const pending = party.pending.find(p => p.client === client);
             if (pending) {
                 leader.reporter.systemLog(`Invite cancelled for [${client.accountId}]`);
-                utils_1.removeItem(party.pending, pending);
+                (0, utils_1.removeItem)(party.pending, pending);
                 this.notificationService.removeNotification(pending.client, pending.notificationId);
                 this.sendPartyUpdateToAll(party);
                 this.countReject(leader);
@@ -105,28 +106,28 @@ class PartyService {
     invite(leader, client) {
         let party = leader.party;
         const can = this.limiter.canExecute(leader, client);
-        if (can === 4 /* LimitReached */) {
-            return chat_1.saySystem(leader, 'Reached invite rejection limit');
+        if (can === 4 /* LimiterResult.LimitReached */) {
+            return (0, chat_1.saySystem)(leader, 'Reached invite rejection limit');
         }
-        else if (can !== 0 /* Yes */) {
-            return chat_1.saySystem(leader, 'Cannot invite');
+        else if (can !== 0 /* LimiterResult.Yes */) {
+            return (0, chat_1.saySystem)(leader, 'Cannot invite');
         }
         if (client.shadowed)
-            return chat_1.saySystem(leader, 'Cannot invite');
-        if (utils_1.hasFlag(leader.account.flags, 1 /* BlockPartyInvites */))
-            return chat_1.saySystem(leader, 'Cannot invite');
+            return (0, chat_1.saySystem)(leader, 'Cannot invite');
+        if ((0, utils_1.hasFlag)(leader.account.flags, 1 /* AccountFlags.BlockPartyInvites */))
+            return (0, chat_1.saySystem)(leader, 'Cannot invite');
         if (party && party.leader !== leader)
-            return chat_1.saySystem(leader, 'You need to be party leader');
+            return (0, chat_1.saySystem)(leader, 'You need to be party leader');
         if (party && (party.clients.length + party.pending.length) >= constants_1.PARTY_LIMIT)
-            return chat_1.saySystem(leader, 'Party is full');
+            return (0, chat_1.saySystem)(leader, 'Party is full');
         if (client.party)
-            return chat_1.saySystem(leader, 'Already in a party');
+            return (0, chat_1.saySystem)(leader, 'Already in a party');
         if (party && party.pending.some(p => p.client === client))
-            return chat_1.saySystem(leader, 'Already invited');
-        if (client.accountSettings.ignorePartyInvites && !friends_1.isFriend(client, leader))
-            return chat_1.saySystem(leader, 'Cannot invite');
+            return (0, chat_1.saySystem)(leader, 'Already invited');
+        if (client.accountSettings.ignorePartyInvites && !(0, friends_1.isFriend)(client, leader))
+            return (0, chat_1.saySystem)(leader, 'Cannot invite');
         if (this.parties.reduce((sum, p) => sum + p.pending.filter(x => x.client === client).length, 0) >= exports.INVITE_LIMIT)
-            return chat_1.saySystem(leader, 'Too many pending invites');
+            return (0, chat_1.saySystem)(leader, 'Too many pending invites');
         const partyExisted = !!leader.party;
         if (!partyExisted) {
             party = this.createParty(leader);
@@ -138,9 +139,9 @@ class PartyService {
         if (!notificationId) {
             if (!partyExisted) {
                 leader.party = undefined;
-                utils_1.removeItem(this.parties, party);
+                (0, utils_1.removeItem)(this.parties, party);
             }
-            return chat_1.saySystem(leader, 'Cannot invite');
+            return (0, chat_1.saySystem)(leader, 'Cannot invite');
         }
         party.pending.push({ client, notificationId });
         this.sendPartyUpdateToAll(party);
@@ -161,11 +162,11 @@ class PartyService {
         if (leader === client)
             return;
         if (client.offline)
-            return chat_1.saySystem(leader, 'Player is offline');
+            return (0, chat_1.saySystem)(leader, 'Player is offline');
         if (party.leader !== leader)
-            return chat_1.saySystem(leader, 'You need to be party leader');
-        if (!utils_1.includes(party.clients, client))
-            return chat_1.saySystem(leader, 'Not in the party');
+            return (0, chat_1.saySystem)(leader, 'You need to be party leader');
+        if (!(0, utils_1.includes)(party.clients, client))
+            return (0, chat_1.saySystem)(leader, 'Not in the party');
         party.leader = client;
         this.sendPartyUpdateToAll(party);
     }
@@ -202,7 +203,7 @@ class PartyService {
         party.pending.forEach(p => this.notificationService.removeNotification(p.client, p.notificationId));
         party.clients = [];
         party.pending = [];
-        utils_1.removeItem(this.parties, party);
+        (0, utils_1.removeItem)(this.parties, party);
         clients.forEach(c => this.partyChanged.next(c));
     }
     sendPartyUpdate(client, party) {
@@ -221,7 +222,7 @@ class PartyService {
         }
     }
     acceptInvitation(party, client, invitedBy) {
-        const removed = lodash_1.remove(party.pending, p => p.client === client)[0];
+        const removed = (0, lodash_1.remove)(party.pending, p => p.client === client)[0];
         if (!client.party && removed) {
             party.leader.reporter.systemLog(`Invite accepted by [${client.accountId}]`);
             party.clients.push(client);
@@ -235,7 +236,7 @@ class PartyService {
         }
     }
     rejectInvitation(party, client, invitedBy) {
-        const removed = lodash_1.remove(party.pending, p => p.client === client)[0];
+        const removed = (0, lodash_1.remove)(party.pending, p => p.client === client)[0];
         if (removed) {
             party.leader.reporter.systemLog(`Invite rejected by [${client.accountId}]`);
             this.notificationService.removeNotification(client, removed.notificationId);
@@ -257,8 +258,8 @@ class PartyService {
             name: leader.pony.name || '',
             entityId: leader.pony.id,
             message: `<div class="text-party"><b>Party invite</b></div><b>#NAME#</b> invited you to a party`,
-            flags: 8 /* Accept */ | 16 /* Reject */ | 64 /* Ignore */ |
-                (client.pony.nameBad ? 128 /* NameBad */ : 0),
+            flags: 8 /* NotificationFlags.Accept */ | 16 /* NotificationFlags.Reject */ | 64 /* NotificationFlags.Ignore */ |
+                (client.pony.nameBad ? 128 /* NotificationFlags.NameBad */ : 0),
             accept: () => this.acceptInvitation(party, client, leader),
             reject: () => this.rejectInvitation(party, client, leader),
         });

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SpriteSelection = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -16,7 +17,7 @@ let SpriteSelection = class SpriteSelection {
         this.disabled = false;
         this.invisible = false;
         this.darken = true;
-        this.id = lodash_1.uniqueId('sprite-selection-');
+        this.id = (0, lodash_1.uniqueId)('sprite-selection-');
     }
     get hasMore() {
         return this.sprites && this.sprites.length > this.limit;
@@ -38,7 +39,7 @@ let SpriteSelection = class SpriteSelection {
                 this.showMore();
             }
             if (focus) {
-                htmlUtils_1.focusElementAfterTimeout(this.element.nativeElement, '.active');
+                (0, htmlUtils_1.focusElementAfterTimeout)(this.element.nativeElement, '.active');
             }
         }
     }
@@ -54,7 +55,7 @@ let SpriteSelection = class SpriteSelection {
     }
     handleKey(keyCode) {
         if (this.sprites) {
-            if (keyCode === 39 /* RIGHT */ || keyCode === 40 /* DOWN */) {
+            if (keyCode === 39 /* Key.RIGHT */ || keyCode === 40 /* Key.DOWN */) {
                 if (this.selected >= (this.sprites.length - 1)) {
                     return this.skip;
                 }
@@ -62,7 +63,7 @@ let SpriteSelection = class SpriteSelection {
                     return this.selected + 1;
                 }
             }
-            else if (keyCode === 37 /* LEFT */ || keyCode === 38 /* UP */) {
+            else if (keyCode === 37 /* Key.LEFT */ || keyCode === 38 /* Key.UP */) {
                 if (this.selected <= this.skip) {
                     return this.sprites.length - 1;
                 }
@@ -70,70 +71,71 @@ let SpriteSelection = class SpriteSelection {
                     return this.selected - 1;
                 }
             }
-            else if (keyCode === 36 /* HOME */) {
+            else if (keyCode === 36 /* Key.HOME */) {
                 return this.skip;
             }
-            else if (keyCode === 35 /* END */) {
+            else if (keyCode === 35 /* Key.END */) {
                 return this.sprites.length - 1;
             }
         }
         return undefined;
     }
 };
+exports.SpriteSelection = SpriteSelection;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "selected", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "selectedChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], SpriteSelection.prototype, "sprites", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "fill", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "outline", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], SpriteSelection.prototype, "circle", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "reverseExtra", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "limit", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "skip", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "disabled", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], SpriteSelection.prototype, "emptyLabel", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "invisible", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SpriteSelection.prototype, "darken", void 0);
-SpriteSelection = tslib_1.__decorate([
-    core_1.Component({
+exports.SpriteSelection = SpriteSelection = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'sprite-selection',
         templateUrl: 'sprite-selection.pug',
         styleUrls: ['sprite-selection.scss'],
@@ -146,5 +148,4 @@ SpriteSelection = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], SpriteSelection);
-exports.SpriteSelection = SpriteSelection;
 //# sourceMappingURL=sprite-selection.js.map

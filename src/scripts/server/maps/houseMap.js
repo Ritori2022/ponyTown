@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const entities = require("../../common/entities");
+exports.defaultHouseSave = void 0;
+exports.createHouseMap = createHouseMap;
+exports.resetHouseMap = resetHouseMap;
+exports.removeToolbox = removeToolbox;
+exports.restoreToolbox = restoreToolbox;
+const tslib_1 = require("tslib");
+const entities = tslib_1.__importStar(require("../../common/entities"));
 const rect_1 = require("../../common/rect");
 const world_1 = require("../world");
 const mapUtils_1 = require("../mapUtils");
@@ -13,28 +19,28 @@ exports.defaultHouseSave = undefined;
 const toolboxX = 2.125;
 const toolboxY = 15.41;
 function createHouseMap(world, instanced, _template = false) {
-    const map = serverMap_1.createServerMap('house', 2 /* House */, 2, 2, 4 /* Wood */, instanced ? 1 /* Party */ : 0 /* Public */);
-    if (worldMap_1.getTile(map, 0, 0) !== 0 /* None */) {
+    const map = (0, serverMap_1.createServerMap)('house', 2 /* MapType.House */, 2, 2, 4 /* TileType.Wood */, instanced ? 1 /* MapUsage.Party */ : 0 /* MapUsage.Public */);
+    if ((0, worldMap_1.getTile)(map, 0, 0) !== 0 /* TileType.None */) {
         for (let x = 0; x < map.width; x++) {
-            serverMap_1.setTile(map, x, 0, 0 /* None */);
-            serverMap_1.setTile(map, x, 1, 0 /* None */);
-            serverMap_1.setTile(map, x, 2, 0 /* None */);
+            (0, serverMap_1.setTile)(map, x, 0, 0 /* TileType.None */);
+            (0, serverMap_1.setTile)(map, x, 1, 0 /* TileType.None */);
+            (0, serverMap_1.setTile)(map, x, 2, 0 /* TileType.None */);
         }
     }
-    serverMap_1.setTile(map, 4, map.height - 1, 10 /* Stone */);
-    serverMap_1.setTile(map, 5, map.height - 1, 10 /* Stone */);
-    map.usage = instanced ? 1 /* Party */ : 0 /* Public */;
-    map.spawnArea = rect_1.rect(4, 8 + 6, 2, 1);
-    map.defaultTile = 0 /* None */;
-    map.flags |= 1 /* EditableWalls */ | 2 /* EditableEntities */ | 4 /* EditableTiles */;
+    (0, serverMap_1.setTile)(map, 4, map.height - 1, 10 /* TileType.Stone */);
+    (0, serverMap_1.setTile)(map, 5, map.height - 1, 10 /* TileType.Stone */);
+    map.usage = instanced ? 1 /* MapUsage.Party */ : 0 /* MapUsage.Public */;
+    map.spawnArea = (0, rect_1.rect)(4, 8 + 6, 2, 1);
+    map.defaultTile = 0 /* TileType.None */;
+    map.flags |= 1 /* MapFlags.EditableWalls */ | 2 /* MapFlags.EditableEntities */ | 4 /* MapFlags.EditableTiles */;
     map.editableEntityLimit = constants_1.HOUSE_ENTITY_LIMIT;
-    map.editableArea = rect_1.rect(0, 76 / constants_1.tileHeight, map.width, map.height);
+    map.editableArea = (0, rect_1.rect)(0, 76 / constants_1.tileHeight, map.width, map.height);
     const topWall = 3;
     const windowY = 76 / constants_1.tileHeight;
     const add = (entity) => world.addEntity(entity, map);
-    const addEditable = (entity) => (entity.state |= 8 /* Editable */, add(entity));
+    const addEditable = (entity) => (entity.state |= 8 /* EntityState.Editable */, add(entity));
     add(entities.triggerDoor(5, map.height))
-        .trigger = (_, client) => world_1.goToMap(world, client, instanced ? 'island' : 'public-island', 'house');
+        .trigger = (_, client) => (0, world_1.goToMap)(world, client, instanced ? 'island' : 'public-island', 'house');
     addEditable(entities.window1(2, windowY));
     addEditable(entities.window1(5, windowY));
     addEditable(entities.window1(8, windowY));
@@ -81,54 +87,52 @@ function createHouseMap(world, instanced, _template = false) {
     wallController.top = 3;
     if (wallController.toggleWall) {
         for (let x = 0; x < map.width; x++) {
-            wallController.toggleWall(x, topWall, 100 /* WallH */);
+            wallController.toggleWall(x, topWall, 100 /* TileType.WallH */);
             if (x !== 4 && x !== 5) {
-                wallController.toggleWall(x, map.height, 100 /* WallH */);
+                wallController.toggleWall(x, map.height, 100 /* TileType.WallH */);
             }
             if (x !== 5 && x !== 8 && x !== 12) {
-                wallController.toggleWall(x, 8, 100 /* WallH */);
+                wallController.toggleWall(x, 8, 100 /* TileType.WallH */);
             }
         }
         for (let x = 0; x < 3; x++) {
-            wallController.toggleWall(x, 13, 100 /* WallH */);
+            wallController.toggleWall(x, 13, 100 /* TileType.WallH */);
         }
         for (let y = topWall; y < 8; y++) {
-            wallController.toggleWall(7, y, 101 /* WallV */);
-            wallController.toggleWall(11, y, 101 /* WallV */);
+            wallController.toggleWall(7, y, 101 /* TileType.WallV */);
+            wallController.toggleWall(11, y, 101 /* TileType.WallV */);
         }
         for (let y = 8; y < map.height; y++) {
             if (y !== 11 && y !== 14) {
-                wallController.toggleWall(3, y, 101 /* WallV */);
+                wallController.toggleWall(3, y, 101 /* TileType.WallV */);
             }
         }
         for (let y = topWall; y < map.height; y++) {
-            wallController.toggleWall(0, y, 101 /* WallV */);
-            wallController.toggleWall(map.width, y, 101 /* WallV */);
+            wallController.toggleWall(0, y, 101 /* TileType.WallV */);
+            wallController.toggleWall(map.width, y, 101 /* TileType.WallV */);
         }
     }
     wallController.lockOuterWalls = true;
     if (DEVELOPMENT) {
-        mapUtils_1.addSpawnPointIndicators(world, map);
+        (0, mapUtils_1.addSpawnPointIndicators)(world, map);
     }
     for (const region of map.regions) {
-        serverRegion_1.resetRegionUpdates(region);
+        (0, serverRegion_1.resetRegionUpdates)(region);
     }
     if (!exports.defaultHouseSave) {
-        exports.defaultHouseSave = serverMap_1.saveMap(map, {
+        exports.defaultHouseSave = (0, serverMap_1.saveMap)(map, {
             saveTiles: true, saveEntities: true, saveOnlyEditableEntities: true, saveWalls: true
         });
     }
     return map;
 }
-exports.createHouseMap = createHouseMap;
 function resetHouseMap(map) {
     for (const { tiles } of map.regions) {
         for (let i = 0; i < tiles.length; i++) {
-            tiles[i] = 4 /* Wood */;
+            tiles[i] = 4 /* TileType.Wood */;
         }
     }
 }
-exports.resetHouseMap = resetHouseMap;
 function findEntityByType(map, type) {
     for (const region of map.regions) {
         for (const entity of region.entities) {
@@ -145,14 +149,12 @@ function removeToolbox(world, map) {
         world.removeEntity(toolbox, map);
     }
 }
-exports.removeToolbox = removeToolbox;
 function restoreToolbox(world, map) {
     const toolbox = findEntityByType(map, entities.toolboxFull.type);
     if (!toolbox) {
         const entity = entities.toolboxFull(toolboxX, toolboxY);
-        entity.state |= 8 /* Editable */;
+        entity.state |= 8 /* EntityState.Editable */;
         world.addEntity(entity, map);
     }
 }
-exports.restoreToolbox = restoreToolbox;
 //# sourceMappingURL=houseMap.js.map

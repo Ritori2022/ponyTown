@@ -1,7 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
+exports.getSpriteRect = getSpriteRect;
+exports.imageToSprite = imageToSprite;
+exports.createSpriteSheet = createSpriteSheet;
+exports.saveSpriteSheet = saveSpriteSheet;
+exports.saveSpriteSheetAsBinary = saveSpriteSheetAsBinary;
+exports.saveCanvasAsRaw = saveCanvasAsRaw;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const lodash_1 = require("lodash");
 const common_1 = require("./common");
 const utils_1 = require("../common/utils");
@@ -78,12 +85,10 @@ function getSpriteRect(canvas, x, y, w, h) {
     const rect = trimImageData(data);
     return { x: x + rect.x, y: y + rect.y, w: rect.w, h: rect.h };
 }
-exports.getSpriteRect = getSpriteRect;
 function imageToSprite(image, index) {
     const { w, h, x, y } = getSpriteRect(image, 0, 0, image.width, image.height);
     return { image, index, w, h, x: 0, y: 0, ox: x, oy: y };
 }
-exports.imageToSprite = imageToSprite;
 function getIndex(x, y, outputWidth) {
     return ((x | 0) + (((y | 0) * outputWidth) | 0)) | 0;
 }
@@ -268,7 +273,7 @@ function createSpriteSheet(name, images, log, size, bg, pack = false) {
                 sprite.overlayedOn = match;
                 match.layers = match.layers + 1;
                 if (match.layers >= maxLayers) {
-                    utils_1.removeItem(pool, match);
+                    (0, utils_1.removeItem)(pool, match);
                 }
                 layered++;
             }
@@ -281,8 +286,8 @@ function createSpriteSheet(name, images, log, size, bg, pack = false) {
     sprites.sort((a, b) => ((b.layers || 1) - (a.layers || 1)) || ((b.h * 1024 + b.w) - (a.h * 1024 + a.w)));
     maxY = 0;
     areaTaken = 0;
-    const taken = lodash_1.times(maxLayers, () => ({
-        lines: lodash_1.times(outputWidth, () => [{ start: 0, length: outputWidth }]),
+    const taken = (0, lodash_1.times)(maxLayers, () => ({
+        lines: (0, lodash_1.times)(outputWidth, () => [{ start: 0, length: outputWidth }]),
         data: new Uint8Array(outputWidth * outputWidth),
     }));
     sprites
@@ -319,8 +324,8 @@ function createSpriteSheet(name, images, log, size, bg, pack = false) {
         s.layer = s.duplicateOf.layer;
         s.shade = s.duplicateOf.shade;
     });
-    const image = canvas_utils_1.createExtCanvas(outputWidth, outputWidth, 'sprite sheet image');
-    const alpha = canvas_utils_1.createExtCanvas(outputWidth, outputWidth, 'sprite sheet alpha');
+    const image = (0, canvas_utils_1.createExtCanvas)(outputWidth, outputWidth, 'sprite sheet image');
+    const alpha = (0, canvas_utils_1.createExtCanvas)(outputWidth, outputWidth, 'sprite sheet alpha');
     const context = image.getContext('2d');
     const alphaContext = alpha.getContext('2d');
     if (bg) {
@@ -354,12 +359,11 @@ function createSpriteSheet(name, images, log, size, bg, pack = false) {
             .forEach(s => context.drawImage(s.image, s.ox, s.oy, s.w, s.h, s.x, s.y, s.w, s.h));
     }
     return {
-        sprites: images.map((_, index) => common_1.findByIndex(sprites, index) || null),
+        sprites: images.map((_, index) => (0, common_1.findByIndex)(sprites, index) || null),
         image,
         alpha,
     };
 }
-exports.createSpriteSheet = createSpriteSheet;
 function drawChannel(src, dst, srcChannel, dstChannel, sx, sy, dx, dy, w, h) {
     const srcData = src.getContext('2d').getImageData(sx, sy, w, h);
     for (let y = 0; y < h; y++) {
@@ -370,16 +374,14 @@ function drawChannel(src, dst, srcChannel, dstChannel, sx, sy, dx, dy, w, h) {
     }
 }
 function saveSpriteSheet(filePath, canvas) {
-    canvas_utils_1.saveCanvas(filePath, canvas);
+    (0, canvas_utils_1.saveCanvas)(filePath, canvas);
     return path.basename(filePath);
 }
-exports.saveSpriteSheet = saveSpriteSheet;
 function saveSpriteSheetAsBinary(filePath, canvas) {
     const context = canvas.getContext('2d');
     const data = context.getImageData(0, 0, canvas.width, canvas.height);
     fs.writeFileSync(filePath, Buffer.from(data.data.buffer));
 }
-exports.saveSpriteSheetAsBinary = saveSpriteSheetAsBinary;
 function saveCanvasAsRaw(filePath, canvas) {
     const buffer = Buffer.alloc(4 + 4 + 4 + 4 * canvas.width * canvas.height);
     buffer.writeUInt8('R'.charCodeAt(0), 0);
@@ -392,5 +394,4 @@ function saveCanvasAsRaw(filePath, canvas) {
     buffer.set(data.data, 12);
     fs.writeFileSync(filePath, buffer);
 }
-exports.saveCanvasAsRaw = saveCanvasAsRaw;
 //# sourceMappingURL=sprite-sheet.js.map

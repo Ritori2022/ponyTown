@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.timeStart = timeStart;
+exports.timeEnd = timeEnd;
+exports.timeReset = timeReset;
+exports.timingCollate = timingCollate;
 const ENABLED = false;
 const ENTRIES_LIMIT = 8000;
 const entries = [];
@@ -22,7 +26,6 @@ function timeStart(name) {
         }
     }
 }
-exports.timeStart = timeStart;
 function timeEnd() {
     if (TIMING && ENABLED) {
         if (entriesCount < ENTRIES_LIMIT) {
@@ -36,13 +39,11 @@ function timeEnd() {
         }
     }
 }
-exports.timeEnd = timeEnd;
 function timeReset() {
     if (TIMING && ENABLED) {
         entriesCount = 0;
     }
 }
-exports.timeReset = timeReset;
 function timingCollate() {
     if (TIMING && ENABLED && entriesCount > 0) {
         const listings = [];
@@ -50,7 +51,7 @@ function timingCollate() {
         for (let i = 0; i < entriesCount; i++) {
             const entry = entries[i];
             if (entry.name !== undefined) {
-                startStack.push(Object.assign({}, entry, { excludedTime: 0 }));
+                startStack.push({ ...entry, excludedTime: 0 });
             }
             else {
                 const start = startStack.pop();
@@ -80,5 +81,4 @@ function timingCollate() {
     }
     return [];
 }
-exports.timingCollate = timingCollate;
 //# sourceMappingURL=timing.js.map

@@ -1,6 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Bluebird = require("bluebird");
+exports.findPonies = findPonies;
+exports.assignCharacter = assignCharacter;
+exports.removeCharacter = removeCharacter;
+exports.removeCharactersAboveLimit = removeCharactersAboveLimit;
+exports.removeAllCharacters = removeAllCharacters;
+exports.createCharacter = createCharacter;
+const tslib_1 = require("tslib");
+const Bluebird = tslib_1.__importStar(require("bluebird"));
 const lodash_1 = require("lodash");
 const accountUtils_1 = require("../accountUtils");
 const db_1 = require("../db");
@@ -18,10 +25,10 @@ function createQuery({ search }) {
             and.push({ account: { $exists: false } });
         }
         else if (/^exact:/.test(search)) {
-            and.push({ name: new RegExp(`^${lodash_1.escapeRegExp(search.substr(6))}$`, 'i') });
+            and.push({ name: new RegExp(`^${(0, lodash_1.escapeRegExp)(search.substr(6))}$`, 'i') });
         }
         else {
-            and.push({ name: new RegExp(lodash_1.escapeRegExp(search), 'i') });
+            and.push({ name: new RegExp((0, lodash_1.escapeRegExp)(search), 'i') });
         }
     }
     return and.length === 0 ? {} : (and.length === 1 ? and[0] : { $and: and });
@@ -35,7 +42,7 @@ async function getPonyIds(query) {
         .exec();
     return items.map(i => i._id.toString());
 }
-const cachedGetPonyIds = serverUtils_1.cached(getPonyIds, CACHE_TIMEOUT);
+const cachedGetPonyIds = (0, serverUtils_1.cached)(getPonyIds, CACHE_TIMEOUT);
 async function findPonies(query, page) {
     const from = page * ITEMS_PER_PAGE;
     const ids = await cachedGetPonyIds(query);
@@ -45,55 +52,49 @@ async function findPonies(query, page) {
         totalCount: ids.length
     };
 }
-exports.findPonies = findPonies;
 async function assignCharacter(characterId, accountId) {
     const character = await db_1.Character.findById(characterId).exec();
     if (!character)
         return;
-    await admin_1.kickFromAllServersByCharacter(characterId);
+    await (0, admin_1.kickFromAllServersByCharacter)(characterId);
     await db_1.Character.updateOne({ _id: characterId }, { account: accountId }).exec();
     await Promise.all([
-        accountUtils_1.updateCharacterCount(character.account),
-        accountUtils_1.updateCharacterCount(accountId),
+        (0, accountUtils_1.updateCharacterCount)(character.account),
+        (0, accountUtils_1.updateCharacterCount)(accountId),
     ]);
 }
-exports.assignCharacter = assignCharacter;
 async function removeCharacter(service, characterId) {
     const character = await db_1.Character.findById(characterId).exec();
     if (!character)
         return;
-    await admin_1.kickFromAllServersByCharacter(characterId);
+    await (0, admin_1.kickFromAllServersByCharacter)(characterId);
     await character.remove();
-    await accountUtils_1.updateCharacterCount(character.account);
-    characterUtils_1.logRemovedCharacter(character);
+    await (0, accountUtils_1.updateCharacterCount)(character.account);
+    (0, characterUtils_1.logRemovedCharacter)(character);
     service.ponies.removed(characterId);
 }
-exports.removeCharacter = removeCharacter;
 async function removeCharacters(character, accountId, removedDocument) {
     await Bluebird.map(character, async (c) => {
         await c.remove();
         await removedDocument('ponies', c._id.toString());
-        characterUtils_1.logRemovedCharacter(c);
+        (0, characterUtils_1.logRemovedCharacter)(c);
     }, { concurrency: 4 });
-    await accountUtils_1.updateCharacterCount(accountId);
+    await (0, accountUtils_1.updateCharacterCount)(accountId);
 }
 async function removeCharactersAboveLimit(removedDocument, accountId) {
     const [account, items] = await Promise.all([
-        db_1.findAccountSafe(accountId),
+        (0, db_1.findAccountSafe)(accountId),
         db_1.Character.find({ account: accountId }).sort({ lastUsed: -1 }).exec(),
     ]);
-    const limited = items.slice(accountUtils_1.getCharacterLimit(account));
+    const limited = items.slice((0, accountUtils_1.getCharacterLimit)(account));
     await removeCharacters(limited, accountId, removedDocument);
 }
-exports.removeCharactersAboveLimit = removeCharactersAboveLimit;
 async function removeAllCharacters(removedDocument, accountId) {
     const items = await db_1.Character.find({ account: accountId }).sort({ lastUsed: -1 }).exec();
     await removeCharacters(items, accountId, removedDocument);
 }
-exports.removeAllCharacters = removeAllCharacters;
 async function createCharacter(account, name, info) {
     await db_1.Character.create({ account, name, info });
-    await accountUtils_1.updateCharacterCount(account);
+    await (0, accountUtils_1.updateCharacterCount)(account);
 }
-exports.createCharacter = createCharacter;
 //# sourceMappingURL=ponies.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BanIcon = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const constants_1 = require("../../../../common/constants");
@@ -11,20 +12,6 @@ const ICONS = {
     ban: icons_1.faBan,
 };
 let BanIcon = class BanIcon {
-    constructor(zone, updateService) {
-        this.timeouts = constants_1.TIMEOUTS;
-        this.clockIcon = icons_1.faClock;
-        this.type = 'ban';
-        this.value = 0;
-        this.toggle = new core_1.EventEmitter();
-        this.timedOut = false;
-        this.toggleUpdate = updateService.toggle(() => {
-            if (this.timedOut !== this.isTimedOut) {
-                zone.run(() => this.timedOut = this.isTimedOut);
-                this.toggleUpdate(this.isTimedOut);
-            }
-        });
-    }
     get icon() {
         return ICONS[this.type] || ICONS.ban;
     }
@@ -44,6 +31,20 @@ let BanIcon = class BanIcon {
         else {
             return 'text-muted';
         }
+    }
+    constructor(zone, updateService) {
+        this.timeouts = constants_1.TIMEOUTS;
+        this.clockIcon = icons_1.faClock;
+        this.type = 'ban';
+        this.value = 0;
+        this.toggle = new core_1.EventEmitter();
+        this.timedOut = false;
+        this.toggleUpdate = updateService.toggle(() => {
+            if (this.timedOut !== this.isTimedOut) {
+                zone.run(() => this.timedOut = this.isTimedOut);
+                this.toggleUpdate(this.isTimedOut);
+            }
+        });
     }
     ngOnInit() {
         this.toggleUpdate(this.isTimedOut);
@@ -68,20 +69,21 @@ let BanIcon = class BanIcon {
         this.toggle.emit(value);
     }
 };
+exports.BanIcon = BanIcon;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], BanIcon.prototype, "type", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], BanIcon.prototype, "value", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], BanIcon.prototype, "toggle", void 0);
-BanIcon = tslib_1.__decorate([
-    core_1.Component({
+exports.BanIcon = BanIcon = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'ban-icon',
         templateUrl: 'ban-icon.pug',
         styleUrls: ['ban-icon.scss'],
@@ -89,5 +91,4 @@ BanIcon = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone, intervalUpdateService_1.IntervalUpdateService])
 ], BanIcon);
-exports.BanIcon = BanIcon;
 //# sourceMappingURL=ban-icon.js.map

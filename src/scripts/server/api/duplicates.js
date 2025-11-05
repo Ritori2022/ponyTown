@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDuplicateEntries = getDuplicateEntries;
+exports.getDuplicateEmails = getDuplicateEmails;
+exports.getDuplicateAuths = getDuplicateAuths;
+exports.getDuplicateInfo = getDuplicateInfo;
+exports.getAllDuplicatesQuickInfo = getAllDuplicatesQuickInfo;
+exports.getAllDuplicatesWithInfo = getAllDuplicatesWithInfo;
+exports.getDuplicateEmailNames = getDuplicateEmailNames;
 const lodash_1 = require("lodash");
 const adminUtils_1 = require("../../common/adminUtils");
 const constants_1 = require("../../common/constants");
@@ -14,25 +21,23 @@ async function getDuplicateEntries(accounts, force) {
         duplicateTimestamp = Date.now();
         duplicateEntries = [
             ...getDuplicateEmails(accounts),
+            // ...getDuplicateAuths(accounts),
         ];
     }
     return duplicateEntries;
 }
-exports.getDuplicateEntries = getDuplicateEntries;
 function getDuplicateEmails(accounts) {
     const duplicates = [];
-    const collect = adminUtils_1.duplicatesCollector(duplicates);
+    const collect = (0, adminUtils_1.duplicatesCollector)(duplicates);
     accounts.forEach(a => a.emails !== undefined && a.emails.forEach(collect));
     return duplicates;
 }
-exports.getDuplicateEmails = getDuplicateEmails;
 function getDuplicateAuths(accounts) {
     const duplicates = [];
-    const collect = adminUtils_1.duplicatesCollector(duplicates);
+    const collect = (0, adminUtils_1.duplicatesCollector)(duplicates);
     accounts.forEach(a => a.auths !== undefined && a.auths.forEach(a => a.url && collect(a.url)));
     return duplicates;
 }
-exports.getDuplicateAuths = getDuplicateAuths;
 // get duplicate info
 async function getDuplicateInfo(accountId, otherAccounts) {
     const ids = [accountId, ...otherAccounts];
@@ -41,7 +46,7 @@ async function getDuplicateInfo(accountId, otherAccounts) {
         db_1.Account.find({ _id: ids }, '_id lastUserAgent').lean().exec(),
     ]);
     chars.forEach(c => c.name = c.name.toLowerCase());
-    const groups = lodash_1.groupBy(chars, c => c.account);
+    const groups = (0, lodash_1.groupBy)(chars, c => c.account);
     const account = accounts.find(a => a._id.toString() === accountId);
     const userAgent = account && account.lastUserAgent || '';
     return otherAccounts.map(id => {
@@ -53,9 +58,8 @@ async function getDuplicateInfo(accountId, otherAccounts) {
         };
     });
 }
-exports.getDuplicateInfo = getDuplicateInfo;
 function getDuplicateNames(mine = [], others = []) {
-    return lodash_1.uniq(mine.filter(a => others.some(b => a.name === b.name)).map(c => c.name));
+    return (0, lodash_1.uniq)(mine.filter(a => others.some(b => a.name === b.name)).map(c => c.name));
 }
 // get all duplicates
 async function getAllDuplicatesQuickInfo(service, accountId) {
@@ -69,7 +73,6 @@ async function getAllDuplicatesQuickInfo(service, accountId) {
         perma: duplicates.some(d => !!d.perma),
     };
 }
-exports.getAllDuplicatesQuickInfo = getAllDuplicatesQuickInfo;
 async function getAllDuplicatesWithInfo(service, accountId) {
     const duplicates = await getAllDuplicates(service, accountId);
     const accountIds = duplicates.map(x => x.account);
@@ -84,21 +87,20 @@ async function getAllDuplicatesWithInfo(service, accountId) {
     duplicates.forEach(d => d.ponies = d.ponies || []);
     return duplicates;
 }
-exports.getAllDuplicatesWithInfo = getAllDuplicatesWithInfo;
 async function getAllDuplicates(service, accountId) {
     const account = service.accounts.get(accountId);
     if (!account) {
         return [];
     }
     else {
-        return lodash_1.uniq([
+        return (0, lodash_1.uniq)([
             ...getDuplicatesByNote(service, account),
             ...getDuplicatesByEmail(service, account),
             ...getDuplicatesByBrowserId(service, account),
             ...getDuplicates(account),
         ])
             .filter(a => a !== account)
-            .map(a => adminUtils_1.createDuplicateResult(a, account))
+            .map(a => (0, adminUtils_1.createDuplicateResult)(a, account))
             .sort(adminUtils_1.compareDuplicates)
             .slice(0, 50);
     }
@@ -106,12 +108,12 @@ async function getAllDuplicates(service, accountId) {
 function getDuplicates(account) {
     const accounts = [];
     const origins = [];
-    utils_1.removeItem(accounts, account);
+    (0, utils_1.removeItem)(accounts, account);
     collectDuplicates(accounts, origins, account, 3);
     return accounts;
 }
 function getDuplicatesByNote(service, account) {
-    const linkedTo = lodash_1.compact(adminUtils_1.getIdsFromNote(account.note).map(id => service.accounts.get(id)));
+    const linkedTo = (0, lodash_1.compact)((0, adminUtils_1.getIdsFromNote)(account.note).map(id => service.accounts.get(id)));
     const linkedFrom = service.getAccountsByNoteRef(account._id);
     return uniqueOtherAccounts([...linkedTo, ...linkedFrom], account);
 }
@@ -119,7 +121,7 @@ function getDuplicatesByEmail(service, account) {
     const accounts = (account.emails || [])
         .map(adminUtils_1.emailName)
         .map(name => service.getAccountsByEmailName(name));
-    return uniqueOtherAccounts(utils_1.flatten(accounts), account);
+    return uniqueOtherAccounts((0, utils_1.flatten)(accounts), account);
 }
 function getDuplicatesByBrowserId(service, account) {
     const browserId = account.lastBrowserId;
@@ -127,13 +129,13 @@ function getDuplicatesByBrowserId(service, account) {
     return uniqueOtherAccounts(accounts, account);
 }
 function uniqueOtherAccounts(accounts, exclude) {
-    return lodash_1.uniq(accounts.filter(a => a !== exclude));
+    return (0, lodash_1.uniq)(accounts.filter(a => a !== exclude));
 }
 function collectDuplicates(accounts, origins, account, level) {
-    if (level > 0 && !utils_1.includes(accounts, account)) {
+    if (level > 0 && !(0, utils_1.includes)(accounts, account)) {
         accounts.push(account);
         account.originsRefs.forEach(o => {
-            if (!utils_1.includes(origins, o.origin)) {
+            if (!(0, utils_1.includes)(origins, o.origin)) {
                 origins.push(o.origin);
                 if (o.origin.accounts) {
                     o.origin.accounts.forEach(a => collectDuplicates(accounts, origins, a, level - 1));
@@ -145,7 +147,7 @@ function collectDuplicates(accounts, origins, account, level) {
 // unused
 function getDuplicateEmailNames(accounts) {
     const set = new Set();
-    return lodash_1.uniq(accounts.reduce((duplicates, a) => {
+    return (0, lodash_1.uniq)(accounts.reduce((duplicates, a) => {
         if (a.emails !== undefined && a.emails.length > 0) {
             const names = a.emails.map(e => e.replace(/@.+$/, ''));
             duplicates.push(...names.filter(name => set.has(name)));
@@ -154,5 +156,4 @@ function getDuplicateEmailNames(accounts) {
         return duplicates;
     }, []));
 }
-exports.getDuplicateEmailNames = getDuplicateEmailNames;
 //# sourceMappingURL=duplicates.js.map

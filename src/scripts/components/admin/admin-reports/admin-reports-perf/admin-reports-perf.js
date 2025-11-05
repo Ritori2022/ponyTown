@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminReportsPerf = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -23,7 +24,7 @@ let AdminReportsPerf = class AdminReportsPerf {
         this.lastZoom = 0;
         if (DEVELOPMENT) {
             const interval = setInterval(() => {
-                if (utils_1.findById(this.model.state.gameServers, 'dev')) {
+                if ((0, utils_1.findById)(this.model.state.gameServers, 'dev')) {
                     clearInterval(interval);
                     this.load('dev');
                 }
@@ -50,7 +51,7 @@ let AdminReportsPerf = class AdminReportsPerf {
         const rect = this.container.nativeElement.getBoundingClientRect();
         const x = e.pageX - rect.left;
         const y = e.pageY - rect.top;
-        const tooltip = this.tooltips.find(t => utils_1.pointInRect(x, y, t));
+        const tooltip = this.tooltips.find(t => (0, utils_1.pointInRect)(x, y, t));
         const element = this.tooltip.nativeElement;
         if (tooltip) {
             element.style.display = 'block';
@@ -64,7 +65,7 @@ let AdminReportsPerf = class AdminReportsPerf {
     }
     wheel(e) {
         e.preventDefault();
-        const deltaY = utils_1.clamp(e.deltaY, -1, 1);
+        const deltaY = (0, utils_1.clamp)(e.deltaY, -1, 1);
         const change = ((this.endTime - this.startTime) * 0.2 * deltaY);
         const rect = this.container.nativeElement.getBoundingClientRect();
         const ratioFromLeft = (e.pageX - rect.left) / rect.width;
@@ -167,7 +168,7 @@ let AdminReportsPerf = class AdminReportsPerf {
         const rowHeight = 20;
         const startStack = [];
         for (const entry of this.timings) {
-            if (entry.type === 0 /* Start */) {
+            if (entry.type === 0 /* TimingEntryType.Start */) {
                 startStack.push(entry);
             }
             else {
@@ -202,8 +203,8 @@ let AdminReportsPerf = class AdminReportsPerf {
         this.listing = [];
         const startStack = [];
         for (const entry of this.timings) {
-            if (entry.type === 0 /* Start */) {
-                startStack.push(Object.assign({}, entry, { excludedTime: 0 }));
+            if (entry.type === 0 /* TimingEntryType.Start */) {
+                startStack.push({ ...entry, excludedTime: 0 });
             }
             else {
                 const start = startStack.pop();
@@ -232,24 +233,24 @@ let AdminReportsPerf = class AdminReportsPerf {
         this.listing.sort((a, b) => b.selfTime - a.selfTime);
     }
 };
+exports.AdminReportsPerf = AdminReportsPerf;
 tslib_1.__decorate([
-    core_1.ViewChild('container', { static: true }),
+    (0, core_1.ViewChild)('container', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], AdminReportsPerf.prototype, "container", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], AdminReportsPerf.prototype, "canvas", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('tooltip', { static: true }),
+    (0, core_1.ViewChild)('tooltip', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], AdminReportsPerf.prototype, "tooltip", void 0);
-AdminReportsPerf = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminReportsPerf = AdminReportsPerf = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-reports-perf',
         templateUrl: 'admin-reports-perf.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AdminReportsPerf);
-exports.AdminReportsPerf = AdminReportsPerf;
 //# sourceMappingURL=admin-reports-perf.js.map

@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Bluebird = require("bluebird");
+exports.getOriginStats = getOriginStats;
+exports.removeAllOrigins = removeAllOrigins;
+exports.removeOrigins = removeOrigins;
+exports.addOrigin = addOrigin;
+exports.clearOriginsForAccount = clearOriginsForAccount;
+exports.clearOriginsForAccounts = clearOriginsForAccounts;
+exports.clearOrigins = clearOrigins;
+const tslib_1 = require("tslib");
+const Bluebird = tslib_1.__importStar(require("bluebird"));
 const lodash_1 = require("lodash");
 const constants_1 = require("../../common/constants");
 const utils_1 = require("../../common/utils");
@@ -43,21 +51,17 @@ async function getOriginStats(accounts) {
         uniqueOrigins, duplicateOrigins, singleOrigins, totalOrigins, totalOriginsIP4, totalOriginsIP6, distribution
     };
 }
-exports.getOriginStats = getOriginStats;
 function removeAllOrigins(service, accountId) {
     service.removeOriginsFromAccount(accountId);
-    return db_1.updateAccount(accountId, { origins: [] });
+    return (0, db_1.updateAccount)(accountId, { origins: [] });
 }
-exports.removeAllOrigins = removeAllOrigins;
 function removeOrigins(service, accountId, ips) {
     service.removeOriginsFromAccount(accountId, ips);
-    return db_1.updateAccount(accountId, { $pull: { origins: { ip: { $in: ips } } } });
+    return (0, db_1.updateAccount)(accountId, { $pull: { origins: { ip: { $in: ips } } } });
 }
-exports.removeOrigins = removeOrigins;
 function addOrigin(accountId, { ip, country }) {
-    return db_1.updateAccount(accountId, { $push: { origins: { ip, country, last: new Date() } } });
+    return (0, db_1.updateAccount)(accountId, { $push: { origins: { ip, country, last: new Date() } } });
 }
-exports.addOrigin = addOrigin;
 async function clearOriginsForAccount(service, accountId, options) {
     const account = service.accounts.get(accountId);
     if (account) {
@@ -65,11 +69,9 @@ async function clearOriginsForAccount(service, accountId, options) {
         await removeOrigins(service, accountId, ips);
     }
 }
-exports.clearOriginsForAccount = clearOriginsForAccount;
 async function clearOriginsForAccounts(service, accounts, options) {
     await Bluebird.map(accounts, id => clearOriginsForAccount(service, id, options), { concurrency: 4 });
 }
-exports.clearOriginsForAccounts = clearOriginsForAccounts;
 async function clearOrigins(service, count, andHigher, options) {
     const origins = service.accounts.items
         .filter(a => a.originsRefs && (andHigher ? a.originsRefs.length >= count : a.originsRefs.length === count))
@@ -77,10 +79,9 @@ async function clearOrigins(service, count, andHigher, options) {
         .filter(({ ips }) => !!ips.length);
     await Bluebird.map(origins, o => removeOrigins(service, o.accountId, o.ips), { concurrency: 4 });
 }
-exports.clearOrigins = clearOrigins;
 const isBanned = (origin) => origin.ban || origin.mute || origin.shadow;
 function getOriginsToRemove(account, { old, singles, trim, veryOld, country }) {
-    const date = utils_1.fromNow((veryOld ? -90 : -14) * constants_1.DAY).getTime();
+    const date = (0, utils_1.fromNow)((veryOld ? -90 : -14) * constants_1.DAY).getTime();
     const originsRefs = account.originsRefs || [];
     const filtered = country ?
         originsRefs.filter(({ origin }) => origin.country === country) :
@@ -91,7 +92,7 @@ function getOriginsToRemove(account, { old, singles, trim, veryOld, country }) {
         });
     const ips = filtered.map(({ origin }) => origin.ip);
     if (trim) {
-        ips.push(...lodash_1.difference(originsRefs.map(({ origin }) => origin.ip), ips).slice(10));
+        ips.push(...(0, lodash_1.difference)(originsRefs.map(({ origin }) => origin.ip), ips).slice(10));
     }
     return { accountId: account._id, ips };
 }

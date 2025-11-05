@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PonyListRemote = void 0;
+exports.compareNames = compareNames;
+exports.compareDates = compareDates;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -58,46 +61,44 @@ let PonyListRemote = class PonyListRemote {
         this.ponies = this.ponyInfos.sort(compare).map(p => p.id);
     }
 };
+exports.PonyListRemote = PonyListRemote;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyListRemote.prototype, "limit", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyListRemote.prototype, "expanded", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyListRemote.prototype, "deletable", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Function)
 ], PonyListRemote.prototype, "highlight", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], PonyListRemote.prototype, "duplicates", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], PonyListRemote.prototype, "accountId", null);
-PonyListRemote = tslib_1.__decorate([
-    core_1.Component({
+exports.PonyListRemote = PonyListRemote = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-list-remote',
         templateUrl: 'pony-list-remote.pug',
         styleUrls: ['pony-list-remote.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], PonyListRemote);
-exports.PonyListRemote = PonyListRemote;
 function compareNames(a, b) {
     return a.name.localeCompare(b.name);
 }
-exports.compareNames = compareNames;
 function compareDates(a, b) {
     return b.date - a.date;
 }
-exports.compareDates = compareDates;
 //# sourceMappingURL=pony-list-remote.js.map

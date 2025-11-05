@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.assignAuth = assignAuth;
+exports.findOrCreateAuth = findOrCreateAuth;
+exports.updateAuthInfo = updateAuthInfo;
 const lodash_1 = require("lodash");
 const mongoose_1 = require("mongoose");
 const utils_1 = require("../common/utils");
@@ -9,17 +12,16 @@ const userError_1 = require("./userError");
 const accountUtils_1 = require("./accountUtils");
 async function assignAuth(auth, account) {
     if (!auth.account || !auth.account.equals(account._id)) {
-        logger_1.system(account._id, `connected auth ${auth.name} [${auth._id}]`);
-        await db_1.updateAuth(auth._id, { account: account._id });
+        (0, logger_1.system)(account._id, `connected auth ${auth.name} [${auth._id}]`);
+        await (0, db_1.updateAuth)(auth._id, { account: account._id });
         return true;
     }
     else {
         return false;
     }
 }
-exports.assignAuth = assignAuth;
 async function findOrCreateAuth(profile, accountId, options) {
-    let auth = await db_1.findAuthByOpenId(profile.id, profile.provider);
+    let auth = await (0, db_1.findAuthByOpenId)(profile.id, profile.provider);
     if (auth) {
         await updateAuthInfo(db_1.updateAuth, auth, profile, accountId);
     }
@@ -40,7 +42,6 @@ async function findOrCreateAuth(profile, accountId, options) {
     await verifyOrRestoreAuth(auth, accountId);
     return auth;
 }
-exports.findOrCreateAuth = findOrCreateAuth;
 async function updateAuthInfo(updateAuth, auth, profile, accountId) {
     if (!auth)
         return;
@@ -52,8 +53,8 @@ async function updateAuthInfo(updateAuth, auth, profile, accountId) {
         changes.name = profile.username;
     }
     if (profile.emails && profile.emails.length) {
-        if (!auth.emails || !utils_1.arraysEqual(auth.emails.sort(), profile.emails.sort())) {
-            changes.emails = lodash_1.uniq([...(auth.emails || []), ...profile.emails]);
+        if (!auth.emails || !(0, utils_1.arraysEqual)(auth.emails.sort(), profile.emails.sort())) {
+            changes.emails = (0, lodash_1.uniq)([...(auth.emails || []), ...profile.emails]);
         }
     }
     if (!auth.account && accountId) {
@@ -64,7 +65,6 @@ async function updateAuthInfo(updateAuth, auth, profile, accountId) {
         await updateAuth(auth._id, changes);
     }
 }
-exports.updateAuthInfo = updateAuthInfo;
 async function createAuth(profile, account) {
     if (!profile.id) {
         throw new Error('Missing profile ID');
@@ -90,6 +90,6 @@ async function verifyOrRestoreAuth(auth, mergeAccount) {
         }
     }
     Object.assign(auth, changes);
-    await db_1.updateAuth(auth._id, changes);
+    await (0, db_1.updateAuth)(auth._id, changes);
 }
 //# sourceMappingURL=authUtils.js.map

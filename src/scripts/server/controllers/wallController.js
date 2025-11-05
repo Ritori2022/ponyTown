@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WallController = void 0;
 const base64_js_1 = require("base64-js");
 const constants_1 = require("../../common/constants");
 const utils_1 = require("../../common/utils");
@@ -21,9 +22,9 @@ class WallController {
         const height = map.height + 1;
         const getAt = createGetAt(width, height);
         const setAt = createSetAt(width, height);
-        const hWalls = this.hWalls = utils_1.array(width * height, undefined);
-        const vWalls = this.vWalls = utils_1.array(width * height, undefined);
-        const cWalls = utils_1.array(width * height, undefined);
+        const hWalls = this.hWalls = (0, utils_1.array)(width * height, undefined);
+        const vWalls = this.vWalls = (0, utils_1.array)(width * height, undefined);
+        const cWalls = (0, utils_1.array)(width * height, undefined);
         const yOffset = 3 / constants_1.tileHeight;
         const { wallHShort, wallVShort, wallH, wallV, wallCorners, wallCornersShort, wallCutR, wallCutL } = walls;
         const calcCorner = (x, y) => {
@@ -53,17 +54,17 @@ class WallController {
                 return;
             if (this.lockedTiles.has(`${x},${y}:${type}`))
                 return;
-            const walls = type === 100 /* WallH */ ? hWalls : vWalls;
+            const walls = type === 100 /* TileType.WallH */ ? hWalls : vWalls;
             const entity = getAt(walls, x, y);
             const top = this.top;
-            if (type === 100 /* WallH */ && x === (width - 1))
+            if (type === 100 /* TileType.WallH */ && x === (width - 1))
                 return;
-            if (type === 101 /* WallV */ && y === (height - 1))
+            if (type === 101 /* TileType.WallV */ && y === (height - 1))
                 return;
             if (this.lockOuterWalls) {
-                if (type === 100 /* WallH */ && (y <= top || y === (width - 1)))
+                if (type === 100 /* TileType.WallH */ && (y <= top || y === (width - 1)))
                     return;
-                if (type === 101 /* WallV */ && (x === 0 || x === (height - 1) || y < top))
+                if (type === 101 /* TileType.WallV */ && (x === 0 || x === (height - 1) || y < top))
                     return;
             }
             if (entity) {
@@ -71,7 +72,7 @@ class WallController {
                 setAt(walls, x, y, undefined);
             }
             else {
-                if (type === 100 /* WallH */) {
+                if (type === 100 /* TileType.WallH */) {
                     const ctor = (y <= top || this.isTall(x, y)) ?
                         wallH : (x === 0 ? wallCutL : (x === (width - 2) ? wallCutR : wallHShort));
                     setAt(walls, x, y, world.addEntity(ctor(x + 0.5, y + yOffset), map));
@@ -114,10 +115,10 @@ class WallController {
             }
             data[offset] = value;
         }
-        return base64_js_1.fromByteArray(data);
+        return (0, base64_js_1.fromByteArray)(data);
     }
     deserialize(width, height, serialized) {
-        const data = base64_js_1.toByteArray(serialized);
+        const data = (0, base64_js_1.toByteArray)(serialized);
         const size = (width + 1) * (height + 1);
         let offset = 0;
         for (let i = 0; i < size; i += 8, offset++) {
@@ -126,7 +127,7 @@ class WallController {
                 if ((!!this.vWalls[i + j]) !== ((value & (1 << j)) !== 0)) {
                     const x = (i + j) % (width + 1);
                     const y = Math.floor((i + j) / (width + 1));
-                    this.toggleWall(x, y, 101 /* WallV */);
+                    this.toggleWall(x, y, 101 /* TileType.WallV */);
                 }
             }
         }
@@ -136,7 +137,7 @@ class WallController {
                 if ((!!this.hWalls[i + j]) !== ((value & (1 << j)) !== 0)) {
                     const x = (i + j) % (width + 1);
                     const y = Math.floor((i + j) / (width + 1));
-                    this.toggleWall(x, y, 100 /* WallH */);
+                    this.toggleWall(x, y, 100 /* TileType.WallH */);
                 }
             }
         }

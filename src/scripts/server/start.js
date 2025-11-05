@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.start = start;
+const tslib_1 = require("tslib");
 const fs_1 = require("fs");
-const ctrl = require("./controllers");
+const ctrl = tslib_1.__importStar(require("./controllers"));
 const world_1 = require("./world");
 const reporter_1 = require("./reporter");
 const logger_1 = require("./logger");
@@ -19,32 +21,32 @@ const customMap_1 = require("./maps/customMap");
 const controllerUtils_1 = require("./controllerUtils");
 const entities_1 = require("../common/entities");
 function start(world, server) {
-    const data = fs_1.readFileSync(paths_1.pathTo('src', 'ts', 'generated', 'pony.bin'));
+    const data = (0, fs_1.readFileSync)((0, paths_1.pathTo)('src', 'ts', 'generated', 'pony.bin'));
     sprites_1.normalSpriteSheet.data = {
         width: 512,
         height: 512,
         data: new Uint8ClampedArray(data.buffer, data.byteOffset, data.byteLength),
     };
-    tileUtils_1.initializeTileHeightmaps();
-    world.maps.push(mainMap_1.createMainMap(world));
-    world.maps.push(caveMap_1.createCaveMap(world));
+    (0, tileUtils_1.initializeTileHeightmaps)();
+    world.maps.push((0, mainMap_1.createMainMap)(world));
+    world.maps.push((0, caveMap_1.createCaveMap)(world));
     // custom map
     if (DEVELOPMENT) { // remove `if` when you're ready to publish your map
         // place sign that will teleport the player to your custom map
-        world.addEntity(controllerUtils_1.createSign(75, 69, 'Go to custom map', (_, client) => world_1.goToMap(world, client, 'custom'), entities_1.signQuestion), world.getMainMap());
+        world.addEntity((0, controllerUtils_1.createSign)(75, 69, 'Go to custom map', (_, client) => (0, world_1.goToMap)(world, client, 'custom'), entities_1.signQuestion), world.getMainMap());
         // add map to the world, go to `/src/ts/server/maps/customMap.ts` to customize your map
-        world.maps.push(customMap_1.createCustomMap(world));
+        world.maps.push((0, customMap_1.createCustomMap)(world));
     }
     if (world.featureFlags.test) {
-        const island = islandMap_1.createIslandMap(world, false);
+        const island = (0, islandMap_1.createIslandMap)(world, false);
         island.id = 'public-island';
         world.maps.push(island);
-        const house = houseMap_1.createHouseMap(world, false);
+        const house = (0, houseMap_1.createHouseMap)(world, false);
         house.id = 'public-house';
         world.maps.push(house);
     }
     if (BETA) {
-        world.maps.push(paletteMap_1.createPaletteMap(world));
+        world.maps.push((0, paletteMap_1.createPaletteMap)(world));
     }
     if (DEVELOPMENT) {
         world.controllers.push(new ctrl.TestController(world, world.getMainMap()));
@@ -60,11 +62,11 @@ function start(world, server) {
     let frames = 0;
     world.initialize(last);
     if (!DEVELOPMENT) {
-        reporter_1.create(server).info(`Server started`);
+        (0, reporter_1.create)(server).info(`Server started`);
     }
     setInterval(() => {
-        timing_1.timingReset();
-        timing_1.timingStart('frame');
+        (0, timing_1.timingReset)();
+        (0, timing_1.timingStart)('frame');
         try {
             const now = Date.now();
             world.update(now - last, now);
@@ -76,12 +78,11 @@ function start(world, server) {
             }
         }
         catch (e) {
-            reporter_1.create(server).danger(e.message);
+            (0, reporter_1.create)(server).danger(e.message);
             logger_1.logger.error(e);
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }, 1000 / constants_1.SERVER_FPS);
     return world;
 }
-exports.start = start;
 //# sourceMappingURL=start.js.map

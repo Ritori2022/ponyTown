@@ -1,8 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.actionExpressionDefaultPalette = void 0;
+exports.expressionButtonAction = expressionButtonAction;
+exports.commandButtonAction = commandButtonAction;
+exports.actionButtonAction = actionButtonAction;
+exports.itemButtonAction = itemButtonAction;
+exports.entityButtonAction = entityButtonAction;
+exports.createButtionActionActions = createButtionActionActions;
+exports.createButtonCommandActions = createButtonCommandActions;
+exports.createDefaultButtonActions = createDefaultButtonActions;
+exports.serializeActions = serializeActions;
+exports.deserializeActions = deserializeActions;
+exports.useAction = useAction;
+exports.drawAction = drawAction;
+const tslib_1 = require("tslib");
 const lodash_1 = require("lodash");
 const interfaces_1 = require("../common/interfaces");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const clientUtils_1 = require("./clientUtils");
 const expressionEncoder_1 = require("../common/encoders/expressionEncoder");
 const playerActions_1 = require("./playerActions");
@@ -30,10 +44,10 @@ const CANVAS_SIZE = 29;
 const ICON_SIZE = 16;
 const headX = -26;
 const headY = -30;
-const headlessBoopFrame = Object.assign({}, utils_1.cloneDeep(ponyAnimations_1.boop.frames[7]), { head: 0 });
+const headlessBoopFrame = { ...(0, utils_1.cloneDeep)(ponyAnimations_1.boop.frames[7]), head: 0 };
 const headlessBoop = { name: '', loop: false, fps: 1, frames: [headlessBoopFrame] };
 function createPony(coatColor, wings = false, horn = false) {
-    const info = ponyInfo_1.createDefaultPony();
+    const info = (0, ponyInfo_1.createDefaultPony)();
     info.coatFill = coatColor;
     info.mane.type = 0;
     info.backMane.type = 0;
@@ -45,18 +59,18 @@ function createPony(coatColor, wings = false, horn = false) {
     if (horn) {
         info.horn.type = 1;
     }
-    ponyInfo_1.syncLockedPonyInfo(info);
-    return ponyInfo_1.toPalette(info, ponyInfo_1.mockPaletteManager);
+    (0, ponyInfo_1.syncLockedPonyInfo)(info);
+    return (0, ponyInfo_1.toPalette)(info, ponyInfo_1.mockPaletteManager);
 }
 function createState() {
-    const state = ponyHelpers_1.defaultPonyState();
-    state.blushColor = colors_1.blushColor(color_1.parseColor(colors_1.ACTION_ACTION_COAT_COLOR));
+    const state = (0, ponyHelpers_1.defaultPonyState)();
+    state.blushColor = (0, colors_1.blushColor)((0, color_1.parseColor)(colors_1.ACTION_ACTION_COAT_COLOR));
     return state;
 }
 function colorToGrayscale(value) {
-    return color_1.colorToHexRGB(color_1.toGrayscale(color_1.parseColor(value)));
+    return (0, color_1.colorToHexRGB)((0, color_1.toGrayscale)((0, color_1.parseColor)(value)));
 }
-const ACTION_ACTION_BG_DISABLED = color_1.toGrayscale(color_1.parseColor(colors_1.ACTION_ACTION_BG));
+const ACTION_ACTION_BG_DISABLED = (0, color_1.toGrayscale)((0, color_1.parseColor)(colors_1.ACTION_ACTION_BG));
 const expressionPony = createPony(colors_1.ACTION_EXPRESSION_BG);
 const actionPony = createPony(colors_1.ACTION_ACTION_COAT_COLOR);
 const actionPonyWithHorn = createPony(colors_1.ACTION_ACTION_COAT_COLOR, false, true);
@@ -70,38 +84,33 @@ expressionPony.defaultPalette.colors[4] = 0xe16200ff; // tongue color
 function expressionButtonAction(expression) {
     return { type: 'expression', expression, title: expression ? '' : 'Reset expression' };
 }
-exports.expressionButtonAction = expressionButtonAction;
 function commandButtonAction(command, icon) {
     return { type: 'command', command, title: command, icon };
 }
-exports.commandButtonAction = commandButtonAction;
-function actionButtonAction(action, title, sendAction = 0 /* None */) {
+function actionButtonAction(action, title, sendAction = 0 /* Action.None */) {
     return { type: 'action', action, title, sendAction };
 }
-exports.actionButtonAction = actionButtonAction;
 function itemButtonAction(icon, count) {
     return { type: 'item', icon, count };
 }
-exports.itemButtonAction = itemButtonAction;
 function entityButtonAction(entity) {
     return { type: 'entity', entity, title: entity };
 }
-exports.entityButtonAction = entityButtonAction;
 const actionActions = [
     actionButtonAction('boop', 'Boop'),
     actionButtonAction('down', 'Sit down / Land'),
     actionButtonAction('up', 'Stand up / Fly up'),
     actionButtonAction('turn-head', 'Turn head'),
-    actionButtonAction('sneeze', 'Sneeze', 5 /* Sneeze */),
-    actionButtonAction('sleep', 'Sleep', 13 /* Sleep */),
-    actionButtonAction('yawn', 'Yawn', 3 /* Yawn */),
-    actionButtonAction('love', 'Love', 18 /* Love */),
-    actionButtonAction('laugh', 'Laugh', 4 /* Laugh */),
-    actionButtonAction('blush', 'Blush', 16 /* Blush */),
-    actionButtonAction('drop', 'Drop item', 14 /* Drop */),
-    actionButtonAction('drop-toy', 'Drop toy', 15 /* DropToy */),
-    actionButtonAction('magic', 'Magic', 26 /* Magic */),
-    actionButtonAction('switch-tool', 'Switch tool', 29 /* SwitchTool */),
+    actionButtonAction('sneeze', 'Sneeze', 5 /* Action.Sneeze */),
+    actionButtonAction('sleep', 'Sleep', 13 /* Action.Sleep */),
+    actionButtonAction('yawn', 'Yawn', 3 /* Action.Yawn */),
+    actionButtonAction('love', 'Love', 18 /* Action.Love */),
+    actionButtonAction('laugh', 'Laugh', 4 /* Action.Laugh */),
+    actionButtonAction('blush', 'Blush', 16 /* Action.Blush */),
+    actionButtonAction('drop', 'Drop item', 14 /* Action.Drop */),
+    actionButtonAction('drop-toy', 'Drop toy', 15 /* Action.DropToy */),
+    actionButtonAction('magic', 'Magic', 26 /* Action.Magic */),
+    actionButtonAction('switch-tool', 'Switch tool', 29 /* Action.SwitchTool */),
     actionButtonAction('switch-entity', 'Switch item to place'),
     actionButtonAction('switch-entity-rev', 'Switch item to place (reverse)'),
     actionButtonAction('switch-tile', 'Switch tile to place'),
@@ -126,46 +135,44 @@ function getCommandAction(command) {
 function createButtionActionActions() {
     return [...actionActions, ...additionalActionsActions];
 }
-exports.createButtionActionActions = createButtionActionActions;
 function createButtonCommandActions() {
     return [...commandActions];
 }
-exports.createButtonCommandActions = createButtonCommandActions;
 function createDefaultButtonActions() {
     return DEVELOPMENT ? [
         { action: getActionAction('boop') },
         { action: getActionAction('down') },
         { action: getActionAction('up') },
         { action: getActionAction('turn-head') },
-        { action: expressionButtonAction(clientUtils_1.createExpression(6 /* Closed */, 6 /* Closed */, 0 /* Smile */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 3 /* Neutral3 */, 0 /* Smile */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 3 /* Scrunch */, 0 /* Forward */, 1 /* Up */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(19 /* Angry */, 19 /* Angry */, 3 /* Scrunch */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(3 /* Neutral3 */, 3 /* Neutral3 */, 6 /* Flat */, 2 /* Left */, 2 /* Left */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(23 /* X */, 23 /* X */, 6 /* Flat */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(4 /* Neutral4 */, 4 /* Neutral4 */, 6 /* Flat */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(6 /* Eye.Closed */, 6 /* Eye.Closed */, 0 /* Muzzle.Smile */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 3 /* Eye.Neutral3 */, 0 /* Muzzle.Smile */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 3 /* Muzzle.Scrunch */, 0 /* Iris.Forward */, 1 /* Iris.Up */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(19 /* Eye.Angry */, 19 /* Eye.Angry */, 3 /* Muzzle.Scrunch */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(3 /* Eye.Neutral3 */, 3 /* Eye.Neutral3 */, 6 /* Muzzle.Flat */, 2 /* Iris.Left */, 2 /* Iris.Left */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(23 /* Eye.X */, 23 /* Eye.X */, 6 /* Muzzle.Flat */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(4 /* Eye.Neutral4 */, 4 /* Eye.Neutral4 */, 6 /* Muzzle.Flat */)) },
         { action: undefined },
-        { action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 6 /* Flat */, 6 /* Shocked */, 6 /* Shocked */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(2 /* Neutral2 */, 2 /* Neutral2 */, 6 /* Flat */, 3 /* Right */, 2 /* Left */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 6 /* Muzzle.Flat */, 6 /* Iris.Shocked */, 6 /* Iris.Shocked */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(2 /* Eye.Neutral2 */, 2 /* Eye.Neutral2 */, 6 /* Muzzle.Flat */, 3 /* Iris.Right */, 2 /* Iris.Left */)) },
         { action: getCommandAction('/roll') },
         { action: itemButtonAction(sprites.flower_2, 14) },
         { action: itemButtonAction(sprites.apple_1, 5) },
         { action: itemButtonAction(sprites.pumpkin_default) },
         { action: itemButtonAction(sprites.tree_1, 2) },
         {
-            action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 6 /* Flat */, 6 /* Shocked */, 6 /* Shocked */, 8 /* Tears */))
+            action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 6 /* Muzzle.Flat */, 6 /* Iris.Shocked */, 6 /* Iris.Shocked */, 8 /* ExpressionExtra.Tears */))
         },
         {
-            action: expressionButtonAction(clientUtils_1.createExpression(2 /* Neutral2 */, 2 /* Neutral2 */, 6 /* Flat */, 3 /* Right */, 2 /* Left */, 4 /* Cry */))
+            action: expressionButtonAction((0, clientUtils_1.createExpression)(2 /* Eye.Neutral2 */, 2 /* Eye.Neutral2 */, 6 /* Muzzle.Flat */, 3 /* Iris.Right */, 2 /* Iris.Left */, 4 /* ExpressionExtra.Cry */))
         },
         {
-            action: expressionButtonAction(clientUtils_1.createExpression(2 /* Neutral2 */, 2 /* Neutral2 */, 6 /* Flat */, 3 /* Right */, 2 /* Left */, 16 /* Hearts */))
+            action: expressionButtonAction((0, clientUtils_1.createExpression)(2 /* Eye.Neutral2 */, 2 /* Eye.Neutral2 */, 6 /* Muzzle.Flat */, 3 /* Iris.Right */, 2 /* Iris.Left */, 16 /* ExpressionExtra.Hearts */))
         },
         {
-            action: expressionButtonAction(clientUtils_1.createExpression(2 /* Neutral2 */, 2 /* Neutral2 */, 6 /* Flat */, 3 /* Right */, 2 /* Left */, 2 /* Zzz */))
+            action: expressionButtonAction((0, clientUtils_1.createExpression)(2 /* Eye.Neutral2 */, 2 /* Eye.Neutral2 */, 6 /* Muzzle.Flat */, 3 /* Iris.Right */, 2 /* Iris.Left */, 2 /* ExpressionExtra.Zzz */))
         },
         {
-            action: expressionButtonAction(clientUtils_1.createExpression(2 /* Neutral2 */, 2 /* Neutral2 */, 6 /* Flat */, 3 /* Right */, 2 /* Left */, 2 /* Zzz */ | 4 /* Cry */ | 16 /* Hearts */ | 1 /* Blush */))
+            action: expressionButtonAction((0, clientUtils_1.createExpression)(2 /* Eye.Neutral2 */, 2 /* Eye.Neutral2 */, 6 /* Muzzle.Flat */, 3 /* Iris.Right */, 2 /* Iris.Left */, 2 /* ExpressionExtra.Zzz */ | 4 /* ExpressionExtra.Cry */ | 16 /* ExpressionExtra.Hearts */ | 1 /* ExpressionExtra.Blush */))
         },
     ] : [
         { action: getActionAction('boop') },
@@ -174,13 +181,12 @@ function createDefaultButtonActions() {
         { action: getActionAction('turn-head') },
         { action: getActionAction('magic') },
         { action: expressionButtonAction(undefined) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(6 /* Closed */, 6 /* Closed */, 0 /* Smile */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 3 /* Neutral3 */, 0 /* Smile */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 3 /* Scrunch */, 0 /* Forward */, 1 /* Up */)) },
-        { action: expressionButtonAction(clientUtils_1.createExpression(19 /* Angry */, 19 /* Angry */, 3 /* Scrunch */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(6 /* Eye.Closed */, 6 /* Eye.Closed */, 0 /* Muzzle.Smile */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 3 /* Eye.Neutral3 */, 0 /* Muzzle.Smile */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 3 /* Muzzle.Scrunch */, 0 /* Iris.Forward */, 1 /* Iris.Up */)) },
+        { action: expressionButtonAction((0, clientUtils_1.createExpression)(19 /* Eye.Angry */, 19 /* Eye.Angry */, 3 /* Muzzle.Scrunch */)) },
     ];
 }
-exports.createDefaultButtonActions = createDefaultButtonActions;
 function serializeActions(slots) {
     const serialized = slots.slice(0, constants_1.ACTIONS_LIMIT).map(serializeAction);
     while (serialized.length && !serialized[serialized.length - 1]) {
@@ -188,7 +194,6 @@ function serializeActions(slots) {
     }
     return JSON.stringify(serialized);
 }
-exports.serializeActions = serializeActions;
 function deserializeActions(data) {
     try {
         const json = JSON.parse(data);
@@ -199,7 +204,6 @@ function deserializeActions(data) {
         return [];
     }
 }
-exports.deserializeActions = deserializeActions;
 function serializeAction({ action }) {
     if (action) {
         switch (action.type) {
@@ -208,7 +212,7 @@ function serializeAction({ action }) {
             case 'command':
                 return { cmd: action.command };
             case 'expression':
-                return { exp: expressionEncoder_1.encodeExpression(action.expression) };
+                return { exp: (0, expressionEncoder_1.encodeExpression)(action.expression) };
             case 'entity':
                 return { ent: action.entity };
             default:
@@ -229,7 +233,7 @@ function deserializeAction(data) {
             return { action: getCommandAction(data.cmd || data.command) };
         }
         else if ('exp' in data || 'expression' in data) {
-            const expression = expressionEncoder_1.decodeExpression(data.exp || data.expression | 0);
+            const expression = (0, expressionEncoder_1.decodeExpression)(data.exp || data.expression | 0);
             return { action: expressionButtonAction(expression) };
         }
         else if ('ent' in data || 'entity' in data) {
@@ -246,7 +250,7 @@ function useAction(game, action) {
     if (action) {
         switch (action.type) {
             case 'expression':
-                game.send(server => server.expression(expressionEncoder_1.encodeExpression(action.expression)));
+                game.send(server => server.expression((0, expressionEncoder_1.encodeExpression)(action.expression)));
                 break;
             case 'action':
                 if (action.sendAction) {
@@ -255,27 +259,27 @@ function useAction(game, action) {
                 else {
                     switch (action.action) {
                         case 'boop':
-                            playerActions_1.boopAction(game);
+                            (0, playerActions_1.boopAction)(game);
                             break;
                         case 'up':
-                            playerActions_1.upAction(game);
+                            (0, playerActions_1.upAction)(game);
                             break;
                         case 'down':
-                            playerActions_1.downAction(game);
+                            (0, playerActions_1.downAction)(game);
                             break;
                         case 'turn-head':
-                            playerActions_1.turnHeadAction(game);
+                            (0, playerActions_1.turnHeadAction)(game);
                             break;
                         case 'switch-entity':
-                            game.send(server => server.action(31 /* SwitchToPlaceTool */));
+                            game.send(server => server.action(31 /* Action.SwitchToPlaceTool */));
                             game.changePlaceEntity(false);
                             break;
                         case 'switch-entity-rev':
-                            game.send(server => server.action(31 /* SwitchToPlaceTool */));
+                            game.send(server => server.action(31 /* Action.SwitchToPlaceTool */));
                             game.changePlaceEntity(true);
                             break;
                         case 'switch-tile':
-                            game.send(server => server.action(32 /* SwitchToTileTool */));
+                            game.send(server => server.action(32 /* Action.SwitchToTileTool */));
                             game.changePlaceTile(false);
                             break;
                         default:
@@ -288,7 +292,7 @@ function useAction(game, action) {
                 const lastCall = lastCommandCalls[action.command] | 0;
                 if ((now - lastCall) > constants_1.COMMAND_ACTION_TIME_DELAY) {
                     lastCommandCalls[action.command] = now;
-                    const chatType = interfaces_1.isPartyChat(game.lastChatMessageType) ? 1 /* Party */ : 0 /* Say */;
+                    const chatType = (0, interfaces_1.isPartyChat)(game.lastChatMessageType) ? 1 /* ChatType.Party */ : 0 /* ChatType.Say */;
                     game.send(server => server.say(0, action.command, chatType));
                 }
                 break;
@@ -302,7 +306,6 @@ function useAction(game, action) {
         }
     }
 }
-exports.useAction = useAction;
 function shouldRedrawAction(action, state, game) {
     if (action !== state.action) {
         return true;
@@ -333,12 +336,12 @@ const canvasCache = new Map();
 const palette = ponyInfo_1.mockPaletteManager.addArray(sprites.fontPalette);
 const emojiPalette = ponyInfo_1.mockPaletteManager.addArray(sprites.emojiPalette);
 function drawCanvasCached(key, action) {
-    const canvas = canvasCache.get(key) || contextSpriteBatch_1.drawCanvas(ICON_SIZE, ICON_SIZE, sprites.paletteSpriteSheet, undefined, action);
+    const canvas = canvasCache.get(key) || (0, contextSpriteBatch_1.drawCanvas)(ICON_SIZE, ICON_SIZE, sprites.paletteSpriteSheet, undefined, action);
     canvasCache.set(key, canvas);
     return canvas;
 }
 function drawAction(canvas, action, state, game) {
-    if (canvasUtils_1.resizeCanvasWithRatio(canvas, CANVAS_SIZE, CANVAS_SIZE)) {
+    if ((0, canvasUtils_1.resizeCanvasWithRatio)(canvas, CANVAS_SIZE, CANVAS_SIZE)) {
         state.action = 0;
     }
     if (!spriteUtils_1.spriteSheetsLoaded || !shouldRedrawAction(action, state, game))
@@ -349,33 +352,33 @@ function drawAction(canvas, action, state, game) {
     state.action = action;
     context.save();
     context.clearRect(0, 0, canvas.width, canvas.height);
-    canvasUtils_1.disableImageSmoothing(context);
-    const scale = 2 * canvasUtils_1.getPixelRatio();
+    (0, canvasUtils_1.disableImageSmoothing)(context);
+    const scale = 2 * (0, canvasUtils_1.getPixelRatio)();
     const bufferSize = ICON_SIZE;
     if (action) {
         switch (action.type) {
             case 'expression': {
-                const buffer = contextSpriteBatch_1.drawCanvas(bufferSize, bufferSize, sprites.paletteSpriteSheet, undefined, batch => {
-                    const state = Object.assign({}, createState(), { expression: action.expression });
-                    const options = Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { noEars: true });
-                    ponyDraw_1.drawHead(batch, expressionPony, headX, headY, undefined, ponyAnimations_1.defaultHeadFrame, state, options, false, 0);
+                const buffer = (0, contextSpriteBatch_1.drawCanvas)(bufferSize, bufferSize, sprites.paletteSpriteSheet, undefined, batch => {
+                    const state = { ...createState(), expression: action.expression };
+                    const options = { ...(0, ponyHelpers_1.defaultDrawPonyOptions)(), noEars: true };
+                    (0, ponyDraw_1.drawHead)(batch, expressionPony, headX, headY, undefined, ponyAnimations_1.defaultHeadFrame, state, options, false, 0);
                     if (action.expression) {
                         const extra = action.expression.extra;
-                        if (utils_1.hasFlag(extra, 2 /* Zzz */)) {
+                        if ((0, utils_1.hasFlag)(extra, 2 /* ExpressionExtra.Zzz */)) {
                             batch.drawSprite(sprites.emote_sleep1.frames[13], colors_1.WHITE, defaultPalette, headX + 15, headY + 3);
                         }
-                        if (utils_1.hasFlag(extra, 16 /* Hearts */)) {
+                        if ((0, utils_1.hasFlag)(extra, 16 /* ExpressionExtra.Hearts */)) {
                             batch.drawSprite(sprites.emote_hearts.frames[41], colors_1.HEARTS_COLOR, defaultPalette, headX + 8, headY + 22);
                         }
-                        if (utils_1.hasFlag(extra, 4 /* Cry */)) {
+                        if ((0, utils_1.hasFlag)(extra, 4 /* ExpressionExtra.Cry */)) {
                             batch.drawSprite(sprites.emote_cry2.frames[4], colors_1.WHITE, defaultPalette, headX, headY);
                         }
-                        else if (utils_1.hasFlag(extra, 8 /* Tears */)) {
+                        else if ((0, utils_1.hasFlag)(extra, 8 /* ExpressionExtra.Tears */)) {
                             batch.drawSprite(sprites.emote_tears.frames[0], colors_1.WHITE, defaultPalette, headX, headY);
                         }
                     }
                     else {
-                        const color = color_1.parseColor(colors_1.ACTION_EXPRESSION_BG);
+                        const color = (0, color_1.parseColor)(colors_1.ACTION_EXPRESSION_BG);
                         batch.drawRect(color, 0, 3, 15, 5);
                         batch.drawRect(color, 0, 8, 3, 1);
                         batch.drawRect(color, 8, 8, 4, 1);
@@ -389,9 +392,9 @@ function drawAction(canvas, action, state, game) {
             }
             case 'command': {
                 const buffer = drawCanvasCached(`command:${action.icon}`, batch => {
-                    const bounds = rect_1.rect(0, 0, 15, 15);
+                    const bounds = (0, rect_1.rect)(0, 0, 15, 15);
                     const options = { palette, emojiPalette };
-                    spriteFont_1.drawTextAligned(batch, action.icon, fonts_1.fontPal, colors_1.BLACK, bounds, 2 /* Center */, 2 /* Middle */, options);
+                    (0, spriteFont_1.drawTextAligned)(batch, action.icon, fonts_1.fontPal, colors_1.BLACK, bounds, 2 /* HAlign.Center */, 2 /* VAlign.Middle */, options);
                 });
                 context.fillStyle = colors_1.ACTION_COMMAND_BG;
                 context.fillRect(0, 0, canvas.width, canvas.height);
@@ -411,14 +414,14 @@ function drawAction(canvas, action, state, game) {
                     buffer = drawCanvasCached(`action:${action.action}`, batch => {
                         switch (action.action) {
                             case 'boop': {
-                                const state = Object.assign({}, createState(), { animation: headlessBoop, animationFrame: 0 });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 25, 32, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), animation: headlessBoop, animationFrame: 0 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 25, 32, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 break;
                             }
                             case 'turn-head': {
                                 // state.right = game.player && isHeadFacingRight(game.player);
-                                const ponyState = Object.assign({}, createState(), { animation: ponyAnimations_1.stand });
-                                ponyDraw_1.drawPony(batch, actionPony, ponyState, 15, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const ponyState = { ...createState(), animation: ponyAnimations_1.stand };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, ponyState, 15, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 // if (!state.right) {
                                 // 	context.translate(context.canvas.width, 0);
                                 // 	context.scale(-1, 1);
@@ -426,42 +429,44 @@ function drawAction(canvas, action, state, game) {
                                 break;
                             }
                             case 'sneeze': {
-                                const state = Object.assign({}, createState(), { headAnimation: ponyAnimations_1.sneeze, headAnimationFrame: 3 });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 17, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), headAnimation: ponyAnimations_1.sneeze, headAnimationFrame: 3 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 17, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 break;
                             }
                             case 'sleep': {
-                                const state = Object.assign({}, createState(), { expression: clientUtils_1.createExpression(6 /* Closed */, 6 /* Closed */, 2 /* Neutral */) });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 18, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), expression: (0, clientUtils_1.createExpression)(6 /* Eye.Closed */, 6 /* Eye.Closed */, 2 /* Muzzle.Neutral */) };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 18, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 batch.drawSprite(sprites.emote_sleep1.frames[13], colors_1.WHITE, defaultPalette, headX + 15, headY + 3);
                                 break;
                             }
                             case 'drop': {
-                                const state = Object.assign({}, createState(), { holding: mixins_1.fakePaletteManager(() => entities_1.apple2(0, 0)) });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 20, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), holding: (0, mixins_1.fakePaletteManager)(() => (0, entities_1.apple2)(0, 0)) };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 20, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 batch.drawSprite(sprites.arrow_down, colors_1.BLACK, defaultPalette, 1, 3);
                                 break;
                             }
                             case 'drop-toy': {
-                                const state = Object.assign({}, createState());
-                                const options = Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { toy: 17 });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 18, 52, options);
+                                const state = { ...createState() };
+                                const options = { ...(0, ponyHelpers_1.defaultDrawPonyOptions)(), toy: 17 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 18, 52, options);
                                 batch.drawSprite(sprites.arrow_down, colors_1.BLACK, defaultPalette, 1, 3);
                                 break;
                             }
                             case 'yawn': {
-                                const state = Object.assign({}, createState(), { headAnimation: ponyAnimations_1.yawn, headAnimationFrame: 3 });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 17, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), headAnimation: ponyAnimations_1.yawn, headAnimationFrame: 3 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 17, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 break;
                             }
                             case 'laugh': {
-                                const state = Object.assign({}, createState(), { headAnimation: ponyAnimations_1.laugh, headAnimationFrame: 3 });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 17, 38, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), headAnimation: ponyAnimations_1.laugh, headAnimationFrame: 3 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 17, 38, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 break;
                             }
                             case 'blush': {
-                                const state = Object.assign({}, createState(), { expression: clientUtils_1.createExpression(1 /* Neutral */, 1 /* Neutral */, 0 /* Smile */, 0 /* Forward */, 0 /* Forward */, 1 /* Blush */) });
-                                ponyDraw_1.drawPony(batch, actionPony, state, 17, 40, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = {
+                                    ...createState(), expression: (0, clientUtils_1.createExpression)(1 /* Eye.Neutral */, 1 /* Eye.Neutral */, 0 /* Muzzle.Smile */, 0 /* Iris.Forward */, 0 /* Iris.Forward */, 1 /* ExpressionExtra.Blush */)
+                                };
+                                (0, ponyDraw_1.drawPony)(batch, actionPony, state, 17, 40, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 break;
                             }
                             case 'love': {
@@ -469,8 +474,8 @@ function drawAction(canvas, action, state, game) {
                                 break;
                             }
                             case 'magic': {
-                                const state = Object.assign({}, createState(), { headAnimation: ponyAnimations_1.laugh, headAnimationFrame: 3 });
-                                ponyDraw_1.drawPony(batch, actionPonyWithHorn, state, 17, 48, ponyHelpers_1.defaultDrawPonyOptions());
+                                const state = { ...createState(), headAnimation: ponyAnimations_1.laugh, headAnimationFrame: 3 };
+                                (0, ponyDraw_1.drawPony)(batch, actionPonyWithHorn, state, 17, 48, (0, ponyHelpers_1.defaultDrawPonyOptions)());
                                 batch.drawSprite(sprites.magic_icon, colors_1.WHITE, defaultPalette, 4, 2);
                                 break;
                             }
@@ -507,7 +512,7 @@ function drawAction(canvas, action, state, game) {
                 break;
             }
             case 'item': {
-                const buffer = contextSpriteBatch_1.drawCanvas(bufferSize, bufferSize, sprites.paletteSpriteSheet, undefined, batch => {
+                const buffer = (0, contextSpriteBatch_1.drawCanvas)(bufferSize, bufferSize, sprites.paletteSpriteSheet, undefined, batch => {
                     const palette = ponyInfo_1.mockPaletteManager.addArray(action.icon.palettes[0]);
                     const sprite = action.icon.color;
                     batch.drawSprite(sprite, colors_1.WHITE, palette, Math.round((15 - sprite.w) / 2), Math.round((15 - sprite.h) / 2) + 1);
@@ -520,18 +525,18 @@ function drawAction(canvas, action, state, game) {
             }
             case 'entity': {
                 if (BETA) {
-                    const types = model_1.getEntityTypesFromName(action.entity) || [];
+                    const types = (0, model_1.getEntityTypesFromName)(action.entity) || [];
                     const size = bufferSize * scale;
-                    const entities = types.map(type => entities_1.createAnEntity(type, 0, 0, 0, {}, ponyInfo_1.mockPaletteManager, game));
+                    const entities = types.map(type => (0, entities_1.createAnEntity)(type, 0, 0, 0, {}, ponyInfo_1.mockPaletteManager, game));
                     // createAnEntity(type, 0, toWorldX(size / 2 - 2), toWorldY(size * 0.75), {}, mockPaletteManager));
-                    const bounds = lodash_1.compact(entities.map(e => e.bounds)).reduce(rect_1.addRects, rect_1.rect(0, 0, 0, 0));
-                    const center = rect_1.centerPoint(bounds);
-                    const buffer = contextSpriteBatch_1.drawCanvas(size, size, sprites.paletteSpriteSheet, undefined, batch => {
+                    const bounds = (0, lodash_1.compact)(entities.map(e => e.bounds)).reduce(rect_1.addRects, (0, rect_1.rect)(0, 0, 0, 0));
+                    const center = (0, rect_1.centerPoint)(bounds);
+                    const buffer = (0, contextSpriteBatch_1.drawCanvas)(size, size, sprites.paletteSpriteSheet, undefined, batch => {
                         for (const entity of entities) {
                             if (entity.draw) {
-                                entity.x += positionUtils_1.toWorldX(size / 2 - 2 - center.x);
-                                entity.y += positionUtils_1.toWorldY(size / 2 - center.y);
-                                entity.draw(batch, Object.assign({}, interfaces_1.defaultDrawOptions, { shadowColor: colors_1.TRANSPARENT }));
+                                entity.x += (0, positionUtils_1.toWorldX)(size / 2 - 2 - center.x);
+                                entity.y += (0, positionUtils_1.toWorldY)(size / 2 - center.y);
+                                entity.draw(batch, { ...interfaces_1.defaultDrawOptions, shadowColor: colors_1.TRANSPARENT });
                             }
                         }
                     });
@@ -545,32 +550,31 @@ function drawAction(canvas, action, state, game) {
     }
     context.restore();
 }
-exports.drawAction = drawAction;
 function drawLie(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.lie });
-    ponyDraw_1.drawPony(batch, actionPony, state, -6, 15, ponyHelpers_1.defaultDrawPonyOptions());
+    const state = { ...createState(), animation: ponyAnimations_1.lie };
+    (0, ponyDraw_1.drawPony)(batch, actionPony, state, -6, 15, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function drawLieDisabled(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.lie });
+    const state = { ...createState(), animation: ponyAnimations_1.lie };
     batch.drawRect(ACTION_ACTION_BG_DISABLED, 0, 0, 50, 50);
-    ponyDraw_1.drawPony(batch, actionPonyDisabled, state, -6, 15, ponyHelpers_1.defaultDrawPonyOptions());
+    (0, ponyDraw_1.drawPony)(batch, actionPonyDisabled, state, -6, 15, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function drawSit(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.sit });
-    ponyDraw_1.drawPony(batch, actionPony, state, -6, 15, ponyHelpers_1.defaultDrawPonyOptions());
+    const state = { ...createState(), animation: ponyAnimations_1.sit };
+    (0, ponyDraw_1.drawPony)(batch, actionPony, state, -6, 15, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function drawStand(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.stand });
-    ponyDraw_1.drawPony(batch, actionPony, state, -1, 15, ponyHelpers_1.defaultDrawPonyOptions());
+    const state = { ...createState(), animation: ponyAnimations_1.stand };
+    (0, ponyDraw_1.drawPony)(batch, actionPony, state, -1, 15, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function drawFly(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.fly });
-    ponyDraw_1.drawPony(batch, actionPonyWithWings, state, 0, 30, ponyHelpers_1.defaultDrawPonyOptions());
+    const state = { ...createState(), animation: ponyAnimations_1.fly };
+    (0, ponyDraw_1.drawPony)(batch, actionPonyWithWings, state, 0, 30, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function drawFlyDisabled(batch) {
-    const state = Object.assign({}, createState(), { animation: ponyAnimations_1.fly });
+    const state = { ...createState(), animation: ponyAnimations_1.fly };
     batch.drawRect(ACTION_ACTION_BG_DISABLED, 0, 0, 50, 50);
-    ponyDraw_1.drawPony(batch, actionPonyWithWingsDisabled, state, 0, 30, ponyHelpers_1.defaultDrawPonyOptions());
+    (0, ponyDraw_1.drawPony)(batch, actionPonyWithWingsDisabled, state, 0, 30, (0, ponyHelpers_1.defaultDrawPonyOptions)());
 }
 function getDrawFuncByName(name) {
     switch (name) {
@@ -587,13 +591,13 @@ function getDrawFuncByName(name) {
 function getUpDrawFunc(game) {
     const player = game.player;
     if (player) {
-        if (entityUtils_1.isPonyLying(player)) {
+        if ((0, entityUtils_1.isPonyLying)(player)) {
             return 'sit';
         }
-        else if (entityUtils_1.isPonySitting(player)) {
+        else if ((0, entityUtils_1.isPonySitting)(player)) {
             return 'stand';
         }
-        else if (entityUtils_1.isPonyStanding(player) && pony_1.canPonyFly(player)) {
+        else if ((0, entityUtils_1.isPonyStanding)(player) && (0, pony_1.canPonyFly)(player)) {
             return 'fly';
         }
     }
@@ -602,13 +606,13 @@ function getUpDrawFunc(game) {
 function getDownDrawFunc(game) {
     const player = game.player;
     if (player) {
-        if (entityUtils_1.isPonySitting(player)) {
+        if ((0, entityUtils_1.isPonySitting)(player)) {
             return 'lie';
         }
-        else if (entityUtils_1.isPonyStanding(player)) {
+        else if ((0, entityUtils_1.isPonyStanding)(player)) {
             return 'sit';
         }
-        else if (entityUtils_1.isPonyFlying(player)) {
+        else if ((0, entityUtils_1.isPonyFlying)(player)) {
             return 'stand';
         }
     }

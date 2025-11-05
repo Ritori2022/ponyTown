@@ -1,5 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.numberToBitCount = numberToBitCount;
+exports.countBits = countBits;
+exports.bitWriter = bitWriter;
+exports.bitReader = bitReader;
+exports.bitReaderCustom = bitReaderCustom;
 function numberToBitCount(value) {
     value = value >>> 0;
     for (let mask = 0xffffffff >>> 0, bits = 0; mask; mask = (mask << 1) >>> 0, bits++) {
@@ -9,7 +14,6 @@ function numberToBitCount(value) {
     }
     return 32;
 }
-exports.numberToBitCount = numberToBitCount;
 function countBits(value) {
     value = value >>> 0;
     let bits = 0;
@@ -19,7 +23,6 @@ function countBits(value) {
     }
     return bits;
 }
-exports.countBits = countBits;
 function bitWriter(writes) {
     let buffer = new Uint8Array(16);
     let length = 0;
@@ -59,7 +62,6 @@ function bitWriter(writes) {
     }
     return buffer.subarray(0, length);
 }
-exports.bitWriter = bitWriter;
 function bitReader(buffer) {
     let offset = 0;
     return bitReaderCustom(() => {
@@ -69,7 +71,6 @@ function bitReader(buffer) {
         return buffer[offset++];
     });
 }
-exports.bitReader = bitReader;
 function bitReaderCustom(readByte) {
     let byte = 0;
     let byteBits = 0;
@@ -92,5 +93,4 @@ function bitReaderCustom(readByte) {
         return result >>> 0;
     };
 }
-exports.bitReaderCustom = bitReaderCustom;
 //# sourceMappingURL=bitUtils.js.map

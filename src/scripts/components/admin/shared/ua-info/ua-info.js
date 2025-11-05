@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UAInfo = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const ua_parser_js_1 = require("ua-parser-js");
@@ -29,18 +30,18 @@ let UAInfo = class UAInfo {
         return this._userAgent;
     }
 };
+exports.UAInfo = UAInfo;
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], UAInfo.prototype, "userAgent", null);
-UAInfo = tslib_1.__decorate([
-    core_1.Component({
+exports.UAInfo = UAInfo = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'ua-info',
         templateUrl: 'ua-info.pug',
         styles: [`:host { display: inline-block; }`],
         changeDetection: core_1.ChangeDetectionStrategy.OnPush,
     })
 ], UAInfo);
-exports.UAInfo = UAInfo;
 //# sourceMappingURL=ua-info.js.map

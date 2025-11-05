@@ -1,6 +1,7 @@
 "use strict";
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.port = exports.server = exports.gameServers = exports.config = exports.description = exports.version = exports.args = void 0;
 const yargs_1 = require("yargs");
 exports.args = yargs_1.argv;
 _a = require('../../../package.json'), exports.version = _a.version, exports.description = _a.description;

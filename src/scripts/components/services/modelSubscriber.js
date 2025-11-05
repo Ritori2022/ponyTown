@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ModelSubscriber = void 0;
 const utils_1 = require("../../common/utils");
 const constants_1 = require("../../common/constants");
 const unsubscribeTimeout = 1 * constants_1.MINUTE;
@@ -54,7 +55,7 @@ class ModelSubscriber {
     unsubscribe(id, callback) {
         const subscription = this.subscriptions.get(id);
         if (subscription) {
-            utils_1.removeItem(subscription.callbacks, callback);
+            (0, utils_1.removeItem)(subscription.callbacks, callback);
             if (subscription.callbacks.length === 0) {
                 subscription.timeout = setTimeout(() => {
                     this.socket.server.unsubscribe(this.type, id);

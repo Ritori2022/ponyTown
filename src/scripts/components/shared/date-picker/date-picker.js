@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DatePicker = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../../common/utils");
@@ -7,7 +8,7 @@ const constants_1 = require("../../../common/constants");
 const clientUtils_1 = require("../../../client/clientUtils");
 let DatePicker = class DatePicker {
     constructor() {
-        this.days = utils_1.times(31, i => i + 1);
+        this.days = (0, utils_1.times)(31, i => i + 1);
         this.years = [];
         this.months = getMonthNames();
         this.day = 0;
@@ -21,12 +22,12 @@ let DatePicker = class DatePicker {
         }
     }
     get date() {
-        const date = utils_1.createValidBirthDate(this.day, this.month, this.year);
-        return date && utils_1.formatISODate(date);
+        const date = (0, utils_1.createValidBirthDate)(this.day, this.month, this.year);
+        return date && (0, utils_1.formatISODate)(date);
     }
     set date(value) {
         if (value) {
-            const { day, month, year } = utils_1.parseISODate(value);
+            const { day, month, year } = (0, utils_1.parseISODate)(value);
             this.day = day;
             this.month = month;
             this.year = year;
@@ -36,33 +37,33 @@ let DatePicker = class DatePicker {
         this.dateChange.emit(this.date);
     }
 };
+exports.DatePicker = DatePicker;
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], DatePicker.prototype, "dateChange", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], DatePicker.prototype, "date", null);
-DatePicker = tslib_1.__decorate([
-    core_1.Component({
+exports.DatePicker = DatePicker = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'date-picker',
         templateUrl: 'date-picker.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], DatePicker);
-exports.DatePicker = DatePicker;
 function getMonthNames() {
     try {
-        const format = new Intl.DateTimeFormat(clientUtils_1.getLocale(), { month: 'long' });
-        return utils_1.times(12, i => {
+        const format = new Intl.DateTimeFormat((0, clientUtils_1.getLocale)(), { month: 'long' });
+        return (0, utils_1.times)(12, i => {
             const date = new Date(523456789);
             date.setMonth(i);
             return format.format(date);
         });
     }
-    catch (_a) {
+    catch {
         return constants_1.MONTH_NAMES_EN;
     }
 }

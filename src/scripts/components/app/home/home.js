@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Home = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const model_1 = require("../../services/model");
@@ -11,7 +12,7 @@ let Home = class Home {
         this.gameService = gameService;
         this.model = model;
         this.installService = installService;
-        this.state = ponyHelpers_1.defaultPonyState();
+        this.state = (0, ponyHelpers_1.defaultPonyState)();
         this.previewPony = undefined;
     }
     get authError() {
@@ -42,14 +43,15 @@ let Home = class Home {
         return this.previewPony ? this.previewPony.name : this.pony.name;
     }
     get previewTag() {
-        return model_1.getPonyTag(this.previewPony || this.pony, this.account);
+        return (0, model_1.getPonyTag)(this.previewPony || this.pony, this.account);
     }
     signIn(provider) {
         this.model.signIn(provider);
     }
 };
-Home = tslib_1.__decorate([
-    core_1.Component({
+exports.Home = Home;
+exports.Home = Home = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'home',
         templateUrl: 'home.pug',
         styleUrls: ['home.scss'],
@@ -58,5 +60,4 @@ Home = tslib_1.__decorate([
         model_1.Model,
         installService_1.InstallService])
 ], Home);
-exports.Home = Home;
 //# sourceMappingURL=home.js.map

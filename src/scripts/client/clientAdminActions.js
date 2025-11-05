@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ClientAdminActions = void 0;
 const tslib_1 = require("tslib");
 const browser_1 = require("ag-sockets/dist/browser");
 class ClientAdminActions {
@@ -25,11 +26,11 @@ class ClientAdminActions {
         }
     }
 }
+exports.ClientAdminActions = ClientAdminActions;
 tslib_1.__decorate([
-    browser_1.Method(),
+    (0, browser_1.Method)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Array]),
     tslib_1.__metadata("design:returntype", void 0)
 ], ClientAdminActions.prototype, "updates", null);
-exports.ClientAdminActions = ClientAdminActions;
 //# sourceMappingURL=clientAdminActions.js.map

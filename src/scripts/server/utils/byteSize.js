@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ByteSize = void 0;
 const MB = 1024 * 1024;
 class ByteSize {
     constructor(bytes = 0, mbytes = 0) {

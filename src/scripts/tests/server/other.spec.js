@@ -8,7 +8,7 @@ describe('other', () => {
         const packageJson = require('../../../../package.json');
         const packageVersion = packageJson.version.replace(/-alpha$/, '');
         const changelogVersion = changelog_1.CHANGELOG[0].version.replace(/^v/, '');
-        chai_1.expect(packageVersion).equal(changelogVersion, `package: ${packageVersion}, changelog: ${changelogVersion}`);
+        (0, chai_1.expect)(packageVersion).equal(changelogVersion, `package: ${packageVersion}, changelog: ${changelogVersion}`);
     });
 });
 //# sourceMappingURL=other.spec.js.map

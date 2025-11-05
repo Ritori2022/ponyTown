@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EditorBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -29,7 +30,7 @@ let EditorBox = class EditorBox {
         this.showEditor = false;
         this.game.editor.type = this.storage.getItem('editor-entity') || 'rock';
         this.showEditor = this.storage.getBoolean('show-editor');
-        this.editorEntities = model_1.getEntityNames().slice().sort();
+        this.editorEntities = (0, model_1.getEntityNames)().slice().sort();
     }
     get editor() {
         return this.game.editor;
@@ -81,13 +82,13 @@ let EditorBox = class EditorBox {
         this.game.editor.selectingEntities = value;
     }
     get shadowOpacity() {
-        return color_1.getAlpha(this.game.shadowColor);
+        return (0, color_1.getAlpha)(this.game.shadowColor);
     }
     set shadowOpacity(value) {
-        this.game.shadowColor = color_1.withAlpha(this.game.shadowColor, value);
+        this.game.shadowColor = (0, color_1.withAlpha)(this.game.shadowColor, value);
     }
     getEntityName(type) {
-        return model_1.getEntityNameFromType(type);
+        return (0, model_1.getEntityNameFromType)(type);
     }
     getEntityValue(map) {
         const entity = this.editor.selectedEntities[0];
@@ -96,21 +97,21 @@ let EditorBox = class EditorBox {
     get entityName() {
         const entities = this.editor.selectedEntities;
         const types = entities.map(e => e.type);
-        const names = lodash_1.uniq(types).map(type => this.getEntityName(type)).join(', ');
+        const names = (0, lodash_1.uniq)(types).map(type => this.getEntityName(type)).join(', ');
         return types.length === 1 ? `${names} [${entities[0].id}]` : names;
     }
     get entityLightColor() {
-        return color_1.colorToHexRGB(this.getEntityValue(e => e && e.lightColor || colors_1.BLACK));
+        return (0, color_1.colorToHexRGB)(this.getEntityValue(e => e && e.lightColor || colors_1.BLACK));
     }
     set entityLightColor(value) {
-        this.editor.selectedEntities.forEach(e => e.lightColor = color_1.parseColor(value));
+        this.editor.selectedEntities.forEach(e => e.lightColor = (0, color_1.parseColor)(value));
     }
     get entityLightSpriteColor() {
         const entity = this.editor.selectedEntities[0];
-        return color_1.colorToHexRGB(entity && entity.lightSpriteColor || colors_1.BLACK);
+        return (0, color_1.colorToHexRGB)(entity && entity.lightSpriteColor || colors_1.BLACK);
     }
     set entityLightSpriteColor(value) {
-        this.editor.selectedEntities.forEach(e => e.lightSpriteColor = color_1.parseColor(value));
+        this.editor.selectedEntities.forEach(e => e.lightSpriteColor = (0, color_1.parseColor)(value));
     }
     get entityLightSpriteX() {
         const entity = this.editor.selectedEntities[0];
@@ -198,8 +199,9 @@ let EditorBox = class EditorBox {
         return !!this.game.debug[field];
     }
 };
-EditorBox = tslib_1.__decorate([
-    core_1.Component({
+exports.EditorBox = EditorBox;
+exports.EditorBox = EditorBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'editor-box',
         templateUrl: 'editor-box.pug',
     }),
@@ -208,5 +210,4 @@ EditorBox = tslib_1.__decorate([
         storageService_1.StorageService,
         core_1.NgZone])
 ], EditorBox);
-exports.EditorBox = EditorBox;
 //# sourceMappingURL=editor-box.js.map

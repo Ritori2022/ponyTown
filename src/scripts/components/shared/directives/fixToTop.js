@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FixToTop = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let FixToTop = class FixToTop {
@@ -18,29 +19,29 @@ let FixToTop = class FixToTop {
         }
     }
 };
+exports.FixToTop = FixToTop;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FixToTop.prototype, "fixToTopOffset", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FixToTop.prototype, "fixToTop", void 0);
 tslib_1.__decorate([
-    core_1.HostBinding('class.fixed-to-top'),
+    (0, core_1.HostBinding)('class.fixed-to-top'),
     tslib_1.__metadata("design:type", Object)
 ], FixToTop.prototype, "fixed", void 0);
 tslib_1.__decorate([
-    core_1.HostListener('window:scroll'),
+    (0, core_1.HostListener)('window:scroll'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], FixToTop.prototype, "scroll", null);
-FixToTop = tslib_1.__decorate([
-    core_1.Directive({
+exports.FixToTop = FixToTop = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[fixToTop]',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], FixToTop);
-exports.FixToTop = FixToTop;
 //# sourceMappingURL=fixToTop.js.map

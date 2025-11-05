@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BtnHighlightDanger = exports.BtnHighlight = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const forms_1 = require("@angular/forms");
@@ -13,33 +14,34 @@ let BtnHighlight = class BtnHighlight {
         return (value === true || value === false || !this.model) ? value : !!this.model.value;
     }
 };
+exports.BtnHighlight = BtnHighlight;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Boolean)
 ], BtnHighlight.prototype, "btnHighlight", void 0);
-BtnHighlight = tslib_1.__decorate([
-    core_1.Directive({
+exports.BtnHighlight = BtnHighlight = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[btnHighlight]',
         host: {
             '[class.btn-default]': '!on',
             '[class.btn-primary]': 'on',
         },
     }),
-    tslib_1.__param(0, core_1.Optional()),
+    tslib_1.__param(0, (0, core_1.Optional)()),
     tslib_1.__metadata("design:paramtypes", [forms_1.NgModel])
 ], BtnHighlight);
-exports.BtnHighlight = BtnHighlight;
 let BtnHighlightDanger = class BtnHighlightDanger {
     constructor() {
         this.btnHighlightDanger = false;
     }
 };
+exports.BtnHighlightDanger = BtnHighlightDanger;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], BtnHighlightDanger.prototype, "btnHighlightDanger", void 0);
-BtnHighlightDanger = tslib_1.__decorate([
-    core_1.Directive({
+exports.BtnHighlightDanger = BtnHighlightDanger = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[btnHighlightDanger]',
         host: {
             '[class.btn-default]': '!btnHighlightDanger',
@@ -47,5 +49,4 @@ BtnHighlightDanger = tslib_1.__decorate([
         },
     })
 ], BtnHighlightDanger);
-exports.BtnHighlightDanger = BtnHighlightDanger;
 //# sourceMappingURL=btnHighlight.js.map

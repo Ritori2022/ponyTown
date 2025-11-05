@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.tilesToSprites = tilesToSprites;
 const canvas_utils_1 = require("./canvas-utils");
 const tileWidth = 32;
 const tileHeight = 24;
@@ -27,8 +28,7 @@ function tilesToSprites(canvas, spaceH, spaceV) {
         const srcRow = Math.floor(srcIndex / cols);
         const srcX = spaceH + srcCol * (tileWidth + spaceH);
         const srcY = spaceV + srcRow * (tileHeight + spaceV);
-        return canvas_utils_1.cropCanvas(canvas, srcX, srcY, tileWidth, tileHeight);
+        return (0, canvas_utils_1.cropCanvas)(canvas, srcX, srcY, tileWidth, tileHeight);
     });
 }
-exports.tilesToSprites = tilesToSprites;
 //# sourceMappingURL=convert-tiles.js.map

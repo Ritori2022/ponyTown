@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EmoteBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const emoji_1 = require("../../../client/emoji");
@@ -14,7 +15,7 @@ let EmoteBox = class EmoteBox {
         this.initialized = false;
     }
     ngAfterViewInit() {
-        spriteUtils_1.loadAndInitSpriteSheets()
+        (0, spriteUtils_1.loadAndInitSpriteSheets)()
             .then(() => {
             this.initialized = true;
             this.zone.runOutsideAngular(() => this.redraw());
@@ -40,8 +41,8 @@ let EmoteBox = class EmoteBox {
     }
     redraw() {
         if (this.initialized) {
-            const emote = emoji_1.findEmoji(this.emote);
-            const sprite = fonts_1.font && emote && spriteFont_1.getCharacterSprite(emote.symbol, fonts_1.font);
+            const emote = (0, emoji_1.findEmoji)(this.emote);
+            const sprite = fonts_1.font && emote && (0, spriteFont_1.getCharacterSprite)(emote.symbol, fonts_1.font);
             const image = this.image.nativeElement;
             if (sprite) {
                 const width = sprite.w + sprite.ox;
@@ -54,7 +55,7 @@ let EmoteBox = class EmoteBox {
                 if (emote) {
                     image.setAttribute('aria-label', emote.names[0]);
                 }
-                emoji_1.getEmojiImageAsync(sprite, src => {
+                (0, emoji_1.getEmojiImageAsync)(sprite, src => {
                     image.src = src;
                     image.alt = emote ? emote.symbol : '';
                     image.style.visibility = 'visible';
@@ -69,22 +70,23 @@ let EmoteBox = class EmoteBox {
         }
     }
 };
+exports.EmoteBox = EmoteBox;
 tslib_1.__decorate([
-    core_1.ViewChild('image', { static: true }),
+    (0, core_1.ViewChild)('image', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], EmoteBox.prototype, "image", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String),
     tslib_1.__metadata("design:paramtypes", [String])
 ], EmoteBox.prototype, "emote", null);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Number),
     tslib_1.__metadata("design:paramtypes", [Number])
 ], EmoteBox.prototype, "scale", null);
-EmoteBox = tslib_1.__decorate([
-    core_1.Component({
+exports.EmoteBox = EmoteBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'emote-box',
         template: '<img #image class="emote-box pixelart" />',
         styles: ['.emote-box { pointer-events: none; }'],
@@ -92,5 +94,4 @@ EmoteBox = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone])
 ], EmoteBox);
-exports.EmoteBox = EmoteBox;
 //# sourceMappingURL=emote-box.js.map

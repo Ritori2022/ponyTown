@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ErrorReporter = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let ErrorReporter = class ErrorReporter {
@@ -37,8 +38,8 @@ let ErrorReporter = class ErrorReporter {
         return { handleRecvError };
     }
 };
-ErrorReporter = tslib_1.__decorate([
-    core_1.Injectable()
-], ErrorReporter);
 exports.ErrorReporter = ErrorReporter;
+exports.ErrorReporter = ErrorReporter = tslib_1.__decorate([
+    (0, core_1.Injectable)()
+], ErrorReporter);
 //# sourceMappingURL=errorReporter.js.map

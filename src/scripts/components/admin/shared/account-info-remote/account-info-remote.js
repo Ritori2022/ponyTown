@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccountInfoRemote = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -34,33 +35,33 @@ let AccountInfoRemote = class AccountInfoRemote {
         }
     }
 };
+exports.AccountInfoRemote = AccountInfoRemote;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfoRemote.prototype, "extendedAuths", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], AccountInfoRemote.prototype, "popoverPlacement", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfoRemote.prototype, "showDuplicates", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountInfoRemote.prototype, "basic", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], AccountInfoRemote.prototype, "accountId", null);
-AccountInfoRemote = tslib_1.__decorate([
-    core_1.Component({
+exports.AccountInfoRemote = AccountInfoRemote = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'account-info-remote',
         templateUrl: 'account-info-remote.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AccountInfoRemote);
-exports.AccountInfoRemote = AccountInfoRemote;
 //# sourceMappingURL=account-info-remote.js.map

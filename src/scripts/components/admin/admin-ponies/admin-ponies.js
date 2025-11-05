@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminPonies = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -20,7 +21,7 @@ let AdminPonies = class AdminPonies {
         this.query = {};
         this.loading = false;
         this.lastQuery = {};
-        this.execSearch = lodash_1.debounce(() => this.fetchPonies(false), 1000);
+        this.execSearch = (0, lodash_1.debounce)(() => this.fetchPonies(false), 1000);
     }
     get totalItems() {
         return this.totalCount === undefined ? this.model.counts.characters : this.totalCount;
@@ -49,7 +50,7 @@ let AdminPonies = class AdminPonies {
     set currentPage(value) {
         if (currentPage !== value) {
             currentPage = value;
-            this.fetchPonies(lodash_1.isEqual(this.lastQuery, query));
+            this.fetchPonies((0, lodash_1.isEqual)(this.lastQuery, query));
         }
     }
     ngOnInit() {
@@ -63,13 +64,13 @@ let AdminPonies = class AdminPonies {
     remove(pony) {
         if (confirm('Are you sure?')) {
             this.model.removePony(pony._id)
-                .then(() => utils_1.delay(500))
+                .then(() => (0, utils_1.delay)(500))
                 .then(() => this.refresh());
         }
     }
     fetchPonies(skipTotalCount) {
-        const thisQuery = utils_1.cloneDeep(query);
-        this.lastQuery = utils_1.cloneDeep(query);
+        const thisQuery = (0, utils_1.cloneDeep)(query);
+        this.lastQuery = (0, utils_1.cloneDeep)(query);
         this.loading = true;
         thisQuery.search = thisQuery.search && thisQuery.search.trim();
         this.model.findPonies(thisQuery, this.currentPage - 1, skipTotalCount)
@@ -87,13 +88,13 @@ let AdminPonies = class AdminPonies {
             .finally(() => this.loading = false);
     }
 };
-AdminPonies = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminPonies = AdminPonies;
+exports.AdminPonies = AdminPonies = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-ponies',
         templateUrl: 'admin-ponies.pug',
         styleUrls: ['admin-ponies.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AdminPonies);
-exports.AdminPonies = AdminPonies;
 //# sourceMappingURL=admin-ponies.js.map

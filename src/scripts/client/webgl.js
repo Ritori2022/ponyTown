@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.initWebGL = initWebGL;
+exports.initWebGLResources = initWebGLResources;
+exports.disposeWebGL = disposeWebGL;
+const tslib_1 = require("tslib");
 const shaders_1 = require("../generated/shaders");
 const frameBuffer_1 = require("../graphics/webgl/frameBuffer");
 const shader_1 = require("../graphics/webgl/shader");
@@ -7,7 +11,7 @@ const paletteSpriteBatch_1 = require("../graphics/paletteSpriteBatch");
 const webglUtils_1 = require("../graphics/webgl/webglUtils");
 const graphicsUtils_1 = require("../graphics/graphicsUtils");
 const spriteSheetUtils_1 = require("../graphics/spriteSheetUtils");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const spriteBatch_1 = require("../graphics/spriteBatch");
 const constants_1 = require("../common/constants");
 const spriteShaderSource = shaders_1.spriteShader;
@@ -27,29 +31,28 @@ function createIndices(capacity) {
     return indices;
 }
 function initWebGL(canvas, paletteManager, camera) {
-    const gl = webglUtils_1.getWebGLContext(canvas);
+    const gl = (0, webglUtils_1.getWebGLContext)(canvas);
     return initWebGLResources(gl, paletteManager, camera);
 }
-exports.initWebGL = initWebGL;
 function initWebGLResources(gl, paletteManager, camera) {
     let renderer = '';
     let failedFBO = false;
     let frameBuffer;
     let frameBufferSheet = { texture: undefined, sprites: [], palette: false };
     try {
-        const size = webglUtils_1.getRenderTargetSize(camera.w, camera.h);
-        frameBuffer = frameBuffer_1.createFrameBuffer(gl, size, size);
+        const size = (0, webglUtils_1.getRenderTargetSize)(camera.w, camera.h);
+        frameBuffer = (0, frameBuffer_1.createFrameBuffer)(gl, size, size);
         frameBufferSheet.texture = frameBuffer.texture;
     }
     catch (e) {
         DEVELOPMENT && console.warn(e);
         failedFBO = true;
     }
-    spriteSheetUtils_1.createTexturesForSpriteSheets(gl, sprites.spriteSheets);
-    const palettes = graphicsUtils_1.createCommonPalettes(paletteManager);
-    const paletteShader = shader_1.createShader(gl, paletteShaderSource);
-    const spriteShader = shader_1.createShader(gl, spriteShaderSource);
-    const lightShader = shader_1.createShader(gl, lightShaderSource);
+    (0, spriteSheetUtils_1.createTexturesForSpriteSheets)(gl, sprites.spriteSheets);
+    const palettes = (0, graphicsUtils_1.createCommonPalettes)(paletteManager);
+    const paletteShader = (0, shader_1.createShader)(gl, paletteShaderSource);
+    const spriteShader = (0, shader_1.createShader)(gl, spriteShaderSource);
+    const lightShader = (0, shader_1.createShader)(gl, lightShaderSource);
     const VERTICES_PER_SPRITE = 4;
     const buffer = new ArrayBuffer(constants_1.BATCH_SIZE_MAX * VERTICES_PER_SPRITE * paletteSpriteBatch_1.PALETTE_BATCH_BYTES_PER_VERTEX);
     const vertexBuffer = gl.createBuffer();
@@ -87,17 +90,15 @@ function initWebGLResources(gl, paletteManager, camera) {
         frameBuffer, frameBufferSheet, palettes, failedFBO, renderer,
     };
 }
-exports.initWebGLResources = initWebGLResources;
 function disposeWebGL(webgl) {
     const { gl } = webgl;
-    webglUtils_1.unbindAllTexturesAndBuffers(gl);
-    spriteSheetUtils_1.disposeTexturesForSpriteSheets(gl, sprites.spriteSheets);
-    frameBuffer_1.disposeFrameBuffer(gl, webgl.frameBuffer);
-    shader_1.disposeShader(gl, webgl.lightShader);
-    shader_1.disposeShader(gl, webgl.spriteShader);
-    shader_1.disposeShader(gl, webgl.paletteShader);
+    (0, webglUtils_1.unbindAllTexturesAndBuffers)(gl);
+    (0, spriteSheetUtils_1.disposeTexturesForSpriteSheets)(gl, sprites.spriteSheets);
+    (0, frameBuffer_1.disposeFrameBuffer)(gl, webgl.frameBuffer);
+    (0, shader_1.disposeShader)(gl, webgl.lightShader);
+    (0, shader_1.disposeShader)(gl, webgl.spriteShader);
+    (0, shader_1.disposeShader)(gl, webgl.paletteShader);
     webgl.spriteBatch.dispose();
     webgl.paletteBatch.dispose();
 }
-exports.disposeWebGL = disposeWebGL;
 //# sourceMappingURL=webgl.js.map

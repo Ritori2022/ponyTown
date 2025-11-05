@@ -1,5 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.filterBadWords = void 0;
+exports.isAscii = isAscii;
+exports.createFilter = createFilter;
+exports.hasBadWords = hasBadWords;
+exports.hasFuck = hasFuck;
+exports.filterName = filterName;
+exports.filterBadWordsPartial = filterBadWordsPartial;
+exports.findMatch = findMatch;
+exports.createMatchEntries = createMatchEntries;
 const lodash_1 = require("lodash");
 const stringUtils_1 = require("../common/stringUtils");
 const otherChars = 'ąăãçćıłńęśóöøğüțţťżź';
@@ -91,11 +100,11 @@ function createBadWords(fast) {
         '(?<!hea(?:r|w)ing|band) aids',
         'akbar',
         'anal(?:fisting)?',
-        '(?:my|your|his|her)?a[*]?nus',
+        '(?:my|your|his|her)?a[*]?nus', // anus
         'i want uranus',
         'a n u s',
         'poopoo hole',
-        '(?:b[i1]tch|fat)?a+[s$]{2,}(?:es|fucks?| ?w?holes?|hats?|lickers?|wipes?)?',
+        '(?:b[i1]tch|fat)?a+[s$]{2,}(?:es|fucks?| ?w?holes?|hats?|lickers?|wipes?)?', // ass
         'arse? ?hole',
         'as[*]+ole',
         separate('asshole', 's'),
@@ -112,7 +121,7 @@ function createBadWords(fast) {
         'bea?stiality',
         'lets bang',
         'bangs (?:her|him)',
-        'son ?of(?: ?a)? ?(?:bitch|beach)',
+        'son ?of(?: ?a)? ?(?:bitch|beach)', // bitch
         'beatch',
         'beach no',
         'you (beach|batch)',
@@ -157,7 +166,7 @@ function createBadWords(fast) {
         'btc[*.]h',
         'bit[*.]h',
         'bi[*]{2}es',
-        `b[i1]+s+h+(?:es)?`,
+        `b[i1]+s+h+(?:es)?`, // bish
         'b[*] sh',
         `b${sep2}+s+h+(?:es)?`,
         'b(?:ei|ic)tc+h+e?s?',
@@ -178,23 +187,23 @@ function createBadWords(fast) {
         '(?:bl[o0]w|hoof|foot|hand|rim) ?jobs?',
         'boners?',
         'bone ?(?:me|you|him|her)',
-        'b[o0]{2,}b(?:i+e+[sz]|ie|s|z| ?jobs?)',
+        'b[o0]{2,}b(?:i+e+[sz]|ie|s|z| ?jobs?)', // boobs
         'b[o0]{2}b',
         'b[. ]+o[. ]+o[. ]+b(?: s)?',
         'butt ?plugs?',
         'put+ in the butt',
         'in the but+hole',
         'bukake',
-        'ballsacks?',
+        'ballsacks?', // balls
         'balls ?(?:deep|slapp?ing)',
         '(?:sweaty|his|lick my|empty my) ?balls',
         'my balls swell',
         '(?:butt|arse) ?holes?',
         'b[*]tthole',
         '(?<!died of )can[cs]er+(?:s|ous)?(?! patient)',
-        'i hope you get (?:\\S+ )?cancer?',
+        'i hope you get (?:\\S+ )?cancer?', // cancer
         `(?<!died of )${separate('cancer')}(?! patient)`,
-        '(?:horse|mare)?c\\Scks?(?! gun)',
+        '(?:horse|mare)?c\\Scks?(?! gun)', // cock
         'c[o0][c<]k(?:socks?)?',
         separate('cock'),
         'co[cq]ksuckers?',
@@ -202,8 +211,8 @@ function createBadWords(fast) {
         `c${sep2}[ck]c`,
         'cockhead',
         'his cok',
-        'condo[nm]',
-        'climaxe[ds]',
+        'condo[nm]', // condom
+        'climaxe[ds]', // climax
         '(?:his|her|has a|hit my) climax',
         'clit(?:o[*]?ris)?',
         'clopp(?:ing|ers?)',
@@ -223,7 +232,7 @@ function createBadWords(fast) {
         'c +u +m +(?:m +)+i +e +s',
         'cumme[rd]',
         'precum',
-        'c(?:[*._-]n|u[*._-]|n[*])ts*',
+        'c(?:[*._-]n|u[*._-]|n[*])ts*', // cunt
         separate('cunt', 's'),
         'cunt(?:bo[iy]s?|lord|muffin|bags?)',
         `c${anyU}${anyN}t`,
@@ -231,10 +240,10 @@ function createBadWords(fast) {
         'c[.]unx?t',
         'cvnts?',
         'cxunt[sz]?',
-        '(?:d[a4]dd?y|(?:bite|poke) me|do it) harder',
-        '(?:(?:duck|rut) ?me|harder|oh ?yes|s-so big) ?d[a4]dd?[yi]',
-        'd[e3]{2}p ?throa[t7](?:ing|s|ed)?',
-        `(?:horse)?d[i!](?:<|${letter.c})k+s?(?:wads?|suck(?:ing|ers?)?)?`,
+        '(?:d[a4]dd?y|(?:bite|poke) me|do it) harder', // daddy/harder
+        '(?:(?:duck|rut) ?me|harder|oh ?yes|s-so big) ?d[a4]dd?[yi]', // daddy
+        'd[e3]{2}p ?throa[t7](?:ing|s|ed)?', // deepthroat
+        `(?:horse)?d[i!](?:<|${letter.c})k+s?(?:wads?|suck(?:ing|ers?)?)?`, // dick
         'd[i*71!]+[c*]k+(?:les|face)?',
         'di\\[k',
         'dii+c+s?',
@@ -258,17 +267,17 @@ function createBadWords(fast) {
         'suck (?:a|my) (?:d *i *c *k|d(?:ic)?)',
         '(?:my|your) di[ck]',
         '(?:my|your) d *e *k',
-        'dildo(?:sa?)?',
+        'dildo(?:sa?)?', // dildo
         'dwildo',
         'd +i +l +d +o',
         'drink bleach',
         'do me hard',
         'ejaculat(?:e[sd]?|ing|ion)',
-        'f[a*]p(?:p?ing)?',
+        'f[a*]p(?:p?ing)?', // fapping
         'f +a +p +p +i +n +g',
         separate('faps'),
         'foalcon',
-        separate('fagot', 's'),
+        separate('fagot', 's'), // faggot
         separate('faggot', 's'),
         'fgt',
         'f ag',
@@ -284,7 +293,7 @@ function createBadWords(fast) {
         'fist( me|ing)',
         'fingering',
         ...(fuckWords = [
-            'shut ?the ?fuck ?up',
+            'shut ?the ?fuck ?up', // fuck
             '(?:f[*]+|f[uy]ck|fuq|fvk) ?(?:ed|ers?|ing|face|you+|off+|u+|me|up|urself)',
             separate('fucking'),
             separate('fuckin'),
@@ -359,7 +368,7 @@ function createBadWords(fast) {
             '(?:faq|f\\.\\.k) *(?:ing|er|this|dis|u|you|yoursel(?:f|ves))',
             '(?:fyuck|fcuk)(?:ing|er)?',
             '(?:brony|furry?|gay|horse|pony|nigg?er|butt|mother ?|mo|mutha|da|de)?'
-                + 'f+[ou*8&%$#@]+[ck]+(?:ed|ers?|in[9g]?|able|faces?|balls?|toys?|ta+rds?|bo[iy]s?)?',
+                + 'f+[ou*8&%$#@]+[ck]+(?:ed|ers?|in[9g]?|able|faces?|balls?|toys?|ta+rds?|bo[iy]s?)?', // motherfucker
             'm[o0]therf\\S*',
             'm[uao](?:th|d)?af[au]c?k(?:as?|in)?',
             'moderfocke+r',
@@ -427,6 +436,7 @@ function createBadWords(fast) {
             `f${anyU}${letter.c}k(s|ing|ed)?`,
             `f +${anyU} +${letter.c} +k(s|ing|ed)?`,
             'f[ .]+u[ .]+c',
+            // `f +${anyU} +k +n`,
         ]),
         'gang ?bang(?:ed|ing)?',
         'gtfo',
@@ -435,38 +445,38 @@ function createBadWords(fast) {
         'g-spot',
         'laid (?:me|you|her|him|them) hard',
         'lo[.]?lis?',
-        `h *${letter.e} *n *t *${letter.a} *i`,
+        `h *${letter.e} *n *t *${letter.a} *i`, // hentai
         'h+e+n+t+[b-z]?a+i+',
         'hentai[a-z]',
         'hen[*-]ai',
         'h[e*]nt[a*]i',
         'henta+i+(?:s+|heaven|hero|commie|tale)?',
-        'h[ae4][i1]l ?h[i1]t+l(?:[e3]rs?|a)',
+        'h[ae4][i1]l ?h[i1]t+l(?:[e3]rs?|a)', // hail hitler
         'ha?i hitler',
         // `you(?:'re a)? hoes?`,
-        `h${letter.o}[e3]s?`,
-        `h[o0.]+${letter.e}s`,
-        'h[o0]+kers?',
+        `h${letter.o}[e3]s?`, // hoe
+        `h[o0.]+${letter.e}s`, // hoes
+        'h[o0]+kers?', // hooker
         'horn[*-]*y',
         'humps?(?: (?:me|you)|ing)',
         'i hope (?:your parents+|you|u) die',
         // 'go die',
-        `(?:i${anyN}|self)c[e3]st(?:uous)?`,
+        `(?:i${anyN}|self)c[e3]st(?:uous)?`, // incest
         '(?:jerk|j[a@]ck)(?:ing|s)? ?off',
         'j +e +r +k +(?:s|i +n +g) +o +f +f',
         'jerk(?:ing)? (?:you|u|him|them) off',
         'jizz(?:ed|ing)?',
         'jihad',
-        'kikes',
+        'kikes', // jews
         'kys',
-        `(?<!don'?t )k[i1] ?ll (?:ur|y[o0]u?r) ?s[e3]l(?:f|ves)`,
+        `(?<!don'?t )k[i1] ?ll (?:ur|y[o0]u?r) ?s[e3]l(?:f|ves)`, // kill yourself
         'lub(?:ing|ed|e)',
         'marehood',
-        'mast[ue]rbat(?:e[ds]?|ion|ing)?',
-        'm[a4][s5]turb(?:ar|o|en?)',
+        'mast[ue]rbat(?:e[ds]?|ion|ing)?', // masturbation
+        'm[a4][s5]turb(?:ar|o|en?)', // masturbo
         'm *a *s *t *u *r *b *a *t *e *[ss]',
         // 'milfs?',
-        `m${anyO}an(?:s|ed|ing)?`,
+        `m${anyO}an(?:s|ed|ing)?`, // moans
         'molest(?:ation|ing|ering?|ed|s|ia)?',
         'molistiah*',
         '(?<!grammar )nazi(?:sts?|sm|s)?',
@@ -511,11 +521,11 @@ function createBadWords(fast) {
         'normies+',
         'nudes',
         'oral',
-        'orga[sz]m[so]?s?',
+        'orga[sz]m[so]?s?', // orgasm
         'urgazmo?z?',
-        `o+r+g+(?:y+|ies|${letter.i}a)`,
-        'piss(?:ing|face)?',
-        'p[e3*]n[i1][s$z](?:es)?',
+        `o+r+g+(?:y+|ies|${letter.i}a)`, // orgy
+        'piss(?:ing|face)?', // piss
+        'p[e3*]n[i1][s$z](?:es)?', // penis
         separate('penis'),
         'p[e3]n[i1]s(?:[e3]h?s)?',
         'p[e3]{2,}ns?',
@@ -529,7 +539,7 @@ function createBadWords(fast) {
         'pneis',
         'p[_*]nis',
         '(?:hard|surprise) ?penetration',
-        'p[o0*]r[*]?no?',
+        'p[o0*]r[*]?no?', // porno
         'pr[o0]n',
         `${separate('porn')}${fast ? '' : '(?![ãÃóÓ])'}`,
         '(?:child )?pornogra(?:fia|phy)',
@@ -537,7 +547,7 @@ function createBadWords(fast) {
         'prostitut[ae]s?',
         'prostate',
         '(?:octo|horse|pony|wet)?(?!puss ?in ?boots)pu+[s$5]{2,}(?:y+|ies+)?(?:juice)?',
-        '(?:horse|pony|boi)?pw?u[s$5]+(?:y|ies|i)(?:juice)?',
+        '(?:horse|pony|boi)?pw?u[s$5]+(?:y|ies|i)(?:juice)?', // pussy
         'horsephssuy',
         separate('pussy'),
         `p${sep}ssy`,
@@ -551,7 +561,7 @@ function createBadWords(fast) {
         'pus{2,}i',
         'p[uv][sz$5]+y',
         'poo+ *s+y',
-        'r[a@*]e?p(?:i[s$]ts?|ing|[e3](?:ists?|ing|s|d)?)',
+        'r[a@*]e?p(?:i[s$]ts?|ing|[e3](?:ists?|ing|s|d)?)', // rape
         separate('rapes'),
         separate('rape', 'd'),
         separate('rapist', 's'),
@@ -570,12 +580,12 @@ function createBadWords(fast) {
         separate('retard', 's'),
         'scr[e*]w(?:ing|ed)? (?:you|u|me|us|her|him|them|all)',
         '(?:[sz]ieg|s[ae]ig|[sz]ig) ?h[ae]il',
-        'se[.]?men',
+        'se[.]?men', // semen
         'sea ?men',
         'cmen',
         'send nu+des',
         'sex(?: *slave| *abuser?)',
-        '(?:anal|butt|oral)?(?:[s$]ex+8?|secks|seks)',
+        '(?:anal|butt|oral)?(?:[s$]ex+8?|secks|seks)', // sex
         '(?:anal|butt|oral) ?secs',
         's+[e3*&_]x+o*',
         's +[e*] +x',
@@ -586,11 +596,11 @@ function createBadWords(fast) {
         'have sax',
         'sexual(?:ly)?',
         'sax with e',
-        'stf ?[uv]+',
+        'stf ?[uv]+', // stfu
         's +t +f +u+',
         'sc?hl?ongs?',
-        '(?:my|his) shaft',
-        '(?:bull|dip|oh|holy)?[s$]+h[i1*!]+e?t+(?:s|ing)?',
+        '(?:my|his) shaft', // shaft
+        '(?:bull|dip|oh|holy)?[s$]+h[i1*!]+e?t+(?:s|ing)?', // shit
         's[*]+i?t',
         `s[#■]it`,
         '(?:bull|dip)?shite(?! (?:iru|ageru|kudasai))',
@@ -607,21 +617,21 @@ function createBadWords(fast) {
         's[0-9]?h[0-9]?i[0-9]?t[0-9]?s?',
         'shxit',
         'shota',
-        'sl[u#*]t(?:s|ty)?',
+        'sl[u#*]t(?:s|ty)?', // slut
         separate('slut', 's'),
         's(?:;l|l;)ut',
         's[*]ut',
         `s${anyL}${anyU}t`,
-        's+p+e+r+m+a*',
+        's+p+e+r+m+a*', // sperm
         'spank me',
         'spicks',
         'spunk',
         'sucks? dic?k',
-        '(c[o0]ck)?s *u *c *k(?:ing|er)',
+        '(c[o0]ck)?s *u *c *k(?:ing|er)', // sucks
         'c[o0]ck *s *u *c *k(?:ing|er)?',
         'sucks (?:balls|dic|harder|deeper)',
         `(?<!(?:it|that|this|which|school) )${separate('suck', 's', sep5)}(?! (?:(?:the )?blood|(?:(?:his|her|my|their) )?neck|at ))`,
-        `${separate('succ', 's', sep5)}`,
+        `${separate('succ', 's', sep5)}`, // succ
         'sukks?',
         'suk my',
         'su[(<\\[]k',
@@ -632,12 +642,12 @@ function createBadWords(fast) {
         `s +${anyU} +< +ks?`,
         'su[c<]{2,}(?:ed|ing)',
         's[*]cks',
-        'su+[i|]?[c<]ide',
+        'su+[i|]?[c<]ide', // suicide
         'suic[*]+de',
         'tampon',
         'testicles',
         'the kkk',
-        `t[_ ]+${anyH}[_ ]+o[_ ]+t([_ ]+s)?`,
+        `t[_ ]+${anyH}[_ ]+o[_ ]+t([_ ]+s)?`, // thots
         `t *\\|-\\| *[o0] *t`,
         'th0ts?',
         `th${sep}+ot`,
@@ -645,7 +655,7 @@ function createBadWords(fast) {
         'thotties',
         'sup thots?',
         'thrusts? into (?:her|him)',
-        'tit(?:s|ty|ties?)',
+        'tit(?:s|ty|ties?)', // tits titties
         't\\[i\\]i?ts',
         'tiddies',
         't i t s(?! [a-z] )',
@@ -653,7 +663,7 @@ function createBadWords(fast) {
         'tranny',
         'touch my d',
         'wank(?:ing|e+r[sz]?)?',
-        'wh[o0*]re+s?',
+        'wh[o0*]re+s?', // whore
         'w\\Shore',
         'w *h *o *r *es?',
         'whorae',
@@ -669,14 +679,14 @@ function createBadWords(fast) {
         '(?:my|your|her) vag(?:ina)?',
         '[vb]aginal',
         'vagbo[iy]s?',
-        'vibra[td]or(s|ima|om|es?)?',
-        `v${anyO}r(?:e[sd]?|ing)`,
+        'vibra[td]or(s|ima|om|es?)?', // vibrator
+        `v${anyO}r(?:e[sd]?|ing)`, // vore
         'v[.-]?o[.-]?r[.-]?e',
         'vulva',
         '(?:white|wyte) ?(?:power|supremacy)',
         'yiff(?:s|ing|ed|ers?|u)?',
         'y i f f',
-        'zo[o*]+(?:f|ph)ili(?:a+h?|cos)',
+        'zo[o*]+(?:f|ph)ili(?:a+h?|cos)', // zoophilia
         // other
         'black ?supremacy',
         '(?:gas|kill)(?: (?:the|some|their))? jews?',
@@ -692,219 +702,219 @@ function createBadWords(fast) {
         'rub my nipples?',
         // FOREIGN
         // bulgarian
-        'nekoi hui',
+        'nekoi hui', // some dick
         // dutch
-        'hoer',
+        'hoer', // whore
         // portuguese
         'estupra',
-        'filho da puta',
-        'caralho+',
-        'pu?ta madr?e',
-        'p+[uv*]+t+a+[sh]?',
-        'p[uv]+tazoh?',
+        'filho da puta', // son of a bitch
+        'caralho+', // fuck / dick
+        'pu?ta madr?e', // motherfucker
+        'p+[uv*]+t+a+[sh]?', // puta - whore
+        'p[uv]+tazoh?', // puta
         `p${sep2}?u${sep2}?t${sep2}?ah*`,
-        'p +u +t +a',
-        'p[v¡]to',
-        'putaria+',
+        'p +u +t +a', // whore
+        'p[v¡]to', // misspelled "puto"
+        'putaria+', // whore
         'ptazos',
-        'p+o+rr+a+',
-        'vadia',
-        'malditos',
-        'fud(?:er|ido)',
-        'foda[ =-]?[sc]e+h?',
+        'p+o+rr+a+', // fuck
+        'vadia', // slut
+        'malditos', // fucking
+        'fud(?:er|ido)', // fuck
+        'foda[ =-]?[sc]e+h?', // fuck
         'se fode',
-        'f o d a - s e',
-        'fodac?',
-        'fodaci',
-        'se fude(?:r|u)?',
-        'm[e3]rdas?',
-        `chupa+r? (?:me[ou]|minha|seu|su|mi) (?:p[${ã}4][ou]h?|rola|miembro|polla|pal)`,
-        `chupa+r? *(tampones|pollas)`,
-        'chupa(?:le|ndo) ?(?:la ?)?(?:tetas|punta)',
-        't3t4s',
-        'chup(?:a|a[rs]|enle) ?(?:el ?)?(?:ano|orto)',
-        `(?:lo )?chupa (?:a (?:minha|salsicha)|r[${á}]pido|entero)`,
-        'chupale ?mejor',
-        'chupamela',
-        'lo chupa',
-        `chupando (?:a salsicha|forte|m[${á}]s fuerte)`,
-        'meu pau',
-        'soplame(?: el)?(?: pito)?',
+        'f o d a - s e', // fuck
+        'fodac?', // fuck
+        'fodaci', // fuck
+        'se fude(?:r|u)?', // fuck
+        'm[e3]rdas?', // shit [it]
+        `chupa+r? (?:me[ou]|minha|seu|su|mi) (?:p[${ã}4][ou]h?|rola|miembro|polla|pal)`, // suck my|your dick|member
+        `chupa+r? *(tampones|pollas)`, // suck tampones
+        'chupa(?:le|ndo) ?(?:la ?)?(?:tetas|punta)', // suck her tits | sucking the tip
+        't3t4s', // tetas
+        'chup(?:a|a[rs]|enle) ?(?:el ?)?(?:ano|orto)', // suck my ass
+        `(?:lo )?chupa (?:a (?:minha|salsicha)|r[${á}]pido|entero)`, // suck my ... | sucks fast | sucks whole
+        'chupale ?mejor', // suck him
+        'chupamela', // suck me
+        'lo chupa', // sucks him
+        `chupando (?:a salsicha|forte|m[${á}]s fuerte)`, // sucking the sausage | sucking hard
+        'meu pau', // my dick
+        'soplame(?: el)?(?: pito)?', // blow my dick
         'sexo+',
-        'penetra+ fort(?:e|ao)',
-        'do pau dele',
-        'cima do pau',
-        'tocar no pau',
-        'lamber meu rabo',
+        'penetra+ fort(?:e|ao)', // penetrates strongly
+        'do pau dele', // his cock
+        'cima do pau', // up the dick
+        'tocar no pau', // touch the dick
+        'lamber meu rabo', // lick my ass
         // spanish
-        'ca[zx]{2,}[o0i]+',
-        'c[a*4]+r[a4]jo',
-        'coje rejalo',
-        'c[o0]j[e3]r(?:conmi|h+)?',
-        'chingar?(?: tu madre)?',
-        'chingados',
-        `chup(?:o|ando) (?:fuerte )?tu pe[sz][${oó}]n`,
-        'chupo con fuerza',
-        'chupo(?: mas)? rapido',
-        'sigue chupando',
+        'ca[zx]{2,}[o0i]+', // shit / cocks
+        'c[a*4]+r[a4]jo', // fuck
+        'coje rejalo', // fuck you
+        'c[o0]j[e3]r(?:conmi|h+)?', // cojer fuck
+        'chingar?(?: tu madre)?', // fuck
+        'chingados', // fucking
+        `chup(?:o|ando) (?:fuerte )?tu pe[sz][${oó}]n`, // suck nipple / chupo
+        'chupo con fuerza', // sucks hard
+        'chupo(?: mas)? rapido', // sucks hard | sucks fast
+        'sigue chupando', // keep sucking
         'cule(?:ro|ar)',
-        'f[o0]ll[.]?[a4](?:r(?:[ms]eh?)?|mos|da|s)?',
-        'gilipollas',
+        'f[o0]ll[.]?[a4](?:r(?:[ms]eh?)?|mos|da|s)?', // fuck me / follarme
+        'gilipollas', // douchebag
         'hij[ao]s? de? pt[ao]',
         'inbesil',
         'jop[uv]tas',
-        'j[o0]d[a4]+s',
-        'j[o0]d[e3a4]r',
-        'j[o0]dier[o0]n',
-        'mi[e3]rda+h*',
-        'tu miembro',
-        'mrda',
-        'matate',
-        'mereces morir',
-        'n[oi] mereces vivir',
-        'n[e3]pes?h*',
-        'maric[o0]n',
-        'p[uvw#*.]t[ao][zhs]*',
-        'pollas',
+        'j[o0]d[a4]+s', // jodas / fuck
+        'j[o0]d[e3a4]r', // joder / fuck
+        'j[o0]dier[o0]n', // they fucked
+        'mi[e3]rda+h*', // fuck / shit
+        'tu miembro', // your member
+        'mrda', // shit
+        'matate', // kill yourself
+        'mereces morir', // you deserve to die
+        'n[oi] mereces vivir', // you do not deserve to live
+        'n[e3]pes?h*', // penis / nepe
+        'maric[o0]n', // maricon
+        'p[uvw#*.]t[ao][zhs]*', // fucking puta / puto
+        'pollas', // cocks
         'pvtaso',
-        'pu[.]?t[ao]',
-        'puti[.]?ta',
+        'pu[.]?t[ao]', // fucking
+        'puti[.]?ta', // bitch,
         'p[uv]t[a4](madre|kos)',
-        'p[t7][ao]',
-        'pij[.]?a',
-        'se le corre',
-        'sou foda',
-        'suicidat',
-        'violando(?! la)',
-        `v1${letter.o}l[eo]`,
-        `[vb][i1]${letter.o}l[a4]r`,
-        `vi0lare`,
-        `[vb]1${letter.o}laci${letter.o}nes`,
-        'violo a',
-        'la viole',
-        'la mete',
-        'lamer la punta',
-        '[bv]ete ?a ?la ?[bv]erga?',
-        'v[e3]?rga',
-        'zemen+',
-        'zorra',
+        'p[t7][ao]', // puta
+        'pij[.]?a', // prick
+        'se le corre', // cums
+        'sou foda', // I'm fucking
+        'suicidat', // commit suicide
+        'violando(?! la)', // raping
+        `v1${letter.o}l[eo]`, // violo / viole
+        `[vb][i1]${letter.o}l[a4]r`, // rapes
+        `vi0lare`, // rapes
+        `[vb]1${letter.o}laci${letter.o}nes`, // violaciones
+        'violo a', // raped
+        'la viole', // raped
+        'la mete', // puts it in
+        'lamer la punta', // lick the tip
+        '[bv]ete ?a ?la ?[bv]erga?', // fuck off
+        'v[e3]?rga', // cock
+        'zemen+', // semen
+        'zorra', // bitch
         // italian
-        'arrap(?:at[eiao]|ano|are|[oi])',
+        'arrap(?:at[eiao]|ano|are|[oi])', // horny
         'bagasci[ae]',
-        'baldracc(?:a|he)',
-        'bastard[eiao]',
-        'bocchin(?:[io]|ar[ae])',
+        'baldracc(?:a|he)', // whore
+        'bastard[eiao]', // bastards
+        'bocchin(?:[io]|ar[ae])', // suckers
         'bordello',
-        'butt[ao]n[ae]',
-        'cagna',
-        'cagare',
-        'k[a4]g[a4]r',
+        'butt[ao]n[ae]', // bitch
+        'cagna', // bitch
+        'cagare', // shitting
+        'k[a4]g[a4]r', // cagar / shit
         'caghi(?:amo)?',
-        'caga(?:no|te)',
-        'cazz(?:on[iae]|at[ea])',
-        'checc(?:a|he)',
-        'chiav(?:o|are)',
-        'chia?[bv]at[ae]',
+        'caga(?:no|te)', // crap
+        'cazz(?:on[iae]|at[ea])', // cocks
+        'checc(?:a|he)', // queers
+        'chiav(?:o|are)', // screw
+        'chia?[bv]at[ae]', // fucked
         'c[o0]glion[aie]',
-        'cortigian[ae]',
+        'cortigian[ae]', // courtesans
         'culatton[ie]',
-        'ditalin[io]',
-        'ebet[ie]',
-        'eiacul(?:i|o|are|azione)',
-        '(?:vaf)?fanculo',
+        'ditalin[io]', // fingering
+        'ebet[ie]', // stupid
+        'eiacul(?:i|o|are|azione)', // ejaculation
+        '(?:vaf)?fanculo', // fuck
         'fanculizzati',
-        'fotte(?:te[lvm]i|re)',
-        'fott[io](?:[tm]i|l[oaie])?',
-        'fottut[aeio]',
-        'frocio?',
-        'fregna',
+        'fotte(?:te[lvm]i|re)', // fuck you
+        'fott[io](?:[tm]i|l[oaie])?', // fuck
+        'fottut[aeio]', // fucking
+        'frocio?', // fags
+        'fregna', // cunt
         'gigolo',
-        'gnocc(?:he|a)',
-        'handicappat[aeio]',
-        'la figa',
-        'negraccio',
-        'perra+',
-        'pirla',
-        'p[e3]l[o0][t7]ud(a|o|ito)',
-        'p[e3]?n[.]?dej(a+|o+h?s?)',
+        'gnocc(?:he|a)', // chicks
+        'handicappat[aeio]', // disabled (insult)
+        'la figa', // pussy
+        'negraccio', // nigger
+        'perra+', // bitch
+        'pirla', // idiot
+        'p[e3]l[o0][t7]ud(a|o|ito)', // asshole
+        'p[e3]?n[.]?dej(a+|o+h?s?)', // stupid | pendejo
         'p[e3]nej(a+|o+h?s?)',
-        'poll[.]*as',
+        'poll[.]*as', // dicks
         // 'porco', // pig
-        'pompin(?:[io]|ar[ieao])',
-        'puth?[o0]s*',
-        'putada',
-        'puttan(?:[ae]+s?|at[ae])',
-        'prostitu(?:irsi|zione)',
-        'scopa(?:ndo|mi)',
-        'incazza(?:t[aeio]|rsi)',
-        'incul(?:o|i(?:amo)?|a(?:rti|li|lo|la|no|te|re)?)',
+        'pompin(?:[io]|ar[ieao])', // blowjob
+        'puth?[o0]s*', // fucking
+        'putada', // bitch
+        'puttan(?:[ae]+s?|at[ae])', // whore
+        'prostitu(?:irsi|zione)', // prostitution
+        'scopa(?:ndo|mi)', // fucking
+        'incazza(?:t[aeio]|rsi)', // pissed
+        'incul(?:o|i(?:amo)?|a(?:rti|li|lo|la|no|te|re)?)', // pounding your butt
         'lecc(?:hin[io]|acul[io])',
-        'masturb(?:[ai]h?|alo|ami|are|arsi|azione|ate(?:li|vi)|iamol[oi]|iamoci|ando|as)',
-        'merdos[ao]',
-        'meretric[ie]',
-        'mignott[ae]',
-        'minchi(?:[ae]|at[ae]|on[iea])',
-        'masturbarmi',
+        'masturb(?:[ai]h?|alo|ami|are|arsi|azione|ate(?:li|vi)|iamol[oi]|iamoci|ando|as)', // masturbation
+        'merdos[ao]', // shitty
+        'meretric[ie]', // harlots
+        'mignott[ae]', // whore
+        'minchi(?:[ae]|at[ae]|on[iea])', // bullshit
+        'masturbarmi', // masturbation
         'rompi(?:palle|coglioni)',
         'ricchion[ie]',
         'rincoglionit[ieao]',
-        'sborr(?:o|a|ano|ate|i|iamo|are)',
+        'sborr(?:o|a|ano|ate|i|iamo|are)', // cum
         'sburro',
         'scopal[ao]',
         'scopar[tm]i',
         'scassacazz[io]',
-        'sesso+',
+        'sesso+', // sex
         'sessuale',
         'segaiol[io]',
         'sfott(?:[io]|ere)',
-        'sgualdrin[ae]',
+        'sgualdrin[ae]', // whore
         'spomipina',
         'spompina(no|re)',
-        'stupratore',
+        'stupratore', // rapist
         'sputtan[ai](?:l[io]|no|amo|t[aeio]|re)?',
         'sputtaniamol[oi]',
         'stronz[eaio]',
         'stronzat[ae]',
-        'stupro',
-        'zoccol[ae]',
-        '(?<!la )pene',
+        'stupro', // rape
+        'zoccol[ae]', // bitch
+        '(?<!la )pene', // penis (also in spanish)
         'el pne',
-        'vagine',
-        'troi[ae](?:io|h)?',
+        'vagine', // vagina
+        'troi[ae](?:io|h)?', // slut
         'trombare',
         'tromb[io]',
         'trombate',
         'trombano',
-        'trombal[ao]',
-        'trombiamo(?:l[eiao])?',
+        'trombal[ao]', // ???
+        'trombiamo(?:l[eiao])?', // ???
         // 'fica', // pussy
         // finnish
-        'perkele',
-        'vittu',
+        'perkele', // fuck
+        'vittu', // fuck
         // french
-        '(?:fils de )?pute',
-        'pute(?:u+h+)?',
-        'merde',
+        '(?:fils de )?pute', // (son of a) bitch
+        'pute(?:u+h+)?', // bitch
+        'merde', // shit
         // sweedish
-        'fitta',
+        'fitta', // pussy
         // german
-        'arsch',
-        'fotzen?',
-        `schei${letter.ss}\\S+`,
-        '(?:[gb]e)?schissen',
+        'arsch', // ass
+        'fotzen?', // cunt
+        `schei${letter.ss}\\S+`, // shit
+        '(?:[gb]e)?schissen', // shit
         '(?:[gb]e)?(?:wichs|kack|fick)(?:est|en|et|e|test|te|t|st)',
         '(?:[gb]e)?(?:piss)(?:est|en|et|test|te)',
-        `hurens(?:oe|[${fast ? 'o' : 'öo'}])hne?`,
-        'huren',
-        'schlampen?',
-        'schwuchteln?',
-        'neger',
-        'wichser?',
-        'wixxer?',
-        'verpiss ?dich',
-        'verdammter',
+        `hurens(?:oe|[${fast ? 'o' : 'öo'}])hne?`, // son of bitch
+        'huren', // bitch
+        'schlampen?', // bitch
+        'schwuchteln?', // faggot
+        'neger', // nigger
+        'wichser?', // fucker / cum
+        'wixxer?', // fucker / cum
+        'verpiss ?dich', // fuck off
+        'verdammter', // fucking
         'm[ea]in ?kampf',
-        'lutsch meinen schwanz',
+        'lutsch meinen schwanz', // suck my dick
         // other
         '9/11',
         // sexually suggestive
@@ -983,250 +993,250 @@ function createBadWords(fast) {
         'your dirty hole',
         `you're so wet`,
         // russian
-        'pidor[sy]?',
+        'pidor[sy]?', // faggot
         'pizdec+\\S?',
         'huinya',
-        'kurva',
-        'blyad',
-        'bliat',
+        'kurva', // bitch
+        'blyad', // bitch
+        'bliat', // fuck
     ];
     const badWordsForeign = [
         // romanian
-        `suga ?pul[${ă}]`,
-        'muie',
-        `s[${ă}] ?te ?fut`,
-        `futu-?[${ț}]i ?pizda`,
+        `suga ?pul[${ă}]`, // suck dick
+        'muie', // blowjob
+        `s[${ă}] ?te ?fut`, // fuck you
+        `futu-?[${ț}]i ?pizda`, // fuck your pussy
         ...(fast ? [] : [
-            'pulă',
+            'pulă', // dick
         ]),
         // polish
-        `ci+p(?:a{2,}|ę|ą|k(?:ami|[${ą}]|[${ę}]|i|owate|o)|ek|eczka|usie[${ń}]ka|ule[${ń}]ka)`,
-        'chu{2,}j',
-        'chuj(?:u|ek?|ami|a)',
-        '(?:ten|w) chuj|chuj wie',
-        'c?huj (?:ci|wam|w dupe)(?: w dupe)?',
+        `ci+p(?:a{2,}|ę|ą|k(?:ami|[${ą}]|[${ę}]|i|owate|o)|ek|eczka|usie[${ń}]ka|ule[${ń}]ka)`, // pussy
+        'chu{2,}j', // dick
+        'chuj(?:u|ek?|ami|a)', // dicks
+        '(?:ten|w) chuj|chuj wie', // fuck
+        'c?huj (?:ci|wam|w dupe)(?: w dupe)?', // fuck you
         'c *h *u *j *[eua]',
-        'huj[aeu]',
-        'huj ?pizda',
-        'cycki',
+        'huj[aeu]', // dick
+        'huj ?pizda', // dick cunt
+        'cycki', // boobs
         // 'debil(?:[aie]|ami|em)?',
-        'kutas(?:y|ami|iarzu?)?',
-        'pornosy?',
-        `dziwk(?:ami|om|[${ą}${ę}io])`,
-        `k[.*]+rwa`,
-        `kurwa ?ma[${ć}]`,
-        `k *u *r *w *a(?: m a [${ć}])?`,
-        `k[${ó}]+r[w*](?:ie|ami|y+|[${ę}]+|[${ą}]+|om|o+)x*`,
-        `ku${sep2OrNum}+r?w(a+|o+)`,
-        'ku[*]{2,}a+',
-        separate('kurwa'),
-        `wkurwi[${ł}][ay]?`,
-        `wkurwia*(?:sz|my?|j[${ą}]?|[${ć}])?`,
+        'kutas(?:y|ami|iarzu?)?', // dick
+        'pornosy?', // porn
+        `dziwk(?:ami|om|[${ą}${ę}io])`, // bitch
+        `k[.*]+rwa`, // bitch
+        `kurwa ?ma[${ć}]`, // bitch
+        `k *u *r *w *a(?: m a [${ć}])?`, // bitch
+        `k[${ó}]+r[w*](?:ie|ami|y+|[${ę}]+|[${ą}]+|om|o+)x*`, // bitch
+        `ku${sep2OrNum}+r?w(a+|o+)`, // bitch
+        'ku[*]{2,}a+', // bitch
+        separate('kurwa'), // bitch
+        `wkurwi[${ł}][ay]?`, // bitch
+        `wkurwia*(?:sz|my?|j[${ą}]?|[${ć}])?`, // bitch
         'skurwiel(?:em?|ami|i|a)?',
-        `pi[z*]d[${ą}${ă}${ę}y]`,
-        `(?:roz|ja|s|wy?)?pierd[o*]l(?:[${ę}]|i?cie|isz|i[${ł}](?:[ao]|[ae][${ś}])|i[${ć}]|eni|e|on[eay]| si[${ę}])?`,
+        `pi[z*]d[${ą}${ă}${ę}y]`, // cunt (also romanian)
+        `(?:roz|ja|s|wy?)?pierd[o*]l(?:[${ę}]|i?cie|isz|i[${ł}](?:[ao]|[ae][${ś}])|i[${ć}]|eni|e|on[eay]| si[${ę}])?`, // fuck
         `roz[*]+ba[${ć}]`,
-        `(?:s|za|wy?)pier?(?:[d*]a|[da*])la(?:jcie|j[${ą}]?|my?|cie|[${ć}])?`,
-        `(?:s|za|wy?)pieprza(j|[${ć}]|j[${ą}]|jmy)`,
-        `z?g[wf]a[u${ł}](?:t|tem|ty|tów|tami|cenie?|ceni|con[aey]|c[eoąi]|[${ć}]my|ci[${ć}]|ci[${ł}]+[iay]|cimy?)`,
+        `(?:s|za|wy?)pier?(?:[d*]a|[da*])la(?:jcie|j[${ą}]?|my?|cie|[${ć}])?`, // fuck
+        `(?:s|za|wy?)pieprza(j|[${ć}]|j[${ą}]|jmy)`, // fuck
+        `z?g[wf]a[u${ł}](?:t|tem|ty|tów|tami|cenie?|ceni|con[aey]|c[eoąi]|[${ć}]my|ci[${ć}]|ci[${ł}]+[iay]|cimy?)`, // rape
         '(?:za|wy|z|u|na|prze|po|roz|przy)?'
-            + `je+[b*](?:ie(?:sz|my)?|i[${ą}]|a+[*]?n[yaei]+(?:mi|m|go)?|a[${ł}][aeiyo][m${ś}]?|a+[${ć}${ł}]|a[${ń}]ce)`,
+            + `je+[b*](?:ie(?:sz|my)?|i[${ą}]|a+[*]?n[yaei]+(?:mi|m|go)?|a[${ł}][aeiyo][m${ś}]?|a+[${ć}${ł}]|a[${ń}]ce)`, // fuck
         `jeb(?: ma[${ł}]e)? dzieci`,
-        `(?:wy)?r${sep2OrNum}*ucha(?:my?|jmy|jcie|j[${ą}]?|[${ć}]|nym?|n[ae]|nie?)`,
-        'peda(?:le|lsk(?:ie|im|i|a)?)',
+        `(?:wy)?r${sep2OrNum}*ucha(?:my?|jmy|jcie|j[${ą}]?|[${ć}]|nym?|n[ae]|nie?)`, // fucks
+        'peda(?:le|lsk(?:ie|im|i|a)?)', // fag
         ...(fast ? [] : [
-            `pe[d*]ał(?:y|a|em|ami|[${ó}*]w)?`,
-            'gówn(?:o|a|iaki?)',
-            'suką+',
-            'żesz chuj',
-            'fapać',
+            `pe[d*]ał(?:y|a|em|ami|[${ó}*]w)?`, // fag
+            'gówn(?:o|a|iaki?)', // shit
+            'suką+', // bitch
+            'żesz chuj', // oh fuck
+            'fapać', // fap
         ]),
-        's *p *i *e *r *d *a *l *a *j',
-        'p *i *e *r *d *o *l *e',
-        'j *e *b *a *n *[aeyi]',
-        'p *i *e *p *r *z *s *i *e',
-        `g *w *a *[${ł}] *t`,
-        'fapie',
-        `zabij ?si[${ę}]`,
-        `wejd[${ę}] w ciebie`,
-        `w dup[${ę}]`,
-        'morda psie',
-        's[.]*u[.]*k+aa+',
-        's[.]*u[.]*k[.]*k+a+',
-        'su ka',
+        's *p *i *e *r *d *a *l *a *j', // fuck off
+        'p *i *e *r *d *o *l *e', // fuck
+        'j *e *b *a *n *[aeyi]', // fucking
+        'p *i *e *p *r *z *s *i *e', // fuck you
+        `g *w *a *[${ł}] *t`, // rape
+        'fapie', // fap
+        `zabij ?si[${ę}]`, // kys
+        `wejd[${ę}] w ciebie`, // I'll penetrate you
+        `w dup[${ę}]`, // in the ass
+        'morda psie', // shut the fuck up
+        's[.]*u[.]*k+aa+', // bitch
+        's[.]*u[.]*k[.]*k+a+', // bitch
+        'su ka', // bitch
         // spanish
         ...(fast ? [] : [
-            'coño+',
+            'coño+', // pussy
         ]),
         // czech
         ...(fast ? [] : [
-            'srát',
-            'piča',
+            'srát', // shit
+            'piča', // cunt
         ]),
         // turkish
-        'sikiyimmi(?: seni)?',
+        'sikiyimmi(?: seni)?', // fuck
         ...(fast ? [] : [
-            'göt(?: ?k[ıI]l[ıI]| ?veren)?',
-            'orospu(?: ?çocuğu)?',
-            '(?:anan[ıI] ?|ecdad[ıI]n[ıI] ?)?sikiyim',
-            'ana?nı sikim',
-            'am[ıI]na ?koyayim',
-            'amc[ıI]k',
-            'yarra[ğg][ıI]m[ıI](?: ?ye)?',
-            'sikiş',
+            'göt(?: ?k[ıI]l[ıI]| ?veren)?', // ass (hole, giver)
+            'orospu(?: ?çocuğu)?', // bitch (son of a)
+            '(?:anan[ıI] ?|ecdad[ıI]n[ıI] ?)?sikiyim', // fuck
+            'ana?nı sikim', // fuck
+            'am[ıI]na ?koyayim', // fuck
+            'amc[ıI]k', // cunt
+            'yarra[ğg][ıI]m[ıI](?: ?ye)?', // eat my dick
+            'sikiş', // porn
         ]),
-        'seni ?sikerim',
-        'sikiyim',
-        'siktir(?: ?git)?',
-        'yarrak(?: ?kafa)?',
-        'orospu',
+        'seni ?sikerim', // fuck
+        'sikiyim', // fuck
+        'siktir(?: ?git)?', // fuck
+        'yarrak(?: ?kafa)?', // dick (head)
+        'orospu', // bitch
         // russian
-        'cy[k*]a ?(?:bl(?:ye|a|ie+)t+|bylat|blyt|blayt|bl[*]at)',
-        '[sc][uy]ka ?bl[yiue]*?a[td]?',
+        'cy[k*]a ?(?:bl(?:ye|a|ie+)t+|bylat|blyt|blayt|bl[*]at)', // fuck bitch
+        '[sc][uy]ka ?bl[yiue]*?a[td]?', // fuck bitch
         'b-?l-?y-?a-?d',
-        'pisda',
-        'bly+a+t+',
-        'blya{3,}',
-        'c[*]{2,}a',
+        'pisda', // cunt
+        'bly+a+t+', // fuck
+        'blya{3,}', // fuck
+        'c[*]{2,}a', // bitch
         'cykablye+t',
         'cykaxd+',
         'cyak ?blyat',
-        'ckya',
-        separate('blyat'),
+        'ckya', // bitch
+        separate('blyat'), // fuck
         separate('cyka'),
         '(?:cyka)+',
-        'c ?ica blia',
-        'govno+',
+        'c ?ica blia', // cyka blyat misspelled
+        'govno+', // shit
         ...(fast ? [] : [
             'б/?\\\\yat',
-            'суда вручат',
-            'анал(?:ьные)?',
+            'суда вручат', // cyka blyat misspelled
+            'анал(?:ьные)?', // anal
             'а +н +а +л',
-            'бля(?:ть)?ъ',
+            'бля(?:ть)?ъ', // fuck
             `(?!бл ять|б лять)${separate('блять')}э?`,
             '[cс][yу][0-9]*[kк][aа]+',
-            separate('сука'),
+            separate('сука'), // cyka
             'су\\dка',
             'су[57]+а',
-            `с${sep2}+ч?ка|су${sep2}+а|сук${sep2.replace(/[.,!?"'()]/g, '')}+`,
-            '[сc][*]{2,}[аa]',
-            'с[*]{3,}',
-            'сцука+',
-            'Сюка',
-            '[*]+ка',
-            'с+у+к+и+н?',
-            'сук[оo0]+',
-            'секс(?:ам|а+|е|у|ом)?',
-            'срать',
-            `(?:вы|по)?е[б6]+[*]?(?:у|учая|ётесь|а?ться|а+т[ьъ]+|ало?м?ъ?|на|ались|аные|ан+ая|[*])`,
-            `(?:вы|по)?е[б6]+${sep2}(?:у|тесь|ться|ть|лись|ные|н+ая|чий|чие)`,
-            'е[б6]етс',
-            'я *ебаl',
-            'выепать',
-            'влагалища',
-            'вибратора?',
-            `е${sep2}?[б6]${sep2}?[ёуа]${sep2}?ть?`,
-            'е[б6](?:ать?ся+|ёнок|.ть|анный|алом?ъ?|нулся|нутая|анутся)',
-            'з[б6]ать',
-            'бл[*]{2,}ь',
-            'б[л*]я(?:.ь|[яа]*)',
-            '(?:е|лэ)?б+[лl]+[я*]+(?:ч|т+ь+э?|т+б*|дина|ди|дь|дя)?',
-            `б(?:л${sep2}|${sep2}я+|${sep2}{2})ть`,
-            'бл[эая]ть',
-            'б[*]+[ья]+',
-            'зае[б6](али?|лся)',
+            `с${sep2}+ч?ка|су${sep2}+а|сук${sep2.replace(/[.,!?"'()]/g, '')}+`, // bitch
+            '[сc][*]{2,}[аa]', // bitch
+            'с[*]{3,}', // bitch
+            'сцука+', // cyka (misspelled)
+            'Сюка', // bitch
+            '[*]+ка', // bitch
+            'с+у+к+и+н?', // bitch
+            'сук[оo0]+', // bitch
+            'секс(?:ам|а+|е|у|ом)?', // sex
+            'срать', // crap
+            `(?:вы|по)?е[б6]+[*]?(?:у|учая|ётесь|а?ться|а+т[ьъ]+|ало?м?ъ?|на|ались|аные|ан+ая|[*])`, // fuck
+            `(?:вы|по)?е[б6]+${sep2}(?:у|тесь|ться|ть|лись|ные|н+ая|чий|чие)`, // fuck
+            'е[б6]етс', // fucks
+            'я *ебаl', // fucked
+            'выепать', // fuck
+            'влагалища', // vagina
+            'вибратора?', // vibrator
+            `е${sep2}?[б6]${sep2}?[ёуа]${sep2}?ть?`, // fucks
+            'е[б6](?:ать?ся+|ёнок|.ть|анный|алом?ъ?|нулся|нутая|анутся)', // fuck
+            'з[б6]ать', // fuck
+            'бл[*]{2,}ь', // whore
+            'б[л*]я(?:.ь|[яа]*)', // whore
+            '(?:е|лэ)?б+[лl]+[я*]+(?:ч|т+ь+э?|т+б*|дина|ди|дь|дя)?', // fuck / whore
+            `б(?:л${sep2}|${sep2}я+|${sep2}{2})ть`, // whore
+            'бл[эая]ть', // whore
+            'б[*]+[ья]+', // whore
+            'зае[б6](али?|лся)', // fucked
             'з[*]ебуьс',
-            'е[б6]а',
+            'е[б6]а', // fuck
             'е[*]б',
-            separate2('заебал'),
-            separate2('бля'),
-            'з[а_*]еб[а_*]ли?',
-            'б *л *я',
-            'вы[*]+',
-            'говно+м?',
-            'мать твою',
-            'онанист',
-            'орг(?:ия|азм)',
-            'охуительны(х|е)',
-            'о[б6]осса(на|ть)',
-            'шалаву',
-            `ш${sep2}?л${sep2}?ю${sep2}?(шк[аa]+|[хx]и|[хx][аa]+)`,
-            'ш +л +ю +(ш +к +а|х +[иа])',
-            'шл[_*]ха',
-            'пенис',
-            'потрахались',
-            'тр[а@*]х(атьс(еб)?я|аьт|нула|алаъ)',
-            'дрочить',
-            'порнухой',
-            'изн[ак]силую',
-            `у?пи[*]?[3з${emoji}]+д(?:абол(?:ка?)?|ое[б6]+учий|овать|овал|олизка|ы|а|ецъ?|е|юк|уйте|уй|ос?)`,
-            'п[_*]здец',
-            `письки`,
-            'киск[иеуа]',
-            'сперму',
-            'кончи(?:л|шь)',
-            'пид[о0]+р(ы|а[зс])?',
+            separate2('заебал'), // whore
+            separate2('бля'), // whore
+            'з[а_*]еб[а_*]ли?', // whore
+            'б *л *я', // whore
+            'вы[*]+', // fuck
+            'говно+м?', // shit
+            'мать твою', // fuck
+            'онанист', // onanist
+            'орг(?:ия|азм)', // orgy/orgasm
+            'охуительны(х|е)', // fucking
+            'о[б6]осса(на|ть)', // pee on somebody
+            'шалаву', // slut
+            `ш${sep2}?л${sep2}?ю${sep2}?(шк[аa]+|[хx]и|[хx][аa]+)`, // slut / whore
+            'ш +л +ю +(ш +к +а|х +[иа])', // slut
+            'шл[_*]ха', // slut
+            'пенис', // penis
+            'потрахались', // have sex
+            'тр[а@*]х(атьс(еб)?я|аьт|нула|алаъ)', // fuck
+            'дрочить', // masturbate
+            'порнухой', // porn
+            'изн[ак]силую', // rape
+            `у?пи[*]?[3з${emoji}]+д(?:абол(?:ка?)?|ое[б6]+учий|овать|овал|олизка|ы|а|ецъ?|е|юк|уйте|уй|ос?)`, // cunt / pussy
+            'п[_*]здец', // pussy
+            `письки`, // pussy
+            'киск[иеуа]', // pussy
+            'сперму', // sperm
+            'кончи(?:л|шь)', // cum/cumshot
+            'пид[о0]+р(ы|а[зс])?', // fag
             `п${sep2}здуй`,
-            'ниггеров',
-            'мудак[аи]?',
-            'лохи',
-            'соси писос',
-            'сосу член',
-            'члено(?:м|соса?)',
-            '(?:иди)?на[хx]уй',
-            `[хx]${sep}ль`,
-            '[хx]ерню',
-            '(?:н[аa])?[хx][уy*]+[йи]+(?:ло|ка|э|у+|ъ+|н[ёе]й|н[юя]?)?',
+            'ниггеров', // niggers
+            'мудак[аи]?', // asshole
+            'лохи', // fuckers
+            'соси писос', // suck dick
+            'сосу член', // suck dick
+            'члено(?:м|соса?)', // cock/cocksucker
+            '(?:иди)?на[хx]уй', // fuck
+            `[хx]${sep}ль`, // fuck
+            '[хx]ерню', // garbage
+            '(?:н[аa])?[хx][уy*]+[йи]+(?:ло|ка|э|у+|ъ+|н[ёе]й|н[юя]?)?', // garbage / prick / fucking // наxyй
             'н[.]*а[.]*х[.]*у[.]*[йи]',
-            '(?:ху[йя])+',
-            'ху[\\\\/]*ли',
-            'х[_.*]ли',
+            '(?:ху[йя])+', // fuck / dick
+            'ху[\\\\/]*ли', // fuck
+            'х[_.*]ли', // fuck
             `ху${sep}+[йи]`,
             `[хx]+${sep}?у+${sep}?[йия]+${sep}?у*`,
             `[хx][${emoji}](?:[йия]|ёв)`,
             `[хx]у[${emoji}]`,
             `на(?:${sep2}у|х${sep2})[йи]`,
-            '(?:ни|на|ha)?хер(?:а|ней)?',
-            `(?:по|идина)?х(?:у|${sep2})[йию](?:ло|лестия)?`,
-            '(?:по|на)\\)\\(у[йию]',
-            'мастурбация',
+            '(?:ни|на|ha)?хер(?:а|ней)?', // dick / fuck
+            `(?:по|идина)?х(?:у|${sep2})[йию](?:ло|лестия)?`, // dick
+            '(?:по|на)\\)\\(у[йию]', // dick
+            'мастурбация', // masturbation
             `[хx] *${sep2}+ *у *${sep2}+ *й`,
-            `п(?:а|${sep2})дика`,
-            'насил(?:ьник|уют)',
-            'ни[хx]уя',
-            'на[*]+й',
-            'н[*]{3,}й',
-            'насрать',
-            'дерьмо',
-            'дебилы?',
-            'ты еб',
+            `п(?:а|${sep2})дика`, // fagot
+            'насил(?:ьник|уют)', // rapist
+            'ни[хx]уя', // fucking
+            'на[*]+й', // dick
+            'н[*]{3,}й', // dick
+            'насрать', // shit
+            'дерьмо', // shit
+            'дебилы?', // moron
+            'ты еб', // you fuck
             // 'дохуя', // f*cking much (shitload)
-            '\\bхуе\\b',
-            'за(?:сранец|лупа|дницу)',
-            'гавном?',
-            `т${sep2}?р${sep2}?а+${sep2}?[хx](?:ни(?:те)?|нуть|ну|ает|а+ть)?(?: (?:тебя|меня))?`,
-            'жоп(?:у|ай?)',
-            `про[е${emoji}]бал(?:ся)?`,
-            'анал',
+            '\\bхуе\\b', // dick
+            'за(?:сранец|лупа|дницу)', // dickhead / ass
+            'гавном?', // shit
+            `т${sep2}?р${sep2}?а+${sep2}?[хx](?:ни(?:те)?|нуть|ну|ает|а+ть)?(?: (?:тебя|меня))?`, // poke / fuck (you|me)
+            'жоп(?:у|ай?)', // ass(hole)
+            `про[е${emoji}]бал(?:ся)?`, // fucked
+            'анал', // anal
             '3===+э',
-            'зиг ха[ий]?ль',
+            'зиг ха[ий]?ль', // seig hail
             '(?:на|г|б)[*]{2,}',
-            '(?:наша|нас|моя|моей) ?(?:территори[яи]|терра)',
-            'кунт',
+            '(?:наша|нас|моя|моей) ?(?:территори[яи]|терра)', // our|my territory
+            'кунт', // cunt (phonetic)
             'х[*]{2,}',
-            '[Ъb][*іi][тt][cc][нh]',
+            '[Ъb][*іi][тt][cc][нh]', // bitch
             `\\)\\(${sep}?у+${sep}?[йия]+${sep}?у*`,
             'fuск\\S*',
         ]),
         // en
         'b[i!]tc\\|-\\|',
-        'di(?:l|\\|_)d(?:o|\\(\\))',
-        '(?<!grammar )n[a4]z[i1]s?',
+        'di(?:l|\\|_)d(?:o|\\(\\))', // dildo
+        '(?<!grammar )n[a4]z[i1]s?', // nazi
         'fu[*-]{2}',
         'sh[*-]{2}',
         'wh[o0]r3s?',
         '\\*{4}(?:ed|ing)',
-        '\\|\\\\\\| *[i1] *[g9] *[g9] *e *rs?',
+        '\\|\\\\\\| *[i1] *[g9] *[g9] *e *rs?', // nigger
         '[$]+(?:hit|perm|luts?|uck(?:ing)?|ex)',
         'tit',
         '[a@]+[s$]{2,}',
@@ -1247,8 +1257,8 @@ function createBadWords(fast) {
         'f[o0][ck]\\(',
         'f[o0]\\([ck]',
         'f [o0] \\( [ck]',
-        `${letter.c}${letter.o}${letter.c}${letter.k}`,
-        `w${letter.h}${letter.o}r${letter.e}`,
+        `${letter.c}${letter.o}${letter.c}${letter.k}`, // cock
+        `w${letter.h}${letter.o}r${letter.e}`, // whore
         // japanese
         'ファックユー?',
     ];
@@ -1264,161 +1274,165 @@ function createBadWords(fast) {
         '(?:^| )irape',
         'rapechild',
         'ifinger',
-        '^negros[.!?]*$',
-        'f[a@]+[g3]+[eou0i]ts?\\b',
+        '^negros[.!?]*$', // nigger
+        'f[a@]+[g3]+[eou0i]ts?\\b', // faggot
         'fags?\\b',
         '\\bfag(?:g|o)ot',
-        `${alts('fuck')}(?:${alts('ing')}|${alts('er')}s?)?`,
-        '\\bfuk(?:you|ass|of+)',
+        `${alts('fuck')}(?:${alts('ing')}|${alts('er')}s?)?`, // fuck
+        '\\bfuk(?:you|ass|of+)', // fuck
         'f[au]ck(?:er[sz]?|ing)',
         'fuking',
         'fvkin',
         'fvck',
         'fu(?:ck|kc)',
         'f +u +c *k',
-        '^a s s$',
+        '^a s s$', // ass
         'fukin',
-        '[*]+exual',
-        '(?:^| )ʞɔnɟ(?: |$)',
-        '(?:^| )[aα]ss(?: |$)',
-        '(?:^| )[a4]n[a4]l(?: |$)',
-        '^beaches$',
-        `(?:^| )b *[i!] *t *c *${anyH}(?: |$)`,
-        `(?:^| )f *${anyU} *${letter.c} *${anyK}(?: |$)`,
-        '(?:^| )fv\\|<(?: |$)',
-        '(?:^| )fu[#&%_]{2,}(?: |$)',
-        '(?:^| )fu\\[\\|<(?:ing|er)?(?: |$)',
+        '[*]+exual', // sexual
+        '(?:^| )ʞɔnɟ(?: |$)', // fuck
+        '(?:^| )[aα]ss(?: |$)', // anal
+        '(?:^| )[a4]n[a4]l(?: |$)', // anal
+        '^beaches$', // bitch
+        `(?:^| )b *[i!] *t *c *${anyH}(?: |$)`, // bitch
+        `(?:^| )f *${anyU} *${letter.c} *${anyK}(?: |$)`, // fuck
+        '(?:^| )fv\\|<(?: |$)', // fv|<
+        '(?:^| )fu[#&%_]{2,}(?: |$)', // fu??
+        '(?:^| )fu\\[\\|<(?:ing|er)?(?: |$)', // fu[|<
         `${separate('fuck', 's')}`,
-        '(?:^| )cum~+(?: |$)',
-        '(?:^| )[*]+cum[*]+(?: |$)',
-        '(?:^| )dild0\\d*(?: |$)',
-        `(?:^| )${alts('cunt')}(?: |$)`,
-        `(?:^| )${alts('tits')}(?: |$)`,
-        `(?:^| )${alts('bitch')}(?: |$)`,
-        `(?:^| )${alts('penis')}(?: |$)`,
-        `(?:^| )${alts('nigga')}(?: |$)`,
-        `(?:^| )${alts('nigger')}(?: |$)`,
-        '(?:^| )n[i1][g69]{2,}[a4][s5]?(?: |$)',
-        `(?:^| )\\|\\\\\\|az[i|]s?(?: |$)`,
-        `(?:^| )\\|-\\|e${anyN}ta[i|](?: |$)`,
-        `(?:^| )\\$${anyH}it(?: |$)`,
-        `(?:^| )sh[i1!][+](?: |$)`,
-        `(?:^| )👃unts?(?: |$)`,
-        `(?:^| )d${letter.i}${letter.c}${letter.k}(?: |$)`,
-        `(?:^| )${anyD}[i1][c(]k[s$]?(?: |$)`,
-        `(?:^| )stf${anyU}(?: |$)`,
-        `(?:^| )s +t +f +${anyU}(?: |$)`,
-        `(?:^| )\\$hithead(?: |$)`,
-        `(?:^| )${letter.s}${letter.e}${letter.x}(?: |$)`,
-        `(?:^| )${letter.p}${letter.o}r${letter.n}(?: |$)`,
-        `(?:^| )p${letter.o}rn${letter.o}+h*(?: |$)`,
-        `(?:^| )p[*]rn${letter.o}+(?: |$)`,
-        '(?:^| )l[o0]l[i1](s|x|cons?)?(?: |$)',
+        '(?:^| )cum~+(?: |$)', // cum
+        '(?:^| )[*]+cum[*]+(?: |$)', // cum
+        '(?:^| )dild0\\d*(?: |$)', // dildo
+        `(?:^| )${alts('cunt')}(?: |$)`, // cunt
+        `(?:^| )${alts('tits')}(?: |$)`, // tits
+        `(?:^| )${alts('bitch')}(?: |$)`, // bitch
+        `(?:^| )${alts('penis')}(?: |$)`, // penis
+        `(?:^| )${alts('nigga')}(?: |$)`, // nigga
+        `(?:^| )${alts('nigger')}(?: |$)`, // nigger
+        '(?:^| )n[i1][g69]{2,}[a4][s5]?(?: |$)', // nigga
+        `(?:^| )\\|\\\\\\|az[i|]s?(?: |$)`, // nazi
+        `(?:^| )\\|-\\|e${anyN}ta[i|](?: |$)`, // hentai
+        `(?:^| )\\$${anyH}it(?: |$)`, // shit
+        `(?:^| )sh[i1!][+](?: |$)`, // shit
+        `(?:^| )👃unts?(?: |$)`, // cunt
+        `(?:^| )d${letter.i}${letter.c}${letter.k}(?: |$)`, // dick
+        `(?:^| )${anyD}[i1][c(]k[s$]?(?: |$)`, // dick
+        `(?:^| )stf${anyU}(?: |$)`, // stfu
+        `(?:^| )s +t +f +${anyU}(?: |$)`, // stfu
+        `(?:^| )\\$hithead(?: |$)`, // shithead
+        `(?:^| )${letter.s}${letter.e}${letter.x}(?: |$)`, // sex
+        `(?:^| )${letter.p}${letter.o}r${letter.n}(?: |$)`, // porn
+        `(?:^| )p${letter.o}rn${letter.o}+h*(?: |$)`, // porno
+        `(?:^| )p[*]rn${letter.o}+(?: |$)`, // porno
+        '(?:^| )l[o0]l[i1](s|x|cons?)?(?: |$)', // loli
         '(?:^| )[*]humps[*](?: |$)',
-        `(?:^| )${letter.o}+r+g+(?:y+|ies|${letter.i}[a4])(?: |$)`,
-        `(?:^| )${letter.o}rg${letter.a}sm(?: |$)`,
-        `(?:^| )${letter.o}v[e3]r?s[e3]x[e3]d(?: |$)`,
-        `(?:^| )${letter.o}r4l(?: |$)`,
-        `(?:^| )h[e*]nt[a*][i1](?: |$)`,
-        `suckmydick`,
+        `(?:^| )${letter.o}+r+g+(?:y+|ies|${letter.i}[a4])(?: |$)`, // orgy / orgia
+        `(?:^| )${letter.o}rg${letter.a}sm(?: |$)`, // orgasm
+        `(?:^| )${letter.o}v[e3]r?s[e3]x[e3]d(?: |$)`, // oversexed
+        `(?:^| )${letter.o}r4l(?: |$)`, // oral
+        `(?:^| )h[e*]nt[a*][i1](?: |$)`, // hentai
+        `suckmydick`, // suck my dick
         '^(?:(?:sup|hi|hey|you) )?botch[!.]*$',
         // spanish
-        '(?:^| )an[0○](?: |$)',
-        '(?:^| )(?:ort0|0r[t7][o0])(?: |$)',
-        '(?:^| )m[i1][e3]rd4(?: |$)',
-        '(?:^| )mi?er[d#][#]+(?: |$)',
-        '(?:^| )maric[a4](?: |$)',
-        '(?:^| )c[a*4]+r[a4]j[o0](?: |$)',
-        '(?:^| )caralh[0#](?: |$)',
-        '(?:^| )put[04#]+[sh]*(?: |$)',
-        `(?:^| )p${letter.u}t${letter.a}(?: |$)`,
-        `(?:^| )pu[*]{2}(?: |$)`,
-        `(?:^| )p[vw]t${letter.o}(?: |$)`,
-        `(?:^| )pvt${letter.a}[s!]?(?: |$)`,
-        `(?:^| )pvt${letter.a}s[o0]s(?: |$)`,
-        `(?:^| )-*pv?t${letter.a}z[o0]h?-*(?: |$)`,
-        '(?:^| )p[t7][@0](?: |$)',
-        '(?:^| )(?:chupa(?:r|me) la )?p[i1]j4h?(?: |$)',
-        '(?:^| )p[e3]?nd[e3]j0[sz]?(?: |$)',
-        '(?:^| )(p4j[a4]|paj4)(?: |$)',
-        '(?:^| )p[e3€]n[3€]h*(?: |$)',
-        '(?:^| )p[3€]n[e3€]h*(?: |$)',
-        '(?:^| )porr[@#](?: |$)',
-        '(?:^| )su<<(?: |$)',
-        '(?:^| )fod[4@#](?: |$)',
-        '(?:^| )c[o0]ñ[o0](?: |$)',
-        '(?:^| )cul[o0](?: |$)',
-        '(?:^| )n[e3]p3(?: |$)',
-        '(?:^| )a[_]?[s$5]{2}(?: |$)',
-        '(?:^| )\\/\\\\[s$]{2}(?: |$)',
-        '(?:^| )\\+turbar(?: |$)',
-        '(?:^| )kg4rl4(?: |$)',
-        '(?:^| )[*]viola[*]?(?: |$)',
-        '(?:^| )v[e3]?rg[a4](?: |$)',
-        '(?:^| )b[e3]?rg4(?: |$)',
-        `(?:^| )[vb][i1]${letter.o}l[03](?: |$)`,
-        `(?:^| )s${letter.e}x${letter.o}(?: |$)`,
-        '(?:^| )p[e3]l[o0][t7]ud0(?: |$)',
-        '(?:^| )j[o0]d[e3]t[e3](?: |$)',
-        'suicidate',
+        '(?:^| )an[0○](?: |$)', // ano
+        '(?:^| )(?:ort0|0r[t7][o0])(?: |$)', // orto
+        '(?:^| )m[i1][e3]rd4(?: |$)', // mierda
+        '(?:^| )mi?er[d#][#]+(?: |$)', // mierda / merda
+        '(?:^| )maric[a4](?: |$)', // marica
+        '(?:^| )c[a*4]+r[a4]j[o0](?: |$)', // carajo
+        '(?:^| )caralh[0#](?: |$)', // caralho
+        '(?:^| )put[04#]+[sh]*(?: |$)', // puta put0
+        `(?:^| )p${letter.u}t${letter.a}(?: |$)`, // puta
+        `(?:^| )pu[*]{2}(?: |$)`, // puta
+        `(?:^| )p[vw]t${letter.o}(?: |$)`, // puta / pvto
+        `(?:^| )pvt${letter.a}[s!]?(?: |$)`, // puta
+        `(?:^| )pvt${letter.a}s[o0]s(?: |$)`, // puta
+        `(?:^| )-*pv?t${letter.a}z[o0]h?-*(?: |$)`, // puta
+        '(?:^| )p[t7][@0](?: |$)', // puta
+        '(?:^| )(?:chupa(?:r|me) la )?p[i1]j4h?(?: |$)', // pija
+        '(?:^| )p[e3]?nd[e3]j0[sz]?(?: |$)', // pendejo
+        '(?:^| )(p4j[a4]|paj4)(?: |$)', // paja
+        '(?:^| )p[e3€]n[3€]h*(?: |$)', // pene
+        '(?:^| )p[3€]n[e3€]h*(?: |$)', // pene
+        '(?:^| )porr[@#](?: |$)', // porra
+        '(?:^| )su<<(?: |$)', // succ
+        '(?:^| )fod[4@#](?: |$)', // foda
+        '(?:^| )c[o0]ñ[o0](?: |$)', // cono
+        '(?:^| )cul[o0](?: |$)', // ass
+        '(?:^| )n[e3]p3(?: |$)', // nepe
+        '(?:^| )a[_]?[s$5]{2}(?: |$)', // ass
+        '(?:^| )\\/\\\\[s$]{2}(?: |$)', // ass /\$$
+        '(?:^| )\\+turbar(?: |$)', // +turbar (masturbar)
+        '(?:^| )kg4rl4(?: |$)', // cagarla // fuck it up
+        '(?:^| )[*]viola[*]?(?: |$)', // *rapes*
+        '(?:^| )v[e3]?rg[a4](?: |$)', // verga / berga // cock
+        '(?:^| )b[e3]?rg4(?: |$)', // verga / berga // cock
+        `(?:^| )[vb][i1]${letter.o}l[03](?: |$)`, // violo / viole
+        `(?:^| )s${letter.e}x${letter.o}(?: |$)`, // sexo
+        '(?:^| )p[e3]l[o0][t7]ud0(?: |$)', // asshole
+        '(?:^| )j[o0]d[e3]t[e3](?: |$)', // jodete / fuck
+        'suicidate', // commit suicide
         // portuguese
-        '^[* ]*chupando[* ]*$',
+        '^[* ]*chupando[* ]*$', // sucking
         ...(fast ? [] : [
-            '(?:^| )6+ля(?: |$)',
-            '(?:^| )6лять(?: |$)',
-            '(?<!бар)с+[у*]+ч*к+а+',
+            '(?:^| )6+ля(?: |$)', // fuck
+            '(?:^| )6лять(?: |$)', // fuck
+            '(?<!бар)с+[у*]+ч*к+а+', // bitch (except: барсука // badger)
         ]),
-        '(?:^| )fu[(|]<(?:ing)?(?: |$)',
-        `(?:^| )${alts('nigger')}(?: |$)`,
+        '(?:^| )fu[(|]<(?:ing)?(?: |$)', // fu(< fu|< fu|<ing
+        `(?:^| )${alts('nigger')}(?: |$)`, // nigger
         `(?:^|^${sep4} ?|\\S\\S | U )f+ +(?:her|him|you|of+|out|me|urself|yourself|everyone|admins|mods|moderators|my life|harder)\\b`,
         `(?:^|[ \\(\\)\\{\\}\\]\\[:;!|\`"@#$%^&*,._=+~\\-])(?!(?:s+hh+|ss+h)[ .,!-]+it)${separate('shit', 's')}\\b`,
         '(?:^| )[a][*#]{2}( |$)',
-        '\\bbi.ch\\b(?! tree)',
-        '\\bc+[y*]+u*k+a+\\b',
-        '^cum$',
-        '^fu?[*]+(?: |$)',
-        ' fu?[*]+ ',
-        '[a-z]{2,} f+[*]* +u+$',
-        '\\bf{2,}[*]* +u+$',
-        '^f+[*]* +u+(?= +[^a-z ])',
-        '^f+[*]* +u+(?! *s *i *o *n)(?= +[a-z][a-z]+)',
-        '^f+[*]* +u+$',
+        '\\bbi.ch\\b(?! tree)', // bitch
+        '\\bc+[y*]+u*k+a+\\b', // bitch
+        '^cum$', // cum
+        '^fu?[*]+(?: |$)', // f* fu*
+        ' fu?[*]+ ', // f* fu*
+        '[a-z]{2,} f+[*]* +u+$', // just f u (avoid matching "o f u")
+        '\\bf{2,}[*]* +u+$', // fffff u
+        '^f+[*]* +u+(?= +[^a-z ])', // f u
+        '^f+[*]* +u+(?! *s *i *o *n)(?= +[a-z][a-z]+)', // f u
+        '^f+[*]* +u+$', // f u
         '^f u c$',
         '^fak$',
-        `(?:^| )${sep3}{2,} *(?:uck+(?:ing)?|itch)(?: |$)`,
-        `(?:^| )${sep4} *(?:uck+(?:ing)?|itch)(?: |$)`,
-        '\\bf[@#$%^&*]{2,}(?: |$)',
-        '(?:^| )[*]{3,} (?:her+|him+|you+r?|of+|out|me+)\\b',
-        '(?:^ *|[^s ] +)h +[o0] *e *s?\\b',
-        `(?:^|${sep})di${sep}[ck](?:$|${sep})`,
-        '8[:=-]{3,}[|]?[oD3>][-~]*',
-        '8==[|]?[oD]',
-        '8[ =]{2,}D',
-        '(?:^| )[.][i|][.](?: |$)',
+        `(?:^| )${sep3}{2,} *(?:uck+(?:ing)?|itch)(?: |$)`, // __uck __itch
+        `(?:^| )${sep4} *(?:uck+(?:ing)?|itch)(?: |$)`, // (uck %itch
+        '\\bf[@#$%^&*]{2,}(?: |$)', // f@#$
+        '(?:^| )[*]{3,} (?:her+|him+|you+r?|of+|out|me+)\\b', // **** you
+        '(?:^ *|[^s ] +)h +[o0] *e *s?\\b', // h o e
+        `(?:^|${sep})di${sep}[ck](?:$|${sep})`, // di c / di k
+        '8[:=-]{3,}[|]?[oD3>][-~]*', // penis ascii art
+        '8==[|]?[oD]', // penis ascii art
+        '8[ =]{2,}D', // penis ascii art
+        '(?:^| )[.][i|][.](?: |$)', // penis ascii art
         'c[=-]{3,}3',
         '(?:^| )n [i!] g g [e3] s [t^](?: |$)',
-        `(?<!\\bi)${wordStart}${alts('tho')}[${onlyLetterT}]+${wordEnd}`,
-        'child *porn',
+        `(?<!\\bi)${wordStart}${alts('tho')}[${onlyLetterT}]+${wordEnd}`, // thot
+        'child *porn', // porn
         '\\Sporn\\b',
         'nigger',
-        'childrapist',
+        'childrapist', // rape
         'rapeyou',
         '\\brapist',
         '(?:\\bg|being)rape?(?:ing|d)\\b',
         'rule *34',
-        '[48]chan\\.',
+        '[48]chan\\.', // 4chan
         '^aids$',
         '(?:p[o0]rno?hub|redtube|lemonparty|brazzers|youporn|xvidios)',
         'yiffyiff',
         // russian
-        '[(]+[yу][kк][aа]',
+        '[(]+[yу][kк][aа]', // cyka
         // polish
         fast ? 'jeban[aey]' : 'jeba(?:ć|ł[ay]?|n[aey])',
-        'rozjebie',
+        'rozjebie', // (in any part of text)
         'spieprzaj',
         'odpierdol ?sie',
         // japanese
         '(?:^| )くそ(?: |$)',
+        // moans
+        // '(?:^| )o-ohh+~+(?: |$)',
+        // '(?:^| )a-ahh+~*(?: |$)',
+        // '(?:^| )ahh+~+(?: |$)',
     ];
     const badWordsSpecific = [
         '\\bgRAPE\\b',
@@ -1431,7 +1445,7 @@ if (DEVELOPMENT && false) {
         let failed = 0;
         for (const phrase of [...words.all, ...words.other, ...words.foreign, ...words.specific]) {
             if (!isAscii(phrase)) {
-                console.log(`not ascii: "${phrase}" [${stringUtils_1.charsToCodes(phrase).join(', ')}]`);
+                console.log(`not ascii: "${phrase}" [${(0, stringUtils_1.charsToCodes)(phrase).join(', ')}]`);
                 failed++;
             }
         }
@@ -1441,7 +1455,6 @@ if (DEVELOPMENT && false) {
 function isAscii(text) {
     return /^[\u0020-\u007e]+$/i.test(text);
 }
-exports.isAscii = isAscii;
 const unicode = createBadWords(false);
 const ascii = createBadWords(true);
 function tryRegex(value, flags) {
@@ -1482,7 +1495,7 @@ const regexReplaceRUSingle = tryRegex(`${unicode.foreign.join('|')}`, 'ugi');
 const regexReplacePartial = tryRegex(`${[
     ...unicode.all, ...unicode.foreign, ...unicode.other, ...unicode.specific
 ].join('|')}`, 'ugi');
-const defaultReplacer = match => lodash_1.repeat('*', match.length);
+const defaultReplacer = match => (0, lodash_1.repeat)('*', match.length);
 const createReplacerRU = (replacer = defaultReplacer) => match => match.replace(regexReplaceRUSingle, replacer);
 function canUseFast(text) {
     return isAscii(text);
@@ -1507,7 +1520,6 @@ function createFilter(replacer = defaultReplacer) {
         fastReplace(text, replacer, replacerRU) :
         slowReplace(text, replacer, replacerRU);
 }
-exports.createFilter = createFilter;
 function slowTest(text) {
     return regexTest.test(text) ||
         regexTestRU.test(text) ||
@@ -1523,28 +1535,23 @@ function fastTest(text) {
 function hasBadWords(text) {
     return canUseFast(text) ? fastTest(text) : slowTest(text);
 }
-exports.hasBadWords = hasBadWords;
 function hasFuck(text) {
     return regexTestFuck.test(text);
 }
-exports.hasFuck = hasFuck;
 exports.filterBadWords = createFilter();
 function filterName(name) {
-    const filtered = exports.filterBadWords(name);
-    return name === filtered ? name : lodash_1.repeat('*', name.length);
+    const filtered = (0, exports.filterBadWords)(name);
+    return name === filtered ? name : (0, lodash_1.repeat)('*', name.length);
 }
-exports.filterName = filterName;
 function filterBadWordsPartial(text, replacer = defaultReplacer) {
     return text.replace(regexReplacePartial, replacer);
 }
-exports.filterBadWordsPartial = filterBadWordsPartial;
 function findMatch(text) {
     return unicode.all.find(x => (tryRegex(`\\b(?:${x})\\b`, 'ui')).test(text))
         || unicode.foreign.find(x => (tryRegex(`${wordStartRU}(?:${x})${wordEndRU}`, 'ui')).test(text))
         || unicode.other.find(x => (tryRegex(`${x}`, 'u')).test(text))
         || unicode.specific.find(x => (tryRegex(`${x}`, 'u')).test(text));
 }
-exports.findMatch = findMatch;
 function createMatchEntries() {
     return [
         ...unicode.all.map(line => ({ line, regex: tryRegex(`\\b(?:${line})\\b`, 'ui') })),
@@ -1553,5 +1560,4 @@ function createMatchEntries() {
         ...unicode.specific.map(line => ({ line, regex: tryRegex(line, 'u') })),
     ];
 }
-exports.createMatchEntries = createMatchEntries;
 //# sourceMappingURL=swears.js.map

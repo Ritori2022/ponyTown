@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IntervalUpdateService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../common/utils");
@@ -18,7 +19,7 @@ let IntervalUpdateService = class IntervalUpdateService {
             });
         }
         return () => {
-            utils_1.removeItem(this.actions, action);
+            (0, utils_1.removeItem)(this.actions, action);
             if (this.actions.length === 0) {
                 clearInterval(this.interval);
                 this.interval = undefined;
@@ -38,11 +39,11 @@ let IntervalUpdateService = class IntervalUpdateService {
         };
     }
 };
-IntervalUpdateService = tslib_1.__decorate([
-    core_1.Injectable({
+exports.IntervalUpdateService = IntervalUpdateService;
+exports.IntervalUpdateService = IntervalUpdateService = tslib_1.__decorate([
+    (0, core_1.Injectable)({
         providedIn: 'root',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone])
 ], IntervalUpdateService);
-exports.IntervalUpdateService = IntervalUpdateService;
 //# sourceMappingURL=intervalUpdateService.js.map

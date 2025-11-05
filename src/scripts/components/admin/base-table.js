@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BaseTable = void 0;
 const lodash_1 = require("lodash");
 class BaseTable {
     constructor() {
@@ -11,7 +12,7 @@ class BaseTable {
         this.sortedAsc = true;
         this._search = '';
         this._currentPage = 1;
-        this.execSearch = lodash_1.debounce(() => {
+        this.execSearch = (0, lodash_1.debounce)(() => {
             this.updateFiltered();
             this.onChange();
         }, 500);

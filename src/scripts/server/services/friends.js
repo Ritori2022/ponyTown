@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FriendsService = exports.REJECTED_TIMEOUT = exports.REJECTED_LIMIT = exports.PENDING_LIMIT = void 0;
+exports.isFriend = isFriend;
+exports.isOnlineFriend = isOnlineFriend;
+exports.toFriendOnline = toFriendOnline;
+exports.toFriendOffline = toFriendOffline;
+exports.toFriendRemove = toFriendRemove;
+exports.toFriend = toFriend;
 const constants_1 = require("../../common/constants");
 const utils_1 = require("../../common/utils");
 const accountUtils_1 = require("../accountUtils");
@@ -14,16 +21,14 @@ exports.REJECTED_TIMEOUT = 2 * constants_1.HOUR;
 function isFriend(client, friend) {
     return client.friends.has(friend.accountId);
 }
-exports.isFriend = isFriend;
 function isOnlineFriend(client, friend) {
     return client.friends.has(friend.accountId) && !friend.accountSettings.hidden;
 }
-exports.isOnlineFriend = isOnlineFriend;
 function toFriendOnline(client) {
     return {
         accountId: client.accountId,
         accountName: client.accountName,
-        status: 1 /* Online */,
+        status: 1 /* FriendStatusFlags.Online */,
         entityId: client.pony.id,
         crc: client.pony.crc,
         name: client.pony.name,
@@ -31,23 +36,20 @@ function toFriendOnline(client) {
         info: client.pony.infoSafe,
     };
 }
-exports.toFriendOnline = toFriendOnline;
 function toFriendOffline(client) {
     return {
         accountId: client.accountId,
         accountName: client.accountName,
-        status: 0 /* None */,
+        status: 0 /* FriendStatusFlags.None */,
         entityId: 0,
     };
 }
-exports.toFriendOffline = toFriendOffline;
 function toFriendRemove(client) {
     return {
         accountId: client.accountId,
-        status: 2 /* Remove */,
+        status: 2 /* FriendStatusFlags.Remove */,
     };
 }
-exports.toFriendRemove = toFriendRemove;
 function toFriend(client) {
     if (client.isConnected) {
         return toFriendOnline(client);
@@ -56,7 +58,6 @@ function toFriend(client) {
         return toFriendOffline(client);
     }
 }
-exports.toFriend = toFriend;
 class FriendsService {
     constructor(notificationService, reportInviteLimit) {
         this.notificationService = notificationService;
@@ -77,50 +78,50 @@ class FriendsService {
         }
     }
     remove(client, friend) {
-        accountUtils_1.removeFriend(client.accountId, friend.accountId).catch(e => logger_1.logger.error(e));
+        (0, accountUtils_1.removeFriend)(client.accountId, friend.accountId).catch(e => logger_1.logger.error(e));
         client.friends.delete(friend.accountId);
         client.friendsCRC = undefined;
         friend.friends.delete(client.accountId);
         friend.friendsCRC = undefined;
         client.reporter.systemLog(`Removed friend [${friend.accountId}]`);
-        client.updateFriends([{ accountId: friend.accountId, status: 2 /* Remove */ }], false);
-        friend.updateFriends([{ accountId: client.accountId, status: 2 /* Remove */ }], false);
-        playerUtils_1.updateEntityPlayerState(client, friend.pony);
-        playerUtils_1.updateEntityPlayerState(friend, client.pony);
+        client.updateFriends([{ accountId: friend.accountId, status: 2 /* FriendStatusFlags.Remove */ }], false);
+        friend.updateFriends([{ accountId: client.accountId, status: 2 /* FriendStatusFlags.Remove */ }], false);
+        (0, playerUtils_1.updateEntityPlayerState)(client, friend.pony);
+        (0, playerUtils_1.updateEntityPlayerState)(friend, client.pony);
     }
     removeByAccountId(client, friendAccountId) {
-        accountUtils_1.removeFriend(client.accountId, friendAccountId).catch(e => logger_1.logger.error(e));
+        (0, accountUtils_1.removeFriend)(client.accountId, friendAccountId).catch(e => logger_1.logger.error(e));
         client.friends.delete(friendAccountId);
         client.friendsCRC = undefined;
         client.reporter.systemLog(`Removed friend [${friendAccountId}]`);
-        client.updateFriends([{ accountId: friendAccountId, status: 2 /* Remove */ }], false);
+        client.updateFriends([{ accountId: friendAccountId, status: 2 /* FriendStatusFlags.Remove */ }], false);
     }
     add(client, target) {
         const can = this.limiter.canExecute(client, target);
-        if (can === 4 /* LimitReached */) {
-            return chat_1.saySystem(client, 'Reached request rejection limit');
+        if (can === 4 /* LimiterResult.LimitReached */) {
+            return (0, chat_1.saySystem)(client, 'Reached request rejection limit');
         }
-        else if (can !== 0 /* Yes */) {
-            return chat_1.saySystem(client, 'Cannot send request');
+        else if (can !== 0 /* LimiterResult.Yes */) {
+            return (0, chat_1.saySystem)(client, 'Cannot send request');
         }
         const pending = this.pending.get(client.accountId) || new Set();
         if (pending.has(target.accountId))
-            return chat_1.saySystem(client, 'Already sent request');
+            return (0, chat_1.saySystem)(client, 'Already sent request');
         if (isFriend(client, target))
-            return chat_1.saySystem(client, 'Already on friends list');
+            return (0, chat_1.saySystem)(client, 'Already on friends list');
         if (client.friends.size >= constants_1.FRIENDS_LIMIT)
-            return chat_1.saySystem(client, 'Your friend list is full');
+            return (0, chat_1.saySystem)(client, 'Your friend list is full');
         if (target.friends.size >= constants_1.FRIENDS_LIMIT)
-            return chat_1.saySystem(client, 'Target player friend list is full');
-        if (utils_1.hasFlag(client.account.flags, 256 /* BlockFriendRequests */))
-            return chat_1.saySystem(client, 'Cannot send request');
+            return (0, chat_1.saySystem)(client, 'Target player friend list is full');
+        if ((0, utils_1.hasFlag)(client.account.flags, 256 /* AccountFlags.BlockFriendRequests */))
+            return (0, chat_1.saySystem)(client, 'Cannot send request');
         if (target.accountSettings.ignoreFriendInvites)
-            return chat_1.saySystem(client, 'Cannot send request');
+            return (0, chat_1.saySystem)(client, 'Cannot send request');
         if (pending.size >= exports.PENDING_LIMIT)
-            return chat_1.saySystem(client, 'Too many pending requests');
+            return (0, chat_1.saySystem)(client, 'Too many pending requests');
         const notificationId = this.addInviteNotification(client, target);
         if (!notificationId) {
-            return chat_1.saySystem(client, 'Cannot send request');
+            return (0, chat_1.saySystem)(client, 'Cannot send request');
         }
         pending.add(target.accountId);
         this.pending.set(client.accountId, pending);
@@ -128,8 +129,8 @@ class FriendsService {
     }
     acceptInvitation(client, friend, notificationId) {
         client.reporter.systemLog(`Friend request accepted by [${friend.accountId}]`);
-        chat_1.saySystem(client, `Friend request accepted by ${entityUtils_1.getEntityName(friend.pony, client)}`);
-        accountUtils_1.addFriend(client.accountId, friend.accountId)
+        (0, chat_1.saySystem)(client, `Friend request accepted by ${(0, entityUtils_1.getEntityName)(friend.pony, client)}`);
+        (0, accountUtils_1.addFriend)(client.accountId, friend.accountId)
             .catch(e => {
             if (e.message !== `Friend request already exists`) {
                 logger_1.logger.error(e);
@@ -143,12 +144,12 @@ class FriendsService {
         this.notificationService.removeNotification(friend, notificationId);
         client.updateFriends([toFriend(friend)], false);
         friend.updateFriends([toFriend(client)], false);
-        playerUtils_1.updateEntityPlayerState(client, friend.pony);
-        playerUtils_1.updateEntityPlayerState(friend, client.pony);
+        (0, playerUtils_1.updateEntityPlayerState)(client, friend.pony);
+        (0, playerUtils_1.updateEntityPlayerState)(friend, client.pony);
     }
     rejectInvitation(client, friend, notificationId) {
         client.reporter.systemLog(`Friend request rejected by [${friend.accountId}]`);
-        chat_1.saySystem(client, `Friend request rejected by ${entityUtils_1.getEntityName(friend.pony, client)}`);
+        (0, chat_1.saySystem)(client, `Friend request rejected by ${(0, entityUtils_1.getEntityName)(friend.pony, client)}`);
         this.removePending(client, friend);
         this.notificationService.removeNotification(friend, notificationId);
         this.countReject(client);
@@ -175,8 +176,8 @@ class FriendsService {
             name: client.pony.name || '',
             entityId: client.pony.id,
             message: `<div class="text-friends"><b>Friend request</b></div><b>#NAME#</b> wants to add you to their friends`,
-            flags: 8 /* Accept */ | 16 /* Reject */ | 64 /* Ignore */ |
-                (client.pony.nameBad ? 128 /* NameBad */ : 0),
+            flags: 8 /* NotificationFlags.Accept */ | 16 /* NotificationFlags.Reject */ | 64 /* NotificationFlags.Ignore */ |
+                (client.pony.nameBad ? 128 /* NotificationFlags.NameBad */ : 0),
             accept: () => this.acceptInvitation(client, friend, notificationId),
             reject: () => this.rejectInvitation(client, friend, notificationId),
         });

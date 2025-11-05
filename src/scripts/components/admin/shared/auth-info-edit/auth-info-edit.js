@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthInfoEdit = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -55,25 +56,25 @@ let AuthInfoEdit = class AuthInfoEdit {
         }
     }
 };
+exports.AuthInfoEdit = AuthInfoEdit;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], AuthInfoEdit.prototype, "duplicates", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AuthInfoEdit.prototype, "showName", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], AuthInfoEdit.prototype, "authId", null);
-AuthInfoEdit = tslib_1.__decorate([
-    core_1.Component({
+exports.AuthInfoEdit = AuthInfoEdit = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'auth-info-edit',
         templateUrl: 'auth-info-edit.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AuthInfoEdit);
-exports.AuthInfoEdit = AuthInfoEdit;
 //# sourceMappingURL=auth-info-edit.js.map

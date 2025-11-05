@@ -11,28 +11,28 @@ describe('originUtils', () => {
         let clock;
         let update;
         beforeEach(() => {
-            clock = sinon_1.useFakeTimers();
-            update = sinon_1.stub(db_1.Account, 'update').returns({ exec: () => Promise.resolve() });
+            clock = (0, sinon_1.useFakeTimers)();
+            update = (0, sinon_1.stub)(db_1.Account, 'update').returns({ exec: () => Promise.resolve() });
         });
         afterEach(() => {
             clock.restore();
             update.restore();
         });
         it('adds origin to account', async () => {
-            const acc = mocks_1.account({});
+            const acc = (0, mocks_1.account)({});
             const origin = { foo: 'bar' };
-            await originUtils_1.addOrigin(acc, origin);
-            chai_1.expect(acc.origins).contains(origin);
+            await (0, originUtils_1.addOrigin)(acc, origin);
+            (0, chai_1.expect)(acc.origins).contains(origin);
             sinon_1.assert.calledWithMatch(update, { _id: acc._id }, { $push: { origins: origin } });
         });
         it('updates date of existing origin', async () => {
-            const acc = mocks_1.account({
+            const acc = (0, mocks_1.account)({
                 origins: [{ _id: 'foo', ip: '1.2.3.4', last: new Date(9999) }],
             });
             const origin = { ip: '1.2.3.4' };
             clock.setSystemTime(12345);
-            await originUtils_1.addOrigin(acc, origin);
-            chai_1.expect(acc.origins).eql([{ _id: 'foo', ip: '1.2.3.4', last: new Date(12345) }]);
+            await (0, originUtils_1.addOrigin)(acc, origin);
+            (0, chai_1.expect)(acc.origins).eql([{ _id: 'foo', ip: '1.2.3.4', last: new Date(12345) }]);
             sinon_1.assert.calledWith(update, { _id: acc._id, 'origins._id': 'foo' }); //, { 'origins.$.last': new Date(12345) });
         });
     });

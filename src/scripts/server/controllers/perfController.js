@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PerfController = void 0;
 const lodash_1 = require("lodash");
 const entities_1 = require("../../common/entities");
 const db_1 = require("../db");
@@ -46,15 +47,15 @@ class PerfController {
         query
             .then(characters => {
             if (characters.length) {
-                this.entities = lodash_1.range(this.options.count).map(i => {
+                this.entities = (0, lodash_1.range)(this.options.count).map(i => {
                     const character = characters[i % characters.length];
                     const name = character._id.toString();
                     const x = this.limitLeft + this.limitWidth * Math.random();
                     const y = this.limitTop + this.limitHeight * Math.random();
-                    const p = entities_1.pony(x, y);
-                    entityUtils_1.setEntityName(p, name);
-                    p.flags |= 64 /* CanCollide */;
-                    p.encryptedInfoSafe = characterUtils_1.encryptInfo(character.info || '');
+                    const p = (0, entities_1.pony)(x, y);
+                    (0, entityUtils_1.setEntityName)(p, name);
+                    p.flags |= 64 /* EntityFlags.CanCollide */;
+                    p.encryptedInfoSafe = (0, characterUtils_1.encryptInfo)(character.info || '');
                     p.client = {
                         pony: p,
                         accountId: 'foobar',
@@ -64,7 +65,7 @@ class PerfController {
                         permaHides: new Set(),
                         account: {},
                         regions: [],
-                        camera: camera_1.createCamera(),
+                        camera: (0, camera_1.createCamera)(),
                         updateRegion() { },
                         addEntity() { },
                         mapTest() { },
@@ -72,7 +73,7 @@ class PerfController {
                     p.client.camera.x = -10000;
                     p.vx = this.options.moving ? randomVelocity() : 0;
                     p.vy = this.options.moving ? randomVelocity() : 0;
-                    p.state = movementUtils_1.shouldBeFacingRight(p) ? 2 /* FacingRight */ : 0 /* None */;
+                    p.state = (0, movementUtils_1.shouldBeFacingRight)(p) ? 2 /* EntityState.FacingRight */ : 0 /* EntityState.None */;
                     return world.addEntity(p, map);
                 });
             }
@@ -80,26 +81,26 @@ class PerfController {
         this.initialized = true;
     }
     update(_, now) {
-        timing_1.timingStart('PerfController.update()');
+        (0, timing_1.timingStart)('PerfController.update()');
         const limitBottom = this.limitTop + this.limitHeight;
         const limitRight = this.limitTop + this.limitHeight;
         if (this.options.moving) {
             for (const entity of this.entities) {
                 if ((entity.vy > 0 && entity.y > limitBottom) || (entity.vy < 0 && entity.y < this.limitTop)) {
-                    entityUtils_1.updateEntityVelocity(entity, entity.vx, -entity.vy, now);
+                    (0, entityUtils_1.updateEntityVelocity)(entity, entity.vx, -entity.vy, now);
                 }
                 else if ((entity.vx > 0 && entity.x > limitRight) || (entity.vx < 0 && entity.x < this.limitLeft)) {
-                    entityUtils_1.updateEntityVelocity(entity, -entity.vx, entity.vy, now);
+                    (0, entityUtils_1.updateEntityVelocity)(entity, -entity.vx, entity.vy, now);
                 }
                 else if (Math.random() < 0.1) {
-                    entityUtils_1.updateEntityVelocity(entity, randomVelocity(), randomVelocity(), now);
+                    (0, entityUtils_1.updateEntityVelocity)(entity, randomVelocity(), randomVelocity(), now);
                 }
                 if (this.options.saying && Math.random() < 0.01) {
-                    chat_1.sayToAll(entity, 'Hello World', 'Hello World', 0 /* Chat */, {});
+                    (0, chat_1.sayToAll)(entity, 'Hello World', 'Hello World', 0 /* MessageType.Chat */, {});
                 }
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
 }
 exports.PerfController = PerfController;

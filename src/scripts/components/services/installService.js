@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InstallService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const storageService_1 = require("./storageService");
@@ -31,11 +32,11 @@ let InstallService = class InstallService {
         this.storage.setBoolean('install-dismissed', true);
     }
 };
-InstallService = tslib_1.__decorate([
-    core_1.Injectable({
+exports.InstallService = InstallService;
+exports.InstallService = InstallService = tslib_1.__decorate([
+    (0, core_1.Injectable)({
         providedIn: 'root',
     }),
     tslib_1.__metadata("design:paramtypes", [storageService_1.StorageService])
 ], InstallService);
-exports.InstallService = InstallService;
 //# sourceMappingURL=installService.js.map

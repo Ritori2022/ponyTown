@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createFrameBuffer = createFrameBuffer;
+exports.resizeFrameBuffer = resizeFrameBuffer;
+exports.bindFrameBuffer = bindFrameBuffer;
+exports.disposeFrameBuffer = disposeFrameBuffer;
 const texture2d_1 = require("./texture2d");
 const utils_1 = require("../../common/utils");
 let colorAttachmentArrays = null;
@@ -41,13 +45,12 @@ function createFrameBuffer(gl, width, height, options = {}) {
         }
     }
     const fbo = {
-        gl, width, height, colorType, color: utils_1.array(numColors, undefined), useDepth: depth, useStencil: stencil, ext,
+        gl, width, height, colorType, color: (0, utils_1.array)(numColors, undefined), useDepth: depth, useStencil: stencil, ext,
         colorRenderBuffer: null, depth: undefined, depthRenderBuffer: null, handle: null,
     };
     rebuild(fbo);
     return fbo;
 }
-exports.createFrameBuffer = createFrameBuffer;
 function resizeFrameBuffer(fbo, w, h) {
     if (fbo.width === w && fbo.height === h) {
         return;
@@ -62,7 +65,7 @@ function resizeFrameBuffer(fbo, w, h) {
     const state = saveFBOState(gl);
     for (const color of fbo.color) {
         if (color) {
-            texture2d_1.resizeTexture(gl, color, w, h);
+            (0, texture2d_1.resizeTexture)(gl, color, w, h);
         }
     }
     if (fbo.colorRenderBuffer) {
@@ -70,7 +73,7 @@ function resizeFrameBuffer(fbo, w, h) {
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA4, w, h);
     }
     if (fbo.depth) {
-        texture2d_1.resizeTexture(gl, fbo.depth, w, h);
+        (0, texture2d_1.resizeTexture)(gl, fbo.depth, w, h);
     }
     if (fbo.depthRenderBuffer) {
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.depthRenderBuffer);
@@ -93,23 +96,21 @@ function resizeFrameBuffer(fbo, w, h) {
     }
     restoreFBOState(gl, state);
 }
-exports.resizeFrameBuffer = resizeFrameBuffer;
 function bindFrameBuffer(fbo) {
     fbo.gl.bindFramebuffer(fbo.gl.FRAMEBUFFER, fbo.handle);
     fbo.gl.viewport(0, 0, fbo.width, fbo.height);
 }
-exports.bindFrameBuffer = bindFrameBuffer;
 function disposeFrameBuffer(fbo) {
     if (fbo) {
         fbo.gl.deleteFramebuffer(fbo.handle);
         fbo.handle = null;
-        fbo.depth = texture2d_1.disposeTexture(fbo.gl, fbo.depth);
+        fbo.depth = (0, texture2d_1.disposeTexture)(fbo.gl, fbo.depth);
         if (fbo.depthRenderBuffer) {
             fbo.gl.deleteRenderbuffer(fbo.depthRenderBuffer);
             fbo.depthRenderBuffer = null;
         }
         for (let i = 0; i < fbo.color.length; i++) {
-            fbo.color[i] = texture2d_1.disposeTexture(fbo.gl, fbo.color[i]);
+            fbo.color[i] = (0, texture2d_1.disposeTexture)(fbo.gl, fbo.color[i]);
         }
         if (fbo.colorRenderBuffer) {
             fbo.gl.deleteRenderbuffer(fbo.colorRenderBuffer);
@@ -118,7 +119,6 @@ function disposeFrameBuffer(fbo) {
     }
     return undefined;
 }
-exports.disposeFrameBuffer = disposeFrameBuffer;
 function rebuild(fbo) {
     const state = saveFBOState(fbo.gl);
     const gl = fbo.gl;
@@ -165,13 +165,13 @@ function rebuild(fbo) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.deleteFramebuffer(fbo.handle);
         fbo.handle = null;
-        fbo.depth = texture2d_1.disposeTexture(gl, fbo.depth);
+        fbo.depth = (0, texture2d_1.disposeTexture)(gl, fbo.depth);
         if (fbo.depthRenderBuffer) {
             gl.deleteRenderbuffer(fbo.depthRenderBuffer);
             fbo.depthRenderBuffer = null;
         }
         for (let i = 0; i < fbo.color.length; i++) {
-            fbo.color[i] = texture2d_1.disposeTexture(gl, fbo.color[i]);
+            fbo.color[i] = (0, texture2d_1.disposeTexture)(gl, fbo.color[i]);
         }
         if (fbo.colorRenderBuffer) {
             gl.deleteRenderbuffer(fbo.colorRenderBuffer);
@@ -222,7 +222,7 @@ function throwFBOError(gl, status, message = '') {
     }
 }
 function initTexture(gl, width, height, type, format, attachment) {
-    const texture = texture2d_1.createEmptyTexture(gl, width, height, format, type);
+    const texture = (0, texture2d_1.createEmptyTexture)(gl, width, height, format, type);
     gl.bindTexture(gl.TEXTURE_2D, texture.handle);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.handle, 0);
     return texture;

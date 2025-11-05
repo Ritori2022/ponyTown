@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.compressTiles = compressTiles;
+exports.decompressTiles = decompressTiles;
+exports.deserializeTiles = deserializeTiles;
 const base64_js_1 = require("base64-js");
 const bitUtils_1 = require("./bitUtils");
 const constants_1 = require("./constants");
@@ -22,7 +25,7 @@ function compressTiles(tiles) {
     }
     const bitsPerTile = getBitsForNumber(types.length);
     const bitsPerRun = 4;
-    return bitUtils_1.bitWriter(write => {
+    return (0, bitUtils_1.bitWriter)(write => {
         write(types.length, 8);
         for (const type of types) {
             write(type, 8);
@@ -83,11 +86,10 @@ function compressTiles(tiles) {
         }
     });
 }
-exports.compressTiles = compressTiles;
 function decompressTiles(data) {
     const size = constants_1.REGION_SIZE * constants_1.REGION_SIZE;
     const result = new Uint8Array(size);
-    const read = bitUtils_1.bitReader(data);
+    const read = (0, bitUtils_1.bitReader)(data);
     const typesCount = read(8);
     const types = [];
     for (let i = 0; i < typesCount; i++) {
@@ -120,9 +122,8 @@ function decompressTiles(data) {
     }
     return result;
 }
-exports.decompressTiles = decompressTiles;
 function deserializeTiles(tiles) {
-    const decodedTiles = base64_js_1.toByteArray(tiles);
+    const decodedTiles = (0, base64_js_1.toByteArray)(tiles);
     const result = [];
     for (let i = 0; i < decodedTiles.length; i += 2) {
         let count = decodedTiles[i];
@@ -134,5 +135,4 @@ function deserializeTiles(tiles) {
     }
     return result;
 }
-exports.deserializeTiles = deserializeTiles;
 //# sourceMappingURL=compress.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CONTRIBUTORS = exports.CREDITS = void 0;
 exports.CREDITS = [
 // example:
 // {

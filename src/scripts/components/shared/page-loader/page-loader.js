@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PageLoader = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../client/icons");
@@ -23,16 +24,16 @@ let PageLoader = class PageLoader {
         return this.model.loadingError;
     }
     reload() {
-        clientUtils_1.hardReload();
+        (0, clientUtils_1.hardReload)();
     }
 };
-PageLoader = tslib_1.__decorate([
-    core_1.Component({
+exports.PageLoader = PageLoader;
+exports.PageLoader = PageLoader = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'page-loader',
         templateUrl: 'page-loader.pug',
         styleUrls: ['page-loader.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model])
 ], PageLoader);
-exports.PageLoader = PageLoader;
 //# sourceMappingURL=page-loader.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminAccounts = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -33,7 +34,7 @@ let AdminAccounts = class AdminAccounts {
         this.itemsPerPage = 20;
         this.loading = false;
         this.expanded = new Set();
-        this.execSearch = lodash_1.debounce(() => this.refresh(), 500);
+        this.execSearch = (0, lodash_1.debounce)(() => this.refresh(), 500);
     }
     get showOnly() {
         return showOnly;
@@ -118,12 +119,12 @@ let AdminAccounts = class AdminAccounts {
         }
     }
 };
-AdminAccounts = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminAccounts = AdminAccounts;
+exports.AdminAccounts = AdminAccounts = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-accounts',
         templateUrl: 'admin-accounts.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel, router_1.Router])
 ], AdminAccounts);
-exports.AdminAccounts = AdminAccounts;
 //# sourceMappingURL=admin-accounts.js.map

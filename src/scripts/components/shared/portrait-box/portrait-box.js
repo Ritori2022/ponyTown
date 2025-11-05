@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PortraitBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const contextSpriteBatch_1 = require("../../../graphics/contextSpriteBatch");
@@ -19,8 +20,8 @@ const sizes = {
     small: 33,
 };
 const BUFFER_SIZE = 34;
-const options = ponyHelpers_1.defaultDrawPonyOptions();
-const state = ponyHelpers_1.defaultPonyState();
+const options = (0, ponyHelpers_1.defaultDrawPonyOptions)();
+const state = (0, ponyHelpers_1.defaultPonyState)();
 let PortraitBox = class PortraitBox {
     constructor(zone) {
         this.zone = zone;
@@ -31,7 +32,7 @@ let PortraitBox = class PortraitBox {
         this.frame = 0;
     }
     ngAfterViewInit() {
-        spriteUtils_1.loadAndInitSpriteSheets()
+        (0, spriteUtils_1.loadAndInitSpriteSheets)()
             .then(() => this.redraw());
     }
     ngOnChanges() {
@@ -46,20 +47,20 @@ let PortraitBox = class PortraitBox {
     draw() {
         const canvas = this.canvas.nativeElement;
         const size = sizes[this.size];
-        canvasUtils_1.resizeCanvasWithRatio(canvas, size, size);
+        (0, canvasUtils_1.resizeCanvasWithRatio)(canvas, size, size);
         const context = canvas.getContext('2d');
         if (context) {
             context.save();
             context.fillStyle = '#444';
             context.fillRect(0, 0, canvas.width, canvas.height);
             if (this.pony) {
-                const scale = scales[this.size] * canvasUtils_1.getPixelRatio();
-                this.batch = this.batch || new contextSpriteBatch_1.ContextSpriteBatch(canvasUtils_1.createCanvas(BUFFER_SIZE, BUFFER_SIZE));
+                const scale = scales[this.size] * (0, canvasUtils_1.getPixelRatio)();
+                this.batch = this.batch || new contextSpriteBatch_1.ContextSpriteBatch((0, canvasUtils_1.createCanvas)(BUFFER_SIZE, BUFFER_SIZE));
                 options.flipped = !this.flip;
                 this.batch.start(sprites_1.paletteSpriteSheet, 0);
-                ponyDraw_1.drawPony(this.batch, this.pony, state, 25, 54, options);
+                (0, ponyDraw_1.drawPony)(this.batch, this.pony, state, 25, 54, options);
                 this.batch.end();
-                canvasUtils_1.disableImageSmoothing(context);
+                (0, canvasUtils_1.disableImageSmoothing)(context);
                 context.scale(this.flip ? scale : -scale, scale);
                 context.drawImage(this.batch.canvas, this.flip ? 0 : -BUFFER_SIZE, 0);
             }
@@ -67,28 +68,29 @@ let PortraitBox = class PortraitBox {
         }
     }
 };
+exports.PortraitBox = PortraitBox;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PortraitBox.prototype, "noBorder", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PortraitBox.prototype, "flip", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PortraitBox.prototype, "size", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PortraitBox.prototype, "pony", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], PortraitBox.prototype, "canvas", void 0);
-PortraitBox = tslib_1.__decorate([
-    core_1.Component({
+exports.PortraitBox = PortraitBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'portrait-box',
         templateUrl: 'portrait-box.pug',
         styleUrls: ['portrait-box.scss'],
@@ -96,5 +98,4 @@ PortraitBox = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone])
 ], PortraitBox);
-exports.PortraitBox = PortraitBox;
 //# sourceMappingURL=portrait-box.js.map

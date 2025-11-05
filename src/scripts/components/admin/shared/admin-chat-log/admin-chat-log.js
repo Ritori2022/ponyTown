@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminChatLog = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
-const moment = require("moment");
+const moment = tslib_1.__importStar(require("moment"));
 const adminModel_1 = require("../../../services/adminModel");
 const adminUtils_1 = require("../../../../common/adminUtils");
 const icons_1 = require("../../../../client/icons");
@@ -22,8 +23,8 @@ let AdminChatLog = class AdminChatLog {
         this.canClose = true;
         this.accounts = [];
         this.open = false;
-        this.today = adminUtils_1.createChatDate(moment());
-        this.dates = [/*{ value: 'all', label: 'All' },*/ ...adminUtils_1.createDateRange(new Date(), 14)];
+        this.today = (0, adminUtils_1.createChatDate)(moment());
+        this.dates = [/*{ value: 'all', label: 'All' },*/ ...(0, adminUtils_1.createDateRange)(new Date(), 14)];
         this.loading = false;
         this.atNode = 0;
         this.processIdle = 0;
@@ -68,7 +69,7 @@ let AdminChatLog = class AdminChatLog {
         if (!this.account) {
             this.show(account);
         }
-        else if (account !== this.account && !utils_1.includes(this.accounts, account)) {
+        else if (account !== this.account && !(0, utils_1.includes)(this.accounts, account)) {
             this.date = this.date || this.today;
             this.accounts.push(account);
             this.refresh();
@@ -114,7 +115,7 @@ let AdminChatLog = class AdminChatLog {
         }
     }
     openLog() {
-        htmlUtils_1.showTextInNewTab(`${this.date ? this.date.label : 'none'}\n\n${(this.chatRaw || '').replace(/\t/g, ' ')}`);
+        (0, htmlUtils_1.showTextInNewTab)(`${this.date ? this.date.label : 'none'}\n\n${(this.chatRaw || '').replace(/\t/g, ' ')}`);
     }
     handleChat(promise) {
         this.loading = true;
@@ -127,7 +128,7 @@ let AdminChatLog = class AdminChatLog {
     }
     switchDate(days) {
         const validDate = this.date && this.date.value !== 'all';
-        this.date = validDate ? adminUtils_1.createChatDate(moment(this.date.value).add(days, 'days')) : this.today;
+        this.date = validDate ? (0, adminUtils_1.createChatDate)(moment(this.date.value).add(days, 'days')) : this.today;
         this.refresh();
     }
     stopInterval() {
@@ -140,8 +141,8 @@ let AdminChatLog = class AdminChatLog {
     setChatlogElements(elements) {
         const element = this.getChatlogElement();
         if (element) {
-            htmlUtils_1.removeAllNodes(element);
-            htmlUtils_1.appendAllNodes(element, elements);
+            (0, htmlUtils_1.removeAllNodes)(element);
+            (0, htmlUtils_1.appendAllNodes)(element, elements);
             this.nodesToProcess = [
                 ...Array.from(element.getElementsByClassName('name')),
                 ...Array.from(element.getElementsByClassName('message')),
@@ -157,7 +158,7 @@ let AdminChatLog = class AdminChatLog {
         if (nodes && this.atNode < nodes.length) {
             let i = 0;
             while (i < processStep && (i + this.atNode) < nodes.length) {
-                adminUtils_1.replaceSwears(nodes[i + this.atNode]);
+                (0, adminUtils_1.replaceSwears)(nodes[i + this.atNode]);
                 i++;
             }
             this.atNode += i;
@@ -168,22 +169,22 @@ let AdminChatLog = class AdminChatLog {
         }
     }
 };
+exports.AdminChatLog = AdminChatLog;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AdminChatLog.prototype, "canClose", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], AdminChatLog.prototype, "account", null);
-AdminChatLog = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminChatLog = AdminChatLog = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-chat-log',
         templateUrl: 'admin-chat-log.pug',
         styleUrls: ['admin-chat-log.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel, core_1.ElementRef])
 ], AdminChatLog);
-exports.AdminChatLog = AdminChatLog;
 //# sourceMappingURL=admin-chat-log.js.map

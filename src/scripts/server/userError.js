@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserError = void 0;
+exports.isUserError = isUserError;
+exports.reportUserError = reportUserError;
+exports.reportUserError2 = reportUserError2;
 const logger_1 = require("./logger");
 const reporter_1 = require("./reporter");
 class UserError extends Error {
@@ -17,7 +21,6 @@ exports.UserError = UserError;
 function isUserError(e) {
     return e.name === 'UserError';
 }
-exports.isUserError = isUserError;
 function report(message, info, reporter, extra = '') {
     const keys = Object.keys(info);
     if (keys.length === 1 && keys[0] === 'log') {
@@ -32,14 +35,12 @@ function report(message, info, reporter, extra = '') {
 }
 function reportUserError(e, server, req) {
     if (e.info) {
-        report(e.message, e.info, reporter_1.createFromRequest(server, req), `${req.url} ${req.ip}`);
+        report(e.message, e.info, (0, reporter_1.createFromRequest)(server, req), `${req.url} ${req.ip}`);
     }
 }
-exports.reportUserError = reportUserError;
 function reportUserError2(e, client) {
     if (e.info) {
         report(e.message, e.info, client && client.reporter);
     }
 }
-exports.reportUserError2 = reportUserError2;
 //# sourceMappingURL=userError.js.map

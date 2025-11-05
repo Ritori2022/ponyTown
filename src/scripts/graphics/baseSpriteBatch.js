@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BaseSpriteBatch = void 0;
+exports.getColorFloat = getColorFloat;
 const colors_1 = require("../common/colors");
 const color_1 = require("../common/color");
 const baseStateBatch_1 = require("./baseStateBatch");
@@ -27,11 +29,10 @@ const mat2d_1 = require("../common/mat2d");
 // 		console.log('delete');
 // 	}
 // }
-const WHITE_FLOAT = color_1.colorToFloat(colors_1.WHITE);
+const WHITE_FLOAT = (0, color_1.colorToFloat)(colors_1.WHITE);
 function getColorFloat(color, alpha) {
-    return (color === colors_1.WHITE && alpha === 1) ? WHITE_FLOAT : color_1.colorToFloatAlpha(color, alpha);
+    return (color === colors_1.WHITE && alpha === 1) ? WHITE_FLOAT : (0, color_1.colorToFloatAlpha)(color, alpha);
 }
-exports.getColorFloat = getColorFloat;
 class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
     constructor(gl, capacity, buffer, vertexBuffer, indexBuffer, attributes) {
         super();
@@ -50,12 +51,12 @@ class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
         this.batching = false;
         this.startBatchIndex = 0;
         this.startBatchSprites = 0;
-        this.floatsPerSprite = vaoAttributes_1.getVAOAttributesSize(gl, attributes);
+        this.floatsPerSprite = (0, vaoAttributes_1.getVAOAttributesSize)(gl, attributes);
         this.vertices = new Float32Array(buffer, 0, capacity * this.floatsPerSprite);
         this.verticesUint32 = new Uint32Array(buffer, 0, capacity * this.floatsPerSprite);
         this.vertexBuffer = vertexBuffer;
         this.indexBuffer = indexBuffer;
-        this.vao = glVao_1.createVAO(gl, vaoAttributes_1.createVAOAttributes(gl, attributes, vertexBuffer), indexBuffer);
+        this.vao = (0, glVao_1.createVAO)(gl, (0, vaoAttributes_1.createVAOAttributes)(gl, attributes, vertexBuffer), indexBuffer);
     }
     dispose() {
         disposeBuffers(this.gl, this);
@@ -75,7 +76,7 @@ class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
         this.vao.unbind();
     }
     drawBatch(batch) {
-        if (DEVELOPMENT && !mat2d_1.isIdentity(this.transform)) {
+        if (DEVELOPMENT && !(0, mat2d_1.isIdentity)(this.transform)) {
             throw new Error('Cannot transform batch');
         }
         const batchSpriteCount = (batch.length / this.floatsPerSprite) | 0;
@@ -108,7 +109,7 @@ class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
             // return batch;
             return this.vertices.slice(this.startBatchIndex, this.index);
         }
-        catch (_a) {
+        catch {
             return undefined;
         }
     }
@@ -123,13 +124,13 @@ class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
         }
         const gl = this.gl;
         if (this.batching) {
-            TIMING && timing_1.timeStart('bufferSubData');
+            TIMING && (0, timing_1.timeStart)('bufferSubData');
             gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.startBatchIndex));
-            TIMING && timing_1.timeEnd();
-            TIMING && timing_1.timeStart('vao.draw');
+            TIMING && (0, timing_1.timeEnd)();
+            TIMING && (0, timing_1.timeStart)('vao.draw');
             this.vao.draw(this.gl.TRIANGLES, this.startBatchSprites * 6, 0);
-            TIMING && timing_1.timeEnd();
+            TIMING && (0, timing_1.timeEnd)();
             this.spritesCount -= this.startBatchSprites;
             this.index -= this.startBatchIndex;
             this.vertices.copyWithin(0, this.startBatchIndex, this.startBatchIndex + this.index);
@@ -137,13 +138,13 @@ class BaseSpriteBatch extends baseStateBatch_1.BaseStateBatch {
             this.startBatchSprites = 0;
         }
         else {
-            TIMING && timing_1.timeStart('bufferSubData');
+            TIMING && (0, timing_1.timeStart)('bufferSubData');
             gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.index));
-            TIMING && timing_1.timeEnd();
-            TIMING && timing_1.timeStart('vao.draw');
+            TIMING && (0, timing_1.timeEnd)();
+            TIMING && (0, timing_1.timeStart)('vao.draw');
             this.vao.draw(this.gl.TRIANGLES, this.spritesCount * 6, 0);
-            TIMING && timing_1.timeEnd();
+            TIMING && (0, timing_1.timeEnd)();
             this.spritesCount = 0;
             this.index = 0;
         }

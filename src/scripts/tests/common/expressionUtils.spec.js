@@ -14,78 +14,78 @@ describe('expressionUtils', () => {
         expressions_1.expressions.forEach(([input, expected]) => {
             it(JSON.stringify(input), () => {
                 if (expected) {
-                    chai_1.expect(expressionUtils_1.parseExpression(input)).eql(toExpression(expected));
+                    (0, chai_1.expect)((0, expressionUtils_1.parseExpression)(input)).eql(toExpression(expected));
                 }
                 else {
-                    chai_1.expect(expressionUtils_1.parseExpression(input)).undefined;
+                    (0, chai_1.expect)((0, expressionUtils_1.parseExpression)(input)).undefined;
                 }
             });
         });
         it('should return the same expression each time', () => {
             const expected = {
-                right: 13 /* ClosedHappy2 */,
-                left: 13 /* ClosedHappy2 */,
-                muzzle: 0 /* Smile */,
-                rightIris: 0 /* Forward */,
-                leftIris: 0 /* Forward */,
-                extra: 0 /* None */,
+                right: 13 /* Eye.ClosedHappy2 */,
+                left: 13 /* Eye.ClosedHappy2 */,
+                muzzle: 0 /* Muzzle.Smile */,
+                rightIris: 0 /* Iris.Forward */,
+                leftIris: 0 /* Iris.Forward */,
+                extra: 0 /* ExpressionExtra.None */,
             };
-            const expr = expressionUtils_1.parseExpression('^^');
-            chai_1.expect(expr).eql(expected, '1st');
+            const expr = (0, expressionUtils_1.parseExpression)('^^');
+            (0, chai_1.expect)(expr).eql(expected, '1st');
             expr.extra = 999;
-            chai_1.expect(expressionUtils_1.parseExpression('^^')).eql(expected, '2nd');
+            (0, chai_1.expect)((0, expressionUtils_1.parseExpression)('^^')).eql(expected, '2nd');
         });
         it('should return nothing for "constructor" expression', () => {
-            chai_1.expect(expressionUtils_1.parseExpression('constructor')).undefined;
+            (0, chai_1.expect)((0, expressionUtils_1.parseExpression)('constructor')).undefined;
         });
     });
     describe('encodeExpression() + decodeExpression()', () => {
         function test(expression) {
-            return expressionEncoder_1.decodeExpression(expressionEncoder_1.encodeExpression(expression));
+            return (0, expressionEncoder_1.decodeExpression)((0, expressionEncoder_1.encodeExpression)(expression));
         }
         it('works for null and undefined', () => {
-            chai_1.expect(test(null)).undefined;
-            chai_1.expect(test(undefined)).undefined;
+            (0, chai_1.expect)(test(null)).undefined;
+            (0, chai_1.expect)(test(undefined)).undefined;
         });
         expressions_1.expressions.filter(([, x]) => !!x).forEach(([input, expected]) => {
             it(JSON.stringify(input), () => {
                 const expression = toExpression(expected);
-                chai_1.expect(test(expression)).eql(expression);
+                (0, chai_1.expect)(test(expression)).eql(expression);
             });
         });
     });
     describe('flipIris()', () => {
         it('returns the same iris for non flippable irises', () => {
-            chai_1.expect(ponyUtils_1.flipIris(0 /* Forward */)).equal(0 /* Forward */);
-            chai_1.expect(ponyUtils_1.flipIris(1 /* Up */)).equal(1 /* Up */);
-            chai_1.expect(ponyUtils_1.flipIris(6 /* Shocked */)).equal(6 /* Shocked */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(0 /* Iris.Forward */)).equal(0 /* Iris.Forward */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(1 /* Iris.Up */)).equal(1 /* Iris.Up */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(6 /* Iris.Shocked */)).equal(6 /* Iris.Shocked */);
         });
         it('returns flipped iris', () => {
-            chai_1.expect(ponyUtils_1.flipIris(2 /* Left */)).equal(3 /* Right */);
-            chai_1.expect(ponyUtils_1.flipIris(3 /* Right */)).equal(2 /* Left */);
-            chai_1.expect(ponyUtils_1.flipIris(4 /* UpLeft */)).equal(5 /* UpRight */);
-            chai_1.expect(ponyUtils_1.flipIris(5 /* UpRight */)).equal(4 /* UpLeft */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(2 /* Iris.Left */)).equal(3 /* Iris.Right */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(3 /* Iris.Right */)).equal(2 /* Iris.Left */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(4 /* Iris.UpLeft */)).equal(5 /* Iris.UpRight */);
+            (0, chai_1.expect)((0, ponyUtils_1.flipIris)(5 /* Iris.UpRight */)).equal(4 /* Iris.UpLeft */);
         });
     });
     describe('expression()', () => {
         it('creates expression with all parameters', () => {
-            chai_1.expect(expressionUtils_1.expression(19 /* Angry */, 14 /* ClosedHappy */, 0 /* Smile */, 2 /* Left */, 3 /* Right */, 1 /* Blush */)).eql({
-                right: 19 /* Angry */,
-                left: 14 /* ClosedHappy */,
-                muzzle: 0 /* Smile */,
-                rightIris: 2 /* Left */,
-                leftIris: 3 /* Right */,
-                extra: 1 /* Blush */,
+            (0, chai_1.expect)((0, expressionUtils_1.expression)(19 /* Eye.Angry */, 14 /* Eye.ClosedHappy */, 0 /* Muzzle.Smile */, 2 /* Iris.Left */, 3 /* Iris.Right */, 1 /* ExpressionExtra.Blush */)).eql({
+                right: 19 /* Eye.Angry */,
+                left: 14 /* Eye.ClosedHappy */,
+                muzzle: 0 /* Muzzle.Smile */,
+                rightIris: 2 /* Iris.Left */,
+                leftIris: 3 /* Iris.Right */,
+                extra: 1 /* ExpressionExtra.Blush */,
             });
         });
         it('creates expression with defaults', () => {
-            chai_1.expect(expressionUtils_1.expression(19 /* Angry */, 14 /* ClosedHappy */, 0 /* Smile */)).eql({
-                right: 19 /* Angry */,
-                left: 14 /* ClosedHappy */,
-                muzzle: 0 /* Smile */,
-                rightIris: 0 /* Forward */,
-                leftIris: 0 /* Forward */,
-                extra: 0 /* None */,
+            (0, chai_1.expect)((0, expressionUtils_1.expression)(19 /* Eye.Angry */, 14 /* Eye.ClosedHappy */, 0 /* Muzzle.Smile */)).eql({
+                right: 19 /* Eye.Angry */,
+                left: 14 /* Eye.ClosedHappy */,
+                muzzle: 0 /* Muzzle.Smile */,
+                rightIris: 0 /* Iris.Forward */,
+                leftIris: 0 /* Iris.Forward */,
+                extra: 0 /* ExpressionExtra.None */,
             });
         });
     });

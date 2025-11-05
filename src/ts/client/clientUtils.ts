@@ -448,7 +448,7 @@ export function hasFeatureFlag(flag: keyof ServerFeatureFlags) {
 
 export function hardReload() {
 	unregisterServiceWorker()
-		.then(() => location.reload(true));
+		.then(() => location.reload());
 }
 
 const LOGGING = false;

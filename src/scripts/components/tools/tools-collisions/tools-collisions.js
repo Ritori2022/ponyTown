@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsCollisions = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const positionUtils_1 = require("../../../common/positionUtils");
@@ -70,7 +71,7 @@ let ToolsCollisions = class ToolsCollisions {
                 this.collider[x + y * line] = 1;
             }
         }
-        this.colliderCanvas = canvasUtils_1.createCanvas(6 * 32, 6 * 24);
+        this.colliderCanvas = (0, canvasUtils_1.createCanvas)(6 * 32, 6 * 24);
         const context = this.colliderCanvas.getContext('2d');
         const data = context.getImageData(0, 0, this.colliderCanvas.width, this.colliderCanvas.height);
         for (let i = 0; i < this.collider.length; i++) {
@@ -108,9 +109,9 @@ let ToolsCollisions = class ToolsCollisions {
             this.steps = [];
             this.collided = false;
             let steps = 100;
-            const current = utils_1.point(this.start.x, this.start.y);
+            const current = (0, utils_1.point)(this.start.x, this.start.y);
             while (--steps > 0) {
-                const collision = utils_1.point(0, 0);
+                const collision = (0, utils_1.point)(0, 0);
                 if (isColliding(current.x, current.y, this.target.x, this.target.y, this.rects, collision)) {
                     this.collided = true;
                     this.steps.push(collision);
@@ -118,7 +119,7 @@ let ToolsCollisions = class ToolsCollisions {
                     current.y = collision.y;
                 }
                 else {
-                    this.steps.push(utils_1.point(this.target.x, this.target.y));
+                    this.steps.push((0, utils_1.point)(this.target.x, this.target.y));
                 }
                 break;
             }
@@ -129,7 +130,7 @@ let ToolsCollisions = class ToolsCollisions {
         else {
             const collision = getClosestCollisionOld(this.start, this.target, this.rects);
             if (equal(this.target, collision)) {
-                this.deflection = Object.assign({}, this.target);
+                this.deflection = { ...this.target };
             }
             else {
                 const coll = getClosestCollisionOld(collision, this.target, this.rects);
@@ -218,7 +219,7 @@ let ToolsCollisions = class ToolsCollisions {
         context.save();
         context.scale(pixelSize, pixelSize);
         context.globalAlpha = 0.2;
-        canvasUtils_1.disableImageSmoothing(context);
+        (0, canvasUtils_1.disableImageSmoothing)(context);
         context.drawImage(this.colliderCanvas, 0, 0);
         context.restore();
         context.save();
@@ -271,7 +272,7 @@ let ToolsCollisions = class ToolsCollisions {
         // context.restore();
         drawLine(context, toScreen(this.start), toScreen(this.target), 'gray', true);
         let last = this.start;
-        this.steps = [utils_1.point(result.result.x / 32, result.result.y / 24)];
+        this.steps = [(0, utils_1.point)(result.result.x / 32, result.result.y / 24)];
         for (const c of this.steps) {
             drawLine(context, toScreen(last), toScreen(c), 'lime', true);
             last = c;
@@ -279,22 +280,22 @@ let ToolsCollisions = class ToolsCollisions {
         drawPoint(context, toScreen(this.start), 'greenyellow');
         drawPoint(context, toScreen(this.target), 'red');
         for (const c of this.steps) {
-            const colliding = isColliding(c.x, c.y, c.x, c.y, this.rects, utils_1.point(0, 0));
+            const colliding = isColliding(c.x, c.y, c.x, c.y, this.rects, (0, utils_1.point)(0, 0));
             drawPoint(context, toScreen(c), colliding ? 'red' : 'yellow');
         }
     }
 };
+exports.ToolsCollisions = ToolsCollisions;
 tslib_1.__decorate([
-    core_1.ViewChild('canvas', { static: true }),
+    (0, core_1.ViewChild)('canvas', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ToolsCollisions.prototype, "canvas", void 0);
-ToolsCollisions = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsCollisions = ToolsCollisions = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-collisions',
         templateUrl: 'tools-collisions.pug',
     })
 ], ToolsCollisions);
-exports.ToolsCollisions = ToolsCollisions;
 function drawLine(context, a, b, color, arrow = false) {
     context.save();
     context.strokeStyle = color;
@@ -337,24 +338,24 @@ function equal(a, b) {
     return a.x === b.x && a.y === b.y;
 }
 function isColliding(srcX, srcY, dstX, dstY, rects, collision) {
-    const temp = utils_1.point(0, 0);
+    const temp = (0, utils_1.point)(0, 0);
     let collided = false;
     collision.x = dstX;
     collision.y = dstY;
     for (const r of rects) {
         if (getCollision(srcX, srcY, dstX, dstY, r.x, r.y, r.x + r.w, r.y + r.h, temp)) {
-            if (!collided || (utils_1.distanceSquaredXY(srcX, srcY, temp.x, temp.y) < utils_1.distanceSquaredXY(srcX, srcY, collision.x, collision.y))) {
+            if (!collided || ((0, utils_1.distanceSquaredXY)(srcX, srcY, temp.x, temp.y) < (0, utils_1.distanceSquaredXY)(srcX, srcY, collision.x, collision.y))) {
                 collision.x = temp.x;
                 collision.y = temp.y;
                 collided = true;
             }
         }
     }
-    positionUtils_1.roundPosition(collision);
+    (0, positionUtils_1.roundPosition)(collision);
     return collided;
 }
 function getClosestCollisionOld(a, b, rects) {
-    return rects.reduce((pt, r) => getCollisionTest(a, pt, r) || pt, Object.assign({}, b));
+    return rects.reduce((pt, r) => getCollisionTest(a, pt, r) || pt, { ...b });
 }
 function getCollisionTest({ x, y }, b, r) {
     const vx = b.x - x;
@@ -404,7 +405,7 @@ function checkInLine(srcX, srcY, dstX, dstY, collider) {
         return x < 0 || y < 0 || x >= (6 * 32) || y >= (6 * 32) || collider[x + y * (6 * 32)] !== 0;
     }
     const checks = [];
-    const result = utils_1.point(srcX, srcY);
+    const result = (0, utils_1.point)(srcX, srcY);
     const x0 = Math.floor(srcX) | 0;
     const y0 = Math.floor(srcY) | 0;
     const x1 = Math.floor(dstX) | 0;
@@ -558,8 +559,8 @@ function checkInLine(srcX, srcY, dstX, dstY, collider) {
     const right = Math.max(x0 + 1, actualX + 1) - epsilon;
     const top = Math.min(y0, actualY);
     const bottom = Math.max(y0 + 1, actualY + 1) - epsilon;
-    result.x = utils_1.clamp(dstX, left, right);
-    result.y = utils_1.clamp(dstY, top, bottom);
+    result.x = (0, utils_1.clamp)(dstX, left, right);
+    result.y = (0, utils_1.clamp)(dstY, top, bottom);
     return { checks, result };
 }
 // if (srcX < dstX) {

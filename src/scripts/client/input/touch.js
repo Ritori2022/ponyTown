@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TouchController = void 0;
 const utils_1 = require("../../common/utils");
 function getTouch(e, id) {
     if (id !== -1) {
@@ -36,9 +37,9 @@ class TouchController {
                     this.tapInvalidated = false;
                     this.touchId = touch.identifier;
                     this.touchStart = this.touchCurrent = this.getTouchXY(touch);
-                    this.manager.setValue(300 /* MOUSE_X */, this.touchStart.x);
-                    this.manager.setValue(301 /* MOUSE_Y */, this.touchStart.y);
-                    this.manager.setValue(327 /* TOUCH */, 1);
+                    this.manager.setValue(300 /* Key.MOUSE_X */, this.touchStart.x);
+                    this.manager.setValue(301 /* Key.MOUSE_Y */, this.touchStart.y);
+                    this.manager.setValue(327 /* Key.TOUCH */, 1);
                 }
             }
             else if (this.touch2Id === -1) {
@@ -55,8 +56,8 @@ class TouchController {
             const touch = getTouch(e, this.touchId);
             if (touch) {
                 this.touchCurrent = this.getTouchXY(touch);
-                this.manager.setValue(300 /* MOUSE_X */, this.touchCurrent.x);
-                this.manager.setValue(301 /* MOUSE_Y */, this.touchCurrent.y);
+                this.manager.setValue(300 /* Key.MOUSE_X */, this.touchCurrent.x);
+                this.manager.setValue(301 /* Key.MOUSE_Y */, this.touchCurrent.y);
                 this.updateInput();
             }
         };
@@ -66,15 +67,15 @@ class TouchController {
             const touch = getTouch(e, this.touchId);
             if (touch) {
                 if (!this.touchIsDrag && !this.tapInvalidated) {
-                    this.manager.setValue(300 /* MOUSE_X */, this.touchStart.x);
-                    this.manager.setValue(301 /* MOUSE_Y */, this.touchStart.y);
-                    this.manager.setValue(328 /* TOUCH_CLICK */, 1);
+                    this.manager.setValue(300 /* Key.MOUSE_X */, this.touchStart.x);
+                    this.manager.setValue(301 /* Key.MOUSE_Y */, this.touchStart.y);
+                    this.manager.setValue(328 /* Key.TOUCH_CLICK */, 1);
                 }
                 this.resetTouch();
             }
             const touch2 = getTouch(e, this.touch2Id);
             if (touch2) {
-                this.manager.setValue(329 /* TOUCH_SECOND_CLICK */, 1);
+                this.manager.setValue(329 /* Key.TOUCH_SECOND_CLICK */, 1);
                 this.touch2Id = -1;
             }
         };
@@ -122,14 +123,14 @@ class TouchController {
                 const transform = `translate3d(${this.touchStart.x - 50}px, ${this.touchStart.y - 50}px, 0px)`;
                 if (this.originTransform !== transform) {
                     this.originTransform = transform;
-                    utils_1.setTransform(this.origin, transform);
+                    (0, utils_1.setTransform)(this.origin, transform);
                 }
             }
             if (showPosition) {
                 const transform = `translate3d(${this.touchCurrent.x - 25}px, ${this.touchCurrent.y - 25}px, 0px)`;
                 if (this.positionTransform !== transform) {
                     this.positionTransform = transform;
-                    utils_1.setTransform(this.position, transform);
+                    (0, utils_1.setTransform)(this.position, transform);
                 }
             }
         }
@@ -144,7 +145,7 @@ class TouchController {
         this.touchId = -1;
         this.touchStart = this.touchCurrent = { x: 0, y: 0 };
         this.touchIsDrag = false;
-        this.manager.setValue(327 /* TOUCH */, 0);
+        this.manager.setValue(327 /* Key.TOUCH */, 0);
         this.updateInput();
     }
     updateInput() {
@@ -155,12 +156,12 @@ class TouchController {
         if (dist > TOUCH_DEADZONE) {
             const scaledDist = Math.min((dist - TOUCH_DEADZONE) / (TOUCH_MAX - TOUCH_DEADZONE), 1);
             this.touchIsDrag = true;
-            this.manager.setValue(307 /* GAMEPAD_AXIS1_X */, -Math.cos(theta) * scaledDist);
-            this.manager.setValue(308 /* GAMEPAD_AXIS1_Y */, -Math.sin(theta) * scaledDist);
+            this.manager.setValue(307 /* Key.GAMEPAD_AXIS1_X */, -Math.cos(theta) * scaledDist);
+            this.manager.setValue(308 /* Key.GAMEPAD_AXIS1_Y */, -Math.sin(theta) * scaledDist);
         }
         else {
-            this.manager.setValue(307 /* GAMEPAD_AXIS1_X */, 0);
-            this.manager.setValue(308 /* GAMEPAD_AXIS1_Y */, 0);
+            this.manager.setValue(307 /* Key.GAMEPAD_AXIS1_X */, 0);
+            this.manager.setValue(308 /* Key.GAMEPAD_AXIS1_Y */, 0);
         }
     }
     getTouchXY(touch) {

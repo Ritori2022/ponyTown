@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FrameService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let FrameService = class FrameService {
@@ -29,11 +30,11 @@ let FrameService = class FrameService {
         };
     }
 };
-FrameService = tslib_1.__decorate([
-    core_1.Injectable({
+exports.FrameService = FrameService;
+exports.FrameService = FrameService = tslib_1.__decorate([
+    (0, core_1.Injectable)({
         providedIn: 'root',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.NgZone])
 ], FrameService);
-exports.FrameService = FrameService;
 //# sourceMappingURL=frameService.js.map

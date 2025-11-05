@@ -1,36 +1,37 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dropdownDirectives = exports.DropdownToggle = exports.Dropdown = exports.DropdownMenu = exports.DropdownOutlet = exports.DropdownOutletService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
 const htmlUtils_1 = require("../../../client/htmlUtils");
 let DropdownOutletService = class DropdownOutletService {
 };
-DropdownOutletService = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' })
-], DropdownOutletService);
 exports.DropdownOutletService = DropdownOutletService;
+exports.DropdownOutletService = DropdownOutletService = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' })
+], DropdownOutletService);
 let DropdownOutlet = class DropdownOutlet {
     constructor(service, viewContainer, element) {
         service.viewContainer = viewContainer;
         service.rootElement = element.nativeElement.parentElement;
     }
 };
-DropdownOutlet = tslib_1.__decorate([
-    core_1.Component({
+exports.DropdownOutlet = DropdownOutlet;
+exports.DropdownOutlet = DropdownOutlet = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'dropdown-outlet',
         template: `<ng-template></ng-template>`,
     }),
     tslib_1.__metadata("design:paramtypes", [DropdownOutletService, core_1.ViewContainerRef, core_1.ElementRef])
 ], DropdownOutlet);
-exports.DropdownOutlet = DropdownOutlet;
 let DropdownMenu = class DropdownMenu {
     constructor(templateRef, viewContainer, renderer, service) {
         this.templateRef = templateRef;
         this.viewContainer = viewContainer;
         this.renderer = renderer;
         this.service = service;
-        this.id = lodash_1.uniqueId('dropdown-menu-');
+        this.id = (0, lodash_1.uniqueId)('dropdown-menu-');
     }
     get root() {
         return this.ref && this.ref.rootNodes[0];
@@ -90,12 +91,13 @@ let DropdownMenu = class DropdownMenu {
     }
     focusFirstElement() {
         if (this.root) {
-            htmlUtils_1.focusFirstElement(this.root);
+            (0, htmlUtils_1.focusFirstElement)(this.root);
         }
     }
 };
-DropdownMenu = tslib_1.__decorate([
-    core_1.Directive({
+exports.DropdownMenu = DropdownMenu;
+exports.DropdownMenu = DropdownMenu = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[dropdownMenu]',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.TemplateRef,
@@ -103,8 +105,10 @@ DropdownMenu = tslib_1.__decorate([
         core_1.Renderer2,
         DropdownOutletService])
 ], DropdownMenu);
-exports.DropdownMenu = DropdownMenu;
 let Dropdown = class Dropdown {
+    get menuId() {
+        return this.isOpen ? this.menu.id : '';
+    }
     constructor(element, service) {
         this.element = element;
         this.service = service;
@@ -128,9 +132,6 @@ let Dropdown = class Dropdown {
             }
         };
         this.canvasCloseHandler = () => this.close();
-    }
-    get menuId() {
-        return this.isOpen ? this.menu.id : '';
     }
     open() {
         if (!this.isOpen) {
@@ -181,44 +182,45 @@ let Dropdown = class Dropdown {
         }
     }
 };
+exports.Dropdown = Dropdown;
 tslib_1.__decorate([
-    core_1.ContentChild(DropdownMenu, { static: false }),
+    (0, core_1.ContentChild)(DropdownMenu, { static: false }),
     tslib_1.__metadata("design:type", DropdownMenu)
 ], Dropdown.prototype, "menu", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "autoClose", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "preventAutoCloseOnOutlet", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "hookToCanvas", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "focusOnOpen", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "focusOnClose", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "useOutlet", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "isOpen", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], Dropdown.prototype, "isOpenChange", void 0);
-Dropdown = tslib_1.__decorate([
-    core_1.Directive({
+exports.Dropdown = Dropdown = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[dropdown]',
         exportAs: 'ag-dropdown',
         host: {
@@ -227,7 +229,6 @@ Dropdown = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, DropdownOutletService])
 ], Dropdown);
-exports.Dropdown = Dropdown;
 let DropdownToggle = class DropdownToggle {
     constructor(element, dropdown) {
         this.element = element;
@@ -244,14 +245,15 @@ let DropdownToggle = class DropdownToggle {
         this.element.nativeElement.focus();
     }
 };
+exports.DropdownToggle = DropdownToggle;
 tslib_1.__decorate([
-    core_1.HostListener('click'),
+    (0, core_1.HostListener)('click'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], DropdownToggle.prototype, "click", null);
-DropdownToggle = tslib_1.__decorate([
-    core_1.Directive({
+exports.DropdownToggle = DropdownToggle = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[dropdownToggle]',
         host: {
             'aria-haspopup': 'true',
@@ -261,6 +263,5 @@ DropdownToggle = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, Dropdown])
 ], DropdownToggle);
-exports.DropdownToggle = DropdownToggle;
 exports.dropdownDirectives = [Dropdown, DropdownToggle, DropdownMenu, DropdownOutlet];
 //# sourceMappingURL=dropdown.js.map

@@ -12,22 +12,22 @@ describe('serverUtils', () => {
         let socket;
         beforeEach(() => {
             socket = {
-                clearTokens: sinon_1.stub(),
-                token: sinon_1.stub(),
+                clearTokens: (0, sinon_1.stub)(),
+                token: (0, sinon_1.stub)(),
             };
-            service = serverUtils_1.tokenService(socket);
+            service = (0, serverUtils_1.tokenService)(socket);
         });
         it('clears tokens for account', () => {
             service.clearTokensForAccount('foo');
             const filter = socket.clearTokens.args[0][0];
-            chai_1.expect(filter('', { accountId: 'foo' })).true;
-            chai_1.expect(filter('', { accountId: 'bar' })).false;
+            (0, chai_1.expect)(filter('', { accountId: 'foo' })).true;
+            (0, chai_1.expect)(filter('', { accountId: 'bar' })).false;
             sinon_1.assert.calledOnce(socket.clearTokens);
         });
         it('clears all tokens', () => {
             service.clearTokensAll();
             const filter = socket.clearTokens.args[0][0];
-            chai_1.expect(filter('', {})).true;
+            (0, chai_1.expect)(filter('', {})).true;
             sinon_1.assert.calledOnce(socket.clearTokens);
         });
         it('creates token', () => {
@@ -38,8 +38,8 @@ describe('serverUtils', () => {
     });
     describe('toPonyObject()', () => {
         it('returns pony object', () => {
-            const id = mocks_1.genId();
-            chai_1.expect(serverUtils_1.toPonyObject(mocks_1.character({
+            const id = (0, mocks_1.genId)();
+            (0, chai_1.expect)((0, serverUtils_1.toPonyObject)((0, mocks_1.character)({
                 _id: mongoose_1.Types.ObjectId(id),
                 name: 'foo',
                 desc: 'aaa',
@@ -60,8 +60,8 @@ describe('serverUtils', () => {
             });
         });
         it('handles empty fields', () => {
-            const id = mocks_1.genId();
-            chai_1.expect(serverUtils_1.toPonyObject(mocks_1.character({
+            const id = (0, mocks_1.genId)();
+            (0, chai_1.expect)((0, serverUtils_1.toPonyObject)((0, mocks_1.character)({
                 _id: mongoose_1.Types.ObjectId(id),
                 name: 'foo',
             }))).eql({
@@ -77,29 +77,29 @@ describe('serverUtils', () => {
             });
         });
         it('sets hide support field', () => {
-            const output = serverUtils_1.toPonyObject(mocks_1.character({
-                _id: mongoose_1.Types.ObjectId(mocks_1.genId()),
+            const output = (0, serverUtils_1.toPonyObject)((0, mocks_1.character)({
+                _id: mongoose_1.Types.ObjectId((0, mocks_1.genId)()),
                 name: 'foo',
-                flags: 4 /* HideSupport */,
+                flags: 4 /* CharacterFlags.HideSupport */,
             }));
-            chai_1.expect(output.hideSupport).true;
+            (0, chai_1.expect)(output.hideSupport).true;
         });
         it('sets respawn at spawn field', () => {
-            const output = serverUtils_1.toPonyObject(mocks_1.character({
-                _id: mongoose_1.Types.ObjectId(mocks_1.genId()),
+            const output = (0, serverUtils_1.toPonyObject)((0, mocks_1.character)({
+                _id: mongoose_1.Types.ObjectId((0, mocks_1.genId)()),
                 name: 'foo',
-                flags: 8 /* RespawnAtSpawn */,
+                flags: 8 /* CharacterFlags.RespawnAtSpawn */,
             }));
-            chai_1.expect(output.respawnAtSpawn).true;
+            (0, chai_1.expect)(output.respawnAtSpawn).true;
         });
         it('returns null for undefined character', () => {
-            chai_1.expect(serverUtils_1.toPonyObject(undefined)).null;
+            (0, chai_1.expect)((0, serverUtils_1.toPonyObject)(undefined)).null;
         });
     });
     describe('toPonyObjectAdmin()', () => {
         it('returns pony object', () => {
-            const id = mocks_1.genId();
-            chai_1.expect(serverUtils_1.toPonyObjectAdmin(mocks_1.character({
+            const id = (0, mocks_1.genId)();
+            (0, chai_1.expect)((0, serverUtils_1.toPonyObjectAdmin)((0, mocks_1.character)({
                 _id: mongoose_1.Types.ObjectId(id),
                 name: 'foo',
                 desc: 'aaa',
@@ -122,13 +122,13 @@ describe('serverUtils', () => {
             });
         });
         it('returns null for undefined character', () => {
-            chai_1.expect(serverUtils_1.toPonyObjectAdmin(undefined)).null;
+            (0, chai_1.expect)((0, serverUtils_1.toPonyObjectAdmin)(undefined)).null;
         });
     });
     describe('toSocialSite()', () => {
         it('returns site object', () => {
-            const id = mocks_1.genId();
-            chai_1.expect(serverUtils_1.toSocialSite(mocks_1.auth({
+            const id = (0, mocks_1.genId)();
+            (0, chai_1.expect)((0, serverUtils_1.toSocialSite)((0, mocks_1.auth)({
                 _id: mongoose_1.Types.ObjectId(id),
                 name: 'foo',
                 provider: 'github',

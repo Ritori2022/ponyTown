@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultPonyState = defaultPonyState;
+exports.isStateEqual = isStateEqual;
+exports.defaultDrawPonyOptions = defaultDrawPonyOptions;
 const colors_1 = require("../common/colors");
 const ponyAnimations_1 = require("./ponyAnimations");
-const defaultBlushColor = colors_1.blushColor(0);
+const defaultBlushColor = (0, colors_1.blushColor)(0);
 function defaultPonyState() {
     return {
         animation: ponyAnimations_1.stand,
@@ -17,10 +20,9 @@ function defaultPonyState() {
         holding: undefined,
         expression: undefined,
         drawFaceExtra: undefined,
-        flags: 0 /* None */,
+        flags: 0 /* PonyStateFlags.None */,
     };
 }
-exports.defaultPonyState = defaultPonyState;
 function isStateEqual(a, b) {
     return a.animation === b.animation &&
         a.animationFrame === b.animationFrame &&
@@ -36,7 +38,6 @@ function isStateEqual(a, b) {
         a.drawFaceExtra === b.drawFaceExtra &&
         a.flags === b.flags;
 }
-exports.isStateEqual = isStateEqual;
 function defaultDrawPonyOptions() {
     return {
         flipped: false,
@@ -48,10 +49,9 @@ function defaultDrawPonyOptions() {
         bounce: false,
         shadowColor: colors_1.SHADOW_COLOR,
         noEars: false,
-        no: 0 /* None */,
+        no: 0 /* NoDraw.None */,
         useAllHooves: false,
         gameTime: 0,
     };
 }
-exports.defaultDrawPonyOptions = defaultDrawPonyOptions;
 //# sourceMappingURL=ponyHelpers.js.map

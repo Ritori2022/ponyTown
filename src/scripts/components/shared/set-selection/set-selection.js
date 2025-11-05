@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SetSelection = exports.SetOutlineHidden = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -11,16 +12,16 @@ let SetOutlineHidden = class SetOutlineHidden {
         this.setOutlineHidden = false;
     }
 };
+exports.SetOutlineHidden = SetOutlineHidden;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetOutlineHidden.prototype, "setOutlineHidden", void 0);
-SetOutlineHidden = tslib_1.__decorate([
-    core_1.Directive({
+exports.SetOutlineHidden = SetOutlineHidden = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[setOutlineHidden]',
     })
 ], SetOutlineHidden);
-exports.SetOutlineHidden = SetOutlineHidden;
 let SetSelection = class SetSelection {
     constructor(hidden) {
         this.hidden = hidden;
@@ -43,7 +44,7 @@ let SetSelection = class SetSelection {
             return 0;
         }
         else if (pat) {
-            return spriteUtils_1.getColorCount(pat);
+            return (0, spriteUtils_1.getColorCount)(pat);
         }
         else {
             return this.nonLockable ? 1 : 0;
@@ -60,7 +61,7 @@ let SetSelection = class SetSelection {
     onChange() {
         const set = this.getSet();
         if (this.set && set) {
-            this.set.pattern = lodash_1.clamp(this.set.pattern || 0, 0, set.length - 1);
+            this.set.pattern = (0, lodash_1.clamp)(this.set.pattern || 0, 0, set.length - 1);
         }
         this.change.emit();
     }
@@ -68,62 +69,62 @@ let SetSelection = class SetSelection {
         return this.set && this.sets && this.sets[this.set.type || 0];
     }
 };
+exports.SetSelection = SetSelection;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], SetSelection.prototype, "label", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], SetSelection.prototype, "base", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "set", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object)
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", Array)
 ], SetSelection.prototype, "sets", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object)
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", Array)
 ], SetSelection.prototype, "sprites", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], SetSelection.prototype, "circle", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "outlineHidden", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "nonLockable", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "compact", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "onlyPatterns", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "darken", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], SetSelection.prototype, "change", void 0);
-SetSelection = tslib_1.__decorate([
-    core_1.Component({
+exports.SetSelection = SetSelection = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'set-selection',
         templateUrl: 'set-selection.pug',
         styleUrls: ['set-selection.scss'],
     }),
-    tslib_1.__param(0, core_1.Optional()),
+    tslib_1.__param(0, (0, core_1.Optional)()),
     tslib_1.__metadata("design:paramtypes", [SetOutlineHidden])
 ], SetSelection);
-exports.SetSelection = SetSelection;
 //# sourceMappingURL=set-selection.js.map

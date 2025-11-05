@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PartyList = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const constants_1 = require("../../../common/constants");
@@ -25,7 +26,7 @@ let PartyList = class PartyList {
         return this.game.party !== undefined;
     }
     get isLeader() {
-        return partyUtils_1.isPartyLeader(this.game);
+        return (0, partyUtils_1.isPartyLeader)(this.game);
     }
     get hasMore() {
         return this.members.length > (this.start + this.visible);
@@ -63,7 +64,7 @@ let PartyList = class PartyList {
     }
     resized() {
         const padding = 140 + 110;
-        const max = utils_1.clamp(Math.floor((window.innerHeight - padding) / 43), 0, constants_1.PARTY_LIMIT - 1);
+        const max = (0, utils_1.clamp)(Math.floor((window.innerHeight - padding) / 43), 0, constants_1.PARTY_LIMIT - 1);
         if (this.maxMembers !== max) {
             this.start = 0;
             this.maxMembers = max;
@@ -81,19 +82,19 @@ let PartyList = class PartyList {
         this.start = start;
     }
 };
+exports.PartyList = PartyList;
 tslib_1.__decorate([
-    core_1.HostListener('window:resize'),
+    (0, core_1.HostListener)('window:resize'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], PartyList.prototype, "resized", null);
-PartyList = tslib_1.__decorate([
-    core_1.Component({
+exports.PartyList = PartyList = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'party-list',
         templateUrl: 'party-list.pug',
         styleUrls: ['party-list.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [game_1.PonyTownGame])
 ], PartyList);
-exports.PartyList = PartyList;
 //# sourceMappingURL=party-list.js.map

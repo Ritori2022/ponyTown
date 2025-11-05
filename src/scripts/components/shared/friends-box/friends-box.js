@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FriendsBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../client/icons");
@@ -36,7 +37,7 @@ let FriendsBox = class FriendsBox {
         this.sendMessage.emit(friend);
     }
     inviteToParty(friend) {
-        this.game.send(server => server.playerAction(friend.entityId, 3 /* InviteToParty */, undefined));
+        this.game.send(server => server.playerAction(friend.entityId, 3 /* PlayerAction.InviteToParty */, undefined));
     }
     remove(friend) {
         this.removing = friend;
@@ -47,8 +48,8 @@ let FriendsBox = class FriendsBox {
     confirmRemove() {
         if (this.removing && this.model.friends) {
             const { accountId } = this.removing;
-            this.game.send(server => server.actionParam(22 /* RemoveFriend */, accountId));
-            utils_1.removeItem(this.model.friends, this.removing);
+            this.game.send(server => server.actionParam(22 /* Action.RemoveFriend */, accountId));
+            (0, utils_1.removeItem)(this.model.friends, this.removing);
             this.removing = undefined;
         }
     }
@@ -57,17 +58,17 @@ let FriendsBox = class FriendsBox {
         this.settings.saveAccountSettings(this.settings.account);
     }
 };
+exports.FriendsBox = FriendsBox;
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], FriendsBox.prototype, "sendMessage", void 0);
-FriendsBox = tslib_1.__decorate([
-    core_1.Component({
+exports.FriendsBox = FriendsBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'friends-box',
         templateUrl: 'friends-box.pug',
         styleUrls: ['friends-box.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [settingsService_1.SettingsService, model_1.Model, game_1.PonyTownGame])
 ], FriendsBox);
-exports.FriendsBox = FriendsBox;
 //# sourceMappingURL=friends-box.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationList = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../client/icons");
@@ -27,21 +28,21 @@ let NotificationList = class NotificationList {
         this.start -= this.start <= LIMIT ? LIMIT : LIMIT - 1;
     }
 };
+exports.NotificationList = NotificationList;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], NotificationList.prototype, "notifications", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Number),
     tslib_1.__metadata("design:paramtypes", [Number])
 ], NotificationList.prototype, "notificationsLength", null);
-NotificationList = tslib_1.__decorate([
-    core_1.Component({
+exports.NotificationList = NotificationList = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'notification-list',
         templateUrl: 'notification-list.pug',
         styleUrls: ['notification-list.scss'],
     })
 ], NotificationList);
-exports.NotificationList = NotificationList;
 //# sourceMappingURL=notification-list.js.map

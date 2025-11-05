@@ -28,33 +28,33 @@ const tests = [
 ];
 describe('SpriteFont', () => {
     before(lib_1.loadSprites);
-    before(() => lib_1.clearCompareResults('font'));
+    before(() => (0, lib_1.clearCompareResults)('font'));
     describe('drawText()', () => {
         const width = 100;
         const height = 30;
         function test(file, draw) {
-            const filePath = paths_1.pathTo('src', 'tests', 'font', file);
-            const expected = lib_1.loadImageAsCanvas(filePath);
-            const actual = contextSpriteBatch_1.drawCanvas(width, height, sprites_1.paletteSpriteSheet, colors_1.WHITE, draw);
-            lib_1.compareCanvases(expected, actual, filePath, 'font');
+            const filePath = (0, paths_1.pathTo)('src', 'tests', 'font', file);
+            const expected = (0, lib_1.loadImageAsCanvas)(filePath);
+            const actual = (0, contextSpriteBatch_1.drawCanvas)(width, height, sprites_1.paletteSpriteSheet, colors_1.WHITE, draw);
+            (0, lib_1.compareCanvases)(expected, actual, filePath, 'font');
         }
         tests.forEach(([text, file]) => it(`correct for "${text}" (${file})`, () => {
-            test(file, batch => spriteFont_1.drawText(batch, text, fonts_1.fontPal, colors_1.BLACK, 5, 5, {
+            test(file, batch => (0, spriteFont_1.drawText)(batch, text, fonts_1.fontPal, colors_1.BLACK, 5, 5, {
                 palette: graphicsUtils_1.commonPalettes.mainFont.white, emojiPalette: graphicsUtils_1.commonPalettes.mainFont.emoji
             }));
         }));
         describe('lineBreak()', () => {
             it('does not break short text', () => {
-                const text = spriteFont_1.lineBreak('hello world', fonts_1.fontPal, 90);
-                chai_1.expect(text).equal('hello world');
+                const text = (0, spriteFont_1.lineBreak)('hello world', fonts_1.fontPal, 90);
+                (0, chai_1.expect)(text).equal('hello world');
             });
             it('breaks into multiple lines', () => {
-                const text = spriteFont_1.lineBreak('this text is too long to fit', fonts_1.fontPal, 90);
-                chai_1.expect(text).equal('this text is too\nlong to fit');
+                const text = (0, spriteFont_1.lineBreak)('this text is too long to fit', fonts_1.fontPal, 90);
+                (0, chai_1.expect)(text).equal('this text is too\nlong to fit');
             });
             it('does not break single word', () => {
-                const text = spriteFont_1.lineBreak('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', fonts_1.fontPal, 90);
-                chai_1.expect(text).equal('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+                const text = (0, spriteFont_1.lineBreak)('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', fonts_1.fontPal, 90);
+                (0, chai_1.expect)(text).equal('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
             });
         });
     });

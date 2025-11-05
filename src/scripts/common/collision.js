@@ -1,5 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCollisionStats = getCollisionStats;
+exports.isOutsideMap = isOutsideMap;
+exports.canCollideWith = canCollideWith;
+exports.isStaticCollision = isStaticCollision;
+exports.fixCollision = fixCollision;
+exports.updatePosition = updatePosition;
 const utils_1 = require("./utils");
 const positionUtils_1 = require("./positionUtils");
 const worldMap_1 = require("./worldMap");
@@ -13,28 +19,24 @@ function getCollisionStats() {
     isCollidingObjectCount = 0;
     return stats;
 }
-exports.getCollisionStats = getCollisionStats;
 function isOutsideMap(x, y, map) {
     return x < 0 || y < 0 || x >= map.width || y >= map.height;
 }
-exports.isOutsideMap = isOutsideMap;
 function canCollideWith(entity) {
-    return (entity.flags & 128 /* CanCollideWith */) !== 0;
+    return (entity.flags & 128 /* EntityFlags.CanCollideWith */) !== 0;
 }
-exports.canCollideWith = canCollideWith;
 function isStaticCollision(entity, map, forceOnGround = false) {
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
         console.error(`isStaticCollision: non-pony entity`);
     }
-    const flying = !forceOnGround && entityUtils_1.isInTheAir(entity);
+    const flying = !forceOnGround && (0, entityUtils_1.isInTheAir)(entity);
     return isPonyColliding(entity.x, entity.y, map, flying);
 }
-exports.isStaticCollision = isStaticCollision;
 function fixCollision(entity, map) {
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
         console.error(`fixCollision: non-pony entity`);
     }
-    const flying = entityUtils_1.isInTheAir(entity);
+    const flying = (0, entityUtils_1.isInTheAir)(entity);
     for (let x = -1; x <= 1; x++) {
         for (let y = -1; y <= 1; y++) {
             const tx = entity.x + x;
@@ -48,17 +50,16 @@ function fixCollision(entity, map) {
     }
     return false;
 }
-exports.fixCollision = fixCollision;
 function isPonyColliding(x, y, map, flying) {
     if (isOutsideMap(x, y, map)) {
         return true;
     }
-    const region = worldMap_1.getRegionGlobal(map, x, y);
+    const region = (0, worldMap_1.getRegionGlobal)(map, x, y);
     if (region === undefined) {
         return true;
     }
-    const rx = utils_1.clamp(Math.floor((x - region.x * constants_1.REGION_SIZE) * constants_1.tileWidth), 0, constants_1.REGION_WIDTH);
-    const ry = utils_1.clamp(Math.floor((y - region.y * constants_1.REGION_SIZE) * constants_1.tileHeight), 0, constants_1.REGION_HEIGHT);
+    const rx = (0, utils_1.clamp)(Math.floor((x - region.x * constants_1.REGION_SIZE) * constants_1.tileWidth), 0, constants_1.REGION_WIDTH);
+    const ry = (0, utils_1.clamp)(Math.floor((y - region.y * constants_1.REGION_SIZE) * constants_1.tileHeight), 0, constants_1.REGION_HEIGHT);
     const pixel = region.collider[rx + ry * constants_1.REGION_WIDTH];
     const mask = flying ? 2 : 1;
     return (pixel & mask) !== 0;
@@ -84,10 +85,10 @@ function isColliding(x, y, mask, map) {
 function updatePosition(entity, delta, map) {
     const ex = entity.x;
     const ey = entity.y;
-    const speed = (!entityUtils_1.isFlying(entity) && worldMap_1.isInWaterAt(map, ex, ey)) ? 0.5 : 1.0;
+    const speed = (!(0, entityUtils_1.isFlying)(entity) && (0, worldMap_1.isInWaterAt)(map, ex, ey)) ? 0.5 : 1.0;
     const destX = ex + entity.vx * speed * delta;
     const destY = ey + entity.vy * speed * delta;
-    if ((entity.flags & 64 /* CanCollide */) === 0) {
+    if ((entity.flags & 64 /* EntityFlags.CanCollide */) === 0) {
         entity.x = destX;
         entity.y = destY;
         return;
@@ -95,7 +96,7 @@ function updatePosition(entity, delta, map) {
     if (DEVELOPMENT && entity.type !== constants_1.PONY_TYPE) {
         console.error(`updatePosition: non-pony entity`);
     }
-    const flying = entityUtils_1.isInTheAir(entity);
+    const flying = (0, entityUtils_1.isInTheAir)(entity);
     const mask = flying ? 2 : 1;
     const srcX = ex * constants_1.tileWidth;
     const srcY = ey * constants_1.tileHeight;
@@ -263,11 +264,10 @@ function updatePosition(entity, delta, map) {
     const right = Math.max(x0 + 1, actualX + 1) - epsilon;
     const top = Math.min(y0, actualY);
     const bottom = Math.max(y0 + 1, actualY + 1) - epsilon;
-    entity.x = positionUtils_1.toWorldX(utils_1.clamp(dstX, left, right));
-    entity.y = positionUtils_1.toWorldY(utils_1.clamp(dstY, top, bottom));
+    entity.x = (0, positionUtils_1.toWorldX)((0, utils_1.clamp)(dstX, left, right));
+    entity.y = (0, positionUtils_1.toWorldY)((0, utils_1.clamp)(dstY, top, bottom));
     if (DEVELOPMENT && steps <= 0) {
         console.error('Overflow collision steps');
     }
 }
-exports.updatePosition = updatePosition;
 //# sourceMappingURL=collision.js.map

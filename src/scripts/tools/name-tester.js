@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const create_font_1 = require("./create-font");
 const existing = new Set();
 const missing = new Map();
@@ -23,9 +24,9 @@ function ignore(code) {
         || (code >= 0x2300 && code <= 0x23FF) // Miscellaneous Technical
     ;
 }
-create_font_1.charsToCodes(create_font_1.CHARS + create_font_1.ROMAJI + create_font_1.EMOJI).forEach(code => existing.add(code));
+(0, create_font_1.charsToCodes)(create_font_1.CHARS + create_font_1.ROMAJI + create_font_1.EMOJI).forEach(code => existing.add(code));
 items.forEach(({ name }) => {
-    const codes = create_font_1.charsToCodes(name);
+    const codes = (0, create_font_1.charsToCodes)(name);
     const missingChars = codes.reduce((count, code) => {
         if (existing.has(code) || isNonPrintableCharacter(code))
             return count;

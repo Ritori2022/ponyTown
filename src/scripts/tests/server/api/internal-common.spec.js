@@ -8,8 +8,8 @@ describe('internal-common', () => {
         let func;
         let reloadSettings;
         beforeEach(() => {
-            reloadSettings = sinon_1.stub();
-            func = internal_common_1.createReloadSettings(reloadSettings);
+            reloadSettings = (0, sinon_1.stub)();
+            func = (0, internal_common_1.createReloadSettings)(reloadSettings);
         });
         it('reloads settings', async () => {
             await func();

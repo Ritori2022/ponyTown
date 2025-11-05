@@ -1,9 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.worldForTemplates = void 0;
+exports.addSpawnPointIndicators = addSpawnPointIndicators;
+exports.generateTileIndicesAndColliders = generateTileIndicesAndColliders;
+exports.removePonies = removePonies;
+exports.createDirectionSign = createDirectionSign;
+exports.pickCandy = pickCandy;
+exports.pickGift = pickGift;
+exports.pickClover = pickClover;
+exports.pickEgg = pickEgg;
+exports.pickEntity = pickEntity;
+exports.checkLantern = checkLantern;
+exports.checkBasket = checkBasket;
+exports.checkNotCollecting = checkNotCollecting;
+exports.positionClover = positionClover;
+exports.createBunny = createBunny;
+const tslib_1 = require("tslib");
 const positionUtils_1 = require("../common/positionUtils");
 const worldMap_1 = require("../common/worldMap");
 const serverRegion_1 = require("./serverRegion");
-const entities = require("../common/entities");
+const entities = tslib_1.__importStar(require("../common/entities"));
 const tileUtils_1 = require("../client/tileUtils");
 const region_1 = require("../common/region");
 const constants_1 = require("../common/constants");
@@ -18,16 +34,16 @@ const collectableController_1 = require("./controllers/collectableController");
 exports.worldForTemplates = {
     featureFlags: {},
     addEntity(entity, map) {
-        positionUtils_1.roundPosition(entity);
-        const region = worldMap_1.getRegionGlobal(map, entity.x, entity.y);
+        (0, positionUtils_1.roundPosition)(entity);
+        const region = (0, worldMap_1.getRegionGlobal)(map, entity.x, entity.y);
         entity.region = region;
-        serverRegion_1.addEntityToRegion(region, entity, map);
+        (0, serverRegion_1.addEntityToRegion)(region, entity, map);
         return entity;
     },
     removeEntity(entity, map) {
         let removed = false;
         if (entity.region) {
-            removed = serverRegion_1.removeEntityFromRegion(entity.region, entity, map);
+            removed = (0, serverRegion_1.removeEntityFromRegion)(entity.region, entity, map);
         }
         return removed;
     },
@@ -46,21 +62,19 @@ function addSpawnPointIndicators(world, map) {
         addSpawn(spawn);
     }
 }
-exports.addSpawnPointIndicators = addSpawnPointIndicators;
 function generateTileIndicesAndColliders(map) {
     for (const region of map.regions) {
-        serverRegion_1.getRegionTiles(region); // initialize encodedTiles
+        (0, serverRegion_1.getRegionTiles)(region); // initialize encodedTiles
         if (region.tilesDirty) {
-            tileUtils_1.updateTileIndices(region, map);
+            (0, tileUtils_1.updateTileIndices)(region, map);
         }
     }
     for (const region of map.regions) {
         if (region.colliderDirty) {
-            region_1.generateRegionCollider(region, map);
+            (0, region_1.generateRegionCollider)(region, map);
         }
     }
 }
-exports.generateTileIndicesAndColliders = generateTileIndicesAndColliders;
 function removePonies(entities) {
     for (let i = entities.length - 1; i >= 0; i--) {
         if (entities[i].type === constants_1.PONY_TYPE) {
@@ -68,13 +82,12 @@ function removePonies(entities) {
         }
     }
 }
-exports.removePonies = removePonies;
 function createDirectionSign(x, y, config) {
     const result = [];
     const options = { sign: {} };
     const lines = [];
     const { w = [], e = [], s = [], n = [] } = config;
-    const max = lodash_1.clamp(Math.max(w.length, e.length, s.length, n.length), 3, 5);
+    const max = (0, lodash_1.clamp)(Math.max(w.length, e.length, s.length, n.length), 3, 5);
     const skip = 5 - max;
     function parse(entries, arrow, plates, ox) {
         for (let i = 0; i < entries.length; i++) {
@@ -82,7 +95,7 @@ function createDirectionSign(x, y, config) {
             if (e) {
                 lines.push(`${arrow} ${e.name}`);
                 const nameplate = plates[i](x + ox / constants_1.tileWidth, y);
-                entityUtils_1.setEntityName(nameplate, e.name);
+                (0, entityUtils_1.setEntityName)(nameplate, e.name);
                 result.push(nameplate);
             }
         }
@@ -110,93 +123,83 @@ function createDirectionSign(x, y, config) {
     }
     const text = lines.join('\n');
     const entity = entities.directionSign(x, y, options);
-    entity.interact = (entity, client) => chat_1.sayTo(client, entity, text, 1 /* System */);
+    entity.interact = (entity, client) => (0, chat_1.sayTo)(client, entity, text, 1 /* MessageType.System */);
     result.push(entity);
     return result;
 }
-exports.createDirectionSign = createDirectionSign;
 const patchTypes = [
     entities.cloverPatch3, entities.cloverPatch4, entities.cloverPatch5, entities.cloverPatch6, entities.cloverPatch7
 ].map(x => x.type);
 const eggBasketTypes = entities.eggBaskets.map(b => b.type);
 function pickCandy(client) {
     let count = 0;
-    accountUtils_1.updateAccountState(client.account, state => state.candies = count = utils_1.toInt(state.candies) + 1);
-    chat_1.saySystem(client, `${count} 🍬`);
+    (0, accountUtils_1.updateAccountState)(client.account, state => state.candies = count = (0, utils_1.toInt)(state.candies) + 1);
+    (0, chat_1.saySystem)(client, `${count} 🍬`);
 }
-exports.pickCandy = pickCandy;
 function pickGift(client) {
     let count = 0;
-    accountUtils_1.updateAccountState(client.account, state => state.gifts = count = utils_1.toInt(state.gifts) + 1);
-    chat_1.saySystem(client, `${count} 🎁`);
-    playerUtils_1.holdItem(client.pony, entities.gift2.type);
+    (0, accountUtils_1.updateAccountState)(client.account, state => state.gifts = count = (0, utils_1.toInt)(state.gifts) + 1);
+    (0, chat_1.saySystem)(client, `${count} 🎁`);
+    (0, playerUtils_1.holdItem)(client.pony, entities.gift2.type);
 }
-exports.pickGift = pickGift;
 function pickClover(client) {
     let count = 0;
-    accountUtils_1.updateAccountState(client.account, state => state.clovers = count = utils_1.toInt(state.clovers) + 1);
-    chat_1.saySystem(client, `${count} 🍀`);
-    playerUtils_1.holdItem(client.pony, entities.cloverPick.type);
+    (0, accountUtils_1.updateAccountState)(client.account, state => state.clovers = count = (0, utils_1.toInt)(state.clovers) + 1);
+    (0, chat_1.saySystem)(client, `${count} 🍀`);
+    (0, playerUtils_1.holdItem)(client.pony, entities.cloverPick.type);
 }
-exports.pickClover = pickClover;
 function pickEgg(client) {
     let count = 0;
-    accountUtils_1.updateAccountState(client.account, state => state.eggs = count = utils_1.toInt(state.eggs) + 1);
-    chat_1.saySystem(client, `${count} 🥚`);
+    (0, accountUtils_1.updateAccountState)(client.account, state => state.eggs = count = (0, utils_1.toInt)(state.eggs) + 1);
+    (0, chat_1.saySystem)(client, `${count} 🥚`);
     if (Math.random() < 0.05) {
         const options = client.pony.options;
         const basketIndex = eggBasketTypes.indexOf(options.hold || 0);
         if (basketIndex >= 0 && basketIndex < (eggBasketTypes.length - 1)) {
-            playerUtils_1.holdItem(client.pony, eggBasketTypes[basketIndex + 1]);
+            (0, playerUtils_1.holdItem)(client.pony, eggBasketTypes[basketIndex + 1]);
         }
     }
 }
-exports.pickEgg = pickEgg;
 function pickEntity(client, entity) {
-    playerUtils_1.holdItem(client.pony, entity.type);
+    (0, playerUtils_1.holdItem)(client.pony, entity.type);
 }
-exports.pickEntity = pickEntity;
 function checkLantern(client) {
     const options = client.pony.options;
     const canPick = options.hold === entities.jackoLanternOn.type || options.hold === entities.jackoLanternOff.type;
     if (!canPick) {
-        chat_1.saySystem(client, 'Get a lantern to collect candies');
+        (0, chat_1.saySystem)(client, 'Get a lantern to collect candies');
     }
     return canPick;
 }
-exports.checkLantern = checkLantern;
 function checkBasket(client) {
     const options = client.pony.options;
-    const canPick = utils_1.includes(eggBasketTypes, options.hold);
+    const canPick = (0, utils_1.includes)(eggBasketTypes, options.hold);
     if (!canPick) {
-        chat_1.saySystem(client, 'Get a basket to collect eggs');
+        (0, chat_1.saySystem)(client, 'Get a basket to collect eggs');
     }
     return canPick;
 }
-exports.checkBasket = checkBasket;
 function checkNotCollecting(client) {
     const options = client.pony.options;
-    const canPick = utils_1.includes(eggBasketTypes, options.hold) ||
+    const canPick = (0, utils_1.includes)(eggBasketTypes, options.hold) ||
         options.hold === entities.jackoLanternOn.type ||
         options.hold === entities.jackoLanternOff.type;
     return !canPick;
 }
-exports.checkNotCollecting = checkNotCollecting;
 function positionClover(map) {
-    const patch = lodash_1.sample(serverMap_1.findEntities(map, e => utils_1.includes(patchTypes, e.type)));
+    const patch = (0, lodash_1.sample)((0, serverMap_1.findEntities)(map, e => (0, utils_1.includes)(patchTypes, e.type)));
     if (patch && patch.bounds) {
         const bounds = patch.bounds;
         const position = {
-            x: patch.x + bounds.x / constants_1.tileWidth + lodash_1.random(0, bounds.w / constants_1.tileWidth, true),
-            y: patch.y + bounds.y / constants_1.tileHeight + lodash_1.random(0, bounds.h / constants_1.tileHeight, true),
+            x: patch.x + bounds.x / constants_1.tileWidth + (0, lodash_1.random)(0, bounds.w / constants_1.tileWidth, true),
+            y: patch.y + bounds.y / constants_1.tileHeight + (0, lodash_1.random)(0, bounds.h / constants_1.tileHeight, true),
         };
         return position;
     }
     else {
-        return collectableController_1.randomPosition(map);
+        return (0, collectableController_1.randomPosition)(map);
     }
 }
-exports.positionClover = positionClover;
 function createBunny(waypoints) {
     const { x, y } = waypoints[0];
     const entity = entities.bunny(x, y);
@@ -211,35 +214,35 @@ function createBunny(waypoints) {
         const reachedY = Math.abs(entity.y - y) < 0.2;
         if (reachedX && reachedY) {
             const rand = Math.random();
-            entityUtils_1.updateEntityVelocity(entity, 0, 0, now);
+            (0, entityUtils_1.updateEntityVelocity)(entity, 0, 0, now);
             if (rand < 0.1) {
-                entityUtils_1.setEntityAnimation(entity, 3 /* Clean */);
+                (0, entityUtils_1.setEntityAnimation)(entity, 3 /* BunnyAnimation.Clean */);
                 sleepUntil = now + 2;
             }
             else if (rand < 0.2) {
-                entityUtils_1.setEntityAnimation(entity, 4 /* Look */);
+                (0, entityUtils_1.setEntityAnimation)(entity, 4 /* BunnyAnimation.Look */);
                 sleepUntil = now + 2;
             }
             else if (rand < 0.3) {
-                entityUtils_1.setEntityAnimation(entity, 2 /* Blink */);
+                (0, entityUtils_1.setEntityAnimation)(entity, 2 /* BunnyAnimation.Blink */);
                 sleepUntil = now + 2;
             }
             else if (rand < 0.6) {
-                entityUtils_1.setEntityAnimation(entity, 0 /* Sit */);
+                (0, entityUtils_1.setEntityAnimation)(entity, 0 /* BunnyAnimation.Sit */);
                 sleepUntil = now + 2;
             }
             else {
                 waypoint = (waypoint + 1) % waypoints.length;
-                entityUtils_1.setEntityAnimation(entity, 0 /* Sit */);
-                sleepUntil = now + lodash_1.random(0.2, 2, true);
+                (0, entityUtils_1.setEntityAnimation)(entity, 0 /* BunnyAnimation.Sit */);
+                sleepUntil = now + (0, lodash_1.random)(0.2, 2, true);
             }
         }
         else {
             const vx = reachedX ? 0 : (x < entity.x ? -bunnySpeed : bunnySpeed);
             const vy = reachedY ? 0 : (y < entity.y ? -bunnySpeed : bunnySpeed);
             if (entity.vx !== vx || entity.vy !== vy) {
-                entityUtils_1.updateEntityVelocity(entity, vx, vy, now);
-                entityUtils_1.setEntityAnimation(entity, 1 /* Walk */, vx === 0 ? undefined : vx > 0);
+                (0, entityUtils_1.updateEntityVelocity)(entity, vx, vy, now);
+                (0, entityUtils_1.setEntityAnimation)(entity, 1 /* BunnyAnimation.Walk */, vx === 0 ? undefined : vx > 0);
             }
         }
     };
@@ -250,5 +253,4 @@ function createBunny(waypoints) {
         return [entity];
     }
 }
-exports.createBunny = createBunny;
 //# sourceMappingURL=mapUtils.js.map

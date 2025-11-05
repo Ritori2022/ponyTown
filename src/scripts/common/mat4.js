@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createMat4 = createMat4;
+exports.ortho = ortho;
 function createMat4() {
     const out = new Float32Array(16);
     out[0] = 1;
@@ -8,7 +10,6 @@ function createMat4() {
     out[15] = 1;
     return out;
 }
-exports.createMat4 = createMat4;
 function ortho(out, left, right, bottom, top, near, far) {
     const lr = 1 / (left - right);
     const bt = 1 / (bottom - top);
@@ -31,5 +32,4 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 }
-exports.ortho = ortho;
 //# sourceMappingURL=mat4.js.map

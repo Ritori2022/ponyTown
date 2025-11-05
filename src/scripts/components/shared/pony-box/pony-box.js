@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PonyBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const pony_1 = require("../../../common/pony");
@@ -32,55 +33,55 @@ let PonyBox = class PonyBox {
         this.sendMessage = new core_1.EventEmitter();
     }
     get ignoredOrHidden() {
-        return this.pony && (entityUtils_1.isIgnored(this.pony) || entityUtils_1.isHidden(this.pony));
+        return this.pony && ((0, entityUtils_1.isIgnored)(this.pony) || (0, entityUtils_1.isHidden)(this.pony));
     }
     get isMod() {
         return this.model.isMod;
     }
     get canInviteToParty() {
-        return this.pony && (!this.game.party || (partyUtils_1.isPartyLeader(this.game) && !partyUtils_1.isPonyInParty(this.game.party, this.pony, true)));
+        return this.pony && (!this.game.party || ((0, partyUtils_1.isPartyLeader)(this.game) && !(0, partyUtils_1.isPonyInParty)(this.game.party, this.pony, true)));
     }
     get canRemoveFromParty() {
-        return this.pony && partyUtils_1.isPartyLeader(this.game) && partyUtils_1.isPonyInParty(this.game.party, this.pony, true);
+        return this.pony && (0, partyUtils_1.isPartyLeader)(this.game) && (0, partyUtils_1.isPonyInParty)(this.game.party, this.pony, true);
     }
     get canPromoteToLeader() {
-        return this.pony && partyUtils_1.isPartyLeader(this.game) && partyUtils_1.isPonyInParty(this.game.party, this.pony, false);
+        return this.pony && (0, partyUtils_1.isPartyLeader)(this.game) && (0, partyUtils_1.isPonyInParty)(this.game.party, this.pony, false);
     }
     get special() {
-        const tag = tags_1.getTag(this.pony && this.pony.tag);
+        const tag = (0, tags_1.getTag)(this.pony && this.pony.tag);
         return tag && tag.name;
     }
     get specialClass() {
-        const tag = tags_1.getTag(this.pony && this.pony.tag);
+        const tag = (0, tags_1.getTag)(this.pony && this.pony.tag);
         return tag && tag.tagClass;
     }
     get paletteInfo() {
-        return this.pony && pony_1.getPaletteInfo(this.pony);
+        return this.pony && (0, pony_1.getPaletteInfo)(this.pony);
     }
     inviteToParty() {
-        this.playerAction(3 /* InviteToParty */);
+        this.playerAction(3 /* PlayerAction.InviteToParty */);
     }
     removeFromParty() {
-        this.playerAction(4 /* RemoveFromParty */);
+        this.playerAction(4 /* PlayerAction.RemoveFromParty */);
     }
     promoteToLeader() {
-        this.playerAction(5 /* PromotePartyLeader */);
+        this.playerAction(5 /* PlayerAction.PromotePartyLeader */);
     }
     toggleIgnore() {
         if (this.pony) {
-            const ignored = entityUtils_1.isIgnored(this.pony);
-            this.playerAction(ignored ? 2 /* Unignore */ : 1 /* Ignore */);
-            this.pony.playerState = utils_1.setFlag(this.pony.playerState, 1 /* Ignored */, !ignored);
+            const ignored = (0, entityUtils_1.isIgnored)(this.pony);
+            this.playerAction(ignored ? 2 /* PlayerAction.Unignore */ : 1 /* PlayerAction.Ignore */);
+            this.pony.playerState = (0, utils_1.setFlag)(this.pony.playerState, 1 /* EntityPlayerState.Ignored */, !ignored);
         }
     }
     hidePlayer(days) {
-        this.playerAction(6 /* HidePlayer */, days * constants_1.DAY);
+        this.playerAction(6 /* PlayerAction.HidePlayer */, days * constants_1.DAY);
     }
     addFriend() {
-        this.playerAction(8 /* AddFriend */);
+        this.playerAction(8 /* PlayerAction.AddFriend */);
     }
     removeFriend() {
-        this.playerAction(9 /* RemoveFriend */);
+        this.playerAction(9 /* PlayerAction.RemoveFriend */);
     }
     playerAction(type, param = undefined) {
         const ponyId = this.pony && this.pony.id;
@@ -101,24 +102,24 @@ let PonyBox = class PonyBox {
         return false;
     }
     inviteToSupporterServers() {
-        this.playerAction(7 /* InviteToSupporterServers */);
+        this.playerAction(7 /* PlayerAction.InviteToSupporterServers */);
     }
 };
+exports.PonyBox = PonyBox;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyBox.prototype, "pony", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyBox.prototype, "sendMessage", void 0);
-PonyBox = tslib_1.__decorate([
-    core_1.Component({
+exports.PonyBox = PonyBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-box',
         templateUrl: 'pony-box.pug',
         styleUrls: ['pony-box.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model, game_1.PonyTownGame])
 ], PonyBox);
-exports.PonyBox = PonyBox;
 //# sourceMappingURL=pony-box.js.map

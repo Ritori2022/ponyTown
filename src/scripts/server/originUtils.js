@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getIP = getIP;
+exports.getOriginFromHTTP = getOriginFromHTTP;
+exports.getOrigin = getOrigin;
+exports.addOrigin = addOrigin;
 const db_1 = require("./db");
 const config_1 = require("./config");
 const logger_1 = require("./logger");
@@ -7,14 +11,12 @@ const get_ip = require('ipware')().get_ip;
 function getIP(req) {
     return req.headers['cf-connecting-ip'] || (get_ip(req) ? get_ip(req).clientIp : null);
 }
-exports.getIP = getIP;
 function getOriginFromHTTP(req) {
     const ip = getIP(req) || '0.0.0.0';
     const ipcountry = (ip === '127.0.0.1' || ip === '::ffff:127.0.0.1' || ip === '::1') ? 'LOCAL' : '';
     const country = ipcountry || req.headers['cf-ipcountry'] || '??';
     return { ip, country, last: new Date() };
 }
-exports.getOriginFromHTTP = getOriginFromHTTP;
 function getOrigin(req) {
     const origin = getOriginFromHTTP(req);
     if (origin.country === '??' && config_1.config.proxy) {
@@ -23,7 +25,6 @@ function getOrigin(req) {
     }
     return origin;
 }
-exports.getOrigin = getOrigin;
 async function addOrigin(account, origin) {
     try {
         const _id = account._id;
@@ -40,5 +41,4 @@ async function addOrigin(account, origin) {
         logger_1.logger.error('Failed to add origin', e);
     }
 }
-exports.addOrigin = addOrigin;
 //# sourceMappingURL=originUtils.js.map

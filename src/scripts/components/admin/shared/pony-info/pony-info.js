@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PonyInfo = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../../../common/utils");
@@ -12,14 +13,14 @@ let PonyInfo = class PonyInfo {
         this.labelClass = 'badge-none';
     }
     get isBadCM() {
-        return !!this.pony && utils_1.hasFlag(this.pony.flags, 1 /* BadCM */);
+        return !!this.pony && (0, utils_1.hasFlag)(this.pony.flags, 1 /* CharacterFlags.BadCM */);
     }
     ngOnChanges() {
         if (this.pony) {
-            if (security_1.isForbiddenName(this.pony.name)) {
+            if ((0, security_1.isForbiddenName)(this.pony.name)) {
                 this.labelClass = 'badge-forbidden';
             }
-            else if (utils_1.hasFlag(this.pony.flags, 1 /* BadCM */)) {
+            else if ((0, utils_1.hasFlag)(this.pony.flags, 1 /* CharacterFlags.BadCM */)) {
                 this.labelClass = 'badge-danger';
             }
             else {
@@ -37,21 +38,21 @@ let PonyInfo = class PonyInfo {
         console.log(this.pony);
     }
 };
+exports.PonyInfo = PonyInfo;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyInfo.prototype, "pony", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyInfo.prototype, "highlight", void 0);
-PonyInfo = tslib_1.__decorate([
-    core_1.Component({
+exports.PonyInfo = PonyInfo = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-info',
         templateUrl: 'pony-info.pug',
         styleUrls: ['pony-info.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], PonyInfo);
-exports.PonyInfo = PonyInfo;
 //# sourceMappingURL=pony-info.js.map

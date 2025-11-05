@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const moment = require("moment");
+exports.StatsTracker = void 0;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const moment = tslib_1.__importStar(require("moment"));
 const lodash_1 = require("lodash");
 const constants_1 = require("../common/constants");
 const byteSize_1 = require("./utils/byteSize");
@@ -104,7 +106,7 @@ class StatsTracker {
         return result.sort((a, b) => b.order.localeCompare(a.order));
     }
     createActionsStats(type, stats) {
-        return lodash_1.compact(stats).map(s => ({
+        return (0, lodash_1.compact)(stats).map(s => ({
             id: s.id,
             name: s.name,
             type,
@@ -144,7 +146,7 @@ class StatsTracker {
     }
     submitDailyStats(statsPath) {
         const statsEntry = [
-            moment().format('MMM DD'),
+            moment().format('MMM DD'), // DD-MM-YY HH:mm:ss
             this.dailyRequestCount.toString(),
             this.dailyRequestSize.toString(),
             this.dailySwearing.toString(),

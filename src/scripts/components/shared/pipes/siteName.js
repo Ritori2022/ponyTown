@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SiteNamePipe = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let SiteNamePipe = class SiteNamePipe {
@@ -8,10 +9,10 @@ let SiteNamePipe = class SiteNamePipe {
         return match && match[1];
     }
 };
-SiteNamePipe = tslib_1.__decorate([
-    core_1.Pipe({
+exports.SiteNamePipe = SiteNamePipe;
+exports.SiteNamePipe = SiteNamePipe = tslib_1.__decorate([
+    (0, core_1.Pipe)({
         name: 'siteName',
     })
 ], SiteNamePipe);
-exports.SiteNamePipe = SiteNamePipe;
 //# sourceMappingURL=siteName.js.map

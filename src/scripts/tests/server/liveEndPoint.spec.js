@@ -16,10 +16,10 @@ describe('liveEndPoint', () => {
     let afterAssign;
     let liveEndPoint;
     function stubFind(items) {
-        return sinon_1.stub(model, 'find').returns({
-            sort: sinon_1.stub().withArgs(sinon_1.match({ updatedAt: 1 })).returns({
-                limit: sinon_1.stub().withArgs(adminInterfaces_1.ITEM_LIMIT + 1).returns({
-                    lean: sinon_1.stub().returns({
+        return (0, sinon_1.stub)(model, 'find').returns({
+            sort: (0, sinon_1.stub)().withArgs((0, sinon_1.match)({ updatedAt: 1 })).returns({
+                limit: (0, sinon_1.stub)().withArgs(adminInterfaces_1.ITEM_LIMIT + 1).returns({
+                    lean: (0, sinon_1.stub)().returns({
                         exec: () => Promise.resolve(items)
                     })
                 })
@@ -27,17 +27,17 @@ describe('liveEndPoint', () => {
         });
     }
     beforeEach(() => {
-        clock = sinon_1.useFakeTimers();
+        clock = (0, sinon_1.useFakeTimers)();
         model = {
             findByIdAndUpdate() { },
             findById() { },
             find() { },
         };
-        encode = sinon_1.stub();
-        beforeDelete = sinon_1.stub();
-        afterDelete = sinon_1.stub();
-        afterAssign = sinon_1.stub();
-        liveEndPoint = liveEndPoint_1.createLiveEndPoint({
+        encode = (0, sinon_1.stub)();
+        beforeDelete = (0, sinon_1.stub)();
+        afterDelete = (0, sinon_1.stub)();
+        afterAssign = (0, sinon_1.stub)();
+        liveEndPoint = (0, liveEndPoint_1.createLiveEndPoint)({
             model, fields: ['_id', 'name', 'desc'], encode, beforeDelete, afterDelete, afterAssign
         });
     });
@@ -46,25 +46,25 @@ describe('liveEndPoint', () => {
         liveEndPoint.destroy();
     });
     it('clears removed items after 10 minutes', () => {
-        const item = { _id: 'foo', remove: sinon_1.stub() };
-        sinon_1.stub(model, 'findById').withArgs('foo').returns({ exec: () => Promise.resolve(item) });
+        const item = { _id: 'foo', remove: (0, sinon_1.stub)() };
+        (0, sinon_1.stub)(model, 'findById').withArgs('foo').returns({ exec: () => Promise.resolve(item) });
         clock.setSystemTime(10000);
         stubFind([]);
         return liveEndPoint.removeItem('foo')
             .then(() => clock.tick(1 * constants_1.MINUTE + 100))
             .then(() => liveEndPoint.getAll())
-            .then(result => chai_1.expect(result.deletes).eql(['foo']));
+            .then(result => (0, chai_1.expect)(result.deletes).eql(['foo']));
     });
     describe('get()', () => {
         it('finds item by id', () => {
             const item = {};
-            sinon_1.stub(model, 'findById').withArgs('foo').returns({
-                lean: sinon_1.stub().returns({
-                    exec: sinon_1.stub().resolves(item)
+            (0, sinon_1.stub)(model, 'findById').withArgs('foo').returns({
+                lean: (0, sinon_1.stub)().returns({
+                    exec: (0, sinon_1.stub)().resolves(item)
                 })
             });
             return liveEndPoint.get('foo')
-                .then(result => chai_1.expect(result).equal(item));
+                .then(result => (0, chai_1.expect)(result).equal(item));
         });
     });
     describe('getAll()', () => {
@@ -72,7 +72,7 @@ describe('liveEndPoint', () => {
             stubFind([{ _id: 'aaa' }, { _id: 'bbb' }]);
             encode.returns('encoded');
             return liveEndPoint.getAll()
-                .then(result => chai_1.expect(result).eql({
+                .then(result => (0, chai_1.expect)(result).eql({
                 base: {},
                 deletes: [],
                 updates: 'encoded',
@@ -93,16 +93,16 @@ describe('liveEndPoint', () => {
         describe('if items exceed limit', () => {
             describe('if last 2 items have different updatedAt', () => {
                 beforeEach(() => {
-                    const items = utils_1.times(adminInterfaces_1.ITEM_LIMIT + 1, i => ({ _id: `foo_${i}`, updatedAt: new Date(i) }));
+                    const items = (0, utils_1.times)(adminInterfaces_1.ITEM_LIMIT + 1, i => ({ _id: `foo_${i}`, updatedAt: new Date(i) }));
                     stubFind(items);
                 });
                 it('removes last item', () => {
                     return liveEndPoint.getAll()
-                        .then(() => chai_1.expect(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT));
+                        .then(() => (0, chai_1.expect)(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT));
                 });
                 it('returns more flag', () => {
                     return liveEndPoint.getAll()
-                        .then(({ more }) => chai_1.expect(more).true);
+                        .then(({ more }) => (0, chai_1.expect)(more).true);
                 });
             });
             describe('if last 2 items have the same updatedAt', () => {
@@ -110,23 +110,23 @@ describe('liveEndPoint', () => {
                 let restItems;
                 let find;
                 beforeEach(() => {
-                    items = utils_1.times(adminInterfaces_1.ITEM_LIMIT, i => ({ _id: `foo_${i}`, updatedAt: new Date(i) }));
+                    items = (0, utils_1.times)(adminInterfaces_1.ITEM_LIMIT, i => ({ _id: `foo_${i}`, updatedAt: new Date(i) }));
                     items.push({ _id: 'bar', updatedAt: items[items.length - 1].updatedAt });
                     restItems = [{ _id: 'bar1' }, { _id: 'bar2' }];
                     find = stubFind(items).onSecondCall().returns({
-                        lean: sinon_1.stub().returns({
-                            exec: sinon_1.stub().resolves(restItems)
+                        lean: (0, sinon_1.stub)().returns({
+                            exec: (0, sinon_1.stub)().resolves(restItems)
                         })
                     });
                 });
                 it('fetches additional items if last items have the same date', () => {
                     return liveEndPoint.getAll()
-                        .then(() => chai_1.expect(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT + 1 + 2));
+                        .then(() => (0, chai_1.expect)(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT + 1 + 2));
                 });
                 it('filters out duplicate items', () => {
                     restItems.push(items[items.length - 1]);
                     return liveEndPoint.getAll()
-                        .then(() => chai_1.expect(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT + 1 + 2));
+                        .then(() => (0, chai_1.expect)(encode.args[0][0].length).equal(adminInterfaces_1.ITEM_LIMIT + 1 + 2));
                 });
                 it('fetches more items using timestamp of last element', () => {
                     const timestamp = items[items.length - 1].updatedAt;
@@ -135,7 +135,7 @@ describe('liveEndPoint', () => {
                 });
                 it('returns more flag', () => {
                     return liveEndPoint.getAll()
-                        .then(({ more }) => chai_1.expect(more).true);
+                        .then(({ more }) => (0, chai_1.expect)(more).true);
                 });
             });
         });
@@ -144,8 +144,8 @@ describe('liveEndPoint', () => {
         describe('if item exists', () => {
             let item;
             beforeEach(() => {
-                item = { _id: 'foo', remove: sinon_1.stub() };
-                sinon_1.stub(model, 'findById').withArgs('foo').returns({ exec: sinon_1.stub().resolves(item) });
+                item = { _id: 'foo', remove: (0, sinon_1.stub)() };
+                (0, sinon_1.stub)(model, 'findById').withArgs('foo').returns({ exec: (0, sinon_1.stub)().resolves(item) });
             });
             it('removes item', () => {
                 return liveEndPoint.removeItem('foo')
@@ -164,14 +164,14 @@ describe('liveEndPoint', () => {
                 stubFind([]);
                 return liveEndPoint.removeItem('foo')
                     .then(() => liveEndPoint.getAll())
-                    .then(result => chai_1.expect(result.deletes).eql(['foo']));
+                    .then(result => (0, chai_1.expect)(result.deletes).eql(['foo']));
             });
         });
         describe('if item does not exist', () => {
             let item;
             beforeEach(() => {
-                item = { remove: sinon_1.stub() };
-                sinon_1.stub(model, 'findById').withArgs('bar').returns({ exec: sinon_1.stub().resolves(null) });
+                item = { remove: (0, sinon_1.stub)() };
+                (0, sinon_1.stub)(model, 'findById').withArgs('bar').returns({ exec: (0, sinon_1.stub)().resolves(null) });
             });
             it('does nothing if item does not exist', () => {
                 return liveEndPoint.removeItem('bar')
@@ -190,12 +190,12 @@ describe('liveEndPoint', () => {
     describe('assignAccount()', () => {
         const item = { account: 'origacc' };
         beforeEach(() => {
-            sinon_1.stub(model, 'findById').withArgs('foo', 'account')
-                .returns({ lean: sinon_1.stub().returns({ exec: sinon_1.stub().resolves(item) }) });
+            (0, sinon_1.stub)(model, 'findById').withArgs('foo', 'account')
+                .returns({ lean: (0, sinon_1.stub)().returns({ exec: (0, sinon_1.stub)().resolves(item) }) });
         });
         it('assigns account to item', () => {
-            const exec = sinon_1.stub();
-            const findByIdAndUpdate = sinon_1.stub(model, 'findByIdAndUpdate').returns({ exec });
+            const exec = (0, sinon_1.stub)();
+            const findByIdAndUpdate = (0, sinon_1.stub)(model, 'findByIdAndUpdate').returns({ exec });
             return liveEndPoint.assignAccount('foo', 'bar')
                 .then(() => {
                 sinon_1.assert.calledWithMatch(findByIdAndUpdate, 'foo', { account: 'bar' });
@@ -203,7 +203,7 @@ describe('liveEndPoint', () => {
             });
         });
         it('calls afterAssign hook', () => {
-            sinon_1.stub(model, 'findByIdAndUpdate').returns({ exec: sinon_1.stub() });
+            (0, sinon_1.stub)(model, 'findByIdAndUpdate').returns({ exec: (0, sinon_1.stub)() });
             return liveEndPoint.assignAccount('foo', 'bar')
                 .then(() => sinon_1.assert.calledWith(afterAssign, 'origacc', 'bar'));
         });

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ModBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const constants_1 = require("../../../common/constants");
@@ -75,13 +76,13 @@ let ModBox = class ModBox {
         return value ? (value === 'perma' ? 'btn-danger' : 'btn-warning') : 'btn-default';
     }
     report() {
-        this.modAction(1 /* Report */);
+        this.modAction(1 /* ModAction.Report */);
     }
     setMute(value) {
-        this.modAction(2 /* Mute */, value);
+        this.modAction(2 /* ModAction.Mute */, value);
     }
     setShadow(value) {
-        this.modAction(3 /* Shadow */, value);
+        this.modAction(3 /* ModAction.Shadow */, value);
     }
     blur() {
         this.game.send(server => server.setNote(this.pony.id, this.modInfo && this.modInfo.note || ''));
@@ -91,17 +92,17 @@ let ModBox = class ModBox {
         return this.game.send(server => server.otherAction(this.pony.id, type, param));
     }
 };
+exports.ModBox = ModBox;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ModBox.prototype, "pony", void 0);
-ModBox = tslib_1.__decorate([
-    core_1.Component({
+exports.ModBox = ModBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'mod-box',
         templateUrl: 'mod-box.pug',
         styleUrls: ['mod-box.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model, game_1.PonyTownGame])
 ], ModBox);
-exports.ModBox = ModBox;
 //# sourceMappingURL=mod-box.js.map

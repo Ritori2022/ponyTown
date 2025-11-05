@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CounterService = void 0;
 const zeroCounter = { date: 0, count: 0, items: [] };
 class CounterService {
     constructor(clearTimeout) {

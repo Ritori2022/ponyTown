@@ -1,11 +1,23 @@
 "use strict";
 /// <reference path="../../typings/my.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadSprites = void 0;
+exports.loadImageServer = loadImageServer;
+exports.loadImageAsCanvas = loadImageAsCanvas;
+exports.generateDiff = generateDiff;
+exports.clearCompareResults = clearCompareResults;
+exports.compareCanvases = compareCanvases;
+exports.readTestsFile = readTestsFile;
+exports.createFunctionWithPromiseHandler = createFunctionWithPromiseHandler;
+exports.stubClass = stubClass;
+exports.stubFromInstance = stubFromInstance;
+exports.resetStubMethods = resetStubMethods;
+const tslib_1 = require("tslib");
 require("../server/boot");
-const mongoose = require("mongoose");
-const fs = require("fs");
-const path = require("path");
-const del = require("del");
+const mongoose = tslib_1.__importStar(require("mongoose"));
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
+const del = tslib_1.__importStar(require("del"));
 const lodash_1 = require("lodash");
 const child_process_1 = require("child_process");
 const sinon_1 = require("sinon");
@@ -22,33 +34,29 @@ mongoose.modelSchemas = {};
 global.TESTS = true;
 global.TOOLS = true;
 global.performance = Date;
-mixins_1.setPaletteManager(ponyInfo_1.mockPaletteManager);
+(0, mixins_1.setPaletteManager)(ponyInfo_1.mockPaletteManager);
 function loadImageServer(src) {
-    return canvasUtilsNode_1.loadImage(paths_1.pathTo('assets', src));
+    return (0, canvasUtilsNode_1.loadImage)((0, paths_1.pathTo)('assets', src));
 }
-exports.loadImageServer = loadImageServer;
-exports.loadSprites = lodash_1.once(() => spriteUtils_1.loadAndInitSheets(sprites_1.spriteSheets, loadImageServer));
+exports.loadSprites = (0, lodash_1.once)(() => (0, spriteUtils_1.loadAndInitSheets)(sprites_1.spriteSheets, loadImageServer));
 function loadImageAsCanvas(filePath) {
     try {
-        const image = canvasUtilsNode_1.loadImageSync(filePath);
-        const expected = canvasUtilsNode_1.createCanvas(image.width, image.height);
+        const image = (0, canvasUtilsNode_1.loadImageSync)(filePath);
+        const expected = (0, canvasUtilsNode_1.createCanvas)(image.width, image.height);
         expected.getContext('2d').drawImage(image, 0, 0);
         return expected;
     }
     catch (e) {
         console.error(e);
     }
-    return canvasUtilsNode_1.createCanvas(0, 0);
+    return (0, canvasUtilsNode_1.createCanvas)(0, 0);
 }
-exports.loadImageAsCanvas = loadImageAsCanvas;
 function generateDiff(expectedPath, actualPath) {
-    child_process_1.spawnSync('magick', ['compare', actualPath, expectedPath, actualPath.replace(/\.png$/, '-diff.png')], { encoding: 'utf8' });
+    (0, child_process_1.spawnSync)('magick', ['compare', actualPath, expectedPath, actualPath.replace(/\.png$/, '-diff.png')], { encoding: 'utf8' });
 }
-exports.generateDiff = generateDiff;
 async function clearCompareResults(group) {
-    await del([paths_1.pathTo('tools', 'temp', group, '*.png').replace(/\\/g, '/')]);
+    await del([(0, paths_1.pathTo)('tools', 'temp', group, '*.png').replace(/\\/g, '/')]);
 }
-exports.clearCompareResults = clearCompareResults;
 function compareCanvases(expected, actual, filePath, group, diff = true) {
     try {
         if (expected === actual)
@@ -72,7 +80,7 @@ function compareCanvases(expected, actual, filePath, group, diff = true) {
     }
     catch (e) {
         if (actual && diff) {
-            const tempRoot = paths_1.pathTo('tools', 'temp', group);
+            const tempRoot = (0, paths_1.pathTo)('tools', 'temp', group);
             const tempPath = path.join(tempRoot, filePath ? path.basename(filePath) : `${Date.now()}-failed-test.png`);
             fs.writeFileSync(tempPath, actual.toBuffer());
             if (filePath) {
@@ -82,8 +90,7 @@ function compareCanvases(expected, actual, filePath, group, diff = true) {
         throw e;
     }
 }
-exports.compareCanvases = compareCanvases;
-const testsPath = paths_1.pathTo('src', 'tests', 'filters');
+const testsPath = (0, paths_1.pathTo)('src', 'tests', 'filters');
 function readTestsFile(fileName) {
     const lines = fs.readFileSync(path.join(testsPath, fileName), 'utf8')
         .split(/\r?\n/g)
@@ -96,7 +103,6 @@ function readTestsFile(fileName) {
     }
     return lines;
 }
-exports.readTestsFile = readTestsFile;
 function createFunctionWithPromiseHandler(ctor, ...deps) {
     return (...args) => {
         let result;
@@ -105,20 +111,16 @@ function createFunctionWithPromiseHandler(ctor, ...deps) {
         return result;
     };
 }
-exports.createFunctionWithPromiseHandler = createFunctionWithPromiseHandler;
 function stubClass(ctor) {
-    return sinon_1.createStubInstance(ctor);
+    return (0, sinon_1.createStubInstance)(ctor);
 }
-exports.stubClass = stubClass;
 function stubFromInstance(instance) {
-    return lodash_1.mapValues(instance, () => sinon_1.stub());
+    return (0, lodash_1.mapValues)(instance, () => (0, sinon_1.stub)());
 }
-exports.stubFromInstance = stubFromInstance;
 function resetStubMethods(stub, ...methods) {
     methods.forEach(method => {
         stub[method].resetBehavior();
         stub[method].reset();
     });
 }
-exports.resetStubMethods = resetStubMethods;
 //# sourceMappingURL=lib.js.map

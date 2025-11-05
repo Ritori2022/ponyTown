@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.OriginInfo = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -17,17 +18,17 @@ let OriginInfo = class OriginInfo {
         }
     }
 };
+exports.OriginInfo = OriginInfo;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], OriginInfo.prototype, "origin", void 0);
-OriginInfo = tslib_1.__decorate([
-    core_1.Component({
+exports.OriginInfo = OriginInfo = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'origin-info',
         templateUrl: 'origin-info.pug',
         styleUrls: ['origin-info.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], OriginInfo);
-exports.OriginInfo = OriginInfo;
 //# sourceMappingURL=origin-info.js.map

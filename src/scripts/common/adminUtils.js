@@ -1,6 +1,49 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment = require("moment");
+exports.tagBad = exports.getId = exports.compareByName = exports.compareOriginRefs = exports.compareOrigins = exports.compareUpdatedAt = void 0;
+exports.compareAccounts = compareAccounts;
+exports.compareAuths = compareAuths;
+exports.highlightWords = highlightWords;
+exports.getAge = getAge;
+exports.formatEventDesc = formatEventDesc;
+exports.replaceSwears = replaceSwears;
+exports.formatChat = formatChat;
+exports.createChatDate = createChatDate;
+exports.createDateRange = createDateRange;
+exports.filterAccounts = filterAccounts;
+exports.createFilter = createFilter;
+exports.createPotentialDuplicatesFilter = createPotentialDuplicatesFilter;
+exports.createFilter2 = createFilter2;
+exports.getPotentialDuplicates = getPotentialDuplicates;
+exports.compareDuplicates = compareDuplicates;
+exports.emailName = emailName;
+exports.createEmailMatcher = createEmailMatcher;
+exports.createDuplicate = createDuplicate;
+exports.createDuplicateResult = createDuplicateResult;
+exports.pushOrdered = pushOrdered;
+exports.duplicatesCollector = duplicatesCollector;
+exports.patreonSupporterLevel = patreonSupporterLevel;
+exports.supporterLevel = supporterLevel;
+exports.isPastSupporter = isPastSupporter;
+exports.banMessage = banMessage;
+exports.isActive = isActive;
+exports.isPerma = isPerma;
+exports.isTemporarilyActive = isTemporarilyActive;
+exports.isMuted = isMuted;
+exports.isShadowed = isShadowed;
+exports.isBanned = isBanned;
+exports.isPermaShadowed = isPermaShadowed;
+exports.isPermaBanned = isPermaBanned;
+exports.isTemporarilyBanned = isTemporarilyBanned;
+exports.createSupporterChanges = createSupporterChanges;
+exports.getIdsFromNote = getIdsFromNote;
+exports.addToMap = addToMap;
+exports.removeFromMap = removeFromMap;
+exports.parsePonies = parsePonies;
+exports.createIdStore = createIdStore;
+exports.getTranslationUrl = getTranslationUrl;
+const tslib_1 = require("tslib");
+const moment = tslib_1.__importStar(require("moment"));
 const lodash_1 = require("lodash");
 const utils_1 = require("./utils");
 const constants_1 = require("./constants");
@@ -8,16 +51,21 @@ const accountUtils_1 = require("./accountUtils");
 const swears_1 = require("./swears");
 const icons_1 = require("../client/icons");
 const htmlUtils_1 = require("../client/htmlUtils");
-exports.compareUpdatedAt = (a, b) => utils_1.compareDates(a.updatedAt, b.updatedAt);
-exports.compareOrigins = (a, b) => a.ip.localeCompare(b.ip);
-exports.compareOriginRefs = (a, b) => utils_1.compareDates(b.last, a.last) || exports.compareOrigins(a.origin, b.origin);
-exports.compareByName = (a, b) => (a.name || '').localeCompare(b.name || '');
-exports.getId = (item) => item._id;
-exports.tagBad = (s) => `<span class='bad'>${s}</span>`;
+const compareUpdatedAt = (a, b) => (0, utils_1.compareDates)(a.updatedAt, b.updatedAt);
+exports.compareUpdatedAt = compareUpdatedAt;
+const compareOrigins = (a, b) => a.ip.localeCompare(b.ip);
+exports.compareOrigins = compareOrigins;
+const compareOriginRefs = (a, b) => (0, utils_1.compareDates)(b.last, a.last) || (0, exports.compareOrigins)(a.origin, b.origin);
+exports.compareOriginRefs = compareOriginRefs;
+const compareByName = (a, b) => (a.name || '').localeCompare(b.name || '');
+exports.compareByName = compareByName;
+const getId = (item) => item._id;
+exports.getId = getId;
+const tagBad = (s) => `<span class='bad'>${s}</span>`;
+exports.tagBad = tagBad;
 function compareAccounts(a, b) {
-    return utils_1.compareDates(a.createdAt, b.createdAt);
+    return (0, utils_1.compareDates)(a.createdAt, b.createdAt);
 }
-exports.compareAccounts = compareAccounts;
 function compareAuths(a, b) {
     const aDeleted = a.disabled || a.banned || false;
     const bDeleted = b.disabled || b.banned || false;
@@ -28,23 +76,20 @@ function compareAuths(a, b) {
         return -1;
     }
     else {
-        return exports.compareByName(a, b);
+        return (0, exports.compareByName)(a, b);
     }
 }
-exports.compareAuths = compareAuths;
 function highlightWords(text) {
     text = text || '';
-    text = swears_1.filterBadWordsPartial(text, exports.tagBad);
+    text = (0, swears_1.filterBadWordsPartial)(text, exports.tagBad);
     return text;
 }
-exports.highlightWords = highlightWords;
 function getAge(birthdate) {
     return moment().diff(birthdate, 'years');
 }
-exports.getAge = getAge;
 // chat & events
 function enc(text) {
-    return lodash_1.escape(text || '');
+    return (0, lodash_1.escape)(text || '');
 }
 function encWithHighlight(text) {
     return highlightWords(enc(text || ''));
@@ -52,7 +97,6 @@ function encWithHighlight(text) {
 function formatEventDesc(text) {
     return encWithHighlight(text).replace(/\[([a-z0-f]{24})\]/g, `<a tabindex onclick="goToAccount('$1')">[$1]</a>`);
 }
-exports.formatEventDesc = formatEventDesc;
 function getMessageTag(message) {
     if (/^\/p /.test(message)) {
         return 'party';
@@ -79,7 +123,6 @@ function replaceSwears(element) {
         }
     }
 }
-exports.replaceSwears = replaceSwears;
 function formatChatLine(l) {
     // 00:00:01 [system] Timed out for swearing
     // 00:00:01 [patreon] fetched patreon data
@@ -99,20 +142,20 @@ function formatChatLine(l) {
         const [, time, accountId, server, map, name, mutedIgnored, message] = m;
         const messageTag = server === 'system' ? 'system' : getMessageTag(message);
         const modTag = mutedIgnored ? ' message-muted' : '';
-        return htmlUtils_1.element('div', 'chatlog-line', [
-            htmlUtils_1.element('span', 'time', [], { 'data-text': time }),
-            accountId ? htmlUtils_1.element('span', 'account-id', [htmlUtils_1.textNode(accountId)]) : undefined,
-            htmlUtils_1.element('span', `server server-${server.replace(/-.+$/g, '')}`, [htmlUtils_1.textNode(`[${server}]`)]),
-            map ? htmlUtils_1.element('span', `map map-${map}`, [htmlUtils_1.textNode(`[${map}]`)]) : undefined,
-            htmlUtils_1.element('span', mutedIgnored ? `name ${mutedIgnored}` : `name`, [htmlUtils_1.textNode(name)]),
-            htmlUtils_1.textNode(' '),
-            htmlUtils_1.element('span', `message message-${messageTag}${modTag}`, [htmlUtils_1.textNode(message)]),
-            htmlUtils_1.textNode(' '),
-            htmlUtils_1.element('a', 'chat-translate', [], undefined, { click: translateChat }),
+        return (0, htmlUtils_1.element)('div', 'chatlog-line', [
+            (0, htmlUtils_1.element)('span', 'time', [], { 'data-text': time }),
+            accountId ? (0, htmlUtils_1.element)('span', 'account-id', [(0, htmlUtils_1.textNode)(accountId)]) : undefined,
+            (0, htmlUtils_1.element)('span', `server server-${server.replace(/-.+$/g, '')}`, [(0, htmlUtils_1.textNode)(`[${server}]`)]),
+            map ? (0, htmlUtils_1.element)('span', `map map-${map}`, [(0, htmlUtils_1.textNode)(`[${map}]`)]) : undefined,
+            (0, htmlUtils_1.element)('span', mutedIgnored ? `name ${mutedIgnored}` : `name`, [(0, htmlUtils_1.textNode)(name)]),
+            (0, htmlUtils_1.textNode)(' '),
+            (0, htmlUtils_1.element)('span', `message message-${messageTag}${modTag}`, [(0, htmlUtils_1.textNode)(message)]),
+            (0, htmlUtils_1.textNode)(' '),
+            (0, htmlUtils_1.element)('a', 'chat-translate', [], undefined, { click: translateChat }),
         ]);
     }
     else {
-        return htmlUtils_1.element('div', '', [htmlUtils_1.textNode(highlightWords(l))]);
+        return (0, htmlUtils_1.element)('div', '', [(0, htmlUtils_1.textNode)(highlightWords(l))]);
     }
 }
 function translateChat() {
@@ -136,20 +179,17 @@ function formatChat(chat) {
         .reverse()
         .map(formatChatLine);
 }
-exports.formatChat = formatChat;
 function createChatDate(date) {
     return {
         value: date.toISOString(),
         label: date.format('MMMM Do YYYY'),
     };
 }
-exports.createChatDate = createChatDate;
 function createDateRange(startDate, days) {
-    return lodash_1.range(days, 0)
+    return (0, lodash_1.range)(days, 0)
         .map(d => moment(startDate).subtract(d, 'days'))
         .map(createChatDate);
 }
-exports.createDateRange = createDateRange;
 // filtering
 function filterAccounts(items, search, showOnly, not) {
     if (search) {
@@ -166,9 +206,8 @@ function filterAccounts(items, search, showOnly, not) {
     }
     return items;
 }
-exports.filterAccounts = filterAccounts;
 function createFilter(search) {
-    const regex = new RegExp(lodash_1.escapeRegExp(search), 'i');
+    const regex = new RegExp((0, lodash_1.escapeRegExp)(search), 'i');
     function test(value) {
         return !!value && regex.test(value);
     }
@@ -196,10 +235,10 @@ function createFilter(search) {
         return false;
     }
     function prefixWith(prefix, action) {
-        return lodash_1.startsWith(search, prefix) ? action(search.substr(prefix.length)) : undefined;
+        return (0, lodash_1.startsWith)(search, prefix) ? action(search.substr(prefix.length)) : undefined;
     }
     function prefixWithRegex(prefix, action) {
-        return prefixWith(prefix, phrase => action(new RegExp(lodash_1.escapeRegExp(phrase), 'i')));
+        return prefixWith(prefix, phrase => action(new RegExp((0, lodash_1.escapeRegExp)(phrase), 'i')));
     }
     function prefixWithNumber(prefix, action) {
         return prefixWith(prefix, phrase => action(+phrase));
@@ -209,21 +248,20 @@ function createFilter(search) {
     return prefixWithRegex('name:', regex => account => regex.test(account.name))
         || prefixWithRegex('note:', regex => account => regex.test(account.note))
         || prefixWithRegex('email:', regex => account => !!account.emails && account.emails.some(e => regex.test(e)))
-        || prefixWith('role:', role => account => accountUtils_1.hasRole(account, role))
+        || prefixWith('role:', role => account => (0, accountUtils_1.hasRole)(account, role))
         || prefixWith('exact:', phrase => exactMatch(phrase.toLowerCase()))
         || prefixWith('disabled!', () => account => !!account.auths && account.auths.some(a => !!a.disabled))
         || prefixWith('locked!', () => account => !!account.auths && account.auths.some(a => !!a.banned))
         || prefixWithNumber('ignores:', count => account => (account.ignoresCount || 0) >= count)
         || prefixWithNumber('ponies:', count => account => account.characterCount >= count)
         || prefixWithNumber('auths:', count => account => !!account.auths && account.auths.length >= count)
-        || prefixWithNumber('old:', days => isOld(utils_1.fromNow(-days * constants_1.DAY).getTime()))
+        || prefixWithNumber('old:', days => isOld((0, utils_1.fromNow)(-days * constants_1.DAY).getTime()))
         || prefixWithNumber('spam:', count => account => !!account.counters && account.counters.spam >= count)
         || prefixWithNumber('swearing:', count => account => !!account.counters && account.counters.swears >= count)
         || prefixWithNumber('timeouts:', count => account => !!account.counters && account.counters.timeouts >= count)
         || prefixWithNumber('limits:', count => account => !!account.counters && account.counters.inviteLimit >= count)
         || filter;
 }
-exports.createFilter = createFilter;
 function hasAnyBan(account) {
     return isBanned(account) || isMuted(account) || isShadowed(account);
 }
@@ -243,7 +281,6 @@ function createPotentialDuplicatesFilter(getAccountsByBrowserId) {
         return false;
     };
 }
-exports.createPotentialDuplicatesFilter = createPotentialDuplicatesFilter;
 function createFilter2(showOnly) {
     const now = Date.now();
     if (showOnly === 'banned') {
@@ -265,7 +302,6 @@ function createFilter2(showOnly) {
         return undefined;
     }
 }
-exports.createFilter2 = createFilter2;
 function getPotentialDuplicates(account, getAccountsByBrowserId) {
     const accounts = account.lastBrowserId ? getAccountsByBrowserId(account.lastBrowserId) : undefined;
     const name = account.nameLower;
@@ -276,7 +312,6 @@ function getPotentialDuplicates(account, getAccountsByBrowserId) {
         return [];
     }
 }
-exports.getPotentialDuplicates = getPotentialDuplicates;
 // duplicates
 function compareDuplicates(a, b) {
     if (a.note !== b.note)
@@ -293,11 +328,9 @@ function compareDuplicates(a, b) {
         return (b.ponies ? b.ponies.length : 0) - (a.ponies ? a.ponies.length : 0);
     return b.lastVisit.getTime() - a.lastVisit.getTime();
 }
-exports.compareDuplicates = compareDuplicates;
 function emailName(email) {
     return email.substr(0, email.indexOf('@')).toLowerCase();
 }
-exports.emailName = emailName;
 function createEmailMatcher(emails) {
     if (!emails || !emails.length) {
         return undefined;
@@ -308,7 +341,6 @@ function createEmailMatcher(emails) {
         return email => regex.test(email);
     }
 }
-exports.createEmailMatcher = createEmailMatcher;
 function createDuplicate(account, base) {
     const indenticalEmail = account.emails && base.emails && account.emails.some(e => base.emails.indexOf(e) !== -1);
     const isMatch = createEmailMatcher(base.emails || []);
@@ -326,19 +358,17 @@ function createDuplicate(account, base) {
         name: name ? 1 : 0,
         note: note ? 1 : 0,
         indenticalEmail: !!indenticalEmail,
-        emails: utils_1.toInt(duplicateEmails),
-        origins: utils_1.toInt(duplicateOrigins),
+        emails: (0, utils_1.toInt)(duplicateEmails),
+        origins: (0, utils_1.toInt)(duplicateOrigins),
         lastVisit: account.lastVisit || new Date(0),
         browserId,
         birthdate,
         perma: isPermaBanned(account) || isPermaShadowed(account),
     };
 }
-exports.createDuplicate = createDuplicate;
 function createDuplicateResult(account, base) {
-    return Object.assign({}, createDuplicate(account, base), { account: account._id });
+    return { ...createDuplicate(account, base), account: account._id };
 }
-exports.createDuplicateResult = createDuplicateResult;
 function pushOrdered(items, item, compare) {
     for (let i = 0; i < items.length; i++) {
         if (compare(items[i], item) >= 0) {
@@ -348,7 +378,6 @@ function pushOrdered(items, item, compare) {
     }
     items.push(item);
 }
-exports.pushOrdered = pushOrdered;
 function duplicatesCollector(duplicates) {
     const set = new Set();
     return (item) => {
@@ -360,25 +389,21 @@ function duplicatesCollector(duplicates) {
         }
     };
 }
-exports.duplicatesCollector = duplicatesCollector;
 function patreonSupporterLevel(account) {
     return account.patreon & 0xf;
 }
-exports.patreonSupporterLevel = patreonSupporterLevel;
 function supporterLevel(account) {
     const flags = account.supporter;
-    const ignore = utils_1.hasFlag(flags, 128 /* IgnorePatreon */);
+    const ignore = (0, utils_1.hasFlag)(flags, 128 /* SupporterFlags.IgnorePatreon */);
     const patreonSupporter = patreonSupporterLevel(account);
     const flagsSupporter = flags & 0xf;
     return Math.max(ignore ? 0 : patreonSupporter, flagsSupporter);
 }
-exports.supporterLevel = supporterLevel;
 function isPastSupporter(account) {
     const flags = account.supporter;
-    return (utils_1.hasFlag(flags, 256 /* PastSupporter */) || utils_1.hasFlag(flags, 512 /* ForcePastSupporter */)) &&
-        !utils_1.hasFlag(flags, 1024 /* IgnorePastSupporter */);
+    return ((0, utils_1.hasFlag)(flags, 256 /* SupporterFlags.PastSupporter */) || (0, utils_1.hasFlag)(flags, 512 /* SupporterFlags.ForcePastSupporter */)) &&
+        !(0, utils_1.hasFlag)(flags, 1024 /* SupporterFlags.IgnorePastSupporter */);
 }
-exports.isPastSupporter = isPastSupporter;
 const fieldToAction = {
     mute: 'Muted',
     shadow: 'Shadowed',
@@ -396,43 +421,33 @@ function banMessage(field, value) {
         return `${action} for (${moment.duration(value - Date.now()).humanize()})`;
     }
 }
-exports.banMessage = banMessage;
 function isActive(value) {
     return !!value && (value === -1 || value > Date.now());
 }
-exports.isActive = isActive;
 function isPerma(value) {
     return value === -1;
 }
-exports.isPerma = isPerma;
 function isTemporarilyActive(value) {
     return !!value && value > Date.now();
 }
-exports.isTemporarilyActive = isTemporarilyActive;
 function isMuted(account) {
     return isActive(account.mute);
 }
-exports.isMuted = isMuted;
 function isShadowed(account) {
     return isActive(account.shadow);
 }
-exports.isShadowed = isShadowed;
 function isBanned(account) {
     return isActive(account.ban);
 }
-exports.isBanned = isBanned;
 function isPermaShadowed(account) {
     return isPerma(account.shadow);
 }
-exports.isPermaShadowed = isPermaShadowed;
 function isPermaBanned(account) {
     return isPerma(account.ban);
 }
-exports.isPermaBanned = isPermaBanned;
 function isTemporarilyBanned(account) {
     return isTemporarilyActive(account.ban);
 }
-exports.isTemporarilyBanned = isTemporarilyBanned;
 function createSupporterChanges(entries) {
     const changes = entries.map(l => ({
         message: l.message,
@@ -461,11 +476,9 @@ function createSupporterChanges(entries) {
     }
     return changes;
 }
-exports.createSupporterChanges = createSupporterChanges;
 function getIdsFromNote(note) {
-    return note ? lodash_1.uniq(note.match(/[0-9a-f]{24}/g)) : [];
+    return note ? (0, lodash_1.uniq)(note.match(/[0-9a-f]{24}/g)) : [];
 }
-exports.getIdsFromNote = getIdsFromNote;
 function addToMap(map, key, item) {
     const items = map.get(key);
     if (items) {
@@ -475,25 +488,22 @@ function addToMap(map, key, item) {
         map.set(key, [item]);
     }
 }
-exports.addToMap = addToMap;
 function removeFromMap(map, key, item) {
     const items = map.get(key);
     if (items) {
-        utils_1.removeItem(items, item);
+        (0, utils_1.removeItem)(items, item);
         if (items.length === 0) {
             map.delete(key);
         }
     }
 }
-exports.removeFromMap = removeFromMap;
 function parsePonies(ponies, filterIds) {
-    return lodash_1.compact(ponies
+    return (0, lodash_1.compact)(ponies
         .split(/\n\r?/g)
         .map(x => /\[system\] removed pony \[([a-f0-9]{24})\] "(.+)" (\S+)/.exec(x)))
         .map(([_, id, name, info]) => ({ id, name, info }))
-        .filter(({ id }) => !filterIds || utils_1.includes(filterIds, id));
+        .filter(({ id }) => !filterIds || (0, utils_1.includes)(filterIds, id));
 }
-exports.parsePonies = parsePonies;
 function createIdStore() {
     const idsMap = new Map();
     return (id) => {
@@ -507,10 +517,8 @@ function createIdStore() {
         }
     };
 }
-exports.createIdStore = createIdStore;
 function getTranslationUrl(text) {
     return `https://translate.google.com/#view=home&op=translate&sl=auto&tl=en&text=${encodeURIComponent(text)}`;
     // return `https://translate.google.com/#auto/en/${encodeURIComponent(text)}`;
 }
-exports.getTranslationUrl = getTranslationUrl;
 //# sourceMappingURL=adminUtils.js.map

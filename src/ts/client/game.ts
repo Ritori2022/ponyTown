@@ -565,7 +565,7 @@ export class PonyTownGame implements Game {
 					this.drawOptions.tileGrid = !this.drawOptions.tileGrid;
 				});
 				addDebugShortcut(7, 'grayscale', () => {
-					document.documentElement.style.filter = document.documentElement.style.filter ? null : 'grayscale(100%)';
+					document.documentElement.style.filter = document.documentElement.style.filter ? '' : 'grayscale(100%)';
 				});
 				addDebugShortcut(8, 'show regions', () => {
 					this.debug.showRegions = !this.debug.showRegions;
@@ -720,10 +720,11 @@ export class PonyTownGame implements Game {
 			this.supporterPony = createPony(0, 0, SUPPORTER_PONY, palettes.defaultPalette, this.paletteManager);
 			initializeToys(this.paletteManager);
 		} catch (e) {
-			this.errorReporter.captureEvent({ name: 'failed game.initWebGL', error: e.message, stack: e.stack });
+			const error = e as Error;
+			this.errorReporter.captureEvent({ name: 'failed game.initWebGL', error: error.message, stack: error.stack });
 			this.releaseWebGL();
 			DEVELOPMENT && console.error(e);
-			throw new Error(`Failed to initialize graphics device (${e.message})`);
+			throw new Error(`Failed to initialize graphics device (${error.message})`);
 		}
 	}
 	private releaseWebGL() {
@@ -1431,7 +1432,7 @@ export class PonyTownGame implements Game {
 				const height = getMapHeightAt(this.map, this.hover.x, this.hover.y, this.time);
 				drawText(paletteBatch, `${height.toFixed(2)}`, fontSmallPal, BLACK, x, y);
 			} catch (e) {
-				console.warn(e.message);
+				console.warn((e as Error).message);
 			}
 		}
 

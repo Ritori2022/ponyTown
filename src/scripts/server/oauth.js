@@ -1,6 +1,12 @@
 "use strict";
 /// <reference path="../../typings/my.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.providers = void 0;
+exports.getProfileUrl = getProfileUrl;
+exports.getProfileEmails = getProfileEmails;
+exports.getProfileUsername = getProfileUsername;
+exports.getProfileName = getProfileName;
+exports.getProfile = getProfile;
 const lodash_1 = require("lodash");
 const passport_google_oauth2_1 = require("@passport-next/passport-google-oauth2");
 const passport_twitter_1 = require("passport-twitter");
@@ -45,7 +51,7 @@ const providerList = [
     {
         id: 'patreon',
         name: 'Patreon',
-        color: color_1.colorToCSS(colors_1.PATREON_COLOR),
+        color: (0, color_1.colorToCSS)(colors_1.PATREON_COLOR),
         strategy: passport_patreon_1.Strategy,
     },
 ];
@@ -69,7 +75,6 @@ function getProfileUrl(profile) {
         return profile.profileUrl || profile._json.url;
     }
 }
-exports.getProfileUrl = getProfileUrl;
 function getProfileEmails(profile) {
     if (profile.emails && profile.emails.length) {
         return profile.emails.map(e => e.value);
@@ -81,17 +86,14 @@ function getProfileEmails(profile) {
         return [];
     }
 }
-exports.getProfileEmails = getProfileEmails;
 function getProfileUsername(profile) {
     return profile.username || profile.displayName || getProfileNameInternal(profile.name);
 }
-exports.getProfileUsername = getProfileUsername;
 function getProfileName(profile) {
     return profile.displayName || profile.username || getProfileNameInternal(profile.name);
 }
-exports.getProfileName = getProfileName;
 function getProfileNameInternal(name) {
-    if (!name || lodash_1.isString(name)) {
+    if (!name || (0, lodash_1.isString)(name)) {
         return name;
     }
     else {
@@ -111,5 +113,4 @@ function getProfile(provider, profile) {
         suspended: profile._json && profile._json.suspended,
     };
 }
-exports.getProfile = getProfile;
 //# sourceMappingURL=oauth.js.map

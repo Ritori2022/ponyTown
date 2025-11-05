@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.virtualListDirectives = exports.VirtualFor = exports.VirtualList = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let VirtualList = class VirtualList {
@@ -8,20 +9,21 @@ let VirtualList = class VirtualList {
         this.itemSize = 50;
     }
 };
+exports.VirtualList = VirtualList;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], VirtualList.prototype, "itemSize", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('padStart', { static: true }),
+    (0, core_1.ViewChild)('padStart', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], VirtualList.prototype, "padStart", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('padEnd', { static: true }),
+    (0, core_1.ViewChild)('padEnd', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], VirtualList.prototype, "padEnd", void 0);
-VirtualList = tslib_1.__decorate([
-    core_1.Component({
+exports.VirtualList = VirtualList = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'virtual-list',
         template: '<div #padStart></div><ng-content></ng-content><div #padEnd></div>',
         styleUrls: ['virtual-list.scss'],
@@ -31,8 +33,11 @@ VirtualList = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], VirtualList);
-exports.VirtualList = VirtualList;
 let VirtualFor = class VirtualFor {
+    set virtualForOf(forOf) {
+        this.forOf = forOf;
+        this.forOfDirty = true;
+    }
     constructor(viewContainer, template, differs, list, changeDetector, zone) {
         this.viewContainer = viewContainer;
         this.template = template;
@@ -48,10 +53,6 @@ let VirtualFor = class VirtualFor {
             list.element.nativeElement.addEventListener('scroll', this.detect);
             window.addEventListener('resize', this.detect);
         });
-    }
-    set virtualForOf(forOf) {
-        this.forOf = forOf;
-        this.forOfDirty = true;
     }
     set virtualForTemplate(value) {
         if (value) {
@@ -73,7 +74,7 @@ let VirtualFor = class VirtualFor {
                 try {
                     this.differ = this.differs.find(value).create();
                 }
-                catch (_a) {
+                catch {
                     throw new Error(`Cannot find a differ`);
                 }
             }
@@ -146,18 +147,19 @@ let VirtualFor = class VirtualFor {
         this.list.padEnd.nativeElement.style.height = `${(forOf.length - actualLast - 1) * itemSize}px`;
     }
 };
+exports.VirtualFor = VirtualFor;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array),
     tslib_1.__metadata("design:paramtypes", [Array])
 ], VirtualFor.prototype, "virtualForOf", null);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", core_1.TemplateRef),
     tslib_1.__metadata("design:paramtypes", [core_1.TemplateRef])
 ], VirtualFor.prototype, "virtualForTemplate", null);
-VirtualFor = tslib_1.__decorate([
-    core_1.Directive({
+exports.VirtualFor = VirtualFor = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[virtualFor][virtualForOf]',
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ViewContainerRef,
@@ -167,6 +169,5 @@ VirtualFor = tslib_1.__decorate([
         core_1.ChangeDetectorRef,
         core_1.NgZone])
 ], VirtualFor);
-exports.VirtualFor = VirtualFor;
 exports.virtualListDirectives = [VirtualFor];
 //# sourceMappingURL=virtual-list.js.map

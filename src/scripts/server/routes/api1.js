@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
 const express_1 = require("express");
 const lodash_1 = require("lodash");
 const db_1 = require("../db");
@@ -10,8 +11,8 @@ const blockApps = [];
 const MAX_CONCURRENT_REQUESTS = 100;
 let requests = 0;
 function default_1(server, settings) {
-    const app = express_1.Router();
-    const getAccountData = account_1.createGetAccountData(db_1.findAllCharacters, db_1.findAllVisibleAuths);
+    const app = (0, express_1.Router)();
+    const getAccountData = (0, account_1.createGetAccountData)(db_1.findAllCharacters, db_1.findAllVisibleAuths);
     async function handleAccountRequest(account, userAgent, browserId) {
         if (requests < MAX_CONCURRENT_REQUESTS) {
             requests++;
@@ -34,7 +35,7 @@ function default_1(server, settings) {
             return { limit: true };
         }
     }
-    app.post('/account', requestUtils_1.offline(settings), requestUtils_1.hash, (req, res) => {
+    app.post('/account', (0, requestUtils_1.offline)(settings), requestUtils_1.hash, (req, res) => {
         req.session.touch();
         let account = req.user;
         const browserId = req.get('Api-Bid');
@@ -42,14 +43,13 @@ function default_1(server, settings) {
         const requestedWith = req.get('X-Requested-With');
         const isWebViewUserAgent = /Chrome\/\d+\.0\.0\.0 Mobile|; wv\)/.test(userAgent);
         const isWebView = requestedWith || isWebViewUserAgent;
-        if (!account || (settings.blockWebView && isWebView && utils_1.includes(blockApps, requestedWith))) {
-            requestUtils_1.handleJSON(server, req, res, null);
+        if (!account || (settings.blockWebView && isWebView && (0, utils_1.includes)(blockApps, requestedWith))) {
+            (0, requestUtils_1.handleJSON)(server, req, res, null);
         }
         else {
-            requestUtils_1.handleJSON(server, req, res, handleAccountRequest(account, userAgent, browserId));
+            (0, requestUtils_1.handleJSON)(server, req, res, handleAccountRequest(account, userAgent, browserId));
         }
     });
     return app;
 }
-exports.default = default_1;
 //# sourceMappingURL=api1.js.map

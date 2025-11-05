@@ -1,10 +1,13 @@
 "use strict";
 /* tslint:disable */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFramesFromPSD = getFramesFromPSD;
+exports.createSprites = createSprites;
+const tslib_1 = require("tslib");
 require('source-map-support').install();
 global.BETA = false;
-const fs = require("fs");
-const path = require("path");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const lodash_1 = require("lodash");
 const common_1 = require("./common");
 const sprite_sheet_1 = require("./sprite-sheet");
@@ -26,12 +29,12 @@ const outputPath = path.join(rootPath, 'tools', 'output');
 const destPath = path.join(rootPath, 'tools', 'output', 'images');
 const ponyPath = path.join(sourcePath, 'pony');
 const shadowPalette = [common_1.TRANSPARENT, common_1.BLACK];
-const isPng = common_1.matcher(/\.png$/);
+const isPng = (0, common_1.matcher)(/\.png$/);
 const getPngs = (directory) => fs.readdirSync(directory).filter(isPng);
-const getFrames = (layers) => layers.filter(common_1.nameMatches(/^frame/)).sort(common_1.compareLayers);
-const ponyPsd = (name) => psd_utils_1.openPsd(path.join(ponyPath, name));
+const getFrames = (layers) => layers.filter((0, common_1.nameMatches)(/^frame/)).sort(common_1.compareLayers);
+const ponyPsd = (name) => (0, psd_utils_1.openPsd)(path.join(ponyPath, name));
 function openPng(fileName) {
-    return canvas_utils_1.imageToCanvas(canvas_utils_1.loadImage(fileName));
+    return (0, canvas_utils_1.imageToCanvas)((0, canvas_utils_1.loadImage)(fileName));
 }
 function createPaletteFromList(canvases) {
     return canvases.reduce((pal, can) => createPalette(can, pal), []);
@@ -40,7 +43,7 @@ function createPaletteFromLayers(layers) {
     return createPaletteFromList(layers.map(common_1.getCanvasSafe));
 }
 function addCMSprite(sprites, flip, ox = 43, oy = 49) {
-    const canvas = canvas_utils_1.createExtCanvas(5, 5, 'cm');
+    const canvas = (0, canvas_utils_1.createExtCanvas)(5, 5, 'cm');
     const context = canvas.getContext('2d');
     const imageData = context.getImageData(0, 0, 5, 5);
     for (let i = 0, y = 0; y < 5; y++) {
@@ -52,12 +55,12 @@ function addCMSprite(sprites, flip, ox = 43, oy = 49) {
         }
     }
     context.putImageData(imageData, 0, 0);
-    sprites.push(common_1.createSprite(sprites.length, canvas_utils_1.padCanvas(canvas, ox, oy), { x: ox, y: oy, w: 5, h: 5 }));
+    sprites.push((0, common_1.createSprite)(sprites.length, (0, canvas_utils_1.padCanvas)(canvas, ox, oy), { x: ox, y: oy, w: 5, h: 5 }));
     return sprites.length - 1;
 }
 function createPalette(canvas, palette = []) {
-    canvas_utils_1.forEachPixel(canvas, c => {
-        if (!lodash_1.includes(palette, c)) {
+    (0, canvas_utils_1.forEachPixel)(canvas, c => {
+        if (!(0, lodash_1.includes)(palette, c)) {
             palette.push(c);
         }
     });
@@ -68,15 +71,15 @@ function createPalette(canvas, palette = []) {
 }
 function splitButton(canvas, border) {
     return {
-        topLeft: canvas_utils_1.cropCanvas(canvas, 0, 0, border, border),
-        top: canvas_utils_1.cropCanvas(canvas, border, 0, canvas.width - border * 2, border),
-        topRight: canvas_utils_1.cropCanvas(canvas, canvas.width - border, 0, border, border),
-        left: canvas_utils_1.cropCanvas(canvas, 0, border, border, canvas.height - border * 2),
-        bg: canvas_utils_1.cropCanvas(canvas, border, border, canvas.width - border * 2, canvas.height - border * 2),
-        right: canvas_utils_1.cropCanvas(canvas, canvas.width - border, border, border, canvas.height - border * 2),
-        bottomLeft: canvas_utils_1.cropCanvas(canvas, 0, canvas.height - border, border, border),
-        bottom: canvas_utils_1.cropCanvas(canvas, border, canvas.height - border, canvas.width - border * 2, border),
-        bottomRight: canvas_utils_1.cropCanvas(canvas, canvas.width - border, canvas.height - border, border, border),
+        topLeft: (0, canvas_utils_1.cropCanvas)(canvas, 0, 0, border, border),
+        top: (0, canvas_utils_1.cropCanvas)(canvas, border, 0, canvas.width - border * 2, border),
+        topRight: (0, canvas_utils_1.cropCanvas)(canvas, canvas.width - border, 0, border, border),
+        left: (0, canvas_utils_1.cropCanvas)(canvas, 0, border, border, canvas.height - border * 2),
+        bg: (0, canvas_utils_1.cropCanvas)(canvas, border, border, canvas.width - border * 2, canvas.height - border * 2),
+        right: (0, canvas_utils_1.cropCanvas)(canvas, canvas.width - border, border, border, canvas.height - border * 2),
+        bottomLeft: (0, canvas_utils_1.cropCanvas)(canvas, 0, canvas.height - border, border, border),
+        bottom: (0, canvas_utils_1.cropCanvas)(canvas, border, canvas.height - border, canvas.width - border * 2, border),
+        bottomRight: (0, canvas_utils_1.cropCanvas)(canvas, canvas.width - border, canvas.height - border, border, border),
     };
 }
 // main methods
@@ -88,51 +91,51 @@ function getEyesFromPsd({ objects2, sprites }, eyesPsd, irisesPsd) {
     const perLine = 10;
     const h = 30, dx = 30, dy = 30;
     const irisesCount = 8;
-    const irises = canvas_utils_1.colorCanvas(common_1.getLayerCanvasSafe('irises', irisesPsd), 'white');
-    const whites = common_1.getLayerCanvasSafe('whites', eyesPsd);
-    const lineart = common_1.getLayerCanvasSafe('lineart', eyesPsd);
-    const eyeshadow = common_1.getLayerCanvasSafe('eyeshadow', eyesPsd);
-    const bases = [canvas_utils_1.mergeCanvases(whites, lineart), ...common_1.findLayerSafe('eyelashes', eyesPsd).children
+    const irises = (0, canvas_utils_1.colorCanvas)((0, common_1.getLayerCanvasSafe)('irises', irisesPsd), 'white');
+    const whites = (0, common_1.getLayerCanvasSafe)('whites', eyesPsd);
+    const lineart = (0, common_1.getLayerCanvasSafe)('lineart', eyesPsd);
+    const eyeshadow = (0, common_1.getLayerCanvasSafe)('eyeshadow', eyesPsd);
+    const bases = [(0, canvas_utils_1.mergeCanvases)(whites, lineart), ...(0, common_1.findLayerSafe)('eyelashes', eyesPsd).children
             .sort(common_1.compareLayers)
             .map(common_1.getCanvas)
-            .map(c => canvas_utils_1.mergeCanvases(whites, lineart, c))];
-    const shadow = canvas_utils_1.colorCanvas(eyeshadow, 'white');
-    const shine = canvas_utils_1.mapColors(eyeshadow, c => c === 0xffffffff ? c : 0);
-    const getRightEye = canvas_utils_1.cropAndPadByColRow(left, top, rightEyeWidth, h, dx, dy, left, top);
-    const getLeftEye = canvas_utils_1.cropAndPadByColRow(left + rightEyeWidth, top, 30 - rightEyeWidth, h, dx, dy, left + rightEyeWidth, top);
-    const getRight = canvas_utils_1.cropByIndex(getRightEye, perLine);
-    const getLeft = canvas_utils_1.cropByIndex(getLeftEye, perLine);
+            .map(c => (0, canvas_utils_1.mergeCanvases)(whites, lineart, c))];
+    const shadow = (0, canvas_utils_1.colorCanvas)(eyeshadow, 'white');
+    const shine = (0, canvas_utils_1.mapColors)(eyeshadow, c => c === 0xffffffff ? c : 0);
+    const getRightEye = (0, canvas_utils_1.cropAndPadByColRow)(left, top, rightEyeWidth, h, dx, dy, left, top);
+    const getLeftEye = (0, canvas_utils_1.cropAndPadByColRow)(left + rightEyeWidth, top, 30 - rightEyeWidth, h, dx, dy, left + rightEyeWidth, top);
+    const getRight = (0, canvas_utils_1.cropByIndex)(getRightEye, perLine);
+    const getLeft = (0, canvas_utils_1.cropByIndex)(getLeftEye, perLine);
     // const mirrored = (get: ByIndexGetter): ByIndexGetter => (canvas, index) => mirrorCanvas(get(canvas, index), -15);
     const palette = [0, common_1.WHITE, common_1.BLACK]; // 
     const getEye = (get) => (i) => bases.map(base => {
-        const s = common_1.addSprite(sprites, get(shadow, i), undefined, palette);
+        const s = (0, common_1.addSprite)(sprites, get(shadow, i), undefined, palette);
         return {
-            base: common_1.addSprite(sprites, get(base, i), undefined, palette),
-            irises: lodash_1.range(0, irisesCount)
-                .map(j => canvas_utils_1.maskCanvas(get(irises, j), get(whites, i)))
-                .map(canvas => common_1.addSprite(sprites, canvas, undefined, palette)),
-            shadow: s ? s : common_1.addSprite(sprites, get(shadow, 0), undefined, palette),
-            shine: s ? common_1.addSprite(sprites, get(shine, i), undefined, palette) : common_1.addSprite(sprites, get(shine, 0), undefined, palette),
+            base: (0, common_1.addSprite)(sprites, get(base, i), undefined, palette),
+            irises: (0, lodash_1.range)(0, irisesCount)
+                .map(j => (0, canvas_utils_1.maskCanvas)(get(irises, j), get(whites, i)))
+                .map(canvas => (0, common_1.addSprite)(sprites, canvas, undefined, palette)),
+            shadow: s ? s : (0, common_1.addSprite)(sprites, get(shadow, 0), undefined, palette),
+            shine: s ? (0, common_1.addSprite)(sprites, get(shine, i), undefined, palette) : (0, common_1.addSprite)(sprites, get(shine, 0), undefined, palette),
         };
     });
-    objects2['eyeRight: PonyEyes'] = [null, ...lodash_1.range(0, eyeCount).map(getEye(getRight))];
-    objects2['eyeLeft: PonyEyes'] = [null, ...lodash_1.range(0, eyeCount).map(getEye(getLeft))];
+    objects2['eyeRight: PonyEyes'] = [null, ...(0, lodash_1.range)(0, eyeCount).map(getEye(getRight))];
+    objects2['eyeLeft: PonyEyes'] = [null, ...(0, lodash_1.range)(0, eyeCount).map(getEye(getLeft))];
     // objects2['eyeRight2: PonyEyes'] = [null, ...range(0, eyeCount).map(getEye(mirrored(getLeft)))];
 }
 function getBlushFromPsd({ sprites, objects2 }, psd) {
-    objects2.blush = common_1.addSprite(sprites, common_1.getLayerCanvasSafe('color', psd));
+    objects2.blush = (0, common_1.addSprite)(sprites, (0, common_1.getLayerCanvasSafe)('color', psd));
 }
 function getPonyShadowsAndSelection({ sprites, objects2 }, psd) {
     const count = 5;
-    const shadow = canvas_utils_1.colorCanvas(common_1.getLayerCanvasSafe('shadow', psd), 'white');
-    const selection = common_1.getLayerCanvasSafe('selection', psd);
-    const crop = canvas_utils_1.cropAndPadByColRow(0, 0, psd.width, 10, 0, 10);
-    objects2.ponyShadows = lodash_1.times(count, i => crop(shadow, 0, i)).map(c => common_1.addSprite(sprites, c));
-    objects2.ponySelections = lodash_1.times(count, i => crop(selection, 0, i)).map(c => common_1.addSprite(sprites, c));
+    const shadow = (0, canvas_utils_1.colorCanvas)((0, common_1.getLayerCanvasSafe)('shadow', psd), 'white');
+    const selection = (0, common_1.getLayerCanvasSafe)('selection', psd);
+    const crop = (0, canvas_utils_1.cropAndPadByColRow)(0, 0, psd.width, 10, 0, 10);
+    objects2.ponyShadows = (0, lodash_1.times)(count, i => crop(shadow, 0, i)).map(c => (0, common_1.addSprite)(sprites, c));
+    objects2.ponySelections = (0, lodash_1.times)(count, i => crop(selection, 0, i)).map(c => (0, common_1.addSprite)(sprites, c));
 }
 function splitMuzzleMouth(canvas) {
-    const muzzleCanvas = canvas_utils_1.mapColors(canvas, c => (c === common_1.WHITE || c === common_1.OUTLINE_COLOR || c === common_1.SHADE_COLOR) ? c : 0);
-    const mouthCanvas = canvas_utils_1.mapColors(canvas, c => {
+    const muzzleCanvas = (0, canvas_utils_1.mapColors)(canvas, c => (c === common_1.WHITE || c === common_1.OUTLINE_COLOR || c === common_1.SHADE_COLOR) ? c : 0);
+    const mouthCanvas = (0, canvas_utils_1.mapColors)(canvas, c => {
         if (c === common_1.MOUTH_COLOR || c === common_1.TONGUE_COLOR) {
             return c;
         }
@@ -160,28 +163,28 @@ function getMuzzlesFromPsd({ sprites, objects2 }, psd) {
         22, 23, 30, 32, 6,
         33,
     ];
-    const { mouthCanvas, muzzleCanvas } = splitMuzzleMouth(common_1.getLayerCanvasSafe('muzzle', psd));
-    const fangsCanvas = canvas_utils_1.colorCanvas(common_1.getLayerCanvasSafe('fangs', psd), 'white');
-    const noseCanvas = canvas_utils_1.colorCanvas(common_1.getLayerCanvasSafe('nose', psd), 'white');
+    const { mouthCanvas, muzzleCanvas } = splitMuzzleMouth((0, common_1.getLayerCanvasSafe)('muzzle', psd));
+    const fangsCanvas = (0, canvas_utils_1.colorCanvas)((0, common_1.getLayerCanvasSafe)('fangs', psd), 'white');
+    const noseCanvas = (0, canvas_utils_1.colorCanvas)((0, common_1.getLayerCanvasSafe)('nose', psd), 'white');
     const noseMuzzleCanvas = muzzleCanvas; // mergeCanvases(muzzleCanvas, noseCanvas);
-    const nosePatternCanvas = canvas_utils_1.mergeCanvases(canvas_utils_1.colorCanvas(muzzleCanvas, 'red'), canvas_utils_1.colorCanvas(noseCanvas, '#00ff00'));
-    const getImage = canvas_utils_1.cropAndPadByColRow(20, 20, 30, 30, 30, 30, 20, 20);
-    const muzzleIndices = [...lodash_1.range(0, typeCount), -1];
-    canvas_utils_1.saveCanvas(path.join(outputPath, 'noseMuzzleCanvas.png'), noseMuzzleCanvas);
-    canvas_utils_1.saveCanvas(path.join(outputPath, 'nosePatternCanvas.png'), nosePatternCanvas);
+    const nosePatternCanvas = (0, canvas_utils_1.mergeCanvases)((0, canvas_utils_1.colorCanvas)(muzzleCanvas, 'red'), (0, canvas_utils_1.colorCanvas)(noseCanvas, '#00ff00'));
+    const getImage = (0, canvas_utils_1.cropAndPadByColRow)(20, 20, 30, 30, 30, 30, 20, 20);
+    const muzzleIndices = [...(0, lodash_1.range)(0, typeCount), -1];
+    (0, canvas_utils_1.saveCanvas)(path.join(outputPath, 'noseMuzzleCanvas.png'), noseMuzzleCanvas);
+    (0, canvas_utils_1.saveCanvas)(path.join(outputPath, 'nosePatternCanvas.png'), nosePatternCanvas);
     // [expression][type][pattern]
     objects2['noses: PonyNose[][][]'] = expressionList.map(expression => muzzleIndices.map(type => {
         const x = expression % expressionsPerLine + (type > 0 ? type : 0) * columns;
         const y = Math.floor(expression / expressionsPerLine);
-        const fangs = common_1.addSprite(sprites, getImage(fangsCanvas, x, y)) || 0;
-        const mouth = common_1.addSprite(sprites, getImage(mouthCanvas, x, y), undefined, common_1.defaultPalette);
+        const fangs = (0, common_1.addSprite)(sprites, getImage(fangsCanvas, x, y)) || 0;
+        const mouth = (0, common_1.addSprite)(sprites, getImage(mouthCanvas, x, y), undefined, common_1.defaultPalette);
         if (type < 0) {
             const color = getImage(noseMuzzleCanvas, x, y);
             const pattern = getImage(nosePatternCanvas, x, y);
-            return [Object.assign({}, common_1.addSpriteWithColors(sprites, color, pattern), { mouth, fangs })];
+            return [{ ...(0, common_1.addSpriteWithColors)(sprites, color, pattern), mouth, fangs }];
         }
         else {
-            return [{ color: common_1.addSprite(sprites, getImage(muzzleCanvas, x, y)), colors: 3, mouth, fangs }];
+            return [{ color: (0, common_1.addSprite)(sprites, getImage(muzzleCanvas, x, y)), colors: 3, mouth, fangs }];
         }
     }));
 }
@@ -206,7 +209,7 @@ function importSprites({ sprites, objects2 }, sheet) {
     const setsWithEmpties = sheet.setsWithEmpties;
     let frameCount = Math.floor(psd.width / offset);
     let typeCount = Math.floor(psd.height / height);
-    let getImage = canvas_utils_1.cropAndPadByColRow(padLeft, 0, width, height, offset, height, 10 + padLeft, padTop - offsetY);
+    let getImage = (0, canvas_utils_1.cropAndPadByColRow)(padLeft, 0, width, height, offset, height, 10 + padLeft, padTop - offsetY);
     let hasExtra = false;
     if (wrap) {
         typeCount = typeCount * frameCount;
@@ -226,47 +229,50 @@ function importSprites({ sprites, objects2 }, sheet) {
     ];
     const maskFiles = {};
     if (sheet.masks) {
-        lodash_1.compact(sheet.masks.map(m => m.maskFile))
-            .forEach(file => maskFiles[file] = psd_utils_1.openPsd(path.join(ponyPath, file + '.psd')));
+        (0, lodash_1.compact)(sheet.masks.map(m => m.maskFile))
+            .forEach(file => maskFiles[file] = (0, psd_utils_1.openPsd)(path.join(ponyPath, file + '.psd')));
     }
     const animations = sets.map(({ layerName, name, mask, reverse, maskFile, mirror, mirrorOffsetX }) => {
-        const layer = common_1.findLayerSafe(layerName, psd);
-        let color = common_1.getLayerCanvasSafe('color', layer);
-        const extraCanvas = sheet.extra ? common_1.getLayerCanvas('extra', layer) : undefined;
-        const patterns = common_1.getPatternCanvases(layer);
+        const layer = (0, common_1.findLayerSafe)(layerName, psd);
+        let color = (0, common_1.getLayerCanvasSafe)('color', layer);
+        const extraCanvas = sheet.extra ? (0, common_1.getLayerCanvas)('extra', layer) : undefined;
+        const patterns = (0, common_1.getPatternCanvases)(layer);
         if (mask) {
-            const maskColor = common_1.getLayerCanvasSafe(mask, maskFiles[maskFile || ''] || psd);
-            const maskRepeated = canvas_utils_1.createExtCanvas(psd.width, psd.height, `${maskColor.info} repeated`);
+            const maskColor = (0, common_1.getLayerCanvasSafe)(mask, maskFiles[maskFile || ''] || psd);
+            const maskRepeated = (0, canvas_utils_1.createExtCanvas)(psd.width, psd.height, `${maskColor.info} repeated`);
             const maskContext = maskRepeated.getContext('2d');
             for (let i = 0; i < typeCount; i++) {
                 maskContext.drawImage(maskColor, 0, i * (height + offsetY));
             }
-            color = canvas_utils_1.maskCanvas(color, reverse ? canvas_utils_1.reverseMaskCanvas(maskRepeated) : maskRepeated);
+            color = (0, canvas_utils_1.maskCanvas)(color, reverse ? (0, canvas_utils_1.reverseMaskCanvas)(maskRepeated) : maskRepeated);
         }
         // [frame][type][pattern]
-        const frames = common_1.trimRight(lodash_1.range(0, frameCount).map(frame => {
-            return common_1.trimRight(lodash_1.range(0, typeCount).map(type => {
+        const frames = (0, common_1.trimRight)((0, lodash_1.range)(0, frameCount).map(frame => {
+            return (0, common_1.trimRight)((0, lodash_1.range)(0, typeCount).map(type => {
                 const { x, y } = importOffsets && importOffsets[frame] || { x: 0, y: 0 };
-                const getAndPadBase = (canvas) => canvas_utils_1.padCanvas(getImage(canvas, frame, type), -x, -y);
-                const getAndPad = mirror ? (canvas) => canvas_utils_1.mirrorCanvas(getAndPadBase(canvas), mirrorOffsetX) : getAndPadBase;
+                const getAndPadBase = (canvas) => (0, canvas_utils_1.padCanvas)(getImage(canvas, frame, type), -x, -y);
+                const getAndPad = mirror ? (canvas) => (0, canvas_utils_1.mirrorCanvas)(getAndPadBase(canvas), mirrorOffsetX) : getAndPadBase;
                 const accessoryFrame = getAndPad(color);
                 const extraFrame = extraCanvas && getAndPad(extraCanvas);
-                if (canvas_utils_1.isCanvasEmpty(accessoryFrame)) {
+                if ((0, canvas_utils_1.isCanvasEmpty)(accessoryFrame)) {
                     return null;
                 }
                 else {
                     let extraProps = {};
                     if (extraFrame) {
                         const palette = createPalette(extraFrame);
-                        const extra = common_1.addSprite(sprites, extraFrame, undefined, palette);
+                        const extra = (0, common_1.addSprite)(sprites, extraFrame, undefined, palette);
                         extraProps = { extra, palette };
                         hasExtra = true;
                     }
                     const patternCanvases = patterns
                         .map(getAndPad)
-                        .map(pattern => common_1.clipPattern(accessoryFrame, pattern));
-                    return lodash_1.dropRightWhile(patternCanvases, canvas_utils_1.isCanvasEmpty)
-                        .map(patternFrame => (Object.assign({}, common_1.addSpriteWithColors(sprites, accessoryFrame, patternFrame), extraProps)));
+                        .map(pattern => (0, common_1.clipPattern)(accessoryFrame, pattern));
+                    return (0, lodash_1.dropRightWhile)(patternCanvases, canvas_utils_1.isCanvasEmpty)
+                        .map(patternFrame => ({
+                        ...(0, common_1.addSpriteWithColors)(sprites, accessoryFrame, patternFrame),
+                        ...extraProps
+                    }));
                 }
             }));
         }));
@@ -276,7 +282,7 @@ function importSprites({ sprites, objects2 }, sheet) {
     if (animations.length > 1) {
         animations.forEach(({ frames }) => {
             frames.forEach((types, i) => {
-                const typeCount = lodash_1.max(animations.map(({ frames }) => frames[i] ? frames[i].length : 0));
+                const typeCount = (0, lodash_1.max)(animations.map(({ frames }) => frames[i] ? frames[i].length : 0));
                 while (types && types.length < typeCount) {
                     types.push([]);
                 }
@@ -288,7 +294,7 @@ function importSprites({ sprites, objects2 }, sheet) {
         const groups = sheet.groups || [animations.map(a => a.name)];
         const colorCounts = groups.map(() => []); // [group][type][pattern]
         animations.forEach(({ name, frames }) => {
-            const gi = groups.findIndex(g => lodash_1.includes(g, name));
+            const gi = groups.findIndex(g => (0, lodash_1.includes)(g, name));
             const groupColorCounts = colorCounts[gi];
             frames.forEach(types => {
                 (types || []).forEach((patterns, ti) => {
@@ -302,7 +308,7 @@ function importSprites({ sprites, objects2 }, sheet) {
             });
         });
         animations.forEach(({ name, frames }) => {
-            const gi = groups.findIndex(g => lodash_1.includes(g, name));
+            const gi = groups.findIndex(g => (0, lodash_1.includes)(g, name));
             const groupColorCounts = colorCounts[gi];
             frames.forEach(types => {
                 (types || []).forEach((patterns, ti) => {
@@ -316,9 +322,9 @@ function importSprites({ sprites, objects2 }, sheet) {
         });
     }
     animations.map(({ name, frames }) => {
-        if (sheet.empties && setsWithEmpties && lodash_1.includes(setsWithEmpties, name)) {
+        if (sheet.empties && setsWithEmpties && (0, lodash_1.includes)(setsWithEmpties, name)) {
             for (let i = 0; i < frames.length; i++) {
-                frames[i] = frames[i] && frames[i].filter((_, j) => !lodash_1.includes(sheet.empties, j));
+                frames[i] = frames[i] && frames[i].filter((_, j) => !(0, lodash_1.includes)(sheet.empties, j));
             }
         }
         if (sheet.single) {
@@ -333,11 +339,11 @@ function getTreesFromPsd({ sprites, objects2 }, psd, name, palettes) {
     const groups = psd.children.filter(c => c.children && c.children.length).sort(common_1.compareLayers);
     const width = psd.width / groups.length;
     const spr = (name, index, palette, parent) => {
-        const canvas = common_1.getLayerCanvasSafe(name, parent);
-        const cropped = canvas_utils_1.cropCanvas(canvas, width * index, 0, width, canvas.height);
-        return common_1.addSprite(sprites, cropped, undefined, palette);
+        const canvas = (0, common_1.getLayerCanvasSafe)(name, parent);
+        const cropped = (0, canvas_utils_1.cropCanvas)(canvas, width * index, 0, width, canvas.height);
+        return (0, common_1.addSprite)(sprites, cropped, undefined, palette);
     };
-    const children = lodash_1.flatten(groups.map(c => c.children));
+    const children = (0, lodash_1.flatten)(groups.map(c => c.children));
     const trunkPalettes = palettes || [createPaletteFromLayers(children.filter(l => /^(stump|trunk)$/.test(l.name)))];
     const crownPalettes = palettes || [createPaletteFromLayers(children.filter(l => /crown/.test(l.name)))];
     const hasStumpWinter = children.some(l => /stump winter/.test(l.name));
@@ -355,7 +361,7 @@ function getTreesFromPsd({ sprites, objects2 }, psd, name, palettes) {
                 palettes: stumpWinterPalettes,
             };
         }
-        if (common_1.findLayer('trunk', group)) {
+        if ((0, common_1.findLayer)('trunk', group)) {
             objects2[`${name}Trunk${index}`] = {
                 color: spr('trunk', index, trunkPalettes[0], group),
                 palettes: trunkPalettes,
@@ -372,9 +378,9 @@ function getTreesFromPsd({ sprites, objects2 }, psd, name, palettes) {
     });
 }
 function getTreesOrObjectFromPsd(result, psd, name, palettes) {
-    if (common_1.findLayer('color', psd)) {
-        const color = common_1.getLayerCanvas('color', psd);
-        const shadow = common_1.getLayerCanvas('shadow', psd);
+    if ((0, common_1.findLayer)('color', psd)) {
+        const color = (0, common_1.getLayerCanvas)('color', psd);
+        const shadow = (0, common_1.getLayerCanvas)('shadow', psd);
         addColorShadow(result, name, color, shadow, palettes);
     }
     else {
@@ -382,33 +388,33 @@ function getTreesOrObjectFromPsd(result, psd, name, palettes) {
     }
 }
 function getTreeStagesFromPsds(result, psds, name) {
-    const groups = lodash_1.range(1, 3).map(i => `tree ${i}`);
+    const groups = (0, lodash_1.range)(1, 3).map(i => `tree ${i}`);
     const layers = ['crown', 'trunk', 'stump'];
-    const palettes = createPalettes(psds, ['color', ...common_1.cartesian(groups, layers).map(([a, b]) => `${a}/${b}`)]);
+    const palettes = createPalettes(psds, ['color', ...(0, common_1.cartesian)(groups, layers).map(([a, b]) => `${a}/${b}`)]);
     psds
         .filter(psd => !isPalettePsd(psd))
         .forEach(psd => getTreesOrObjectFromPsd(result, psd, `${name}_${psd.name}`, palettes));
 }
 function getTreesFromPsds(result, directory) {
-    common_1.getDirectories(directory)
+    (0, common_1.getDirectories)(directory)
         .filter(dir => !/^_/.test(path.basename(dir)))
-        .forEach(dir => getTreeStagesFromPsds(result, psd_utils_1.openPsdFiles(dir, /\d+\.psd$/), path.basename(dir)));
+        .forEach(dir => getTreeStagesFromPsds(result, (0, psd_utils_1.openPsdFiles)(dir, /\d+\.psd$/), path.basename(dir)));
 }
 function addColorShadow({ sprites, objects2 }, name, color, shadow, palettes) {
     objects2[name] = {
-        color: common_1.addSprite(sprites, color, undefined, palettes && palettes[0]),
-        shadow: common_1.addSprite(sprites, shadow, undefined, shadowPalette),
+        color: (0, common_1.addSprite)(sprites, color, undefined, palettes && palettes[0]),
+        shadow: (0, common_1.addSprite)(sprites, shadow, undefined, shadowPalette),
         palettes,
     };
 }
 function getObjectFromPsd(result, psd, name) {
-    const color = common_1.getLayerCanvas('color', psd);
-    const shadow = common_1.getLayerCanvas('shadow', psd);
+    const color = (0, common_1.getLayerCanvas)('color', psd);
+    const shadow = (0, common_1.getLayerCanvas)('shadow', psd);
     const palettes = color ? [createPalette(color)] : undefined;
     addColorShadow(result, name, color, shadow, palettes);
 }
 function createOtherPalette(basePalette, base, color, palette) {
-    canvas_utils_1.forEachPixelOf2Canvases(base, color, (b, c) => {
+    (0, canvas_utils_1.forEachPixelOf2Canvases)(base, color, (b, c) => {
         if (b !== c) {
             const index = basePalette.indexOf(b);
             if (index === -1) {
@@ -421,8 +427,8 @@ function createOtherPalette(basePalette, base, color, palette) {
 }
 function otherPaletteFromPsd(basePalette, basePsd, palettePsd, palette, layers) {
     return layers.reduce((palette, layer) => {
-        const base = common_1.getLayerCanvas(layer, basePsd);
-        const pal = common_1.getLayerCanvas(layer, palettePsd);
+        const base = (0, common_1.getLayerCanvas)(layer, basePsd);
+        const pal = (0, common_1.getLayerCanvas)(layer, palettePsd);
         return base && pal ? createOtherPalette(basePalette, base, pal, palette) : palette;
     }, palette);
 }
@@ -430,11 +436,11 @@ function isPalettePsd(psd) {
     return /^palette_/.test(psd.name);
 }
 function getLayerCanvases(names, psd) {
-    return lodash_1.compact(names.map(name => common_1.getLayerCanvas(name, psd)));
+    return (0, lodash_1.compact)(names.map(name => (0, common_1.getLayerCanvas)(name, psd)));
 }
 function createPalettes(psds, layers) {
     const main = psds.filter(psd => !isPalettePsd(psd));
-    const canvases = lodash_1.flatten(main.map(psd => getLayerCanvases(layers, psd)));
+    const canvases = (0, lodash_1.flatten)(main.map(psd => getLayerCanvases(layers, psd)));
     const palette = createPaletteFromList(canvases);
     const otherPalettes = psds
         .filter(isPalettePsd)
@@ -442,8 +448,8 @@ function createPalettes(psds, layers) {
         const [, index, name] = psd.name.split('_');
         return { index: +index, name, psd };
     });
-    const paletteCount = lodash_1.max(otherPalettes.map(p => p.index)) || 0;
-    const other = lodash_1.range(1, paletteCount + 1)
+    const paletteCount = (0, lodash_1.max)(otherPalettes.map(p => p.index)) || 0;
+    const other = (0, lodash_1.range)(1, paletteCount + 1)
         .map(i => otherPalettes.filter(p => p.index === i))
         .filter(x => x.length)
         .map(x => x.map(({ name, psd }) => ({ base: main.find(x => x.name === name), psd })))
@@ -455,18 +461,18 @@ function getObjectGroupFromPsd(result, psds, dir) {
     psds
         .filter(psd => !isPalettePsd(psd))
         .forEach(psd => {
-        const color = common_1.getLayerCanvas('color', psd);
-        const shadow = common_1.getLayerCanvas('shadow', psd);
+        const color = (0, common_1.getLayerCanvas)('color', psd);
+        const shadow = (0, common_1.getLayerCanvas)('shadow', psd);
         addColorShadow(result, `${dir}_${psd.name}`, color, shadow, palettes);
     });
 }
 function getObjectsFromPsds(result, directory) {
-    psd_utils_1.openPsdFiles(directory, /psd$/)
+    (0, psd_utils_1.openPsdFiles)(directory, /psd$/)
         .forEach(psd => getObjectFromPsd(result, psd, psd.name));
-    common_1.getDirectories(directory)
+    (0, common_1.getDirectories)(directory)
         .filter(dir => !/^_/.test(path.basename(dir)))
         .forEach(dir => {
-        const files = psd_utils_1.openPsdFiles(dir, /psd$/)
+        const files = (0, psd_utils_1.openPsdFiles)(dir, /psd$/)
             .filter(psd => !/^_/.test(path.basename(psd.name)));
         getObjectGroupFromPsd(result, files, path.basename(dir));
     });
@@ -475,7 +481,7 @@ function createOtherSprites({ objects, images }, directory) {
     getPngs(directory).forEach(f => {
         const canvas = openPng(path.join(directory, f));
         const name = path.basename(f, '.png');
-        objects[name] = common_1.addImage(images, canvas);
+        objects[name] = (0, common_1.addImage)(images, canvas);
     });
 }
 function createOtherSpritesPalette({ objects2, sprites }, directory) {
@@ -483,7 +489,7 @@ function createOtherSpritesPalette({ objects2, sprites }, directory) {
         const canvas = openPng(path.join(directory, f));
         const name = path.basename(f, '.png');
         const palette = createPalette(canvas);
-        const color = common_1.addSprite(sprites, canvas, undefined, palette);
+        const color = (0, common_1.addSprite)(sprites, canvas, undefined, palette);
         objects2[name + '_2'] = { color, palette };
     });
 }
@@ -491,13 +497,13 @@ function createIcons({ objects2, sprites }, directory) {
     getPngs(directory).forEach(f => {
         const canvas = openPng(path.join(directory, f));
         const name = path.basename(f, '.png');
-        objects2[name] = common_1.addSprite(sprites, canvas, undefined, common_1.defaultPalette);
+        objects2[name] = (0, common_1.addSprite)(sprites, canvas, undefined, common_1.defaultPalette);
     });
 }
 function createOtherSpritesAnimations({ objects, images }, directory) {
-    psd_utils_1.openPsdFiles(directory).forEach(psd => {
+    (0, psd_utils_1.openPsdFiles)(directory).forEach(psd => {
         const canvases = getFrames(psd.children).map(common_1.getCanvas);
-        const frames = canvases.map(c => c ? common_1.addImage(images, c) : 0);
+        const frames = canvases.map(c => c ? (0, common_1.addImage)(images, c) : 0);
         objects[psd.name] = { frames };
     });
 }
@@ -507,9 +513,9 @@ function createButtons({ objects, objects2, images, sprites }, directory) {
         const border = +borderText;
         const canvas = openPng(path.join(directory, f));
         const canvases = splitButton(canvas, border);
-        objects[name] = Object.assign({ border }, lodash_1.mapValues(canvases, c => common_1.addImage(images, c)));
+        objects[name] = { border, ...(0, lodash_1.mapValues)(canvases, c => (0, common_1.addImage)(images, c)) };
         const palette = createPalette(canvas);
-        objects2[name + '_2'] = Object.assign({ border, palette }, lodash_1.mapValues(canvases, c => common_1.addSprite(sprites, c, undefined, palette)));
+        objects2[name + '_2'] = { border, palette, ...(0, lodash_1.mapValues)(canvases, c => (0, common_1.addSprite)(sprites, c, undefined, palette)) };
     });
 }
 const lightsPad = 4;
@@ -517,50 +523,50 @@ function createLights({ objects, images }, directory) {
     return getPngs(directory).map(f => {
         const canvas = openPng(path.join(directory, f));
         const name = path.basename(f, '.png');
-        return objects[name] = common_1.addImage(images, canvas_utils_1.padCanvas(canvas, lightsPad, lightsPad, lightsPad, lightsPad, 'black'));
+        return objects[name] = (0, common_1.addImage)(images, (0, canvas_utils_1.padCanvas)(canvas, lightsPad, lightsPad, lightsPad, lightsPad, 'black'));
     });
 }
 function createAnimations({ objects2, sprites }, directory) {
     getPngs(directory).forEach(f => {
         const [, name, w, h] = /^(.+)-(\d+)x(\d+)\.png$/.exec(f);
-        const canvas = canvas_utils_1.imageToCanvas(canvas_utils_1.loadImage(path.join(directory, f)));
+        const canvas = (0, canvas_utils_1.imageToCanvas)((0, canvas_utils_1.loadImage)(path.join(directory, f)));
         const spriteWidth = canvas.width / +w;
         const spriteHeight = canvas.height / +h;
         const palette = createPalette(canvas);
-        const frames = common_1.cartesian(lodash_1.range(+w), lodash_1.range(+h))
-            .map(([x, y]) => canvas_utils_1.cropCanvas(canvas, x * spriteWidth, y * spriteHeight, spriteWidth, spriteHeight))
-            .map(bitmap => common_1.addSprite(sprites, bitmap, undefined, palette));
+        const frames = (0, common_1.cartesian)((0, lodash_1.range)(+w), (0, lodash_1.range)(+h))
+            .map(([x, y]) => (0, canvas_utils_1.cropCanvas)(canvas, x * spriteWidth, y * spriteHeight, spriteWidth, spriteHeight))
+            .map(bitmap => (0, common_1.addSprite)(sprites, bitmap, undefined, palette));
         objects2[name] = { frames, palette };
     });
-    psd_utils_1.openPsdFiles(directory).forEach(psd => {
+    (0, psd_utils_1.openPsdFiles)(directory).forEach(psd => {
         const canvases = getFrames(psd.children).map(common_1.getCanvas);
-        const palette = createPaletteFromList(lodash_1.compact(canvases));
-        const frames = canvases.map(c => common_1.addSprite(sprites, c, undefined, palette));
-        const shadowLayer = common_1.findLayer('shadow', psd);
-        const shadow = shadowLayer ? common_1.addSprite(sprites, common_1.getCanvas(shadowLayer), undefined, shadowPalette) : undefined;
+        const palette = createPaletteFromList((0, lodash_1.compact)(canvases));
+        const frames = canvases.map(c => (0, common_1.addSprite)(sprites, c, undefined, palette));
+        const shadowLayer = (0, common_1.findLayer)('shadow', psd);
+        const shadow = shadowLayer ? (0, common_1.addSprite)(sprites, (0, common_1.getCanvas)(shadowLayer), undefined, shadowPalette) : undefined;
         objects2[psd.name] = { frames, palette, shadow };
     });
-    common_1.getDirectories(directory)
+    (0, common_1.getDirectories)(directory)
         .filter(dir => !/^_/.test(path.basename(dir)))
         .forEach(dir => {
-        const psds = psd_utils_1.openPsdFiles(dir);
+        const psds = (0, psd_utils_1.openPsdFiles)(dir);
         const dirName = path.basename(dir);
-        const canvases = lodash_1.flatten(psds.map(psd => lodash_1.compact(psd.children.filter(x => /^frame/i.test(x.name)).map(x => common_1.getCanvas(x)))));
+        const canvases = (0, lodash_1.flatten)(psds.map(psd => (0, lodash_1.compact)(psd.children.filter(x => /^frame/i.test(x.name)).map(x => (0, common_1.getCanvas)(x)))));
         const palette = createPaletteFromList(canvases);
         for (const psd of psds) {
             const canvases = getFrames(psd.children).map(common_1.getCanvas);
-            const frames = canvases.map(c => common_1.addSprite(sprites, c, undefined, palette));
-            const shadowLayer = common_1.findLayer('shadow', psd);
-            const shadow = shadowLayer ? common_1.addSprite(sprites, common_1.getCanvas(shadowLayer), undefined, shadowPalette) : undefined;
+            const frames = canvases.map(c => (0, common_1.addSprite)(sprites, c, undefined, palette));
+            const shadowLayer = (0, common_1.findLayer)('shadow', psd);
+            const shadow = shadowLayer ? (0, common_1.addSprite)(sprites, (0, common_1.getCanvas)(shadowLayer), undefined, shadowPalette) : undefined;
             objects2[`${dirName}_${psd.name}`] = { frames, palette, shadow };
         }
     });
 }
 function createEmoteAnimations({ objects2, sprites }, directory) {
-    psd_utils_1.openPsdFiles(directory).forEach(psd => {
+    (0, psd_utils_1.openPsdFiles)(directory).forEach(psd => {
         const frames = getFrames(psd.children)
             .map(common_1.getCanvasSafe)
-            .map(c => common_1.addSprite(sprites, c, undefined, common_1.defaultPalette));
+            .map(c => (0, common_1.addSprite)(sprites, c, undefined, common_1.defaultPalette));
         objects2[psd.name] = { frames, palette: [] };
     });
 }
@@ -576,7 +582,7 @@ function encodeArray(items) {
     return `[${items.join(', ')}]`;
 }
 function addPalette(palette) {
-    const index = palettes.findIndex(p => lodash_1.isEqual(p, palette));
+    const index = palettes.findIndex(p => (0, lodash_1.isEqual)(p, palette));
     const paletteIndex = index === -1 ? (palettes.push(palette) - 1) : index;
     return paletteIndex;
 }
@@ -719,7 +725,7 @@ function encodeSprite(s) {
     if (s.x > 0xfff || s.y > 0xfff || s.ox > 0xff || s.oy > 0xff || s.w > 0x1ff || s.h > 0x1ff || spriteType(s) > 0x3f) {
         throw new Error(`Invalid sprite (${s})`);
     }
-    const buffer = bitUtils_1.bitWriter(write => {
+    const buffer = (0, bitUtils_1.bitWriter)(write => {
         write(s.x, 12);
         write(s.y, 12);
         write(s.w, 9);
@@ -743,7 +749,7 @@ function toSpritesArray(sprites) {
         console.error(`Invalid sprite at ${index}`, sprites[index]);
         throw new Error(`Invalid sprite at ${index}`);
     }
-    return lodash_1.compact(sprites)
+    return (0, lodash_1.compact)(sprites)
         .filter(s => s.w && s.h)
         .map(s => {
         maxW = Math.max(maxW, s.w);
@@ -794,7 +800,7 @@ function createSpritesTS(dest, config) {
     ].join('\n\n'));
     ts += Object.keys(objects).map(key => createObject(key, objects[key])).join('');
     ts += Object.keys(objects2).map(key => createObject(key, objects2[key])).join('').replace(/sprites/g, 'sprites2');
-    const colors = lodash_1.uniq(lodash_1.flatten(config.palettes)).sort((a, b) => a - b);
+    const colors = (0, lodash_1.uniq)((0, lodash_1.flatten)(config.palettes)).sort((a, b) => a - b);
     const palettesCode = config.palettes
         .map(p => p.map(c => colors.indexOf(c)).join(', '))
         .map(p => `\t[${p}]`)
@@ -802,7 +808,7 @@ function createSpritesTS(dest, config) {
         .trim();
     ts = ts.replace('/*COLORS*/', colors.map(encodeColor).join(' '));
     ts = ts.replace('/*PALETTES*/', palettesCode);
-    ts = ts.replace('/*NAMED_PALETTES*/', lodash_1.toPairs(config.namedPalettes)
+    ts = ts.replace('/*NAMED_PALETTES*/', (0, lodash_1.toPairs)(config.namedPalettes)
         .map(([key, value]) => `export const ${key} = palettes[${value}];`).join('\n'));
     ts = ts.replace('/*NAMED_SPRITES*/', `export const emptySprite = sprites[0];\nexport const emptySprite2 = sprites2[0];`);
     ts += `
@@ -824,24 +830,23 @@ function fixPixelRect(sprites, objects, srcName, dstName) {
     objects[dstName] = sprites.length - 1;
 }
 function getFramesFromPSD({ sprites }, psd, padY = 5) {
-    return common_1.findLayerSafe('frames', psd).children
+    return (0, common_1.findLayerSafe)('frames', psd).children
         .slice()
         .sort(common_1.compareLayers)
         .map(common_1.getCanvasSafe)
         .map(canvas => {
-        const cropped = canvas_utils_1.padCanvas(canvas, 0, padY);
-        const pattern = common_1.clipPattern(cropped, canvas_utils_1.colorCanvas(cropped, 'red'));
-        return common_1.addSpriteWithColors(sprites, cropped, pattern);
+        const cropped = (0, canvas_utils_1.padCanvas)(canvas, 0, padY);
+        const pattern = (0, common_1.clipPattern)(cropped, (0, canvas_utils_1.colorCanvas)(cropped, 'red'));
+        return (0, common_1.addSpriteWithColors)(sprites, cropped, pattern);
     });
 }
-exports.getFramesFromPSD = getFramesFromPSD;
 // main
 function createResult() {
     return {
         objects: {},
         objects2: {},
-        images: [canvas_utils_1.createExtCanvas(1, 1, 'empty')],
-        sprites: [{ image: canvas_utils_1.createExtCanvas(1, 1, 'empty'), x: 0, y: 0, w: 0, h: 0, ox: 0, oy: 0 }],
+        images: [(0, canvas_utils_1.createExtCanvas)(1, 1, 'empty')],
+        sprites: [{ image: (0, canvas_utils_1.createExtCanvas)(1, 1, 'empty'), x: 0, y: 0, w: 0, h: 0, ox: 0, oy: 0 }],
     };
 }
 function createPonySprites(result) {
@@ -867,19 +872,19 @@ function createPonySprites(result) {
     createOtherSpritesAnimations(result, path.join(sourcePath, 'sprites-animations'));
     createEmoteAnimations(result, path.join(sourcePath, 'emotes'));
     createWalls(result, path.join(sourcePath, 'walls'));
-    common_1.createPixelSprites(result);
+    (0, common_1.createPixelSprites)(result);
 }
 function createWalls(result, rootPath) {
-    createWall(result, 'wall_wood', psd_utils_1.openPsd(path.join(rootPath, 'wood.psd')), {
+    createWall(result, 'wall_wood', (0, psd_utils_1.openPsd)(path.join(rootPath, 'wood.psd')), {
         thickness: 8, fullHeight: 85, halfHeight: 22, fullHeightVertical: 97, halfHeightVertical: 34,
     });
-    createWall(result, 'wall_stone', psd_utils_1.openPsd(path.join(rootPath, 'stone.psd')), {
+    createWall(result, 'wall_stone', (0, psd_utils_1.openPsd)(path.join(rootPath, 'stone.psd')), {
         thickness: 8, fullHeight: 85, halfHeight: 22, fullHeightVertical: 97, halfHeightVertical: 34,
     });
 }
 function createWall(result, name, psd, config) {
-    const full = common_1.getCanvasSafe(common_1.findLayerSafe('full', psd));
-    const half = common_1.getCanvasSafe(common_1.findLayerSafe('half', psd));
+    const full = (0, common_1.getCanvasSafe)((0, common_1.findLayerSafe)('full', psd));
+    const half = (0, common_1.getCanvasSafe)((0, common_1.findLayerSafe)('half', psd));
     const palette = createPaletteFromList([full, half]);
     const h0wall = 16;
     const v0wall = 17;
@@ -900,8 +905,8 @@ function createWall(result, name, psd, config) {
     }
     function createSprites(canvas, y, height, verticalHeight) {
         return map
-            .map(({ x, w, vertical }) => canvas_utils_1.cropCanvas(canvas, x, y, w, vertical ? verticalHeight : height))
-            .map(part => ({ palette, color: common_1.addSprite(result.sprites, part, undefined, palette) }));
+            .map(({ x, w, vertical }) => (0, canvas_utils_1.cropCanvas)(canvas, x, y, w, vertical ? verticalHeight : height))
+            .map(part => ({ palette, color: (0, common_1.addSprite)(result.sprites, part, undefined, palette) }));
     }
     // 0b	top right bottom left
     push(0b0100, thickness);
@@ -959,16 +964,16 @@ function createTileSprites({ sprites, objects2 }) {
         { name: 'caveTiles', file: 'dirt-stone-cave.png', space: 1, alts: [] },
     ];
     types.forEach(({ name, file, alts, space }) => {
-        const tileSprites = convert_tiles_1.tilesToSprites(openPng(path.join(basePath, file)), space, space);
+        const tileSprites = (0, convert_tiles_1.tilesToSprites)(openPng(path.join(basePath, file)), space, space);
         const palette = createPaletteFromList(tileSprites);
         const palettes = [palette, ...alts.map(altFile => {
-                const altSprites = convert_tiles_1.tilesToSprites(openPng(path.join(basePath, altFile)), space, space);
+                const altSprites = (0, convert_tiles_1.tilesToSprites)(openPng(path.join(basePath, altFile)), space, space);
                 const altPalette = palette.slice();
                 return altSprites.reduce((pal, s, i) => createOtherPalette(palette, tileSprites[i], s, pal), altPalette);
             })];
         objects2[name] = {
             palettes,
-            sprites: tileSprites.map(s => common_1.addSprite(sprites, s, undefined, palette)),
+            sprites: tileSprites.map(s => (0, common_1.addSprite)(sprites, s, undefined, palette)),
         };
     });
     const otherTiles = [];
@@ -977,7 +982,7 @@ function createTileSprites({ sprites, objects2 }) {
         const palette = createPaletteFromList([image]);
         objects2[`${tile}Tiles`] = {
             palettes: [palette],
-            sprites: [common_1.addSprite(sprites, image, undefined, palette)],
+            sprites: [(0, common_1.addSprite)(sprites, image, undefined, palette)],
         };
     });
     const cliffs = openPng(path.join(sourcePath, 'tiles', 'cliffs-grass.png'));
@@ -992,7 +997,7 @@ function createTileSprites({ sprites, objects2 }) {
     createCliffs('cave_walls', cave, [cavePalette]);
     function createCliffs(baseName, canvas, palettes) {
         function addCliffSprite(name, x, y, w = 1, h = 1) {
-            const color = common_1.addSprite(sprites, canvas_utils_1.cropCanvas(canvas, 32 * x, 24 * y, 32 * w, 24 * h), undefined, palettes[0]);
+            const color = (0, common_1.addSprite)(sprites, (0, canvas_utils_1.cropCanvas)(canvas, 32 * x, 24 * y, 32 * w, 24 * h), undefined, palettes[0]);
             objects2[`${baseName}_${name}`] = { color, palettes };
         }
         addCliffSprite('decal_1', 3, 1);
@@ -1042,14 +1047,14 @@ function createTileSprites({ sprites, objects2 }) {
 }
 function fontCanvas(name) {
     const filePath = path.join(sourcePath, 'fonts', name);
-    const file = psd_utils_1.openPsd(filePath);
-    return common_1.getLayerCanvasSafe('color', file);
+    const file = (0, psd_utils_1.openPsd)(filePath);
+    return (0, common_1.getLayerCanvasSafe)('color', file);
 }
 function createStripedCanvas(canvas, colors) {
-    const stripes = canvas_utils_1.createExtCanvas(canvas.width, canvas.height, `${canvas.info} (stripes)`);
+    const stripes = (0, canvas_utils_1.createExtCanvas)(canvas.width, canvas.height, `${canvas.info} (stripes)`);
     const context = stripes.getContext('2d');
     for (let y = 0; y < canvas.height; y++) {
-        context.fillStyle = color_1.colorToCSS(colors[y % colors.length]);
+        context.fillStyle = (0, color_1.colorToCSS)(colors[y % colors.length]);
         context.fillRect(0, y, canvas.width, 1);
     }
     context.globalCompositeOperation = 'destination-in';
@@ -1057,7 +1062,7 @@ function createStripedCanvas(canvas, colors) {
     return stripes;
 }
 function bandedPalette(colors, bands) {
-    return lodash_1.flatten(bands.map((t, i) => lodash_1.times(t, () => colors[i] >>> 0)));
+    return (0, lodash_1.flatten)(bands.map((t, i) => (0, lodash_1.times)(t, () => colors[i] >>> 0)));
 }
 function bandedTextPalette(colors) {
     return bandedPalette(colors, [3, 2, 3, 2]);
@@ -1069,8 +1074,8 @@ const SUPPORTER1 = 0xf86754ff;
 const SUPPORTER2_BANDS = [0xffdfc1ff, 0xffcd99ff, 0xff9f3bff, 0xd97e09ff];
 const SUPPORTER3_BANDS = [0xffffffff, 0xfffda4ff, 0xffea3bff, 0xfdbb0bff];
 function createSprites(log) {
-    common_1.mkdir(destPath);
-    common_1.mkdir(generatedPath);
+    (0, common_1.mkdir)(destPath);
+    (0, common_1.mkdir)(generatedPath);
     const result = createResult();
     createPonySprites(result);
     createTileSprites(result);
@@ -1079,22 +1084,22 @@ function createSprites(log) {
     const tinyFont = fontCanvas('tiny.psd');
     const monoFont = fontCanvas('mono.psd');
     const emojiPalette = createPalette(mainEmoji);
-    const mainFontPalette = [common_1.TRANSPARENT, ...lodash_1.times(10, i => 0xff + i * 256)];
+    const mainFontPalette = [common_1.TRANSPARENT, ...(0, lodash_1.times)(10, i => 0xff + i * 256)];
     const stripedMainFont = createStripedCanvas(mainFont, mainFontPalette.slice(1));
-    const smallFontPalette = [common_1.TRANSPARENT, ...lodash_1.times(9, i => 0xff + i * 256)];
+    const smallFontPalette = [common_1.TRANSPARENT, ...(0, lodash_1.times)(9, i => 0xff + i * 256)];
     const stripedSmallFont = createStripedCanvas(tinyFont, smallFontPalette.slice(1));
     const stripedMonoFont = createStripedCanvas(monoFont, smallFontPalette.slice(1));
-    const fontSprites = create_font_1.createFont(mainFont, 10, 10, canvas => common_1.addImage(result.images, canvas), { noChinese: true });
-    const emojiSprites = create_font_1.createEmojis(mainEmoji, 10, 10, canvas => common_1.addImage(result.images, canvas));
-    const smallFontSprites = create_font_1.createFont(tinyFont, 8, 9, canvas => common_1.addImage(result.images, canvas), { noChinese: true });
-    const monoFontSprites = create_font_1.createFont(monoFont, 8, 9, canvas => common_1.addImage(result.images, canvas), { noChinese: true, mono: 4, onlyBase: true });
-    const fontSpritesPal = create_font_1.createFont(stripedMainFont, 10, 10, canvas => common_1.addSprite(result.sprites, canvas, undefined, mainFontPalette));
-    const emojiSpritesPal = create_font_1.createEmojis(mainEmoji, 10, 10, canvas => common_1.addSprite(result.sprites, canvas, undefined, emojiPalette));
-    const smallFontSpritesPal = create_font_1.createFont(stripedSmallFont, 8, 9, canvas => common_1.addSprite(result.sprites, canvas, undefined, smallFontPalette), { noChinese: true });
-    const monoFontSpritesPal = create_font_1.createFont(stripedMonoFont, 8, 9, canvas => common_1.addSprite(result.sprites, canvas, undefined, smallFontPalette), { noChinese: true, mono: 4, onlyBase: true });
+    const fontSprites = (0, create_font_1.createFont)(mainFont, 10, 10, canvas => (0, common_1.addImage)(result.images, canvas), { noChinese: true });
+    const emojiSprites = (0, create_font_1.createEmojis)(mainEmoji, 10, 10, canvas => (0, common_1.addImage)(result.images, canvas));
+    const smallFontSprites = (0, create_font_1.createFont)(tinyFont, 8, 9, canvas => (0, common_1.addImage)(result.images, canvas), { noChinese: true });
+    const monoFontSprites = (0, create_font_1.createFont)(monoFont, 8, 9, canvas => (0, common_1.addImage)(result.images, canvas), { noChinese: true, mono: 4, onlyBase: true });
+    const fontSpritesPal = (0, create_font_1.createFont)(stripedMainFont, 10, 10, canvas => (0, common_1.addSprite)(result.sprites, canvas, undefined, mainFontPalette));
+    const emojiSpritesPal = (0, create_font_1.createEmojis)(mainEmoji, 10, 10, canvas => (0, common_1.addSprite)(result.sprites, canvas, undefined, emojiPalette));
+    const smallFontSpritesPal = (0, create_font_1.createFont)(stripedSmallFont, 8, 9, canvas => (0, common_1.addSprite)(result.sprites, canvas, undefined, smallFontPalette), { noChinese: true });
+    const monoFontSpritesPal = (0, create_font_1.createFont)(stripedMonoFont, 8, 9, canvas => (0, common_1.addSprite)(result.sprites, canvas, undefined, smallFontPalette), { noChinese: true, mono: 4, onlyBase: true });
     const lights = createLights(result, path.join(sourcePath, 'lights'));
-    const ponySheet = sprite_sheet_1.createSpriteSheet('ponySheet', result.images.map(sprite_sheet_1.imageToSprite), log, 1024);
-    const ponySheet2 = sprite_sheet_1.createSpriteSheet('ponySheet2', result.sprites, log, 1024, 'black', true);
+    const ponySheet = (0, sprite_sheet_1.createSpriteSheet)('ponySheet', result.images.map(sprite_sheet_1.imageToSprite), log, 1024);
+    const ponySheet2 = (0, sprite_sheet_1.createSpriteSheet)('ponySheet2', result.sprites, log, 1024, 'black', true);
     fixPixelRect(ponySheet.sprites, result.objects, 'pixelRect', 'pixel');
     fixPixelRect(ponySheet2.sprites, result.objects2, 'pixelRect2', 'pixel2');
     lights.map(i => ponySheet.sprites[i]).forEach(s => {
@@ -1105,11 +1110,11 @@ function createSprites(log) {
             s.h -= lightsPad * 2;
         }
     });
-    sprite_sheet_1.saveSpriteSheetAsBinary(path.join(generatedPath, 'pony.bin'), ponySheet.image);
+    (0, sprite_sheet_1.saveSpriteSheetAsBinary)(path.join(generatedPath, 'pony.bin'), ponySheet.image);
     const spritesConfig = {
-        spriteFileName: sprite_sheet_1.saveSpriteSheet(path.join(destPath, 'pony.png'), ponySheet.image),
-        paletteFileName: sprite_sheet_1.saveSpriteSheet(path.join(destPath, 'pony2.png'), ponySheet2.image),
-        paletteAlphaFileName: sprite_sheet_1.saveSpriteSheet(path.join(destPath, 'pony2a.png'), ponySheet2.alpha),
+        spriteFileName: (0, sprite_sheet_1.saveSpriteSheet)(path.join(destPath, 'pony.png'), ponySheet.image),
+        paletteFileName: (0, sprite_sheet_1.saveSpriteSheet)(path.join(destPath, 'pony2.png'), ponySheet2.image),
+        paletteAlphaFileName: (0, sprite_sheet_1.saveSpriteSheet)(path.join(destPath, 'pony2a.png'), ponySheet2.alpha),
         sprites: ponySheet.sprites,
         paletteSprites: ponySheet2.sprites,
         result,
@@ -1130,22 +1135,21 @@ function createSprites(log) {
             defaultPalette: 0,
             emojiPalette: addPalette(emojiPalette),
             // main
-            fontPalette: addPalette([common_1.TRANSPARENT, ...lodash_1.times(10, () => common_1.WHITE)]),
-            fontSupporter1Palette: addPalette([common_1.TRANSPARENT, ...lodash_1.times(10, () => SUPPORTER1)]),
+            fontPalette: addPalette([common_1.TRANSPARENT, ...(0, lodash_1.times)(10, () => common_1.WHITE)]),
+            fontSupporter1Palette: addPalette([common_1.TRANSPARENT, ...(0, lodash_1.times)(10, () => SUPPORTER1)]),
             fontSupporter2Palette: addPalette([common_1.TRANSPARENT, ...bandedTextPalette(SUPPORTER2_BANDS)]),
             fontSupporter3Palette: addPalette([common_1.TRANSPARENT, ...bandedTextPalette(SUPPORTER3_BANDS)]),
             // small
-            fontSmallPalette: addPalette([common_1.TRANSPARENT, ...lodash_1.times(9, () => common_1.WHITE)]),
-            fontSmallSupporter1Palette: addPalette([common_1.TRANSPARENT, ...lodash_1.times(9, () => SUPPORTER1)]),
+            fontSmallPalette: addPalette([common_1.TRANSPARENT, ...(0, lodash_1.times)(9, () => common_1.WHITE)]),
+            fontSmallSupporter1Palette: addPalette([common_1.TRANSPARENT, ...(0, lodash_1.times)(9, () => SUPPORTER1)]),
             fontSmallSupporter2Palette: addPalette([common_1.TRANSPARENT, ...bandedTinyPalette(SUPPORTER2_BANDS)]),
             fontSmallSupporter3Palette: addPalette([common_1.TRANSPARENT, ...bandedTinyPalette(SUPPORTER3_BANDS)]),
         },
     };
     createSpritesTS(path.join(generatedPath, 'sprites.ts'), spritesConfig);
     // Other exports
-    sprite_sheet_1.saveCanvasAsRaw(path.join(outputPath, 'pony2.raw'), ponySheet2.image);
+    (0, sprite_sheet_1.saveCanvasAsRaw)(path.join(outputPath, 'pony2.raw'), ponySheet2.image);
 }
-exports.createSprites = createSprites;
 if (require.main === module) {
     const start = Date.now();
     createSprites(true);

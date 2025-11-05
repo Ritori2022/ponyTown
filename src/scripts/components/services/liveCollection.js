@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LiveCollection = void 0;
 const utils_1 = require("../../common/utils");
 class LiveCollection {
     constructor(name, rate, getKey, options, socket, timestamp = (new Date(0)).toISOString(), logError = (e) => console.error(e.stack)) {
@@ -31,7 +32,7 @@ class LiveCollection {
         const item = this.itemsMap.get(key);
         if (item) {
             if (removeFromList || this.options.deleteItems) {
-                utils_1.removeItem(this.items, item);
+                (0, utils_1.removeItem)(this.items, item);
                 this.itemsMap.delete(key);
             }
             else if (deleted) {

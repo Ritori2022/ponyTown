@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SupportButton = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const model_1 = require("../../services/model");
@@ -13,13 +14,13 @@ let SupportButton = class SupportButton {
         return this.model.supporter;
     }
 };
-SupportButton = tslib_1.__decorate([
-    core_1.Component({
+exports.SupportButton = SupportButton;
+exports.SupportButton = SupportButton = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'support-button',
         templateUrl: 'support-button.pug',
         styleUrls: ['support-button.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model])
 ], SupportButton);
-exports.SupportButton = SupportButton;
 //# sourceMappingURL=support-button.js.map

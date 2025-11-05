@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Promise = require("bluebird");
+exports.createLiveEndPoint = createLiveEndPoint;
+const tslib_1 = require("tslib");
+const Promise = tslib_1.__importStar(require("bluebird"));
 const lodash_1 = require("lodash");
 const adminInterfaces_1 = require("../common/adminInterfaces");
 const constants_1 = require("../common/constants");
@@ -103,8 +105,8 @@ function createLiveEndPoint({ model, fields, encode, beforeDelete, afterDelete, 
         return Promise.resolve(model.findById(id).lean().exec());
     }
     const interval = setInterval(() => {
-        const date = utils_1.fromNow(-10 * constants_1.MINUTE);
-        lodash_1.remove(removedItems, x => x.updatedAt.getTime() < date.getTime());
+        const date = (0, utils_1.fromNow)(-10 * constants_1.MINUTE);
+        (0, lodash_1.remove)(removedItems, x => x.updatedAt.getTime() < date.getTime());
     }, 1 * constants_1.MINUTE);
     function destroy() {
         clearInterval(interval);
@@ -119,5 +121,4 @@ function createLiveEndPoint({ model, fields, encode, beforeDelete, afterDelete, 
         destroy,
     };
 }
-exports.createLiveEndPoint = createLiveEndPoint;
 //# sourceMappingURL=liveEndPoint.js.map

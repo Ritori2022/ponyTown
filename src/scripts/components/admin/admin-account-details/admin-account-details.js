@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminAccountDetails = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -59,11 +60,11 @@ let AdminAccountDetails = class AdminAccountDetails {
         this.ignoresLimits = new Map();
         this.ignoredByLimits = new Map();
         this.highlighCharacter = (char) => {
-            return !!char && utils_1.includes(this.ponyNames, char.name.toLowerCase());
+            return !!char && (0, utils_1.includes)(this.ponyNames, char.name.toLowerCase());
         };
     }
     get canRemove() {
-        return accountUtils_1.hasRole(this.model.account, 'superadmin');
+        return (0, accountUtils_1.hasRole)(this.model.account, 'superadmin');
     }
     get around() {
         return this.aroundMap.get(this.id || '');
@@ -93,10 +94,10 @@ let AdminAccountDetails = class AdminAccountDetails {
         }
     }
     get originRegions() {
-        return lodash_1.uniq(this.origins.map(o => o.country));
+        return (0, lodash_1.uniq)(this.origins.map(o => o.country));
     }
     get age() {
-        return (this.account && this.account.birthdate) ? adminUtils_1.getAge(this.account.birthdate) : '-';
+        return (this.account && this.account.birthdate) ? (0, adminUtils_1.getAge)(this.account.birthdate) : '-';
     }
     get forceAge() {
         return (this.account && this.account.birthyear) ? (year - this.account.birthyear) : '-';
@@ -144,7 +145,7 @@ let AdminAccountDetails = class AdminAccountDetails {
             this.model.getAllDuplicates(account._id)
                 .then(duplicates => {
                 if (duplicates) {
-                    this.ponyNames = lodash_1.uniq(utils_1.flatten(duplicates.map(d => (d.ponies || []).map(x => x.toLowerCase()))));
+                    this.ponyNames = (0, lodash_1.uniq)((0, utils_1.flatten)(duplicates.map(d => (d.ponies || []).map(x => x.toLowerCase()))));
                     this.duplicates = duplicates;
                     this.loadingDuplicates = false;
                 }
@@ -187,10 +188,10 @@ let AdminAccountDetails = class AdminAccountDetails {
                 if (details) {
                     this.banLog = details.banLog;
                     this.merges = details.merges;
-                    this.support = adminUtils_1.createSupporterChanges(details.supporterLog);
+                    this.support = (0, adminUtils_1.createSupporterChanges)(details.supporterLog);
                     this.invites = [
-                        ...details.invitesSent.map(i => (Object.assign({}, i, { type: 'sent' }))),
-                        ...details.invitesReceived.map(i => (Object.assign({}, i, { type: 'recv' }))),
+                        ...details.invitesSent.map(i => ({ ...i, type: 'sent' })),
+                        ...details.invitesReceived.map(i => ({ ...i, type: 'recv' })),
                     ];
                     const state = details.state;
                     this.counters = Object.keys(state).map(key => createCounter(key, state[key]));
@@ -231,14 +232,14 @@ let AdminAccountDetails = class AdminAccountDetails {
     removeFriend(friendId) {
         if (this.id && confirm('Are you sure ?')) {
             this.model.removeFriend(this.id, friendId)
-                .then(() => this.friends && utils_1.removeItem(this.friends, friendId));
+                .then(() => this.friends && (0, utils_1.removeItem)(this.friends, friendId));
         }
     }
     canToggleRole(role) {
-        return role !== 'superadmin' && accountUtils_1.hasRole(this.model.account, 'superadmin');
+        return role !== 'superadmin' && (0, accountUtils_1.hasRole)(this.model.account, 'superadmin');
     }
     hasRole(role) {
-        return accountUtils_1.hasRole(this.account, role);
+        return (0, accountUtils_1.hasRole)(this.account, role);
     }
     toggleRole(role) {
         if (this.id) {
@@ -327,7 +328,7 @@ let AdminAccountDetails = class AdminAccountDetails {
     merge(accountId) {
         if (this.account && confirm('Are you sure?')) {
             this.model.mergeAccounts(this.account._id, accountId)
-                .then(() => lodash_1.remove(this.duplicates || [], d => d.account === accountId))
+                .then(() => (0, lodash_1.remove)(this.duplicates || [], d => d.account === accountId))
                 .then(() => this.refresh());
         }
     }
@@ -337,7 +338,7 @@ let AdminAccountDetails = class AdminAccountDetails {
         }
     }
     translateUrl(text) {
-        return adminUtils_1.getTranslationUrl(text);
+        return (0, adminUtils_1.getTranslationUrl)(text);
     }
     getPoniesCreators() {
         if (this.account) {
@@ -398,8 +399,8 @@ let AdminAccountDetails = class AdminAccountDetails {
                 title,
                 `\tname: ${account.name}`,
                 `\tnote: ${account.note || ''}`,
-                `\tflags: ${utils_1.flagsToString(account.flags, adminInterfaces_1.accountFlags)}`,
-                `\tage: ${account.birthdate ? adminUtils_1.getAge(account.birthdate) : '-'}`,
+                `\tflags: ${(0, utils_1.flagsToString)(account.flags, adminInterfaces_1.accountFlags)}`,
+                `\tage: ${account.birthdate ? (0, adminUtils_1.getAge)(account.birthdate) : '-'}`,
                 `\tfriends: ${account.friends ? account.friends.length : 0}`,
                 `\tcounters:`,
                 ...Object.keys(account.counters || {}).sort().map(key => `\t\t${key}: ${account.counters[key]}`),
@@ -431,8 +432,8 @@ let AdminAccountDetails = class AdminAccountDetails {
                 title,
                 `\tname: ${account.name}`,
                 `\tnote: ${account.note || ''}`,
-                `\tflags: ${utils_1.flagsToString(account.flags, adminInterfaces_1.accountFlags)}`,
-                `\tage: ${account.birthdate ? adminUtils_1.getAge(account.birthdate) : '-'}`,
+                `\tflags: ${(0, utils_1.flagsToString)(account.flags, adminInterfaces_1.accountFlags)}`,
+                `\tage: ${account.birthdate ? (0, adminUtils_1.getAge)(account.birthdate) : '-'}`,
                 `\tcounters:`,
                 ...Object.keys(account.counters || {}).sort().map(key => `\t\t${key}: ${account.counters[key]}`),
                 `\tstate:`,
@@ -470,10 +471,10 @@ let AdminAccountDetails = class AdminAccountDetails {
         return merge.data && `${mergeInfo('ACCOUNT', merge.data.account)}\n\n${mergeInfo('MERGED', merge.data.merge)}`;
     }
     showMergeInNewTab(merge) {
-        htmlUtils_1.showTextInNewTab(this.mergeInfo(merge) || '');
+        (0, htmlUtils_1.showTextInNewTab)(this.mergeInfo(merge) || '');
     }
     showMergeInNewTab2(merge) {
-        htmlUtils_1.showTextInNewTab(this.mergeInfo2(merge) || '');
+        (0, htmlUtils_1.showTextInNewTab)(this.mergeInfo2(merge) || '');
     }
     unmerge(mergeId, split, keep) {
         if (this.account) {
@@ -525,13 +526,13 @@ let AdminAccountDetails = class AdminAccountDetails {
         }
     }
 };
-AdminAccountDetails = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminAccountDetails = AdminAccountDetails;
+exports.AdminAccountDetails = AdminAccountDetails = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-account-details',
         templateUrl: 'admin-account-details.pug',
         styleUrls: ['admin-account-details.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [router_1.ActivatedRoute, adminModel_1.AdminModel])
 ], AdminAccountDetails);
-exports.AdminAccountDetails = AdminAccountDetails;
 //# sourceMappingURL=admin-account-details.js.map

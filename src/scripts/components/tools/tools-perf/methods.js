@@ -1,6 +1,10 @@
 "use strict";
 // import { TextEncoder } from 'util';
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.encodeString = encodeString;
+exports.encodeStringNew = encodeStringNew;
+exports.stringLengthInBytes2 = stringLengthInBytes2;
+exports.encodeStringTo2 = encodeStringTo2;
 function forEachCharacter(value, callback) {
     for (let i = 0; i < value.length; i++) {
         const code = value.charCodeAt(i);
@@ -70,7 +74,6 @@ function encodeString(value) {
     encodeStringTo(buffer, 0, value);
     return buffer;
 }
-exports.encodeString = encodeString;
 function encodeStringNew(value) {
     if (value == null)
         return null;
@@ -78,7 +81,6 @@ function encodeStringNew(value) {
     encodeStringTo2(buffer, 0, value);
     return buffer;
 }
-exports.encodeStringNew = encodeStringNew;
 // new methods
 function charLengthInBytes2(code) {
     if ((code & 0xffffff80) === 0) {
@@ -99,7 +101,6 @@ function stringLengthInBytes2(value) {
     forEachCharacter2(value, code => result = (result + charLengthInBytes2(code)) | 0);
     return result;
 }
-exports.stringLengthInBytes2 = stringLengthInBytes2;
 function encodeStringTo2(buffer, offset, value) {
     forEachCharacter2(value, code => {
         const length = charLengthInBytes2(code) | 0;
@@ -124,7 +125,6 @@ function encodeStringTo2(buffer, offset, value) {
     });
     return offset;
 }
-exports.encodeStringTo2 = encodeStringTo2;
 function forEachCharacter2(value, callback) {
     const length = value.length | 0;
     const lengthMinusOne = Math.max(0, length - 1) | 0;

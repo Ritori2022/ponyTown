@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsUI = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const modal_1 = require("ngx-bootstrap/modal");
 const lodash_1 = require("lodash");
 const constants_1 = require("../../../common/constants");
 const ponyInfo_1 = require("../../../common/ponyInfo");
-const sprites = require("../../../generated/sprites");
+const sprites = tslib_1.__importStar(require("../../../generated/sprites"));
 const game_1 = require("../../../client/game");
 const utils_1 = require("../../../common/utils");
 const stringUtils_1 = require("../../../common/stringUtils");
@@ -24,14 +25,14 @@ const colors_1 = require("../../../common/colors");
 const color_1 = require("../../../common/color");
 const entityUtils_1 = require("../../../common/entityUtils");
 const clientUtils_1 = require("../../../client/clientUtils");
-const offlinePonyInfo = compressPony_1.decompressPonyString(constants_1.OFFLINE_PONY, true);
-const offlinePonyPal = ponyInfo_1.toPalette(offlinePonyInfo);
+const offlinePonyInfo = (0, compressPony_1.decompressPonyString)(constants_1.OFFLINE_PONY, true);
+const offlinePonyPal = (0, ponyInfo_1.toPalette)(offlinePonyInfo);
 const defaultPalette = ponyInfo_1.mockPaletteManager.addArray(sprites.defaultPalette);
-const offlinePony = pony_1.createPony(1, 0, constants_1.OFFLINE_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
+const offlinePony = (0, pony_1.createPony)(1, 0, constants_1.OFFLINE_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
 offlinePony.name = 'Offline pony';
-const supporterPony = pony_1.createPony(2, 0, constants_1.SUPPORTER_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
+const supporterPony = (0, pony_1.createPony)(2, 0, constants_1.SUPPORTER_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
 supporterPony.name = 'Supporter pony';
-const pendingPony = pony_1.createPony(3, 0, constants_1.SUPPORTER_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
+const pendingPony = (0, pony_1.createPony)(3, 0, constants_1.SUPPORTER_PONY, defaultPalette, ponyInfo_1.mockPaletteManager);
 pendingPony.name = 'Pending pony';
 const tails = sprites.tails[0].slice();
 const labels = ['none', 'Long tail', 'Short tail', 'Short smooth tail', 'Long puffy tail', 'Long wavy tail'];
@@ -65,13 +66,13 @@ let ToolsUI = class ToolsUI {
         this.outlines = ['990000', '009900'];
         this.spriteActive = false;
         this.selected = offlinePony;
-        this.timeout = utils_1.fromNow(1000 * 3600 * 10).toISOString();
+        this.timeout = (0, utils_1.fromNow)(1000 * 3600 * 10).toISOString();
         this.autoCloseDropdown = true;
         this.initialized = false;
         this.customChecked = false;
         this.actionBarEditable = true;
-        this.tags = ['', ...tags_1.getAllTags().map(t => t.id)];
-        this.virtualItems = utils_1.times(1000, i => ({ value: i, name: `This is item ${i}`, color: colors[i % colors.length] }));
+        this.tags = ['', ...(0, tags_1.getAllTags)().map(t => t.id)];
+        this.virtualItems = (0, utils_1.times)(1000, i => ({ value: i, name: `This is item ${i}`, color: colors[i % colors.length] }));
         this.virtualItems2 = [{ name: 'An item 0' }];
         this.angle = 45;
         this.selected.name = 'Offline Pony';
@@ -122,10 +123,10 @@ let ToolsUI = class ToolsUI {
         });
     }
     ngOnInit() {
-        clientUtils_1.initFeatureFlags({});
-        return spriteUtils_1.loadAndInitSpriteSheets()
+        (0, clientUtils_1.initFeatureFlags)({});
+        return (0, spriteUtils_1.loadAndInitSpriteSheets)()
             .then(() => {
-            ponyDraw_1.initializeToys(ponyInfo_1.mockPaletteManager);
+            (0, ponyDraw_1.initializeToys)(ponyInfo_1.mockPaletteManager);
             this.initialized = true;
             this.model.loading = true;
             this.zone.runOutsideAngular(() => this.update());
@@ -135,28 +136,28 @@ let ToolsUI = class ToolsUI {
         cancelAnimationFrame(this.animationFrame);
     }
     get baseHairColor() {
-        return ponyInfo_1.getBaseFill(this.pony.mane);
+        return (0, ponyInfo_1.getBaseFill)(this.pony.mane);
     }
     get isFriend() {
-        return entityUtils_1.isFriend(this.selected);
+        return (0, entityUtils_1.isFriend)(this.selected);
     }
     set isFriend(value) {
-        this.selected.playerState = utils_1.setFlag(this.selected.playerState, 4 /* Friend */, value);
+        this.selected.playerState = (0, utils_1.setFlag)(this.selected.playerState, 4 /* EntityPlayerState.Friend */, value);
     }
     update() {
         this.animationFrame = requestAnimationFrame(() => this.update());
-        game_1.redrawActionButtons(this.game.actionsChanged);
+        (0, game_1.redrawActionButtons)(this.game.actionsChanged);
         this.game.actionsChanged = false;
         this.game.onFrame.next();
     }
     changed() {
-        ponyInfo_1.syncLockedPonyInfo(this.pony);
+        (0, ponyInfo_1.syncLockedPonyInfo)(this.pony);
     }
     toggleIgnored(entity) {
-        entity.playerState = utils_1.setFlag(entity.playerState, 1 /* Ignored */, !entityUtils_1.isIgnored(entity));
+        entity.playerState = (0, utils_1.setFlag)(entity.playerState, 1 /* EntityPlayerState.Ignored */, !(0, entityUtils_1.isIgnored)(entity));
     }
     toggleHidden(entity) {
-        entity.playerState = utils_1.setFlag(entity.playerState, 2 /* Hidden */, !entityUtils_1.isHidden(entity));
+        entity.playerState = (0, utils_1.setFlag)(entity.playerState, 2 /* EntityPlayerState.Hidden */, !(0, entityUtils_1.isHidden)(entity));
     }
     spamChat(chatlog) {
         if (this.spamChatInterval) {
@@ -169,15 +170,15 @@ let ToolsUI = class ToolsUI {
                 chatlog.addMessage({
                     id: 0,
                     crc: undefined,
-                    name: stringUtils_1.randomString(lodash_1.random(1, 20)),
-                    message: stringUtils_1.randomString(lodash_1.random(1, 40)),
-                    type: 0 /* Chat */
+                    name: (0, stringUtils_1.randomString)((0, lodash_1.random)(1, 20)),
+                    message: (0, stringUtils_1.randomString)((0, lodash_1.random)(1, 40)),
+                    type: 0 /* MessageType.Chat */
                 });
             }, 50));
         }
     }
     get isPartyLeader() {
-        return partyUtils_1.isPartyLeader(this.game);
+        return (0, partyUtils_1.isPartyLeader)(this.game);
     }
     set isPartyLeader(value) {
         if (value) {
@@ -194,10 +195,10 @@ let ToolsUI = class ToolsUI {
         this.settings.account.chatlogOpacity = value;
     }
     addMessage(chatlog, message) {
-        chatlog.addMessage({ name: 'test name', id: 123, crc: undefined, message, type: 0 /* Chat */ });
+        chatlog.addMessage({ name: 'test name', id: 123, crc: undefined, message, type: 0 /* MessageType.Chat */ });
     }
     addWhisper(chatlog, message) {
-        chatlog.addMessage({ name: 'test name', id: 123, crc: undefined, message, type: 13 /* Whisper */ });
+        chatlog.addMessage({ name: 'test name', id: 123, crc: undefined, message, type: 13 /* MessageType.Whisper */ });
     }
     get angleInRad() {
         return (this.angle / 180) * Math.PI;
@@ -213,8 +214,8 @@ let ToolsUI = class ToolsUI {
     }
     saveActions() {
         if (DEVELOPMENT) {
-            const serialized = buttonActions_1.serializeActions(this.game.actions);
-            this.game.actions = buttonActions_1.deserializeActions(serialized);
+            const serialized = (0, buttonActions_1.serializeActions)(this.game.actions);
+            this.game.actions = (0, buttonActions_1.deserializeActions)(serialized);
             console.log(serialized);
         }
     }
@@ -223,12 +224,13 @@ let ToolsUI = class ToolsUI {
         return colors_1.ACTION_EXPRESSION_BG;
     }
     set expressionActionsColor(value) {
-        colors_1.updateActionColor(color_1.colorToCSS(color_1.parseColor(value)));
+        (0, colors_1.updateActionColor)((0, color_1.colorToCSS)((0, color_1.parseColor)(value)));
         this.game.actionsChanged = true;
     }
 };
-ToolsUI = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsUI = ToolsUI;
+exports.ToolsUI = ToolsUI = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-ui',
         templateUrl: 'tools-ui.pug',
     }),
@@ -238,5 +240,4 @@ ToolsUI = tslib_1.__decorate([
         modal_1.BsModalService,
         model_1.Model])
 ], ToolsUI);
-exports.ToolsUI = ToolsUI;
 //# sourceMappingURL=tools-ui.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ObservableList = void 0;
 const utils_1 = require("../../common/utils");
 const adminUtils_1 = require("../../common/adminUtils");
 class ObservableList {
@@ -24,11 +25,11 @@ class ObservableList {
         this.trigger();
     }
     pushOrdered(item, compare) {
-        adminUtils_1.pushOrdered(this.list, item, compare);
+        (0, adminUtils_1.pushOrdered)(this.list, item, compare);
         this.trigger();
     }
     remove(item) {
-        const removed = utils_1.removeItem(this.list, item);
+        const removed = (0, utils_1.removeItem)(this.list, item);
         this.trigger();
         return removed;
     }
@@ -41,7 +42,7 @@ class ObservableList {
         this.trigger();
         return {
             unsubscribe: () => {
-                utils_1.removeItem(this.listeners, listener);
+                (0, utils_1.removeItem)(this.listeners, listener);
             }
         };
     }

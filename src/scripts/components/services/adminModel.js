@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminModel = void 0;
+exports.decodeEvent = decodeEvent;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const platform_browser_1 = require("@angular/platform-browser");
@@ -21,6 +23,14 @@ function shouldNotify(e) {
         .test(e.message);
 }
 let AdminModel = class AdminModel {
+    get loading() {
+        return !this.account;
+    }
+    initAccountPromise() {
+        this.accountPromise = new Promise(resolve => {
+            this.resolveAccount = resolve;
+        });
+    }
     constructor(sanitizer, storage, zone) {
         this.sanitizer = sanitizer;
         this.storage = storage;
@@ -56,7 +66,7 @@ let AdminModel = class AdminModel {
         this.running = true;
         this.initializedLive = false;
         this.initAccountPromise();
-        this.socket = browser_1.createClientSocket(Object.assign({}, data_1.socketOptions()), data_1.token, undefined, zone.run.bind(zone));
+        this.socket = (0, browser_1.createClientSocket)({ ...(0, data_1.socketOptions)() }, data_1.token, undefined, zone.run.bind(zone));
         window.model = this;
         if (this.socket) {
             this.socket.client = new clientAdminActions_1.ClientAdminActions(this);
@@ -96,7 +106,7 @@ let AdminModel = class AdminModel {
                     this.log(`events ${all.length}`);
                 }
                 all.forEach(e => {
-                    e.descHTML = this.sanitizer.bypassSecurityTrustHtml(adminUtils_1.formatEventDesc(e.desc));
+                    e.descHTML = this.sanitizer.bypassSecurityTrustHtml((0, adminUtils_1.formatEventDesc)(e.desc));
                 });
                 this.callUpdated('events', !!added);
                 this.updateTitle();
@@ -110,14 +120,6 @@ let AdminModel = class AdminModel {
         if (!this.socket) {
             this.initialize(true);
         }
-    }
-    get loading() {
-        return !this.account;
-    }
-    initAccountPromise() {
-        this.accountPromise = new Promise(resolve => {
-            this.resolveAccount = resolve;
-        });
     }
     get server() {
         return this.socket.server;
@@ -218,7 +220,7 @@ let AdminModel = class AdminModel {
             .then(data => {
             if (data) {
                 pony.info = data.info;
-                pony.ponyInfo = compressPony_1.decompressPonyString(data.info, false);
+                pony.ponyInfo = (0, compressPony_1.decompressPonyString)(data.info, false);
                 pony.lastUsed = data.lastUsed ? new Date(data.lastUsed) : undefined;
                 pony.creator = data.creator;
             }
@@ -243,7 +245,7 @@ let AdminModel = class AdminModel {
         return this.checkError(this.server.createPony(accountId, name, info));
     }
     restorePonies(accountId, chatlog, onlyIds) {
-        const ponies = adminUtils_1.parsePonies(chatlog, onlyIds);
+        const ponies = (0, adminUtils_1.parsePonies)(chatlog, onlyIds);
         return Promise.all(ponies.map(({ name, info }) => this.createPony(accountId, name, info)));
     }
     // origins
@@ -336,7 +338,7 @@ let AdminModel = class AdminModel {
         return this.checkError(this.server.updateAccount(accountId, { supporter }));
     }
     setAccountBanField(accountId, field, value) {
-        return this.checkError(this.server.updateAccount(accountId, { [field]: value }, adminUtils_1.banMessage(field, value)));
+        return this.checkError(this.server.updateAccount(accountId, { [field]: value }, (0, adminUtils_1.banMessage)(field, value)));
     }
     setAccountTimeout(accountId, timeout) {
         return this.checkError(this.server.timeoutAccount(accountId, timeout));
@@ -389,7 +391,7 @@ let AdminModel = class AdminModel {
             .catch(this.handleError);
     }
     cleanupDeletedEvents() {
-        if (lodash_1.remove(this.events, e => e.deleted).length) {
+        if ((0, lodash_1.remove)(this.events, e => e.deleted).length) {
             this.callUpdated('events', false);
             this.updateTitle();
         }
@@ -433,7 +435,7 @@ let AdminModel = class AdminModel {
     formatChat(promise) {
         return this.checkError(promise)
             .then(chat => chat === undefined ? 'ERROR' : chat)
-            .then(raw => ({ raw, html: adminUtils_1.formatChat(raw) }));
+            .then(raw => ({ raw, html: (0, adminUtils_1.formatChat)(raw) }));
     }
     fetchServerStats(serverId) {
         return this.checkError(this.server.fetchServerStats(serverId));
@@ -486,17 +488,17 @@ let AdminModel = class AdminModel {
     }
     get isOldCertificate() {
         const date = this.state.status.certificateExpiration;
-        return date && (new Date(date)).getTime() < utils_1.fromNow(7 * constants_1.DAY).getTime();
+        return date && (new Date(date)).getTime() < (0, utils_1.fromNow)(7 * constants_1.DAY).getTime();
     }
     get isOldPatreon() {
         const date = this.state.status.lastPatreonUpdate;
-        return date && (new Date(date)).getTime() < utils_1.fromNow(-21 * constants_1.MINUTE).getTime();
+        return date && (new Date(date)).getTime() < (0, utils_1.fromNow)(-21 * constants_1.MINUTE).getTime();
     }
     requestState() {
         return this.socket.isConnected ? this.server.getState().then(s => this.readState(s)) : Promise.resolve();
     }
     readState(state) {
-        lodash_1.merge(this.state, state);
+        (0, lodash_1.merge)(this.state, state);
         this.initialized = true;
         this.updateTitle();
     }
@@ -520,13 +522,13 @@ let AdminModel = class AdminModel {
         const count = this.events.reduce((sum, e) => sum + (e.deleted ? 0 : 1), 0);
         const inred = this.events.reduce((sum, e) => sum + ((!e.deleted && e.count > 9) ? 1 : 0), 0);
         const flag = this.isLowDiskSpace || this.isLowMemory || this.isOldCertificate || this.isOldPatreon;
-        document.title = `${ponies} | ${count}${lodash_1.repeat('!', inred)}${flag ? ' 🚩' : ''}${!this.connected ? ' ⚠' : ''} | Pony Town`;
+        document.title = `${ponies} | ${count}${(0, lodash_1.repeat)('!', inred)}${flag ? ' 🚩' : ''}${!this.connected ? ' ⚠' : ''} | Pony Town`;
     }
     notify(title, body) {
         if (this.notifications && notification.permission === 'granted') {
             const n = new notification(title, {
                 body: body || '',
-                icon: rev_1.getUrl('images/logo-120.png'),
+                icon: (0, rev_1.getUrl)('images/logo-120.png'),
             });
             n.onclick = () => {
                 window.focus();
@@ -538,11 +540,11 @@ let AdminModel = class AdminModel {
         }
     }
 };
-AdminModel = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' }),
+exports.AdminModel = AdminModel;
+exports.AdminModel = AdminModel = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' }),
     tslib_1.__metadata("design:paramtypes", [platform_browser_1.DomSanitizer, storageService_1.StorageService, core_1.NgZone])
 ], AdminModel);
-exports.AdminModel = AdminModel;
 function decodeDate(value, base) {
     if (value == null || base == null) {
         return new Date(0);
@@ -568,5 +570,4 @@ function decodeEvent(values, base) {
         pony: values[10],
     };
 }
-exports.decodeEvent = decodeEvent;
 //# sourceMappingURL=adminModel.js.map

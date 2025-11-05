@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.authRoutes = authRoutes;
 const express_1 = require("express");
 const passport_1 = require("passport");
 const passport_local_1 = require("passport-local");
@@ -24,7 +25,7 @@ const FRESH_ACCOUNT_TIME = 1 * constants_1.MINUTE;
 const mergeRequests = [];
 /* tslint:disable */
 const ignoreErrors = [
-    'Service unavailable',
+    'Service unavailable', // replacement for twitter HTTP error
     'Internal error',
     'User denied your request',
     'Code was already redeemed.',
@@ -66,13 +67,13 @@ const ignoreErrors = [
     'Invalid code.',
     'Internal server error: Database problems, try later',
     'An invalid Platform session was found.: An invalid Platform session was found.',
-    `Cannot read property 'id' of undefined`,
+    `Cannot read property 'id' of undefined`, // patreon error
     'User Rate Limit Exceeded. Rate of requests for user exceed configured project quota. You may consider re-evaluating expected per-user traffic to the API and adjust project quota limits accordingly. You may monitor aggregate quota usage and adjust limits in the API Console: https://console.developers.google.com/apis/api/plus.googleapis.com/quotas?project=200390553857',
 ];
 function kickCurrentUser(req) {
     const user = req.user;
     if (user) {
-        admin_1.kickFromAllServers(user.id)
+        (0, admin_1.kickFromAllServers)(user.id)
             .catch(e => logger_1.logger.error(e));
     }
 }
@@ -83,57 +84,57 @@ function logIn(req, account) {
     });
 }
 function isMerge(accountId) {
-    const minTime = utils_1.fromNow(-10 * constants_1.MINUTE).getTime();
-    lodash_1.remove(mergeRequests, r => r.time < minTime);
+    const minTime = (0, utils_1.fromNow)(-10 * constants_1.MINUTE).getTime();
+    (0, lodash_1.remove)(mergeRequests, r => r.time < minTime);
     return mergeRequests.some(r => r.accountId === accountId);
 }
 function getIP(req) {
     return req.ip || req.ips[0];
 }
 function reportError(server, message, e, req) {
-    reporter_1.createFromRequest(server, req).danger(message, e.toString());
+    (0, reporter_1.createFromRequest)(server, req).danger(message, e.toString());
     logger_1.logger.error(message, e);
 }
 function fixTwitterErrorMessage(message) {
     return /^<!DOCTYPE html>/.test(message) ? 'Service unavailable' : message;
 }
 async function checkBanField(server, account, field, message, origin) {
-    if (adminUtils_1.isActive(origin[field]) && !adminUtils_1.isActive(account[field])) {
-        reporter_1.create(server, account._id, undefined, origin).warn(message);
+    if ((0, adminUtils_1.isActive)(origin[field]) && !(0, adminUtils_1.isActive)(account[field])) {
+        (0, reporter_1.create)(server, account._id, undefined, origin).warn(message);
         account[field] = origin[field];
         await account.save();
     }
 }
 async function loginUser(server, req, res, account) {
     const origin = await db_1.Origin.findOne({ ip: getIP(req) }).exec();
-    await originUtils_1.addOrigin(account, originUtils_1.getOrigin(req));
+    await (0, originUtils_1.addOrigin)(account, (0, originUtils_1.getOrigin)(req));
     if (origin) {
         await checkBanField(server, account, 'mute', 'Muted account by origin', origin);
         await checkBanField(server, account, 'shadow', 'Shadowed account by origin', origin);
         await checkBanField(server, account, 'ban', 'Banned account by origin', origin);
     }
-    if (adminUtils_1.isBanned(account)) {
+    if ((0, adminUtils_1.isBanned)(account)) {
         // const message = isTemporarilyBanned(account) ? `Account locked()` : 'Account locked';
-        throw new userError_1.UserError('Account locked', undefined, accountUtils_1.getAccountAlertMessage(account));
+        throw new userError_1.UserError('Account locked', undefined, (0, accountUtils_1.getAccountAlertMessage)(account));
     }
     await logIn(req, account);
-    await internal_1.accountChanged(account._id.toString());
-    const isFresh = account.createdAt && account.createdAt.getTime() > utils_1.fromNow(-FRESH_ACCOUNT_TIME).getTime();
+    await (0, internal_1.accountChanged)(account._id.toString());
+    const isFresh = account.createdAt && account.createdAt.getTime() > (0, utils_1.fromNow)(-FRESH_ACCOUNT_TIME).getTime();
     res.redirect(isFresh ? '/account' : '/');
 }
 async function mergeUser(req, res, account, removedDocument) {
     const user = req.user;
     const userId = user._id.toString();
     const accountId = account._id.toString();
-    lodash_1.remove(mergeRequests, r => r.accountId === userId);
+    (0, lodash_1.remove)(mergeRequests, r => r.accountId === userId);
     if (userId !== accountId) {
-        await merge_1.mergeAccounts(userId, accountId, 'by user', removedDocument, false);
+        await (0, merge_1.mergeAccounts)(userId, accountId, 'by user', removedDocument, false);
     }
     res.redirect('/account?merged=true');
 }
 function handleErrorAndRedirect(server, url, message, e, req, res) {
-    if (userError_1.isUserError(e)) {
-        userError_1.reportUserError(e, server, req);
+    if ((0, userError_1.isUserError)(e)) {
+        (0, userError_1.reportUserError)(e, server, req);
         url += `?error=${encodeURIComponent(e.message)}`;
         if (e.userInfo) {
             url += `&alert=${encodeURIComponent(e.userInfo)}`;
@@ -150,17 +151,17 @@ async function handleAuth(server, live, removedDocument, req, res, error, accoun
     const merge = isMerge(user && user.id);
     try {
         if (error) {
-            if (userError_1.isUserError(error)) {
+            if ((0, userError_1.isUserError)(error)) {
                 throw error;
             }
             const message = fixTwitterErrorMessage(error.message);
-            const ignore = utils_1.includes(ignoreErrors, message);
+            const ignore = (0, utils_1.includes)(ignoreErrors, message);
             throw new userError_1.UserError(message, ignore ? undefined : { error, desc: `url: ${req.path}` });
         }
         if (!account) {
             throw new userError_1.UserError('No account');
         }
-        if (merge && !utils_1.hasFlag(account.flags, 16 /* BlockMerging */)) {
+        if (merge && !(0, utils_1.hasFlag)(account.flags, 16 /* AccountFlags.BlockMerging */)) {
             if (live.shutdown) {
                 throw new Error(`Cannot merge while server is shutdown`);
             }
@@ -177,66 +178,82 @@ async function handleAuth(server, live, removedDocument, req, res, error, accoun
 }
 function createHandler(server, live, id, options, removedDocument) {
     return (req, res, next) => {
-        const handler = passport_1.authenticate(id, options, (error, account) => handleAuth(server, live, removedDocument, req, res, error, account));
+        const handler = (0, passport_1.authenticate)(id, options, (error, account) => handleAuth(server, live, removedDocument, req, res, error, account));
         return handler(req, res, next);
     };
 }
 function authRoutes(host, server, settings, live, mockLogin, removedDocument) {
     const failureRedirect = `/?error=${encodeURIComponent('Authentication failed')}`;
-    const app = express_1.Router();
+    const app = (0, express_1.Router)();
     const checkers = {
-        isSuspiciousName: security_1.createIsSuspiciousName(settings),
-        isSuspiciousAuth: security_1.createIsSuspiciousAuth(settings),
+        isSuspiciousName: (0, security_1.createIsSuspiciousName)(settings),
+        isSuspiciousAuth: (0, security_1.createIsSuspiciousAuth)(settings),
     };
     oauth_1.providers.filter(p => !!p.auth).forEach(({ id, strategy, auth, connectOnly, additionalOptions = {} }) => {
         const callbackURL = `${host}auth/${id}/callback`;
         const scope = id === 'patreon' ? ['users'] : ['email'];
-        const options = Object.assign({}, additionalOptions, auth, { callbackURL, includeEmail: true, profileFields: ['id', 'displayName', 'name', 'emails'], passReqToCallback: true });
+        const options = {
+            ...additionalOptions,
+            ...auth,
+            callbackURL,
+            includeEmail: true,
+            profileFields: ['id', 'displayName', 'name', 'emails'],
+            passReqToCallback: true,
+        };
         async function signInOrSignUp(req, profile) {
             const user = req.user;
             const userId = user && user._id.toString();
             const mergeAccount = (userId && isMerge(userId)) ? userId : undefined;
             const createAccountOptions = createOptions(req, !!connectOnly, server, settings, checkers);
-            const auth = await authUtils_1.findOrCreateAuth(profile, mergeAccount, createAccountOptions);
-            const account = await accountUtils_1.findOrCreateAccount(auth, profile, createAccountOptions);
+            const auth = await (0, authUtils_1.findOrCreateAuth)(profile, mergeAccount, createAccountOptions);
+            const account = await (0, accountUtils_1.findOrCreateAccount)(auth, profile, createAccountOptions);
             const { ip, userAgent } = createAccountOptions;
-            logger_1.system(account._id, `signed-in with "${auth.name}" [${auth._id}] [${ip}] [${userAgent}]`);
+            (0, logger_1.system)(account._id, `signed-in with "${auth.name}" [${auth._id}] [${ip}] [${userAgent}]`);
             return account;
         }
-        passport_1.use(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
-            const profile = oauth_1.getProfile(id, oauthProfile);
+        (0, passport_1.use)(id, new strategy(options, (req, _accessToken, _refreshToken, oauthProfile, callback) => {
+            const profile = (0, oauth_1.getProfile)(id, oauthProfile);
             signInOrSignUp(req, profile)
                 .then(account => {
                 callback(null, account);
             })
                 .catch((error) => {
-                logger_1.logServer(`failed to sign-in ${JSON.stringify(profile)}`);
+                (0, logger_1.logServer)(`failed to sign-in ${JSON.stringify(profile)}`);
                 callback(error, null);
             });
         }));
-        app.get(`/${id}`, requestUtils_1.limit(120, 3600), createHandler(server, live, id, { scope, failureRedirect }, removedDocument));
-        app.get(`/${id}/callback`, requestUtils_1.limit(120, 3600), createHandler(server, live, id, { failureRedirect }, removedDocument));
-        app.get(`/${id}/merge`, requestUtils_1.limit(120, 3600), requestUtils_1.auth, (req, res) => {
+        app.get(`/${id}`, (0, requestUtils_1.limit)(120, 3600), createHandler(server, live, id, { scope, failureRedirect }, removedDocument));
+        app.get(`/${id}/callback`, (0, requestUtils_1.limit)(120, 3600), createHandler(server, live, id, { failureRedirect }, removedDocument));
+        app.get(`/${id}/merge`, (0, requestUtils_1.limit)(120, 3600), requestUtils_1.auth, (req, res) => {
             const accountId = req.user._id.toString();
             mergeRequests.push({ accountId, time: Date.now() });
             res.redirect(`/auth/${id}`);
         });
     });
-    app.post('/sign-out', requestUtils_1.wrap(server, req => {
+    app.post('/sign-out', (0, requestUtils_1.wrap)(server, req => {
         kickCurrentUser(req);
         req.logout();
         return { success: true };
     }));
     if (mockLogin) {
-        passport_1.use(new passport_local_1.Strategy((login, _pass, done) => db_1.Account.findById(login, done)));
-        app.get('/local', passport_1.authenticate('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
+        (0, passport_1.use)(new passport_local_1.Strategy((login, _pass, done) => db_1.Account.findById(login, done)));
+        app.get('/local', (0, passport_1.authenticate)('local', { successRedirect: '/', failureRedirect: '/failed-login' }));
     }
     return app;
 }
-exports.authRoutes = authRoutes;
 function createOptions(req, connectOnly, server, settings, checkers) {
     const acl = req.cookies && req.cookies.acl;
-    const origin = originUtils_1.getOriginFromHTTP(req);
-    return Object.assign({ ip: getIP(req), userAgent: req.get('User-Agent'), browserId: req.get('Api-Bid'), connectOnly: !!connectOnly, creationLocked: acl && acl > (new Date()).toISOString(), canCreateAccounts: !!settings.canCreateAccounts, reportPotentialDuplicates: !!settings.reportPotentialDuplicates, warn: (accountId, message, desc) => reporter_1.create(server, accountId, undefined, origin).warn(message, desc) }, checkers);
+    const origin = (0, originUtils_1.getOriginFromHTTP)(req);
+    return {
+        ip: getIP(req),
+        userAgent: req.get('User-Agent'),
+        browserId: req.get('Api-Bid'),
+        connectOnly: !!connectOnly,
+        creationLocked: acl && acl > (new Date()).toISOString(),
+        canCreateAccounts: !!settings.canCreateAccounts,
+        reportPotentialDuplicates: !!settings.reportPotentialDuplicates,
+        warn: (accountId, message, desc) => (0, reporter_1.create)(server, accountId, undefined, origin).warn(message, desc),
+        ...checkers,
+    };
 }
 //# sourceMappingURL=auth.js.map

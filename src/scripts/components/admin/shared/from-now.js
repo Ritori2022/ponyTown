@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FromNow = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
-const moment = require("moment");
+const moment = tslib_1.__importStar(require("moment"));
 const intervalUpdateService_1 = require("../../services/intervalUpdateService");
 let FromNow = class FromNow {
     constructor(element, updateService) {
@@ -28,17 +29,17 @@ let FromNow = class FromNow {
         }
     }
 };
+exports.FromNow = FromNow;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], FromNow.prototype, "time", void 0);
-FromNow = tslib_1.__decorate([
-    core_1.Component({
+exports.FromNow = FromNow = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'from-now',
         template: '<span></span>',
         changeDetection: core_1.ChangeDetectionStrategy.OnPush,
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, intervalUpdateService_1.IntervalUpdateService])
 ], FromNow);
-exports.FromNow = FromNow;
 //# sourceMappingURL=from-now.js.map

@@ -1,27 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.hasRole = hasRole;
+exports.isAdmin = isAdmin;
+exports.isMod = isMod;
+exports.isDev = isDev;
+exports.meetsRequirement = meetsRequirement;
+exports.getCharacterLimit = getCharacterLimit;
+exports.getSupporterInviteLimit = getSupporterInviteLimit;
 const constants_1 = require("./constants");
 const utils_1 = require("./utils");
 function hasRole(account, role) {
     return !!(account && account.roles && account.roles.indexOf(role) !== -1);
 }
-exports.hasRole = hasRole;
 function isAdmin(account) {
     return hasRole(account, 'admin') || hasRole(account, 'superadmin');
 }
-exports.isAdmin = isAdmin;
 function isMod(account) {
     return hasRole(account, 'mod') || isAdmin(account);
 }
-exports.isMod = isMod;
 function isDev(account) {
     return hasRole(account, 'dev');
 }
-exports.isDev = isDev;
 function meetsRequirement(account, require) {
     return !require || hasRole(account, require) || meetsSupporterRequirement(account, require);
 }
-exports.meetsRequirement = meetsRequirement;
 function meetsSupporterRequirement(account, require) {
     const level = account.supporter || 0;
     const modOrDev = isMod(account) || isDev(account);
@@ -47,7 +49,7 @@ function getCharacterLimit(account) {
         case 2: return constants_1.BASE_CHARACTER_LIMIT + constants_1.ADDITIONAL_CHARACTERS_SUPPORTER2;
         case 3: return constants_1.BASE_CHARACTER_LIMIT + constants_1.ADDITIONAL_CHARACTERS_SUPPORTER3;
         default:
-            if (utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
+            if ((0, utils_1.hasFlag)(account.flags, 4 /* AccountDataFlags.PastSupporter */)) {
                 return constants_1.BASE_CHARACTER_LIMIT + constants_1.ADDITIONAL_CHARACTERS_PAST_SUPPORTER;
             }
             else {
@@ -55,7 +57,6 @@ function getCharacterLimit(account) {
             }
     }
 }
-exports.getCharacterLimit = getCharacterLimit;
 function getSupporterInviteLimit(account) {
     if (isMod(account) || isDev(account)) {
         return 100;
@@ -69,5 +70,4 @@ function getSupporterInviteLimit(account) {
         }
     }
 }
-exports.getSupporterInviteLimit = getSupporterInviteLimit;
 //# sourceMappingURL=accountUtils.js.map

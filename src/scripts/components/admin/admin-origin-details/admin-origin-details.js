@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminOriginDetails = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -30,12 +31,12 @@ let AdminOriginDetails = class AdminOriginDetails {
         }
     }
 };
-AdminOriginDetails = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminOriginDetails = AdminOriginDetails;
+exports.AdminOriginDetails = AdminOriginDetails = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-origin-details',
         templateUrl: 'admin-origin-details.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [router_1.ActivatedRoute, adminModel_1.AdminModel])
 ], AdminOriginDetails);
-exports.AdminOriginDetails = AdminOriginDetails;
 //# sourceMappingURL=admin-origin-details.js.map

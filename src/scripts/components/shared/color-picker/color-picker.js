@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ColorPicker = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const utils_1 = require("../../../common/utils");
@@ -32,7 +33,7 @@ let ColorPicker = class ColorPicker {
         }
     }
     get bg() {
-        return color_1.colorToCSS(color_1.parseColorFast(this.inputColor));
+        return (0, color_1.colorToCSS)((0, color_1.parseColorFast)(this.inputColor));
     }
     get svLeft() {
         this.updateHsv();
@@ -48,7 +49,7 @@ let ColorPicker = class ColorPicker {
     }
     get hue() {
         this.updateHsv();
-        return color_1.colorToCSS(color_1.colorFromHSVA(this.h, 1, 1, 1));
+        return (0, color_1.colorToCSS)((0, color_1.colorFromHSVA)(this.h, 1, 1, 1));
     }
     focus(e) {
         this.isOpen = true;
@@ -57,19 +58,19 @@ let ColorPicker = class ColorPicker {
     dragSV({ event, x, y }) {
         event.preventDefault();
         this.updateHsv();
-        this.s = utils_1.clamp(x / SIZE, 0, 1);
-        this.v = 1 - utils_1.clamp(y / SIZE, 0, 1);
+        this.s = (0, utils_1.clamp)(x / SIZE, 0, 1);
+        this.v = 1 - (0, utils_1.clamp)(y / SIZE, 0, 1);
         this.updateColor();
     }
     dragHue({ event, y }) {
         event.preventDefault();
         this.updateHsv();
-        this.h = utils_1.clamp(360 * y / SIZE, 0, 360);
+        this.h = (0, utils_1.clamp)(360 * y / SIZE, 0, 360);
         this.updateColor();
     }
     updateHsv() {
         if (this.lastColor !== this.color) {
-            const { h, s, v } = color_1.colorToHSVA(color_1.parseColorFast(this.color), this.h);
+            const { h, s, v } = (0, color_1.colorToHSVA)((0, color_1.parseColorFast)(this.color), this.h);
             this.h = h;
             this.s = s;
             this.v = v;
@@ -77,7 +78,7 @@ let ColorPicker = class ColorPicker {
         }
     }
     updateColor() {
-        const color = color_1.colorToHexRGB(color_1.colorFromHSVA(this.h, this.s, this.v, 1));
+        const color = (0, color_1.colorToHexRGB)((0, color_1.colorFromHSVA)(this.h, this.s, this.v, 1));
         const changed = this.color !== color;
         this.lastColor = this.color = color;
         if (changed) {
@@ -117,44 +118,44 @@ let ColorPicker = class ColorPicker {
         }
     }
 };
+exports.ColorPicker = ColorPicker;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "isOpen", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "isDisabled", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "disabledColor", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "color", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "indicatorColor", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], ColorPicker.prototype, "label", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], ColorPicker.prototype, "labelledBy", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ColorPicker.prototype, "colorChange", void 0);
-ColorPicker = tslib_1.__decorate([
-    core_1.Component({
+exports.ColorPicker = ColorPicker = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'color-picker',
         templateUrl: 'color-picker.pug',
         styleUrls: ['color-picker.scss'],
     })
 ], ColorPicker);
-exports.ColorPicker = ColorPicker;
 //# sourceMappingURL=color-picker.js.map

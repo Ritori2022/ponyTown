@@ -1,30 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
+const tslib_1 = require("tslib");
 const express_1 = require("express");
-const fs = require("fs");
-const path = require("path");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const lodash_1 = require("lodash");
 const stringUtils_1 = require("../../common/stringUtils");
 const serverUtils_1 = require("../serverUtils");
 const requestUtils_1 = require("../requestUtils");
-const paths = require("../paths");
+const paths = tslib_1.__importStar(require("../paths"));
 const db_1 = require("../db");
 const account_1 = require("../api/account");
 const utils_1 = require("../../common/utils");
 const serverMap_1 = require("../serverMap");
 function default_1(server, settings, world) {
-    const offline = requestUtils_1.offline(settings);
-    const app = express_1.Router();
+    const offline = (0, requestUtils_1.offline)(settings);
+    const app = (0, express_1.Router)();
     app.use(requestUtils_1.auth);
     app.get('/ponies', offline, (req, res) => {
-        requestUtils_1.handleJSON(server, req, res, account_1.createGetAccountCharacters(db_1.findAllCharacters)(req.user));
+        (0, requestUtils_1.handleJSON)(server, req, res, (0, account_1.createGetAccountCharacters)(db_1.findAllCharacters)(req.user));
     });
     app.get('/animation/:id', offline, (req, res) => {
         const filePath = path.join(paths.store, req.params.id);
         res.sendFile(filePath);
     });
     app.post('/animation', offline, (req, res) => {
-        const name = stringUtils_1.randomString(10);
+        const name = (0, stringUtils_1.randomString)(10);
         const filePath = path.join(paths.store, name);
         fs.writeFileAsync(filePath, req.body.animation, 'utf8')
             .then(() => res.send({ name }));
@@ -35,15 +37,15 @@ function default_1(server, settings, world) {
         const height = req.body.height || 80;
         const fps = req.body.fps || 24;
         const remove = req.body.remove || 0;
-        const name = stringUtils_1.randomString(10);
+        const name = (0, stringUtils_1.randomString)(10);
         const filePath = path.join(paths.store, name + '.png');
         const header = 'data:image/gif;base64,';
         const buffer = Buffer.from(image.substr(header.length), 'base64');
         const magick = /^win/.test(process.platform) ? 'magick' : 'convert';
         const command = `${magick} -dispose 3 -delay ${100 / fps} -loop 0 "${filePath}" -crop ${width}x${height} `
-            + `+repage${lodash_1.repeat(' +delete', remove)} "${filePath.replace(/png$/, 'gif')}"`;
+            + `+repage${(0, lodash_1.repeat)(' +delete', remove)} "${filePath.replace(/png$/, 'gif')}"`;
         fs.writeFileAsync(filePath, buffer)
-            .then(() => serverUtils_1.execAsync(command))
+            .then(() => (0, serverUtils_1.execAsync)(command))
             .then(() => res.send({ name }));
     });
     app.get('/maps', offline, (_, res) => {
@@ -59,11 +61,16 @@ function default_1(server, settings, world) {
             const id = req.query.map || '';
             const map = world.maps.find(m => m.id === id);
             if (map) {
-                const mapInfo = Object.assign({}, serverMap_1.serializeMap(map), { defaultTile: map.defaultTile, type: map.type, info: {
+                const mapInfo = {
+                    ...(0, serverMap_1.serializeMap)(map),
+                    defaultTile: map.defaultTile,
+                    type: map.type,
+                    info: {
                         season: world.season,
-                        entities: utils_1.flatten(map.regions.map(r => r.entities))
+                        entities: (0, utils_1.flatten)(map.regions.map(r => r.entities))
                             .map(({ type, x, y, order, id }) => ({ type, x, y, order, id })),
-                    } });
+                    },
+                };
                 res.json(mapInfo);
                 return;
             }
@@ -72,5 +79,4 @@ function default_1(server, settings, world) {
     });
     return app;
 }
-exports.default = default_1;
 //# sourceMappingURL=api-tools.js.map

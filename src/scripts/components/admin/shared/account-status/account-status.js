@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AccountStatus = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -23,20 +24,20 @@ let AccountStatus = class AccountStatus {
             .then(status => this.status = status);
     }
 };
+exports.AccountStatus = AccountStatus;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountStatus.prototype, "account", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], AccountStatus.prototype, "verbose", void 0);
-AccountStatus = tslib_1.__decorate([
-    core_1.Component({
+exports.AccountStatus = AccountStatus = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'account-status',
         templateUrl: 'account-status.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AccountStatus);
-exports.AccountStatus = AccountStatus;
 //# sourceMappingURL=account-status.js.map

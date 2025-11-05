@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Audio = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const howler_1 = require("howler");
@@ -7,17 +8,17 @@ const lodash_1 = require("lodash");
 const rev_1 = require("../../client/rev");
 function getTracks(season, holiday, map) {
     switch (map) {
-        case 1 /* Island */:
+        case 1 /* MapType.Island */:
             return [
                 'island',
                 'sunny-island',
             ];
-        case 2 /* House */:
+        case 2 /* MapType.House */:
             return [
                 'happy-house',
                 'sweet-home',
             ];
-        case 3 /* Cave */:
+        case 3 /* MapType.Cave */:
             return [
                 'cave-crystals',
                 'cave-secrets',
@@ -34,7 +35,7 @@ function getTracks(season, holiday, map) {
                 'scherzo',
                 'trills',
                 'waltzalt',
-                ...(season === 4 /* Winter */ ? [
+                ...(season === 4 /* Season.Winter */ ? [
                     'trees-winter',
                     'reindeer-winter',
                 ] : [
@@ -48,12 +49,12 @@ function getTracks(season, holiday, map) {
                 'falling',
                 'tio',
                 'orchid',
-                ...(season === 4 /* Winter */ ? [
+                ...(season === 4 /* Season.Winter */ ? [
                     'xmas-air',
                     'xmas-horns',
                     'xmas-presents',
                 ] : []),
-                ...(holiday === 2 /* Halloween */ ? [
+                ...(holiday === 2 /* Holiday.Halloween */ ? [
                     'ghost',
                     'pumpkin',
                 ] : []),
@@ -101,7 +102,7 @@ let Audio = class Audio {
         // const duplicateTracks = tracks.filter(t => t === 'ghost' || t === 'pumpkin');
         // tracks.push(...duplicateTracks);
         // tracks.push(...duplicateTracks);
-        this.tracks = tracks.map(name => ({ name, src: [rev_1.getUrl(`music/${name}.webm`), rev_1.getUrl(`music/${name}.mp3`)] }));
+        this.tracks = tracks.map(name => ({ name, src: [(0, rev_1.getUrl)(`music/${name}.webm`), (0, rev_1.getUrl)(`music/${name}.mp3`)] }));
         this.loops = 0;
     }
     setVolume(volume) {
@@ -172,9 +173,9 @@ let Audio = class Audio {
         }
     }
     playRandomTrack() {
-        while (!this.switchToTrack(lodash_1.sample(this.tracks)))
+        while (!this.switchToTrack((0, lodash_1.sample)(this.tracks)))
             ;
-        this.loops = lodash_1.random(4, 7);
+        this.loops = (0, lodash_1.random)(4, 7);
     }
     playTrack(track) {
         this.prepareTrack(track);
@@ -232,8 +233,8 @@ let Audio = class Audio {
         }
     }
 };
-Audio = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' })
-], Audio);
 exports.Audio = Audio;
+exports.Audio = Audio = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' })
+], Audio);
 //# sourceMappingURL=audio.js.map

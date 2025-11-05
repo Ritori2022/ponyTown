@@ -1,8 +1,33 @@
 "use strict";
 /// <reference path="../../typings/my.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
-const path = require("path");
+exports.compareLayers = exports.matcher = exports.time = exports.nameMatches = exports.getDirectories = exports.defaultPalette = exports.TEETH_SHADE_COLOR = exports.TEETH_COLOR = exports.TONGUE_COLOR = exports.MOUTH_COLOR = exports.DARK_GRAY = exports.TEAR_COLOR = exports.LIGHT_SHADE_COLOR = exports.SHADE_COLOR = exports.OUTLINE_COLOR = exports.WHITE = exports.BLACK = exports.TRANSPARENT = void 0;
+exports.cartesian = cartesian;
+exports.mkdir = mkdir;
+exports.findLayer = findLayer;
+exports.findLayerSafe = findLayerSafe;
+exports.findByName = findByName;
+exports.findByIndex = findByIndex;
+exports.compareNames = compareNames;
+exports.spawnAsync = spawnAsync;
+exports.getCanvas = getCanvas;
+exports.getCanvasSafe = getCanvasSafe;
+exports.getLayerCanvas = getLayerCanvas;
+exports.getLayerCanvasSafe = getLayerCanvasSafe;
+exports.parseWithNumber = parseWithNumber;
+exports.trimRight = trimRight;
+exports.addImage = addImage;
+exports.createSprite = createSprite;
+exports.addSprite = addSprite;
+exports.addSpriteWithColors = addSpriteWithColors;
+exports.getColorsCount = getColorsCount;
+exports.createPixelSprites = createPixelSprites;
+exports.getPatternLayers = getPatternLayers;
+exports.getPatternCanvases = getPatternCanvases;
+exports.clipPattern = clipPattern;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
+const path = tslib_1.__importStar(require("path"));
 const child_process_1 = require("child_process");
 const lodash_1 = require("lodash");
 const palette_utils_1 = require("./palette-utils");
@@ -31,25 +56,23 @@ exports.defaultPalette = [
     ...holdPoofColors,
 ];
 function cartesian(...args) {
-    return lodash_1.reduce(args, (a, b) => lodash_1.flatten(lodash_1.map(a, x => lodash_1.map(b, y => x.concat([y])))), [[]]);
+    return (0, lodash_1.reduce)(args, (a, b) => (0, lodash_1.flatten)((0, lodash_1.map)(a, x => (0, lodash_1.map)(b, y => x.concat([y])))), [[]]);
 }
-exports.cartesian = cartesian;
 function mkdir(dirpath) {
     try {
         fs.mkdirSync(dirpath);
     }
-    catch (_a) { }
+    catch { }
 }
-exports.mkdir = mkdir;
 const isDirectory = (dir) => fs.lstatSync(dir).isDirectory();
-exports.getDirectories = (dir) => fs.readdirSync(dir).map(name => path.join(dir, name)).filter(isDirectory);
+const getDirectories = (dir) => fs.readdirSync(dir).map(name => path.join(dir, name)).filter(isDirectory);
+exports.getDirectories = getDirectories;
 function findLayerByPath([name, ...child], layer) {
     return name ? findLayerByPath(child, layer && findByName(layer.children, name)) : layer;
 }
 function findLayer(path, layer) {
     return findLayerByPath(path.split('/'), layer);
 }
-exports.findLayer = findLayer;
 function findLayerSafe(name, parent) {
     const layer = findLayer(name, parent);
     if (!layer) {
@@ -57,20 +80,17 @@ function findLayerSafe(name, parent) {
     }
     return layer;
 }
-exports.findLayerSafe = findLayerSafe;
 function findByName(items, name) {
     return items.find(i => i.name === name);
 }
-exports.findByName = findByName;
 function findByIndex(items, index) {
     return items.find(i => i.index === index);
 }
-exports.findByIndex = findByIndex;
-exports.nameMatches = (regex) => (l) => regex.test(l.name);
+const nameMatches = (regex) => (l) => regex.test(l.name);
+exports.nameMatches = nameMatches;
 function compareNames(a, b) {
     return a.name.localeCompare(b.name);
 }
-exports.compareNames = compareNames;
 exports.time = (function () {
     const start = Date.now();
     let last = start;
@@ -82,12 +102,11 @@ exports.time = (function () {
 })();
 function spawnAsync(command, args) {
     return new Promise((resolve, reject) => {
-        child_process_1.spawn(command, args)
+        (0, child_process_1.spawn)(command, args)
             .on('error', (err) => reject(err))
             .on('exit', (code) => code === 0 ? resolve() : reject(new Error(`Non-zero return code for ${command} (${code})`)));
     });
 }
-exports.spawnAsync = spawnAsync;
 // canvas
 function getCanvas(layer) {
     if (!layer)
@@ -98,7 +117,6 @@ function getCanvas(layer) {
     }
     return canvas;
 }
-exports.getCanvas = getCanvas;
 function getCanvasSafe(layer) {
     const canvas = getCanvas(layer);
     if (!canvas) {
@@ -106,29 +124,25 @@ function getCanvasSafe(layer) {
     }
     return canvas;
 }
-exports.getCanvasSafe = getCanvasSafe;
 function getLayerCanvas(name, parent) {
     return getCanvas(findLayer(name, parent));
 }
-exports.getLayerCanvas = getLayerCanvas;
 function getLayerCanvasSafe(name, parent) {
     return getCanvasSafe(findLayerSafe(name, parent));
 }
-exports.getLayerCanvasSafe = getLayerCanvasSafe;
 function parseWithNumber(name) {
     const match = /(\d+)/.exec(name);
     return parseInt(match ? match[1] : '0', 10);
 }
-exports.parseWithNumber = parseWithNumber;
-exports.matcher = (regex) => (text) => regex.test(text);
+const matcher = (regex) => (text) => regex.test(text);
+exports.matcher = matcher;
 const isArrayEmpty = (a) => !a || a.length === 0;
 const nullForEmpty = (a) => isArrayEmpty(a) ? null : a;
 function trimRight(items) {
-    return lodash_1.dropRightWhile(items.map(nullForEmpty), isArrayEmpty);
+    return (0, lodash_1.dropRightWhile)(items.map(nullForEmpty), isArrayEmpty);
 }
-exports.trimRight = trimRight;
 // sprites
-const redCanvas = canvas_utils_1.createColorCanvas(1000, 1000, 'red');
+const redCanvas = (0, canvas_utils_1.createColorCanvas)(1000, 1000, 'red');
 function addImage(images, canvas) {
     if (canvas) {
         // TODO: remove duplicated
@@ -139,57 +153,50 @@ function addImage(images, canvas) {
         return 0;
     }
 }
-exports.addImage = addImage;
 function createSprite(index, image, { w, h, x, y }) {
     return { index, image, w, h, x: 0, y: 0, ox: x, oy: y };
 }
-exports.createSprite = createSprite;
 const maxSpriteWidth = 500;
 const maxSpriteHeight = 500;
 function addSprite(sprites, canvas, pattern, palette, out = {}) {
     if (canvas) {
-        const rect = sprite_sheet_1.getSpriteRect(canvas, 0, 0, canvas.width, canvas.height);
+        const rect = (0, sprite_sheet_1.getSpriteRect)(canvas, 0, 0, canvas.width, canvas.height);
         if (rect.w && rect.h) {
             if (rect.w > maxSpriteWidth || rect.h > maxSpriteHeight) {
                 throw new Error(`Sprite too large (${rect.w}, ${rect.h}) from [${canvas.info}]`);
             }
-            const image = palette_utils_1.imageToPalette(rect, canvas, pattern || redCanvas, palette, out);
+            const image = (0, palette_utils_1.imageToPalette)(rect, canvas, pattern || redCanvas, palette, out);
             sprites.push(createSprite(sprites.length, image, rect));
             return sprites.length - 1;
         }
     }
     return 0;
 }
-exports.addSprite = addSprite;
 function addSpriteWithColors(sprites, colorImage, patternImage, forceWhite) {
     const out = { forceWhite };
     const color = addSprite(sprites, colorImage, patternImage, undefined, out);
     return { color, colors: out.colors };
 }
-exports.addSpriteWithColors = addSpriteWithColors;
 function getColorsCount(colorImage, patternImage, forceWhite) {
     const out = { forceWhite };
     addSprite([], colorImage, patternImage, undefined, out);
     return out.colors;
 }
-exports.getColorsCount = getColorsCount;
 function createPixelSprites({ objects, objects2, images, sprites }) {
-    const pixel = canvas_utils_1.createColorCanvas(3, 3, 'white');
+    const pixel = (0, canvas_utils_1.createColorCanvas)(3, 3, 'white');
     objects['pixelRect'] = addImage(images, pixel);
     objects2['pixelRect2'] = addSprite(sprites, pixel, undefined, exports.defaultPalette);
 }
-exports.createPixelSprites = createPixelSprites;
 // layers
-exports.compareLayers = (a, b) => parseWithNumber(a.name) - parseWithNumber(b.name);
+const compareLayers = (a, b) => parseWithNumber(a.name) - parseWithNumber(b.name);
+exports.compareLayers = compareLayers;
 function getPatternLayers(layer) {
-    return layer.children.filter(exports.nameMatches(/^pattern/)).sort(exports.compareLayers);
+    return layer.children.filter((0, exports.nameMatches)(/^pattern/)).sort(exports.compareLayers);
 }
-exports.getPatternLayers = getPatternLayers;
 function getPatternCanvases(layer) {
     const canvases = getPatternLayers(layer).map(getCanvas);
-    return lodash_1.dropRightWhile(canvases, canvas_utils_1.isCanvasEmpty);
+    return (0, lodash_1.dropRightWhile)(canvases, canvas_utils_1.isCanvasEmpty);
 }
-exports.getPatternCanvases = getPatternCanvases;
 function clipPattern(color, pattern) {
     if (pattern) {
         const ctx = pattern.getContext('2d');
@@ -198,5 +205,4 @@ function clipPattern(color, pattern) {
     }
     return pattern;
 }
-exports.clipPattern = clipPattern;
 //# sourceMappingURL=common.js.map

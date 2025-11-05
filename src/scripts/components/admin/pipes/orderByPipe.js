@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.OrderByPipe = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let OrderByPipe = class OrderByPipe {
@@ -7,10 +8,10 @@ let OrderByPipe = class OrderByPipe {
         return value && value.slice().sort(compare);
     }
 };
-OrderByPipe = tslib_1.__decorate([
-    core_1.Pipe({
+exports.OrderByPipe = OrderByPipe;
+exports.OrderByPipe = OrderByPipe = tslib_1.__decorate([
+    (0, core_1.Pipe)({
         name: 'orderBy',
     })
 ], OrderByPipe);
-exports.OrderByPipe = OrderByPipe;
 //# sourceMappingURL=orderByPipe.js.map

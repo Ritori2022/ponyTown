@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getVAOAttributesSize = getVAOAttributesSize;
+exports.createVAOAttributes = createVAOAttributes;
 function getVAOAttributesSize(gl, attributes) {
     return attributes.reduce((sum, a) => sum + a.size * sizeOfType(gl, a.type), 0);
 }
-exports.getVAOAttributesSize = getVAOAttributesSize;
 function createVAOAttributes(gl, attributes, buffer) {
     const result = [];
     const stride = getVAOAttributesSize(gl, attributes);
     let offset = 0;
     for (const a of attributes) {
-        result.push(Object.assign({}, a, { stride, buffer, offset }));
+        result.push({ ...a, stride, buffer, offset });
         offset += a.size * sizeOfType(gl, a.type);
     }
     return result;
 }
-exports.createVAOAttributes = createVAOAttributes;
 function sizeOfType(gl, type) {
     switch (type) {
         case gl.BYTE:

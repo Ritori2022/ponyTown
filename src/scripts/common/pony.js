@@ -1,5 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createPony = createPony;
+exports.isPony = isPony;
+exports.isPonyOnTheGround = isPonyOnTheGround;
+exports.getPaletteInfo = getPaletteInfo;
+exports.releasePony = releasePony;
+exports.canPonyFly = canPonyFly;
+exports.canPonyLie = canPonyLie;
+exports.canPonySit = canPonySit;
+exports.canPonyStand = canPonyStand;
+exports.canPonyFlyUp = canPonyFlyUp;
+exports.getPonyChatHeight = getPonyChatHeight;
+exports.updatePonyInfo = updatePonyInfo;
+exports.ensurePonyInfoDecoded = ensurePonyInfoDecoded;
+exports.invalidatePalettesForPony = invalidatePalettesForPony;
+exports.doBoopPonyAction = doBoopPonyAction;
+exports.doPonyAction = doPonyAction;
+exports.setPonyExpression = setPonyExpression;
+exports.hasExtendedInfo = hasExtendedInfo;
+exports.hasHeadAnimation = hasHeadAnimation;
+exports.setHeadAnimation = setHeadAnimation;
+exports.drawPonyEntity = drawPonyEntity;
+exports.drawPonyEntityLight = drawPonyEntityLight;
+exports.drawPonyEntityLightSprite = drawPonyEntityLightSprite;
+exports.flagsToState = flagsToState;
+exports.updatePonyEntity = updatePonyEntity;
+exports.updatePonyHold = updatePonyHold;
+const tslib_1 = require("tslib");
 const ponyUtils_1 = require("../client/ponyUtils");
 const ponyAnimations_1 = require("../client/ponyAnimations");
 const interfaces_1 = require("./interfaces");
@@ -23,28 +50,28 @@ const worldMap_1 = require("./worldMap");
 const draw_1 = require("../client/draw");
 const mixins_1 = require("./mixins");
 const handlers_1 = require("../client/handlers");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const color_1 = require("./color");
 const flyY = 15;
 const lightExtentX = 100;
 const lightExtentY = 70;
-const emptyBounds = rect_1.rect(0, 0, 0, 0);
-const bounds = rect_1.rect(-ponyUtils_1.PONY_WIDTH / 2, -ponyUtils_1.PONY_HEIGHT, ponyUtils_1.PONY_WIDTH, ponyUtils_1.PONY_HEIGHT + 5);
-const boundsFly = rect_1.rect(bounds.x, bounds.y - flyY, bounds.w, bounds.h + flyY);
+const emptyBounds = (0, rect_1.rect)(0, 0, 0, 0);
+const bounds = (0, rect_1.rect)(-ponyUtils_1.PONY_WIDTH / 2, -ponyUtils_1.PONY_HEIGHT, ponyUtils_1.PONY_WIDTH, ponyUtils_1.PONY_HEIGHT + 5);
+const boundsFly = (0, rect_1.rect)(bounds.x, bounds.y - flyY, bounds.w, bounds.h + flyY);
 const lightBounds = makeLightBounds(bounds);
 const lightBoundsFly = makeLightBounds(boundsFly);
-const interactBounds = rect_1.rect(-20, -50, 40, 50);
-const interactBoundsFly = rect_1.rect(interactBounds.x, interactBounds.y - flyY, interactBounds.w, interactBounds.h);
-const defaultExpr = expressionEncoder_1.encodeExpression(undefined);
+const interactBounds = (0, rect_1.rect)(-20, -50, 40, 50);
+const interactBoundsFly = (0, rect_1.rect)(interactBounds.x, interactBounds.y - flyY, interactBounds.w, interactBounds.h);
+const defaultExpr = (0, expressionEncoder_1.encodeExpression)(undefined);
 function createPony(id, state, info, defaultPalette, paletteManager) {
     const pony = {
         id,
         state,
-        playerState: 0 /* None */,
+        playerState: 0 /* EntityPlayerState.None */,
         type: constants_1.PONY_TYPE,
-        flags: 1 /* Movable */ | 64 /* CanCollide */ | 256 /* Interactive */,
+        flags: 1 /* EntityFlags.Movable */ | 64 /* EntityFlags.CanCollide */ | 256 /* EntityFlags.Interactive */,
         expr: defaultExpr,
-        ponyState: ponyHelpers_1.defaultPonyState(),
+        ponyState: (0, ponyHelpers_1.defaultPonyState)(),
         x: 0,
         y: 0,
         z: 0,
@@ -59,7 +86,7 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
         extra: false,
         toy: 0,
         swimming: false,
-        ex: false,
+        ex: false, // extended data indicator, sent in extended option
         inTheAirDelay: 0,
         name: undefined,
         tag: undefined,
@@ -74,20 +101,20 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
         blinkTime: 0,
         nextBlink: Math.random() * 5,
         currentExpression: defaultExpr,
-        drawingOptions: Object.assign({}, ponyHelpers_1.defaultDrawPonyOptions(), { shadow: true, bounce: BETA }),
-        zzzEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
-        cryEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
-        sneezeEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
-        holdPoofEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
-        heartsEffect: animationPlayer_1.createAnimationPlayer(defaultPalette),
-        magicEffect: animationPlayer_1.createAnimationPlayer(paletteManager.addArray(sprites.magic2.palette)),
-        animator: animator_1.createAnimator(),
+        drawingOptions: { ...(0, ponyHelpers_1.defaultDrawPonyOptions)(), shadow: true, bounce: BETA },
+        zzzEffect: (0, animationPlayer_1.createAnimationPlayer)(defaultPalette),
+        cryEffect: (0, animationPlayer_1.createAnimationPlayer)(defaultPalette),
+        sneezeEffect: (0, animationPlayer_1.createAnimationPlayer)(defaultPalette),
+        holdPoofEffect: (0, animationPlayer_1.createAnimationPlayer)(defaultPalette),
+        heartsEffect: (0, animationPlayer_1.createAnimationPlayer)(defaultPalette),
+        magicEffect: (0, animationPlayer_1.createAnimationPlayer)(paletteManager.addArray(sprites.magic2.palette)),
+        animator: (0, animator_1.createAnimator)(),
         lastX: 0,
         lastY: 0,
         lastRight: false,
-        lastState: ponyHelpers_1.defaultPonyState(),
+        lastState: (0, ponyHelpers_1.defaultPonyState)(),
         initialized: false,
-        doAction: 0 /* None */,
+        doAction: 0 /* DoAction.None */,
         bounds: bounds,
         interactBounds: interactBounds,
         chatBounds: interactBounds,
@@ -100,49 +127,39 @@ function createPony(id, state, info, defaultPalette, paletteManager) {
     pony.ponyState.drawFaceExtra = batch => drawFaceExtra(batch, pony);
     return pony;
 }
-exports.createPony = createPony;
 function isPony(entity) {
     return entity.type === constants_1.PONY_TYPE;
 }
-exports.isPony = isPony;
 function isPonyOnTheGround(pony) {
-    return !entityUtils_1.isPonyFlying(pony) && !ponyStates_1.isFlyingUpOrDown(pony.animator.state);
+    return !(0, entityUtils_1.isPonyFlying)(pony) && !(0, ponyStates_1.isFlyingUpOrDown)(pony.animator.state);
 }
-exports.isPonyOnTheGround = isPonyOnTheGround;
 function getPaletteInfo(pony) {
     return ensurePonyInfoDecoded(pony);
 }
-exports.getPaletteInfo = getPaletteInfo;
 function releasePony(pony) {
     if (pony.ponyState.holding) {
-        entityUtils_1.releaseEntity(pony.ponyState.holding);
+        (0, entityUtils_1.releaseEntity)(pony.ponyState.holding);
     }
     releasePalettePonyInfo(pony);
 }
-exports.releasePony = releasePony;
 function canPonyFly(pony) {
-    return !!pony.palettePonyInfo && ponyUtils_1.canFly(pony.palettePonyInfo);
+    return !!pony.palettePonyInfo && (0, ponyUtils_1.canFly)(pony.palettePonyInfo);
 }
-exports.canPonyFly = canPonyFly;
 function canPonyLie(pony, map) {
-    return !entityUtils_1.isPonyLying(pony) && (entityUtils_1.isIdle(pony) || ponyStates_1.isSittingDown(pony.animator.state) || ponyStates_1.isFlyingDown(pony.animator.state)) &&
-        entityUtils_1.isPonyLandedOrCanLand(pony, map);
+    return !(0, entityUtils_1.isPonyLying)(pony) && ((0, entityUtils_1.isIdle)(pony) || (0, ponyStates_1.isSittingDown)(pony.animator.state) || (0, ponyStates_1.isFlyingDown)(pony.animator.state)) &&
+        (0, entityUtils_1.isPonyLandedOrCanLand)(pony, map);
 }
-exports.canPonyLie = canPonyLie;
 function canPonySit(pony, map) {
-    return !entityUtils_1.isPonySitting(pony) && (entityUtils_1.isIdle(pony) || ponyStates_1.isFlyingDown(pony.animator.state)) &&
-        entityUtils_1.isPonyLandedOrCanLand(pony, map);
+    return !(0, entityUtils_1.isPonySitting)(pony) && ((0, entityUtils_1.isIdle)(pony) || (0, ponyStates_1.isFlyingDown)(pony.animator.state)) &&
+        (0, entityUtils_1.isPonyLandedOrCanLand)(pony, map);
 }
-exports.canPonySit = canPonySit;
 function canPonyStand(pony, map) {
-    return !entityUtils_1.isPonyStanding(pony) && (entityUtils_1.isIdleAnimation(pony.ponyState.animation) || ponyStates_1.isSittingUp(pony.animator.state)) &&
-        entityUtils_1.isPonyLandedOrCanLand(pony, map);
+    return !(0, entityUtils_1.isPonyStanding)(pony) && ((0, entityUtils_1.isIdleAnimation)(pony.ponyState.animation) || (0, ponyStates_1.isSittingUp)(pony.animator.state)) &&
+        (0, entityUtils_1.isPonyLandedOrCanLand)(pony, map);
 }
-exports.canPonyStand = canPonyStand;
 function canPonyFlyUp(pony) {
-    return !entityUtils_1.isPonyFlying(pony) && canPonyFly(pony) && !ponyStates_1.isFlyingUpOrDown(pony.animator.state);
+    return !(0, entityUtils_1.isPonyFlying)(pony) && canPonyFly(pony) && !(0, ponyStates_1.isFlyingUpOrDown)(pony.animator.state);
 }
-exports.canPonyFlyUp = canPonyFlyUp;
 function getPonyChatHeight(pony) {
     const baseHeight = 2;
     const state = pony.ponyState;
@@ -153,79 +170,69 @@ function getPonyChatHeight(pony) {
         return baseHeight - 16;
     }
     else {
-        const frame = ponyDraw_1.getPonyAnimationFrame(state.animation, state.animationFrame, ponyAnimations_1.defaultBodyFrame);
+        const frame = (0, ponyDraw_1.getPonyAnimationFrame)(state.animation, state.animationFrame, ponyAnimations_1.defaultBodyFrame);
         const animation = state.headAnimation || ponyAnimations_1.defaultHeadAnimation;
-        const headFrame = ponyDraw_1.getPonyAnimationFrame(animation, state.headAnimationFrame, ponyAnimations_1.defaultHeadFrame);
-        return baseHeight + ponyDraw_1.getHeadY(frame, headFrame);
+        const headFrame = (0, ponyDraw_1.getPonyAnimationFrame)(animation, state.headAnimationFrame, ponyAnimations_1.defaultHeadFrame);
+        return baseHeight + (0, ponyDraw_1.getHeadY)(frame, headFrame);
     }
 }
-exports.getPonyChatHeight = getPonyChatHeight;
 function updatePonyInfo(pony, info, apply) {
     pony.info = info;
     if (pony.palettePonyInfo !== undefined) {
         releasePalettePonyInfo(pony);
         ensurePonyInfoDecoded(pony);
         pony.discardBatch = true;
-        if (entityUtils_1.isPonyFlying(pony) && !canPonyFly(pony)) {
+        if ((0, entityUtils_1.isPonyFlying)(pony) && !canPonyFly(pony)) {
             DEVELOPMENT && console.warn('Force land');
-            pony.state = utils_1.setFlag(pony.state, 80 /* PonyFlying */, false);
-            animator_1.resetAnimatorState(pony.animator);
+            pony.state = (0, utils_1.setFlag)(pony.state, 80 /* EntityState.PonyFlying */, false);
+            (0, animator_1.resetAnimatorState)(pony.animator);
         }
         apply();
     }
 }
-exports.updatePonyInfo = updatePonyInfo;
 function ensurePonyInfoDecoded(pony) {
     if (pony.info !== undefined && pony.palettePonyInfo === undefined) {
-        pony.palettePonyInfo = compressPony_1.decodePonyInfo(pony.info, pony.paletteManager);
+        pony.palettePonyInfo = (0, compressPony_1.decodePonyInfo)(pony.info, pony.paletteManager);
         const wingType = pony.palettePonyInfo.wings && pony.palettePonyInfo.wings.type || 0;
         pony.animator.variant = wingType === 4 ? 'bug' : '';
-        pony.ponyState.blushColor = colors_1.blushColor(pony.palettePonyInfo.coatPalette.colors[1]);
-        pony.magicColor = color_1.withAlpha(pony.palettePonyInfo.magicColorValue, colors_1.MAGIC_ALPHA);
+        pony.ponyState.blushColor = (0, colors_1.blushColor)(pony.palettePonyInfo.coatPalette.colors[1]);
+        pony.magicColor = (0, color_1.withAlpha)(pony.palettePonyInfo.magicColorValue, colors_1.MAGIC_ALPHA);
     }
     return pony.palettePonyInfo;
 }
-exports.ensurePonyInfoDecoded = ensurePonyInfoDecoded;
 function invalidatePalettesForPony(pony) {
     pony.discardBatch = true;
 }
-exports.invalidatePalettesForPony = invalidatePalettesForPony;
 function doBoopPonyAction(game, pony) {
-    doPonyAction(pony, 1 /* Boop */);
+    doPonyAction(pony, 1 /* DoAction.Boop */);
     if (pony.swimming && pony.lastBoopSplash < performance.now()) {
-        if (entityUtils_1.isFacingRight(pony)) {
-            handlers_1.playEffect(game, pony, entities_1.boopSplashRight.type);
+        if ((0, entityUtils_1.isFacingRight)(pony)) {
+            (0, handlers_1.playEffect)(game, pony, entities_1.boopSplashRight.type);
         }
         else {
-            handlers_1.playEffect(game, pony, entities_1.boopSplashLeft.type);
+            (0, handlers_1.playEffect)(game, pony, entities_1.boopSplashLeft.type);
         }
         pony.lastBoopSplash = performance.now() + 800;
     }
 }
-exports.doBoopPonyAction = doBoopPonyAction;
 function doPonyAction(pony, action) {
     pony.doAction = action;
 }
-exports.doPonyAction = doPonyAction;
 function setPonyExpression(pony, expr) {
     pony.expr = expr;
 }
-exports.setPonyExpression = setPonyExpression;
 function hasExtendedInfo(pony) {
     return pony.ex;
 }
-exports.hasExtendedInfo = hasExtendedInfo;
 function hasHeadAnimation(pony) {
     return pony.headAnimation !== undefined;
 }
-exports.hasHeadAnimation = hasHeadAnimation;
 function setHeadAnimation(pony, headAnimation) {
     if (pony.headAnimation !== headAnimation) {
         pony.headTime = 0;
         pony.headAnimation = headAnimation;
     }
 }
-exports.setHeadAnimation = setHeadAnimation;
 function drawPonyEntity(batch, pony, drawOptions) {
     if (pony.discardBatch && pony.batch !== undefined) {
         batch.releaseBatch(pony.batch);
@@ -237,7 +244,7 @@ function drawPonyEntity(batch, pony, drawOptions) {
     }
     else if (pony.palettePonyInfo !== undefined) {
         let swimming = false;
-        if (ponyStates_1.isSwimmingState(pony.animator.state)) {
+        if ((0, ponyStates_1.isSwimmingState)(pony.animator.state)) {
             if (pony.animator.state === ponyStates_1.swimmingToFlying) {
                 swimming = pony.animator.time < 0.4;
             }
@@ -246,7 +253,7 @@ function drawPonyEntity(batch, pony, drawOptions) {
             }
         }
         const createBatch = pony.vx === 0 && pony.vy === 0 && !swimming;
-        const right = entityUtils_1.isFacingRight(pony);
+        const right = (0, entityUtils_1.isFacingRight)(pony);
         if (createBatch) {
             batch.startBatch();
         }
@@ -262,20 +269,20 @@ function drawPonyEntity(batch, pony, drawOptions) {
         options.gameTime = drawOptions.gameTime + pony.id * 0.1;
         options.shadowColor = drawOptions.shadowColor;
         const ponyState = pony.ponyState;
-        ponyDraw_1.drawPony(batch, pony.palettePonyInfo, ponyState, 0, 0, options);
-        if (animationPlayer_1.isAnimationPlaying(pony.zzzEffect) || animationPlayer_1.isAnimationPlaying(pony.sneezeEffect) ||
-            animationPlayer_1.isAnimationPlaying(pony.holdPoofEffect) || animationPlayer_1.isAnimationPlaying(pony.heartsEffect) ||
-            animationPlayer_1.isAnimationPlaying(pony.magicEffect)) {
-            const { x, y } = ponyDraw_1.getPonyHeadPosition(pony.ponyState, 0, 0);
-            const right = entityUtils_1.isFacingRight(pony);
+        (0, ponyDraw_1.drawPony)(batch, pony.palettePonyInfo, ponyState, 0, 0, options);
+        if ((0, animationPlayer_1.isAnimationPlaying)(pony.zzzEffect) || (0, animationPlayer_1.isAnimationPlaying)(pony.sneezeEffect) ||
+            (0, animationPlayer_1.isAnimationPlaying)(pony.holdPoofEffect) || (0, animationPlayer_1.isAnimationPlaying)(pony.heartsEffect) ||
+            (0, animationPlayer_1.isAnimationPlaying)(pony.magicEffect)) {
+            const { x, y } = (0, ponyDraw_1.getPonyHeadPosition)(pony.ponyState, 0, 0);
+            const right = (0, entityUtils_1.isFacingRight)(pony);
             const flip = right ? !ponyState.headTurned : ponyState.headTurned;
-            batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
-            animationPlayer_1.drawAnimation(batch, pony.zzzEffect, 0, 0, colors_1.WHITE, flip);
-            animationPlayer_1.drawAnimation(batch, pony.sneezeEffect, 0, 0, colors_1.WHITE, flip);
-            animationPlayer_1.drawAnimation(batch, pony.holdPoofEffect, 0, 0, colors_1.WHITE, flip);
-            animationPlayer_1.drawAnimation(batch, pony.heartsEffect, 0, 0, colors_1.HEARTS_COLOR, flip);
+            batch.multiplyTransform((0, ponyDraw_1.createHeadTransform)(undefined, x, y, ponyState));
+            (0, animationPlayer_1.drawAnimation)(batch, pony.zzzEffect, 0, 0, colors_1.WHITE, flip);
+            (0, animationPlayer_1.drawAnimation)(batch, pony.sneezeEffect, 0, 0, colors_1.WHITE, flip);
+            (0, animationPlayer_1.drawAnimation)(batch, pony.holdPoofEffect, 0, 0, colors_1.WHITE, flip);
+            (0, animationPlayer_1.drawAnimation)(batch, pony.heartsEffect, 0, 0, colors_1.HEARTS_COLOR, flip);
             if (pony.magicEffect.currentAnimation !== undefined) {
-                animationPlayer_1.drawAnimation(batch, pony.magicEffect, 0, 0, pony.magicColor, flip);
+                (0, animationPlayer_1.drawAnimation)(batch, pony.magicEffect, 0, 0, pony.magicColor, flip);
                 const sprite = sprites.magic3.frames[pony.magicEffect.frame];
                 sprite && batch.drawSprite(sprite, colors_1.WHITE, pony.heartsEffect.palette, 0, 0);
             }
@@ -283,8 +290,8 @@ function drawPonyEntity(batch, pony, drawOptions) {
         batch.restore();
         if (createBatch) {
             pony.batch = batch.finishBatch();
-            pony.lastX = positionUtils_1.toScreenX(pony.x);
-            pony.lastY = positionUtils_1.toScreenYWithZ(pony.y, pony.z);
+            pony.lastX = (0, positionUtils_1.toScreenX)(pony.x);
+            pony.lastY = (0, positionUtils_1.toScreenYWithZ)(pony.y, pony.z);
             pony.lastRight = right;
             pony.zzzEffect.dirty = false;
             pony.cryEffect.dirty = false;
@@ -296,11 +303,10 @@ function drawPonyEntity(batch, pony, drawOptions) {
         }
     }
 }
-exports.drawPonyEntity = drawPonyEntity;
 const magickLightSizes = [
-    0, 1.02,
-    0.97, 0.94, 0.91, 0.94, 0.97, 1.00,
-    0.97, 0.94, 0.91,
+    0, 1.02, // fade-in
+    0.97, 0.94, 0.91, 0.94, 0.97, 1.00, // loop
+    0.97, 0.94, 0.91, // fade-out
 ];
 function drawPonyEntityLight(batch, pony, options) {
     const ponyState = pony.ponyState;
@@ -311,11 +317,11 @@ function drawPonyEntityLight(batch, pony, options) {
     if (draw) {
         batch.save();
         transformBatch(batch, pony);
-        const { x, y } = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0);
-        batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
+        const { x, y } = (0, ponyDraw_1.getPonyHeadPosition)(ponyState, 0, 0);
+        batch.multiplyTransform((0, ponyDraw_1.createHeadTransform)(undefined, x, y, ponyState));
         if (drawHolding) {
-            holding.x = positionUtils_1.toWorldX(holding.pickableX);
-            holding.y = positionUtils_1.toWorldY(holding.pickableY);
+            holding.x = (0, positionUtils_1.toWorldX)(holding.pickableX);
+            holding.y = (0, positionUtils_1.toWorldY)(holding.pickableY);
             holding.drawLight(batch, options);
         }
         if (drawMagic) {
@@ -325,7 +331,6 @@ function drawPonyEntityLight(batch, pony, options) {
         batch.restore();
     }
 }
-exports.drawPonyEntityLight = drawPonyEntityLight;
 function drawPonyEntityLightSprite(batch, pony, options) {
     const ponyState = pony.ponyState;
     const holding = ponyState.holding;
@@ -335,11 +340,11 @@ function drawPonyEntityLightSprite(batch, pony, options) {
     if (draw) {
         batch.save();
         transformBatch(batch, pony);
-        const { x, y } = ponyDraw_1.getPonyHeadPosition(ponyState, 0, 0);
-        batch.multiplyTransform(ponyDraw_1.createHeadTransform(undefined, x, y, ponyState));
+        const { x, y } = (0, ponyDraw_1.getPonyHeadPosition)(ponyState, 0, 0);
+        batch.multiplyTransform((0, ponyDraw_1.createHeadTransform)(undefined, x, y, ponyState));
         if (drawHolding) {
-            holding.x = positionUtils_1.toWorldX(holding.pickableX);
-            holding.y = positionUtils_1.toWorldY(holding.pickableY);
+            holding.x = (0, positionUtils_1.toWorldX)(holding.pickableX);
+            holding.y = (0, positionUtils_1.toWorldY)(holding.pickableY);
             holding.drawLightSprite(batch, options);
         }
         // if (drawMagic) {
@@ -350,14 +355,13 @@ function drawPonyEntityLightSprite(batch, pony, options) {
         batch.restore();
     }
 }
-exports.drawPonyEntityLightSprite = drawPonyEntityLightSprite;
 function flagsToState(state, moving, isSwimming) {
-    const ponyState = state & 240 /* PonyStateMask */;
+    const ponyState = state & 240 /* EntityState.PonyStateMask */;
     if (isSwimming) {
         return ponyStates_1.swimming;
     }
     else if (moving) {
-        if (ponyState === 80 /* PonyFlying */) {
+        if (ponyState === 80 /* EntityState.PonyFlying */) {
             return ponyStates_1.flying;
         }
         else {
@@ -366,18 +370,17 @@ function flagsToState(state, moving, isSwimming) {
     }
     else {
         switch (ponyState) {
-            case 0 /* PonyStanding */: return ponyStates_1.standing;
-            case 16 /* PonyWalking */: return ponyStates_1.trotting;
-            case 32 /* PonyTrotting */: return ponyStates_1.trotting;
-            case 48 /* PonySitting */: return ponyStates_1.sitting;
-            case 64 /* PonyLying */: return ponyStates_1.lying;
-            case 80 /* PonyFlying */: return ponyStates_1.hovering;
+            case 0 /* EntityState.PonyStanding */: return ponyStates_1.standing;
+            case 16 /* EntityState.PonyWalking */: return ponyStates_1.trotting;
+            case 32 /* EntityState.PonyTrotting */: return ponyStates_1.trotting;
+            case 48 /* EntityState.PonySitting */: return ponyStates_1.sitting;
+            case 64 /* EntityState.PonyLying */: return ponyStates_1.lying;
+            case 80 /* EntityState.PonyFlying */: return ponyStates_1.hovering;
             default:
                 throw new Error(`Invalid pony state (${ponyState})`);
         }
     }
 }
-exports.flagsToState = flagsToState;
 function updatePonyEntity(pony, delta, gameTime, safe) {
     // update state
     const state = pony.ponyState;
@@ -386,26 +389,26 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     if (pony.inTheAirDelay > 0) {
         pony.inTheAirDelay -= delta;
     }
-    if (pony.doAction !== 0 /* None */) {
+    if (pony.doAction !== 0 /* DoAction.None */) {
         switch (pony.doAction) {
-            case 1 /* Boop */:
-                animator_1.setAnimatorState(pony.animator, ponyStates_1.toBoopState(animationState) || animationState);
+            case 1 /* DoAction.Boop */:
+                (0, animator_1.setAnimatorState)(pony.animator, (0, ponyStates_1.toBoopState)(animationState) || animationState);
                 break;
-            case 2 /* Swing */:
-                animator_1.setAnimatorState(pony.animator, ponyStates_1.swinging);
+            case 2 /* DoAction.Swing */:
+                (0, animator_1.setAnimatorState)(pony.animator, ponyStates_1.swinging);
                 break;
-            case 3 /* HoldPoof */:
-                animationPlayer_1.playAnimation(pony.holdPoofEffect, spriteAnimations_1.holdPoofAnimation);
+            case 3 /* DoAction.HoldPoof */:
+                (0, animationPlayer_1.playAnimation)(pony.holdPoofEffect, spriteAnimations_1.holdPoofAnimation);
                 break;
             default:
                 if (DEVELOPMENT) {
                     console.error(`Invalid DoAction: ${pony.doAction}`);
                 }
         }
-        pony.doAction = 0 /* None */;
+        pony.doAction = 0 /* DoAction.None */;
     }
     else {
-        animator_1.setAnimatorState(pony.animator, animationState);
+        (0, animator_1.setAnimatorState)(pony.animator, animationState);
     }
     // head
     pony.headTime += delta;
@@ -422,25 +425,25 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
     if (state.headAnimation !== pony.headAnimation) {
         state.headAnimation = pony.headAnimation;
         if (pony.headAnimation === ponyAnimations_1.sneeze) {
-            animationPlayer_1.playAnimation(pony.sneezeEffect, spriteAnimations_1.sneezeAnimation);
+            (0, animationPlayer_1.playAnimation)(pony.sneezeEffect, spriteAnimations_1.sneezeAnimation);
         }
     }
     // effects / expressions
     if (pony.currentExpression !== pony.expr) {
         updatePonyExpression(pony, pony.expr, safe);
     }
-    if ((pony.state & 8 /* Magic */) !== 0) {
-        animationPlayer_1.playAnimation(pony.magicEffect, spriteAnimations_1.magicAnimation);
+    if ((pony.state & 8 /* EntityState.Magic */) !== 0) {
+        (0, animationPlayer_1.playAnimation)(pony.magicEffect, spriteAnimations_1.magicAnimation);
     }
     else {
-        animationPlayer_1.playAnimation(pony.magicEffect, undefined);
+        (0, animationPlayer_1.playAnimation)(pony.magicEffect, undefined);
     }
-    animationPlayer_1.updateAnimation(pony.zzzEffect, delta);
-    animationPlayer_1.updateAnimation(pony.cryEffect, delta);
-    animationPlayer_1.updateAnimation(pony.sneezeEffect, delta);
-    animationPlayer_1.updateAnimation(pony.holdPoofEffect, delta);
-    animationPlayer_1.updateAnimation(pony.heartsEffect, delta);
-    animationPlayer_1.updateAnimation(pony.magicEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.zzzEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.cryEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.sneezeEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.holdPoofEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.heartsEffect, delta);
+    (0, animationPlayer_1.updateAnimation)(pony.magicEffect, delta);
     // holding
     const holdingUpdated = state.holding !== undefined &&
         state.holding.update !== undefined &&
@@ -451,152 +454,150 @@ function updatePonyEntity(pony, delta, gameTime, safe) {
         pony.nextBlink = pony.blinkTime + Math.random() * 2 + 3;
     }
     // update animator
-    animator_1.updateAnimator(pony.animator, delta);
+    (0, animator_1.updateAnimator)(pony.animator, delta);
     // update state
     const blinkFrame = Math.floor((pony.blinkTime - pony.nextBlink) * constants_1.blinkFps);
     state.blinkFrame = blinkFrame < ponyUtils_1.BLINK_FRAMES.length ? ponyUtils_1.BLINK_FRAMES[blinkFrame] : 1;
-    state.headTurned = (pony.state & 4 /* HeadTurned */) !== 0;
-    state.animation = animator_1.getAnimation(pony.animator) || ponyAnimations_1.stand;
-    state.animationFrame = animator_1.getAnimationFrame(pony.animator);
+    state.headTurned = (pony.state & 4 /* EntityState.HeadTurned */) !== 0;
+    state.animation = (0, animator_1.getAnimation)(pony.animator) || ponyAnimations_1.stand;
+    state.animationFrame = (0, animator_1.getAnimationFrame)(pony.animator);
     // randomize animator time at startup
     if (!pony.initialized) {
         pony.initialized = true;
-        animator_1.updateAnimator(pony.animator, Math.random() * 2);
+        (0, animator_1.updateAnimator)(pony.animator, Math.random() * 2);
     }
     // discard batch if outdated
     if (pony.batch !== undefined) {
         const options = pony.drawingOptions;
-        const right = entityUtils_1.isFacingRight(pony);
+        const right = (0, entityUtils_1.isFacingRight)(pony);
         if (holdingUpdated ||
-            positionUtils_1.toScreenX(pony.x) !== pony.lastX || positionUtils_1.toScreenYWithZ(pony.y, pony.z) !== pony.lastY ||
+            (0, positionUtils_1.toScreenX)(pony.x) !== pony.lastX || (0, positionUtils_1.toScreenYWithZ)(pony.y, pony.z) !== pony.lastY ||
             pony.lastRight !== right ||
             pony.zzzEffect.dirty || pony.cryEffect.dirty || pony.sneezeEffect.dirty || pony.holdPoofEffect.dirty ||
             pony.heartsEffect.dirty || pony.magicEffect.dirty ||
             options.flipped !== right || options.selected !== pony.selected || options.extra !== pony.extra ||
             options.toy !== pony.toy ||
-            !ponyHelpers_1.isStateEqual(pony.lastState, state)) {
+            !(0, ponyHelpers_1.isStateEqual)(pony.lastState, state)) {
             pony.discardBatch = true;
         }
     }
     // update bounds
-    const flying = entityUtils_1.isPonyFlying(pony);
-    const flyingUpOrDown = ponyStates_1.isFlyingUpOrDown(pony.animator.state);
+    const flying = (0, entityUtils_1.isPonyFlying)(pony);
+    const flyingUpOrDown = (0, ponyStates_1.isFlyingUpOrDown)(pony.animator.state);
     const flyingOrFlyingUpOrDown = flying || flyingUpOrDown;
     pony.bounds = flyingOrFlyingUpOrDown ? boundsFly : bounds;
     pony.interactBounds = flying ? interactBoundsFly : interactBounds;
     pony.lightBounds = flyingOrFlyingUpOrDown ? lightBoundsFly : lightBounds;
     pony.lightSpriteBounds = flyingOrFlyingUpOrDown ? lightBoundsFly : lightBounds;
 }
-exports.updatePonyEntity = updatePonyEntity;
 function updatePonyHold(pony, game) {
     const ponyState = pony.ponyState;
-    const hadLight = draw_1.hasDrawLight(pony);
-    const hadLightSprite = draw_1.hasLightSprite(pony);
+    const hadLight = (0, draw_1.hasDrawLight)(pony);
+    const hadLightSprite = (0, draw_1.hasLightSprite)(pony);
     if (pony.hold !== 0) {
         if (ponyState.holding === undefined) {
-            ponyState.holding = entities_1.createAnEntity(pony.hold, 0, 0, 0, {}, pony.paletteManager, game);
+            ponyState.holding = (0, entities_1.createAnEntity)(pony.hold, 0, 0, 0, {}, pony.paletteManager, game);
         }
         else if (ponyState.holding.type !== pony.hold) {
-            entityUtils_1.releaseEntity(ponyState.holding);
-            ponyState.holding = entities_1.createAnEntity(pony.hold, 0, 0, 0, {}, pony.paletteManager, game);
+            (0, entityUtils_1.releaseEntity)(ponyState.holding);
+            ponyState.holding = (0, entities_1.createAnEntity)(pony.hold, 0, 0, 0, {}, pony.paletteManager, game);
         }
     }
     else if (ponyState.holding !== undefined) {
-        entityUtils_1.releaseEntity(ponyState.holding);
+        (0, entityUtils_1.releaseEntity)(ponyState.holding);
         ponyState.holding = undefined;
     }
-    const hasLight = draw_1.hasDrawLight(pony);
-    const hasLightSprite1 = draw_1.hasLightSprite(pony);
-    worldMap_1.addOrRemoveFromEntityList(game.map.entitiesLight, pony, hadLight, hasLight);
-    worldMap_1.addOrRemoveFromEntityList(game.map.entitiesLightSprite, pony, hadLightSprite, hasLightSprite1);
+    const hasLight = (0, draw_1.hasDrawLight)(pony);
+    const hasLightSprite1 = (0, draw_1.hasLightSprite)(pony);
+    (0, worldMap_1.addOrRemoveFromEntityList)(game.map.entitiesLight, pony, hadLight, hasLight);
+    (0, worldMap_1.addOrRemoveFromEntityList)(game.map.entitiesLightSprite, pony, hadLightSprite, hasLightSprite1);
 }
-exports.updatePonyHold = updatePonyHold;
 function filterExpression(expression) {
     const extra = expression.extra;
-    const blush = utils_1.hasFlag(extra, 1 /* Blush */);
+    const blush = (0, utils_1.hasFlag)(extra, 1 /* ExpressionExtra.Blush */);
     if (blush ||
-        utils_1.hasFlag(extra, 16 /* Hearts */) ||
-        utils_1.hasFlag(extra, 4 /* Cry */) ||
-        interfaces_1.isEyeSleeping(expression.left) ||
-        interfaces_1.isEyeSleeping(expression.right)) {
-        if (expression.muzzle === 22 /* SmilePant */ || expression.muzzle === 23 /* NeutralPant */) {
-            expression.muzzle = 2 /* Neutral */;
+        (0, utils_1.hasFlag)(extra, 16 /* ExpressionExtra.Hearts */) ||
+        (0, utils_1.hasFlag)(extra, 4 /* ExpressionExtra.Cry */) ||
+        (0, interfaces_1.isEyeSleeping)(expression.left) ||
+        (0, interfaces_1.isEyeSleeping)(expression.right)) {
+        if (expression.muzzle === 22 /* Muzzle.SmilePant */ || expression.muzzle === 23 /* Muzzle.NeutralPant */) {
+            expression.muzzle = 2 /* Muzzle.Neutral */;
         }
     }
     if (blush ||
-        expression.muzzle === 22 /* SmilePant */ ||
-        expression.muzzle === 23 /* NeutralPant */) {
-        if (expression.leftIris === 1 /* Up */ || expression.rightIris === 1 /* Up */) {
-            expression.leftIris = 0 /* Forward */;
-            expression.rightIris = 0 /* Forward */;
+        expression.muzzle === 22 /* Muzzle.SmilePant */ ||
+        expression.muzzle === 23 /* Muzzle.NeutralPant */) {
+        if (expression.leftIris === 1 /* Iris.Up */ || expression.rightIris === 1 /* Iris.Up */) {
+            expression.leftIris = 0 /* Iris.Forward */;
+            expression.rightIris = 0 /* Iris.Forward */;
         }
-        if (expression.muzzle === 22 /* SmilePant */) {
-            expression.muzzle = 5 /* SmileOpen */;
+        if (expression.muzzle === 22 /* Muzzle.SmilePant */) {
+            expression.muzzle = 5 /* Muzzle.SmileOpen */;
         }
-        else if (expression.muzzle === 23 /* NeutralPant */) {
-            expression.muzzle = 11 /* NeutralOpen2 */;
+        else if (expression.muzzle === 23 /* Muzzle.NeutralPant */) {
+            expression.muzzle = 11 /* Muzzle.NeutralOpen2 */;
         }
     }
     if (blush) {
-        if (expression.muzzle === 9 /* SmileOpen2 */) {
-            expression.muzzle = 5 /* SmileOpen */;
+        if (expression.muzzle === 9 /* Muzzle.SmileOpen2 */) {
+            expression.muzzle = 5 /* Muzzle.SmileOpen */;
         }
-        else if (expression.muzzle === 10 /* FrownOpen */) {
-            expression.muzzle = 8 /* ConcernedOpen */;
+        else if (expression.muzzle === 10 /* Muzzle.FrownOpen */) {
+            expression.muzzle = 8 /* Muzzle.ConcernedOpen */;
         }
-        else if (expression.muzzle === 11 /* NeutralOpen2 */) {
-            expression.muzzle = 24 /* Oh */;
+        else if (expression.muzzle === 11 /* Muzzle.NeutralOpen2 */) {
+            expression.muzzle = 24 /* Muzzle.Oh */;
         }
     }
 }
 function updatePonyExpression(pony, expr, safe) {
-    const expression = expressionEncoder_1.decodeExpression(expr);
+    const expression = (0, expressionEncoder_1.decodeExpression)(expr);
     pony.currentExpression = pony.expr;
     pony.ponyState.expression = expression;
     if (expression && safe) {
         filterExpression(expression);
     }
     const extra = (expression && expression.extra) || 0;
-    if (utils_1.hasFlag(extra, 4 /* Cry */)) {
-        animationPlayer_1.playAnimation(pony.cryEffect, spriteAnimations_1.cryAnimation);
+    if ((0, utils_1.hasFlag)(extra, 4 /* ExpressionExtra.Cry */)) {
+        (0, animationPlayer_1.playAnimation)(pony.cryEffect, spriteAnimations_1.cryAnimation);
     }
-    else if (utils_1.hasFlag(extra, 8 /* Tears */)) {
-        animationPlayer_1.playAnimation(pony.cryEffect, spriteAnimations_1.tearsAnimation);
-    }
-    else {
-        animationPlayer_1.playAnimation(pony.cryEffect, undefined);
-    }
-    if (utils_1.hasFlag(extra, 2 /* Zzz */)) {
-        animationPlayer_1.playOneOfAnimations(pony.zzzEffect, spriteAnimations_1.zzzAnimations);
+    else if ((0, utils_1.hasFlag)(extra, 8 /* ExpressionExtra.Tears */)) {
+        (0, animationPlayer_1.playAnimation)(pony.cryEffect, spriteAnimations_1.tearsAnimation);
     }
     else {
-        animationPlayer_1.playAnimation(pony.zzzEffect, undefined);
+        (0, animationPlayer_1.playAnimation)(pony.cryEffect, undefined);
     }
-    if (utils_1.hasFlag(extra, 16 /* Hearts */)) {
-        animationPlayer_1.playAnimation(pony.heartsEffect, spriteAnimations_1.heartsAnimation);
+    if ((0, utils_1.hasFlag)(extra, 2 /* ExpressionExtra.Zzz */)) {
+        (0, animationPlayer_1.playOneOfAnimations)(pony.zzzEffect, spriteAnimations_1.zzzAnimations);
     }
     else {
-        animationPlayer_1.playAnimation(pony.heartsEffect, undefined);
+        (0, animationPlayer_1.playAnimation)(pony.zzzEffect, undefined);
+    }
+    if ((0, utils_1.hasFlag)(extra, 16 /* ExpressionExtra.Hearts */)) {
+        (0, animationPlayer_1.playAnimation)(pony.heartsEffect, spriteAnimations_1.heartsAnimation);
+    }
+    else {
+        (0, animationPlayer_1.playAnimation)(pony.heartsEffect, undefined);
     }
 }
 function transformBatch(batch, entity) {
-    batch.translate(positionUtils_1.toScreenX(entity.x), positionUtils_1.toScreenYWithZ(entity.y, entity.z));
-    batch.scale(entityUtils_1.isFacingRight(entity) ? -1 : 1, 1);
+    batch.translate((0, positionUtils_1.toScreenX)(entity.x), (0, positionUtils_1.toScreenYWithZ)(entity.y, entity.z));
+    batch.scale((0, entityUtils_1.isFacingRight)(entity) ? -1 : 1, 1);
 }
 function releasePalettePonyInfo(pony) {
     if (pony.palettePonyInfo !== undefined) {
-        ponyInfo_1.releasePalettes(pony.palettePonyInfo);
+        (0, ponyInfo_1.releasePalettes)(pony.palettePonyInfo);
         pony.palettePonyInfo = undefined;
     }
 }
 function makeLightBounds({ x, y, w, h }) {
-    return rect_1.rect(x - lightExtentX, y - lightExtentY, w + lightExtentX * 2, h + lightExtentY * 2);
+    return (0, rect_1.rect)(x - lightExtentX, y - lightExtentY, w + lightExtentX * 2, h + lightExtentY * 2);
 }
 function drawFaceExtra(batch, pony) {
-    if (animationPlayer_1.isAnimationPlaying(pony.cryEffect)) {
-        const flip = entityUtils_1.isFacingRight(pony) ? !pony.ponyState.headTurned : pony.ponyState.headTurned;
-        const maxY = entityUtils_1.isPonyLying(pony) ? 62 : (entityUtils_1.isPonySitting(pony) ? 65 : 0);
-        animationPlayer_1.drawAnimation(batch, pony.cryEffect, 0, 0, colors_1.WHITE, flip, maxY);
+    if ((0, animationPlayer_1.isAnimationPlaying)(pony.cryEffect)) {
+        const flip = (0, entityUtils_1.isFacingRight)(pony) ? !pony.ponyState.headTurned : pony.ponyState.headTurned;
+        const maxY = (0, entityUtils_1.isPonyLying)(pony) ? 62 : ((0, entityUtils_1.isPonySitting)(pony) ? 65 : 0);
+        (0, animationPlayer_1.drawAnimation)(batch, pony.cryEffect, 0, 0, colors_1.WHITE, flip, maxY);
     }
 }
 //# sourceMappingURL=pony.js.map

@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Model = void 0;
+exports.createDefaultPonyObject = createDefaultPonyObject;
+exports.getPonyTag = getPonyTag;
+exports.getEntityNames = getEntityNames;
+exports.getEntityTypesFromName = getEntityTypesFromName;
+exports.getEntityNameFromType = getEntityNameFromType;
+exports.compareFriends = compareFriends;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -50,38 +57,32 @@ function createDefaultPonyObject() {
         id: '',
         name: '',
         info: '',
-        ponyInfo: ponyInfo_1.createDefaultPony(),
+        ponyInfo: (0, ponyInfo_1.createDefaultPony)(),
     };
 }
-exports.createDefaultPonyObject = createDefaultPonyObject;
 function getPonyTag(pony, account) {
     if (account) {
-        const tag = tags_1.canUseTag(account, pony.tag || '') ? pony.tag : undefined;
+        const tag = (0, tags_1.canUseTag)(account, pony.tag || '') ? pony.tag : undefined;
         return (!tag && account.supporter && !pony.hideSupport) ? `sup${account.supporter}` : tag;
     }
     else {
         return undefined;
     }
 }
-exports.getPonyTag = getPonyTag;
 const entityTypeToName = new Map();
 const entityNameToTypes = new Map();
 function getEntityNames() {
     return modStatus.editor.names;
 }
-exports.getEntityNames = getEntityNames;
 function getEntityTypesFromName(name) {
     return entityNameToTypes.get(name);
 }
-exports.getEntityTypesFromName = getEntityTypesFromName;
 function getEntityNameFromType(type) {
     return entityTypeToName.get(type);
 }
-exports.getEntityNameFromType = getEntityNameFromType;
 function compareFriends(a, b) {
     return a.online !== b.online ? (a.online ? -1 : 1) : a.accountName.localeCompare(b.accountName);
 }
-exports.compareFriends = compareFriends;
 let Model = class Model {
     constructor(http, router, storage, errorReporter) {
         this.http = http;
@@ -115,8 +116,8 @@ let Model = class Model {
             });
         }
         if (DEVELOPMENT) {
-            clientUtils_1.attachDebugMethod('ddos', () => this.protectionErrors.next());
-            clientUtils_1.attachDebugMethod('userModel', this);
+            (0, clientUtils_1.attachDebugMethod)('ddos', () => this.protectionErrors.next());
+            (0, clientUtils_1.attachDebugMethod)('userModel', this);
         }
     }
     initialize() {
@@ -128,7 +129,7 @@ let Model = class Model {
         this.friends = undefined;
         this.sites = [noneSite];
         this._pony = createDefaultPonyObject();
-        this.storage.setItem('bid', this.storage.getItem('bid') || stringUtils_1.randomString(20));
+        this.storage.setItem('bid', this.storage.getItem('bid') || (0, stringUtils_1.randomString)(20));
         this.accountPromise = this.initializeAccount();
     }
     initializeAccount() {
@@ -142,11 +143,11 @@ let Model = class Model {
             }
             this.errorReporter.configureUser({ id: account.id, username: account.name });
             try {
-                modStatus.mod = accountUtils_1.isMod(account);
+                modStatus.mod = (0, accountUtils_1.isMod)(account);
                 modStatus.check = account.check;
                 modStatus.editor = account.editor || modStatus.editor;
             }
-            catch (_a) { }
+            catch { }
             if (modStatus.editor) {
                 modStatus.editor.typeToName.forEach(({ type, name }) => entityTypeToName.set(type, name));
                 modStatus.editor.nameToTypes.forEach(({ types, name }) => entityNameToTypes.set(name, types));
@@ -170,11 +171,11 @@ let Model = class Model {
             }
             else if (e.message === LIMIT_ERROR) {
                 this.loadingError = 'request-limit';
-                return utils_1.delay(5000).then(() => this.initializeAccount());
+                return (0, utils_1.delay)(5000).then(() => this.initializeAccount());
             }
             else if (e.message === errors_1.OFFLINE_ERROR) {
                 this.loadingError = 'cannot-connect';
-                return utils_1.delay(5000).then(() => this.initializeAccount());
+                return (0, utils_1.delay)(5000).then(() => this.initializeAccount());
             }
             else if (e.message === errors_1.PROTECTION_ERROR) {
                 this.loadingError = 'cloudflare-error';
@@ -192,7 +193,14 @@ let Model = class Model {
     fetchFriends() {
         this.getFriends()
             .then(friends => {
-            this.friends = friends.map(f => (Object.assign({}, f, { online: false, entityId: 0, crc: 0, ponyInfo: f.pony && compressPony_1.decodePonyInfo(f.pony, ponyInfo_1.mockPaletteManager) || undefined, actualName: '' }))).sort(compareFriends);
+            this.friends = friends.map(f => ({
+                ...f,
+                online: false,
+                entityId: 0,
+                crc: 0,
+                ponyInfo: f.pony && (0, compressPony_1.decodePonyInfo)(f.pony, ponyInfo_1.mockPaletteManager) || undefined,
+                actualName: '',
+            })).sort(compareFriends);
         })
             .catch(e => {
             DEVELOPMENT && console.error(e);
@@ -200,10 +208,10 @@ let Model = class Model {
         });
     }
     get characterLimit() {
-        return this.account ? accountUtils_1.getCharacterLimit(this.account) : 0;
+        return this.account ? (0, accountUtils_1.getCharacterLimit)(this.account) : 0;
     }
     get supporterInviteLimit() {
-        return this.account ? accountUtils_1.getSupporterInviteLimit(this.account) : 0;
+        return this.account ? (0, accountUtils_1.getSupporterInviteLimit)(this.account) : 0;
     }
     get isMod() {
         return modStatus.mod;
@@ -224,12 +232,12 @@ let Model = class Model {
         return !!this.account && !this.account.birthdate;
     }
     computeFriendsCRC() {
-        return this.friends ? utils_1.computeFriendsCRC(this.friends.map(f => f.accountId)) : 0;
+        return this.friends ? (0, utils_1.computeFriendsCRC)(this.friends.map(f => f.accountId)) : 0;
     }
     parsePonyObject(pony) {
         try {
-            const ponyInfo = compressPony_1.decompressPonyString(pony.info, true);
-            return Object.assign({ ponyInfo }, pony);
+            const ponyInfo = (0, compressPony_1.decompressPonyString)(pony.info, true);
+            return { ponyInfo, ...pony };
         }
         catch (e) {
             this.errorReporter.reportError(e, { ponyInfo: pony.info });
@@ -239,7 +247,7 @@ let Model = class Model {
     }
     selectPony(pony) {
         const copy = this.parsePonyObject(pony);
-        copy.ponyInfo && ponyInfo_1.syncLockedPonyInfo(copy.ponyInfo);
+        copy.ponyInfo && (0, ponyInfo_1.syncLockedPonyInfo)(copy.ponyInfo);
         this._pony = copy;
     }
     // account
@@ -260,7 +268,7 @@ let Model = class Model {
     }
     openAuth(url) {
         url = `${data_1.host.replace(/\/$/, '')}${url}`;
-        if (clientUtils_1.isStandalone()) {
+        if ((0, clientUtils_1.isStandalone)()) {
             window.open(url);
         }
         else {
@@ -275,17 +283,17 @@ let Model = class Model {
     }
     updateAccount(account) {
         return this.post('/api/account-update', { account })
-            .then(a => lodash_1.merge(this.account, a));
+            .then(a => (0, lodash_1.merge)(this.account, a));
     }
     saveSettings(settings) {
         return this.post('/api/account-settings', { settings })
-            .then(a => lodash_1.merge(this.account, a));
+            .then(a => (0, lodash_1.merge)(this.account, a));
     }
     removeSite(siteId) {
         return this.post('/api/remove-site', { siteId })
             .then(() => {
             if (this.account && this.account.sites) {
-                utils_1.removeById(this.account.sites, siteId);
+                (0, utils_1.removeById)(this.account.sites, siteId);
             }
         });
     }
@@ -312,13 +320,13 @@ let Model = class Model {
             if (this.pending) {
                 throw new Error('Saving in progress');
             }
-            pony.name = clientUtils_1.cleanName(pony.name);
+            pony.name = (0, clientUtils_1.cleanName)(pony.name);
             pony.desc = pony.desc && pony.desc.substr(0, constants_1.PLAYER_DESC_MAX_LENGTH) || '';
-            if (!clientUtils_1.validatePonyName(pony.name)) {
+            if (!(0, clientUtils_1.validatePonyName)(pony.name)) {
                 throw new Error(errors_1.NAME_ERROR);
             }
             if (pony.ponyInfo) {
-                pony.info = compressPony_1.compressPonyString(pony.ponyInfo);
+                pony.info = (0, compressPony_1.compressPonyString)(pony.ponyInfo);
             }
             const { id, name, desc, site, tag, info, hideSupport, respawnAtSpawn } = pony;
             if (!fast) {
@@ -339,7 +347,7 @@ let Model = class Model {
                 throw new Error('Failed to save pony');
             }
             if (pony.id) {
-                utils_1.removeById(this.ponies, pony.id);
+                (0, utils_1.removeById)(this.ponies, pony.id);
             }
             else {
                 this.account.characterCount++;
@@ -356,7 +364,7 @@ let Model = class Model {
     removePony(pony) {
         return this.post('/api/pony/remove', { id: pony.id })
             .then(() => {
-            utils_1.removeById(this.ponies, pony.id);
+            (0, utils_1.removeById)(this.ponies, pony.id);
             this.account.characterCount--;
             if (this.pony === pony) {
                 this.selectPony(getDefaultPony(this.ponies));
@@ -395,7 +403,7 @@ let Model = class Model {
             .set('short', short.toString())
             .set('d', age.toString())
             .set('t', (Date.now() % 0x10000).toString(16));
-        return utils_1.observableToPromise(this.http.get('/api2/game/status', { params }));
+        return (0, utils_1.observableToPromise)(this.http.get('/api2/game/status', { params }));
     }
     join(serverId, ponyId) {
         if (this.pending)
@@ -416,20 +424,20 @@ let Model = class Model {
             }
             const accountId = this.account.id + this.suffix;
             const accountName = this.account.name + this.suffix;
-            data = Object.assign({ accountId, accountName }, data);
+            data = { accountId, accountName, ...data };
         }
         const params = new http_1.HttpParams()
             .set('t', (Date.now() % 0x10000).toString(16));
         const headers = new http_1.HttpHeaders({ 'api-version': hash_1.HASH, 'api-bid': this.storage.getItem('bid') || '-' });
-        return utils_1.observableToPromise(this.http.post(url, data, { params, headers }));
+        return (0, utils_1.observableToPromise)(this.http.post(url, data, { params, headers }));
     }
 };
-Model = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' }),
+exports.Model = Model;
+exports.Model = Model = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' }),
     tslib_1.__metadata("design:paramtypes", [http_1.HttpClient,
         router_1.Router,
         storageService_1.StorageService,
         errorReporter_1.ErrorReporter])
 ], Model);
-exports.Model = Model;
 //# sourceMappingURL=model.js.map

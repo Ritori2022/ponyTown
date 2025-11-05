@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.REV = void 0;
 exports.REV = {
     'images/avatars.jpg': '0f8cf8266f',
     'images/logo-120.png': 'b051cf1915',

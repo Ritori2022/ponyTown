@@ -1,5 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.results = exports.ToolsPerf = void 0;
+exports.compressColorsTest = compressColorsTest;
+exports.parseColorTest = parseColorTest;
+exports.compareArrays = compareArrays;
+exports.decode = decode;
+exports.utfTest = utfTest;
+exports.arrayTest = arrayTest;
+exports.fillToOutlineTest = fillToOutlineTest;
+exports.includeTest = includeTest;
+exports.toColorListTest = toColorListTest;
+exports.copyTest = copyTest;
+exports.regexTest = regexTest;
+exports.swearTest = swearTest;
+exports.swearEntryTest = swearEntryTest;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const http_1 = require("@angular/common/http");
@@ -24,7 +38,7 @@ let ToolsPerf = class ToolsPerf {
         this.tests = [];
         http.get('/tests/ponies.json').subscribe(data => this.ponies = data);
         http.get('/tests/messages.json').subscribe(data => this.messages = data);
-        this.output = compressPony_1.createPostDecompressPony().toString();
+        this.output = (0, compressPony_1.createPostDecompressPony)().toString();
         this.tests.push({ name: 'arrays', func: () => this.runTest(arrayTest) });
         this.tests.push({ name: 'compress colors', func: () => this.runTest(compressColorsTest) });
         this.tests.push({ name: 'parse color', func: () => this.runTest(parseColorTest) });
@@ -42,14 +56,14 @@ let ToolsPerf = class ToolsPerf {
         this.zone.runOutsideAngular(() => setTimeout(test, 20));
     }
 };
-ToolsPerf = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsPerf = ToolsPerf;
+exports.ToolsPerf = ToolsPerf = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-perf',
         templateUrl: 'tools-perf.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [http_1.HttpClient, core_1.NgZone])
 ], ToolsPerf);
-exports.ToolsPerf = ToolsPerf;
 function measure(name, iterations, func) {
     if (!iterations)
         return;
@@ -77,16 +91,15 @@ function compressColorsTest() {
         740297471, 807801599, 740629247, 656811007, 3587560959, 2998055679, 2425393407, 1869574143,
         4294967295, 4294238719, 4293575679, 4292051711, 4291190527
     ].map(x => x >>> 0);
-    const oldMethod = bitUtils_1.bitWriter(write => colors.forEach(x => write(x >> 8, 24)));
+    const oldMethod = (0, bitUtils_1.bitWriter)(write => colors.forEach(x => write(x >> 8, 24)));
     const truncated = colors.map(c => (c >>> 8) & 0xffffff);
     truncated.sort((a, b) => a > b ? 1 : (a < b ? -1 : 0));
     console.log(truncated);
     console.log(truncated.slice(1).map((c, i) => (c - truncated[i]).toString(16)));
-    const newMethod = bitUtils_1.bitWriter(write => truncated.forEach(x => write(x, 24)));
+    const newMethod = (0, bitUtils_1.bitWriter)(write => truncated.forEach(x => write(x, 24)));
     console.log('old', oldMethod.byteLength);
     console.log('new', newMethod.byteLength);
 }
-exports.compressColorsTest = compressColorsTest;
 exports.results = [];
 function parseColorTest() {
     const iterations = 100000;
@@ -94,16 +107,15 @@ function parseColorTest() {
         return (parseInt(value, 16) << 8) | 0xff;
     }
     measure('COLOR parseColorWithAlpha', iterations, () => {
-        return color_1.parseColorWithAlpha('ff4354', 1);
+        return (0, color_1.parseColorWithAlpha)('ff4354', 1);
     });
     measure('COLOR parseColorFast', iterations, () => {
-        return color_1.parseColorFast('ff4354');
+        return (0, color_1.parseColorFast)('ff4354');
     });
     measure('COLOR parseColorExperimental', iterations, () => {
         return parseColorExperimental('ff4354');
     });
 }
-exports.parseColorTest = parseColorTest;
 function compareArrays() {
     const iterations = 100000;
     const a = [2423, 534534, 546124, 23412, 54364, 67756, 234234];
@@ -121,9 +133,9 @@ function compareArrays() {
         return true;
     }
     measure('ARRAY _.isEqual', iterations, () => {
-        t = lodash_1.isEqual(a, b);
-        t = lodash_1.isEqual(a, c) || t;
-        t = lodash_1.isEqual(a, d) || t;
+        t = (0, lodash_1.isEqual)(a, b);
+        t = (0, lodash_1.isEqual)(a, c) || t;
+        t = (0, lodash_1.isEqual)(a, d) || t;
         exports.results.push(t);
     });
     measure('ARRAY compareArrays', iterations, () => {
@@ -133,30 +145,27 @@ function compareArrays() {
         exports.results.push(t);
     });
 }
-exports.compareArrays = compareArrays;
 function decode(data) {
     let manager = new paletteManager_1.PaletteManager();
     // manager = ({ addArray: (x: any) => x } as any);
     measure('DECODE 1', 10000, i => {
-        exports.results.push(compressPony_1.decodePonyInfo(data[i % data.length], manager));
+        exports.results.push((0, compressPony_1.decodePonyInfo)(data[i % data.length], manager));
     });
     // console.log(((manager as any).palettes as any[]).map(x => x.length).join(', '));
 }
-exports.decode = decode;
 function utfTest(messages) {
     const iterations = 300000;
     measure('old', iterations, i => {
-        exports.results.push(methods_1.encodeString(messages[i % messages.length]));
+        exports.results.push((0, methods_1.encodeString)(messages[i % messages.length]));
     });
     measure('new', iterations, i => {
-        exports.results.push(methods_1.encodeStringNew(messages[i % messages.length]));
+        exports.results.push((0, methods_1.encodeStringNew)(messages[i % messages.length]));
     });
     const encoder = new window.TextEncoder('utf8');
     measure('native', iterations, i => {
         exports.results.push(encoder.encode(messages[i % messages.length]));
     });
 }
-exports.utfTest = utfTest;
 function arrayTest() {
     const iterations = 10000;
     const length = 100;
@@ -166,7 +175,7 @@ function arrayTest() {
     for (let i = 0; i < typed.length; i++) {
         typed2[i] = typed[i] = Math.random() * 0xffff;
     }
-    const objects = lodash_1.times(length, i => ({
+    const objects = (0, lodash_1.times)(length, i => ({
         a: typed[i * size + 0],
         b: typed[i * size + 1],
         c: typed[i * size + 2],
@@ -192,7 +201,7 @@ function arrayTest() {
         w: typed[i * size + 22],
         x: typed[i * size + 23],
     }));
-    const indexes = lodash_1.times(length, () => (Math.random() * length) | 0);
+    const indexes = (0, lodash_1.times)(length, () => (Math.random() * length) | 0);
     measure('typed', iterations, index => {
         let sum = 0;
         for (let i = 0; i < length; i++) {
@@ -224,23 +233,21 @@ function arrayTest() {
         exports.results.push(sum);
     });
 }
-exports.arrayTest = arrayTest;
 function fillToOutlineTest() {
     const iterations = 100000;
     function fillToOutlineFast(color) {
-        return color_1.colorToHexRGB(color_1.parseColorFast(color));
+        return (0, color_1.colorToHexRGB)((0, color_1.parseColorFast)(color));
     }
     measure('FILL-TO-OUTLINE fillToOutline', iterations, () => {
-        colors_1.fillToOutline('32cd32');
+        (0, colors_1.fillToOutline)('32cd32');
     });
     measure('FILL-TO-OUTLINE fillToOutlineFast', iterations, () => {
         fillToOutlineFast('32cd32');
     });
 }
-exports.fillToOutlineTest = fillToOutlineTest;
 function includeTest() {
     const iterations = 100000;
-    const array = lodash_1.range(1000).map(() => lodash_1.random(0, 1000));
+    const array = (0, lodash_1.range)(1000).map(() => (0, lodash_1.random)(0, 1000));
     let t = 0;
     // measure('INCLUDE _.includes', iterations, () => {
     // 	t += includes(array, array[random(0, 1000)]) as any | 0;
@@ -248,18 +255,17 @@ function includeTest() {
     // 	t += includes(array, array[random(0, 1000)]) as any | 0;
     // });
     measure('INCLUDE includes', iterations, () => {
-        t += utils_1.includes(array, array[lodash_1.random(0, 1000)]);
-        t += utils_1.includes(array, array[lodash_1.random(0, 1000)]);
-        t += utils_1.includes(array, array[lodash_1.random(0, 1000)]);
+        t += (0, utils_1.includes)(array, array[(0, lodash_1.random)(0, 1000)]);
+        t += (0, utils_1.includes)(array, array[(0, lodash_1.random)(0, 1000)]);
+        t += (0, utils_1.includes)(array, array[(0, lodash_1.random)(0, 1000)]);
     });
     measure('INCLUDE indexOf !== -1', iterations, () => {
-        t += (array.indexOf(array[lodash_1.random(0, 1000)]) !== -1);
-        t += (array.indexOf(array[lodash_1.random(0, 1000)]) !== -1);
-        t += (array.indexOf(array[lodash_1.random(0, 1000)]) !== -1);
+        t += (array.indexOf(array[(0, lodash_1.random)(0, 1000)]) !== -1);
+        t += (array.indexOf(array[(0, lodash_1.random)(0, 1000)]) !== -1);
+        t += (array.indexOf(array[(0, lodash_1.random)(0, 1000)]) !== -1);
     });
     exports.results.push(t);
 }
-exports.includeTest = includeTest;
 function toColorListTest() {
     function toColorList2Old(colors) {
         return [0, ...colors.map(c => c || 0xff)];
@@ -270,11 +276,10 @@ function toColorListTest() {
         t.push(toColorList2Old([1, 2, Date.now(), Date.now(), 5, 6]));
     });
     measure('TOCOLORLIST2 new', iterations, () => {
-        t.push(ponyInfo_1.toColorListNumber([1, 2, Date.now(), Date.now(), 5, 6]));
+        t.push((0, ponyInfo_1.toColorListNumber)([1, 2, Date.now(), Date.now(), 5, 6]));
     });
     exports.results.push(t);
 }
-exports.toColorListTest = toColorListTest;
 function copyTest() {
     const iterations = 10000;
     let t = [];
@@ -302,7 +307,6 @@ function copyTest() {
     });
     exports.results.push(t);
 }
-exports.copyTest = copyTest;
 function regexTest(testStrings) {
     const iterations = 1000000;
     const t = [];
@@ -316,21 +320,19 @@ function regexTest(testStrings) {
     });
     exports.results.push(t);
 }
-exports.regexTest = regexTest;
 function swearTest(testStrings) {
     const iterations = 10000;
     const t = [];
     measure('TEST', iterations, iteration => {
         const test = testStrings[iteration % testStrings.length];
-        t.push(swears_1.filterBadWords(test));
+        t.push((0, swears_1.filterBadWords)(test));
     });
     exports.results.push(t);
 }
-exports.swearTest = swearTest;
 function swearEntryTest(testStrings, onResult) {
     const iterations = 2000;
     const output = [];
-    const entries = swears_1.createMatchEntries();
+    const entries = (0, swears_1.createMatchEntries)();
     for (const e of entries) {
         const start = performance.now();
         for (let i = 0; i < iterations; i++) {
@@ -345,6 +347,5 @@ function swearEntryTest(testStrings, onResult) {
         .map(x => `${x.diff.toFixed(2).padStart(6)} "${x.e.line}"`)
         .join('\n'));
 }
-exports.swearEntryTest = swearEntryTest;
 window.__results = exports.results;
 //# sourceMappingURL=tools-perf.js.map

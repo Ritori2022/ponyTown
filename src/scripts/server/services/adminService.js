@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminService = void 0;
+const tslib_1 = require("tslib");
 const timsort_1 = require("timsort");
 const lodash_1 = require("lodash");
 const rxjs_1 = require("rxjs");
-const db = require("../db");
+const db = tslib_1.__importStar(require("../db"));
 const liveList_1 = require("./liveList");
 const utils_1 = require("../../common/utils");
 const adminInterfaces_1 = require("../../common/adminInterfaces");
@@ -43,7 +45,7 @@ function removePonyFromAccount(account, pony) {
     }
 }
 function getTotalPledged(auths) {
-    return Math.floor((auths || []).reduce((sum, a) => sum + utils_1.toInt(a.pledged), 0) / 100);
+    return Math.floor((auths || []).reduce((sum, a) => sum + (0, utils_1.toInt)(a.pledged), 0) / 100);
 }
 class AdminService {
     constructor() {
@@ -53,9 +55,9 @@ class AdminService {
         this.browserIdMap = new Map();
         this.unassignedAuths = [];
         this.unassignedPonies = [];
-        this.duplicateFilter = adminUtils_1.createPotentialDuplicatesFilter(id => this.browserIdMap.get(id));
+        this.duplicateFilter = (0, adminUtils_1.createPotentialDuplicatesFilter)(id => this.browserIdMap.get(id));
         this.accountsForPotentialDuplicatesCheck = [];
-        const accountId = adminUtils_1.createIdStore();
+        const accountId = (0, adminUtils_1.createIdStore)();
         this.accounts = new liveList_1.LiveList(db.Account, {
             fields: [
                 '_id', 'updatedAt', 'createdAt', 'lastVisit', 'name', 'birthdate', 'origins', 'ignores', 'emails', 'note',
@@ -63,9 +65,9 @@ class AdminService {
                 'supporterDeclinedSince', 'lastBrowserId', 'noteUpdated', 'alert', 'birthyear'
             ],
             clean: ({ _id, createdAt, updatedAt, lastVisit, name, birthdate, origins, ignoresCount, emails, note, counters, mute, shadow, ban, flags, roles, characterCount, patreon, supporter, supporterDeclinedSince, auths, noteUpdated, alert, birthyear, }) => ({
-                _id, createdAt, updatedAt, lastVisit, name, birthdate, origins, ignoresCount: utils_1.toInt(ignoresCount),
-                emails, note, counters, mute, shadow, ban, flags: utils_1.toInt(flags), roles, birthyear,
-                characterCount: utils_1.toInt(characterCount), patreon: utils_1.toInt(patreon), supporter: utils_1.toInt(supporter),
+                _id, createdAt, updatedAt, lastVisit, name, birthdate, origins, ignoresCount: (0, utils_1.toInt)(ignoresCount),
+                emails, note, counters, mute, shadow, ban, flags: (0, utils_1.toInt)(flags), roles, birthyear,
+                characterCount: (0, utils_1.toInt)(characterCount), patreon: (0, utils_1.toInt)(patreon), supporter: (0, utils_1.toInt)(supporter),
                 supporterDeclinedSince, totalPledged: getTotalPledged(auths), noteUpdated, alert,
             }),
             fix: account => {
@@ -95,14 +97,14 @@ class AdminService {
             onUpdate: (oldAccount, newAccount) => {
                 if (oldAccount.emails) {
                     for (const e of oldAccount.emails) {
-                        if (!utils_1.includes(newAccount.emails, e)) {
+                        if (!(0, utils_1.includes)(newAccount.emails, e)) {
                             this.removeEmailFromMap(e, oldAccount);
                         }
                     }
                 }
                 if (newAccount.emails) {
                     for (const e of newAccount.emails) {
-                        if (!utils_1.includes(oldAccount.emails, e)) {
+                        if (!(0, utils_1.includes)(oldAccount.emails, e)) {
                             this.addEmailToMap(e, oldAccount);
                         }
                     }
@@ -148,7 +150,7 @@ class AdminService {
                 this.accountDeleted.next(account);
             },
             onFinished: () => {
-                timsort_1.sort(this.accounts.items, adminUtils_1.compareAccounts);
+                (0, timsort_1.sort)(this.accounts.items, adminUtils_1.compareAccounts);
                 this.auths.start();
             },
         });
@@ -172,11 +174,11 @@ class AdminService {
                 this.assignAccount(auth, this.unassignedAuths, account => addAuthToAccount(account, auth, 'onAdd'));
             },
             onUpdate: this.createUpdater({
-                remove: (account, auth) => removeAuthFromAccount(account, auth) || utils_1.removeItem(this.unassignedAuths, auth),
+                remove: (account, auth) => removeAuthFromAccount(account, auth) || (0, utils_1.removeItem)(this.unassignedAuths, auth),
                 add: (account, auth) => account ? addAuthToAccount(account, auth, 'onUpdate') : pushUnique(this.unassignedAuths, auth),
             }),
             onDelete: auth => {
-                utils_1.removeItem(this.unassignedAuths, auth);
+                (0, utils_1.removeItem)(this.unassignedAuths, auth);
                 this.accounts.for(auth.account, account => removeAuthFromAccount(account, auth));
             },
             onFinished: () => {
@@ -200,13 +202,14 @@ class AdminService {
                 this.assignAccount(pony, this.unassignedPonies, account => addPonyToAccount(account, pony));
             },
             onUpdate: this.createUpdater({
-                remove: (account, pony) => removePonyFromAccount(account, pony) || utils_1.removeItem(this.unassignedPonies, pony),
+                remove: (account, pony) => removePonyFromAccount(account, pony) || (0, utils_1.removeItem)(this.unassignedPonies, pony),
                 add: (account, pony) => account ? addPonyToAccount(account, pony) : pushUnique(this.unassignedPonies, pony),
             }),
             onDelete: pony => {
-                utils_1.removeItem(this.unassignedPonies, pony);
+                (0, utils_1.removeItem)(this.unassignedPonies, pony);
                 this.accounts.for(pony.account, account => removePonyFromAccount(account, pony));
             },
+            // afterAssign: (from, to) => Promise.all([updateCharacterCount(from), updateCharacterCount(to)]),
         });
         this.events = new liveList_1.LiveList(db.Event, {
             fields: adminInterfaces_1.eventFields,
@@ -250,7 +253,7 @@ class AdminService {
         const account = this.accounts.get(accountId);
         if (account) {
             if (ips) {
-                if (lodash_1.remove(account.origins, o => utils_1.includes(ips, o.ip)).length) {
+                if ((0, lodash_1.remove)(account.origins, o => (0, utils_1.includes)(ips, o.ip)).length) {
                     this.updateOriginRefs(account);
                 }
             }
@@ -326,52 +329,52 @@ class AdminService {
             const popedAccount = this.accountsForPotentialDuplicatesCheck.pop();
             const account = this.getAccount(popedAccount._id);
             if (account && duplicateFilter(account)) {
-                const threshold = utils_1.fromNow(-1 * constants_1.HOUR).getTime();
-                const duplicates = adminUtils_1.getPotentialDuplicates(account, id => this.getAccountsByBrowserId(id))
+                const threshold = (0, utils_1.fromNow)(-1 * constants_1.HOUR).getTime();
+                const duplicates = (0, adminUtils_1.getPotentialDuplicates)(account, id => this.getAccountsByBrowserId(id))
                     .filter(a => a.createdAt && a.createdAt.getTime() < threshold);
                 if (duplicates.length) {
-                    const server = internal_1.getLoginServer('login');
+                    const server = (0, internal_1.getLoginServer)('login');
                     const duplicate = duplicates[0];
                     const accountIsOlder = account.lastVisit && duplicate.lastVisit
                         && account.lastVisit.getTime() < duplicate.lastVisit.getTime();
                     const accountId = accountIsOlder ? duplicate._id : account._id;
                     const withId = accountIsOlder ? account._id : duplicate._id;
-                    logger_1.logPerformance(`mergePotentialDuplicates (${Date.now() - start}ms) [yes]`);
+                    (0, logger_1.logPerformance)(`mergePotentialDuplicates (${Date.now() - start}ms) [yes]`);
                     await server.api.mergeAccounts(accountId, withId, `by server`, false, true);
                     return accountId;
                 }
             }
         }
         this.accountsForPotentialDuplicatesCheck = [];
-        logger_1.logPerformance(`mergePotentialDuplicates (${Date.now() - start}ms) [no]`);
+        (0, logger_1.logPerformance)(`mergePotentialDuplicates (${Date.now() - start}ms) [no]`);
         return undefined;
     }
     // helpers
     addEmailToMap(email, account) {
-        adminUtils_1.addToMap(this.emailMap, adminUtils_1.emailName(email), account);
+        (0, adminUtils_1.addToMap)(this.emailMap, (0, adminUtils_1.emailName)(email), account);
     }
     removeEmailFromMap(email, account) {
-        adminUtils_1.removeFromMap(this.emailMap, adminUtils_1.emailName(email), account);
+        (0, adminUtils_1.removeFromMap)(this.emailMap, (0, adminUtils_1.emailName)(email), account);
     }
     addNoteRefsToMap(note, account) {
-        for (let id of adminUtils_1.getIdsFromNote(note)) {
+        for (let id of (0, adminUtils_1.getIdsFromNote)(note)) {
             if (id !== account._id) {
-                adminUtils_1.addToMap(this.noteRefMap, id, account);
+                (0, adminUtils_1.addToMap)(this.noteRefMap, id, account);
             }
         }
     }
     removeNoteRefsFromMap(note, account) {
-        for (let id of adminUtils_1.getIdsFromNote(note)) {
+        for (let id of (0, adminUtils_1.getIdsFromNote)(note)) {
             if (id !== account._id) {
-                adminUtils_1.removeFromMap(this.noteRefMap, id, account);
+                (0, adminUtils_1.removeFromMap)(this.noteRefMap, id, account);
             }
         }
     }
     addBrowserIdToMap(browserId, account) {
-        adminUtils_1.addToMap(this.browserIdMap, browserId, account);
+        (0, adminUtils_1.addToMap)(this.browserIdMap, browserId, account);
     }
     removeBrowserIdFromMap(browserId, account) {
-        adminUtils_1.removeFromMap(this.browserIdMap, browserId, account);
+        (0, adminUtils_1.removeFromMap)(this.browserIdMap, browserId, account);
     }
     getAccount(id) {
         return id ? this.accounts.get(id) : undefined;
@@ -397,9 +400,9 @@ class AdminService {
         }
         const oldOriginRefs = a.originsRefs;
         a.originsRefs = a.origins.map(o => ({ origin: this.getOrCreateOrigin(o), last: o.last }));
-        timsort_1.sort(a.originsRefs, adminUtils_1.compareOriginRefs);
+        (0, timsort_1.sort)(a.originsRefs, adminUtils_1.compareOriginRefs);
         for (const o of a.originsRefs) {
-            if (o.origin.accounts && !utils_1.includes(o.origin.accounts, a)) {
+            if (o.origin.accounts && !(0, utils_1.includes)(o.origin.accounts, a)) {
                 o.origin.accounts.push(a);
             }
         }
@@ -418,7 +421,7 @@ class AdminService {
         }
     }
     assignItems(unassigned, push) {
-        lodash_1.remove(unassigned, item => {
+        (0, lodash_1.remove)(unassigned, item => {
             const account = item.account && this.getAccount(item.account);
             if (account) {
                 push(account, item);

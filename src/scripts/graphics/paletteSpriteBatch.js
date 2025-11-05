@@ -1,18 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PaletteSpriteBatch = exports.PALETTE_BATCH_BYTES_PER_VERTEX = void 0;
 const baseSpriteBatch_1 = require("./baseSpriteBatch");
 const color_1 = require("../common/color");
 const spriteUtils_1 = require("../client/spriteUtils");
 const paletteManager_1 = require("./paletteManager");
-const defaultRectSprite = spriteUtils_1.createSprite(0, 0, 1, 1, 0, 0, 3);
+const defaultRectSprite = (0, spriteUtils_1.createSprite)(0, 0, 1, 1, 0, 0, 3);
 const types = new Float32Array([
-    color_1.colorToFloat(color_1.colorFromRGBA(255, 0, 0, 0)),
-    color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 255, 0)),
-    color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 0, 0)),
-    color_1.colorToFloat(color_1.colorFromRGBA(255, 0, 0, 255)),
-    color_1.colorToFloat(color_1.colorFromRGBA(0, 255, 0, 255)),
-    color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 255, 255)),
-    color_1.colorToFloat(color_1.colorFromRGBA(0, 0, 0, 255)),
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(255, 0, 0, 0)), // type 0 shade
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(0, 0, 255, 0)), // type 2 shade
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(0, 0, 0, 0)), // type 3 shade
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(255, 0, 0, 255)), // type 0
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(0, 255, 0, 255)), // type 1
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(0, 0, 255, 255)), // type 2
+    (0, color_1.colorToFloat)((0, color_1.colorFromRGBA)(0, 0, 0, 255)), // type 3
 ]);
 /*
 function pushVertex(
@@ -118,19 +119,19 @@ class PaletteSpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
     constructor(gl, capacity, buffer, vertexBuffer, indexBuffer) {
         super(gl, capacity, buffer, vertexBuffer, indexBuffer, [
             { name: 'position', size: 2 },
-            { name: 'texcoord0', size: 4 },
+            { name: 'texcoord0', size: 4 }, //, type: gl.UNSIGNED_SHORT },
             { name: 'color', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
             { name: 'color1', size: 4, type: gl.UNSIGNED_BYTE, normalized: true },
         ]);
         this.palette = true;
-        this.defaultPalette = paletteManager_1.createPalette(new Uint32Array(0));
+        this.defaultPalette = (0, paletteManager_1.createPalette)(new Uint32Array(0));
     }
     drawImage(type, color, palette, sx, sy, sw, sh, dx, dy, dw, dh) {
         if (this.capacity <= this.spritesCount) {
             this.flush();
         }
         this.index = pushQuad(this.vertices, //this.verticesUint32,
-        this.transform, this.index, type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), palette || this.defaultPalette, sx, sy, sw, sh, dx, dy, dw, dh);
+        this.transform, this.index, type, (0, baseSpriteBatch_1.getColorFloat)(color, this.globalAlpha), palette || this.defaultPalette, sx, sy, sw, sh, dx, dy, dw, dh);
         this.spritesCount++;
         this.tris += 2;
     }
@@ -141,7 +142,7 @@ class PaletteSpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
             }
             const s = this.rectSprite || defaultRectSprite;
             this.index = pushQuad(this.vertices, //this.verticesUint32,
-            this.transform, this.index, s.type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), this.defaultPalette, s.x, s.y, s.w, s.h, x, y, w, h);
+            this.transform, this.index, s.type, (0, baseSpriteBatch_1.getColorFloat)(color, this.globalAlpha), this.defaultPalette, s.x, s.y, s.w, s.h, x, y, w, h);
             this.spritesCount++;
             this.tris += 2;
         }
@@ -183,14 +184,14 @@ class PaletteSpriteBatch extends baseSpriteBatch_1.BaseSpriteBatch {
                 }
                 if (w > 0 && h > 0) {
                     this.index = pushQuad(this.vertices, //this.verticesUint32,
-                    this.transform, this.index, s.type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), palette || this.defaultPalette, sx, sy, w, h, dx, dy, w, h);
+                    this.transform, this.index, s.type, (0, baseSpriteBatch_1.getColorFloat)(color, this.globalAlpha), palette || this.defaultPalette, sx, sy, w, h, dx, dy, w, h);
                     this.spritesCount++;
                     this.tris += 2;
                 }
             }
             else {
                 this.index = pushQuad(this.vertices, //this.verticesUint32,
-                this.transform, this.index, s.type, baseSpriteBatch_1.getColorFloat(color, this.globalAlpha), palette || this.defaultPalette, s.x, s.y, s.w, s.h, x + s.ox, y + s.oy, s.w, s.h);
+                this.transform, this.index, s.type, (0, baseSpriteBatch_1.getColorFloat)(color, this.globalAlpha), palette || this.defaultPalette, s.x, s.y, s.w, s.h, x + s.ox, y + s.oy, s.w, s.h);
                 this.spritesCount++;
                 this.tris += 2;
             }

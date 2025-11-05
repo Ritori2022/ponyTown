@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment = require("moment");
-const chalk_1 = require("chalk");
+exports.createMove = void 0;
+const tslib_1 = require("tslib");
+const moment = tslib_1.__importStar(require("moment"));
+const chalk_1 = tslib_1.__importDefault(require("chalk"));
 const movementUtils_1 = require("../common/movementUtils");
 const entityUtils_1 = require("../common/entityUtils");
 const camera_1 = require("../common/camera");
@@ -15,36 +17,36 @@ const collision_1 = require("../common/collision");
 const teleportReportLimit = 10;
 const maxLagLimitSeconds = 15;
 const maxLagLimit = maxLagLimitSeconds * constants_1.SECOND;
-exports.createMove = (teleportCounter) => (client, now, a, b, c, d, e, settings) => {
+const createMove = (teleportCounter) => (client, now, a, b, c, d, e, settings) => {
     if (client.loading || client.fixingPosition || client.isSwitchingMap)
         return;
     const connectionDuration = (now - client.connectedTime) >>> 0;
     const pony = client.pony;
-    const { x, y, dir, flags, time, camera } = movementUtils_1.decodeMovement(a, b, c, d, e);
-    const v = movementUtils_1.dirToVector(dir);
-    const speed = movementUtils_1.flagsToSpeed(flags);
+    const { x, y, dir, flags, time, camera } = (0, movementUtils_1.decodeMovement)(a, b, c, d, e);
+    const v = (0, movementUtils_1.dirToVector)(dir);
+    const speed = (0, movementUtils_1.flagsToSpeed)(flags);
     if (checkOutsideMap(client, x, y))
         return;
-    camera_1.setupCamera(client.camera, camera.x, camera.y, camera.w, camera.h, client.map);
+    (0, camera_1.setupCamera)(client.camera, camera.x, camera.y, camera.w, camera.h, client.map);
     if (checkLagging(client, time, connectionDuration, settings))
         return;
     if (checkTeleporting(client, x, y, time, settings, teleportCounter))
         return;
-    if (!collision_1.isStaticCollision(pony, client.map, true)) {
+    if (!(0, collision_1.isStaticCollision)(pony, client.map, true)) {
         client.safeX = pony.x;
         client.safeY = pony.y;
     }
     pony.x = x;
     pony.y = y;
-    if (collision_1.isStaticCollision(pony, client.map)) {
+    if ((0, collision_1.isStaticCollision)(pony, client.map)) {
         pony.x = client.safeX;
         pony.y = client.safeY;
-        if (!collision_1.isStaticCollision(pony, client.map)) {
+        if (!(0, collision_1.isStaticCollision)(pony, client.map)) {
             if (settings.logFixingPosition) {
                 client.reporter.systemLog(`Fixed colliding (${x} ${y}) -> (${pony.x} ${pony.y})`);
             }
             DEVELOPMENT && !TESTS && logger_1.logger.warn(`Fixing position due to collision`);
-            entityUtils_2.fixPosition(pony, client.map, client.safeX, client.safeY, false);
+            (0, entityUtils_2.fixPosition)(pony, client.map, client.safeX, client.safeY, false);
         }
         else {
             pony.x = x;
@@ -54,19 +56,19 @@ exports.createMove = (teleportCounter) => (client, now, a, b, c, d, e, settings)
     pony.vx = v.x * speed;
     pony.vy = v.y * speed;
     let ponyState = pony.state || 0;
-    const facingRight = utils_1.hasFlag(ponyState, 2 /* FacingRight */);
-    const right = movementUtils_1.isMovingRight(pony.vx, facingRight);
+    const facingRight = (0, utils_1.hasFlag)(ponyState, 2 /* EntityState.FacingRight */);
+    const right = (0, movementUtils_1.isMovingRight)(pony.vx, facingRight);
     if (facingRight !== right) {
-        ponyState = utils_1.setFlag(ponyState, 2 /* FacingRight */, right);
-        ponyState = utils_1.setFlag(ponyState, 4 /* HeadTurned */, false);
+        ponyState = (0, utils_1.setFlag)(ponyState, 2 /* EntityState.FacingRight */, right);
+        ponyState = (0, utils_1.setFlag)(ponyState, 4 /* EntityState.HeadTurned */, false);
     }
-    if ((pony.vx || pony.vy) && (entityUtils_1.isSittingState(ponyState) || entityUtils_1.isLyingState(ponyState))) {
-        ponyState = entityUtils_1.setPonyState(ponyState, 0 /* PonyStanding */);
+    if ((pony.vx || pony.vy) && ((0, entityUtils_1.isSittingState)(ponyState) || (0, entityUtils_1.isLyingState)(ponyState))) {
+        ponyState = (0, entityUtils_1.setPonyState)(ponyState, 0 /* EntityState.PonyStanding */);
     }
     pony.state = ponyState;
-    entityUtils_2.updateEntity(pony, false);
+    (0, entityUtils_2.updateEntity)(pony, false);
     if (pony.exprCancellable) {
-        playerUtils_1.setEntityExpression(pony, undefined);
+        (0, playerUtils_1.setEntityExpression)(pony, undefined);
     }
     pony.timestamp = now / 1000;
     client.lastX = pony.x;
@@ -75,13 +77,14 @@ exports.createMove = (teleportCounter) => (client, now, a, b, c, d, e, settings)
     client.lastVX = pony.vx;
     client.lastVY = pony.vy;
 };
+exports.createMove = createMove;
 function checkOutsideMap(client, x, y) {
-    if (collision_1.isOutsideMap(x, y, client.map)) {
+    if ((0, collision_1.isOutsideMap)(x, y, client.map)) {
         const message = `map: [${client.map.id || 'main'}] coords: [${x.toFixed(2)}, ${y.toFixed(2)}]`;
         if (!client.shadowed) {
             client.reporter.warn(`Outside map`, message);
         }
-        playerUtils_1.kickClient(client, `outside ${message}`);
+        (0, playerUtils_1.kickClient)(client, `outside ${message}`);
         return true;
     }
     return false;
@@ -97,7 +100,7 @@ function checkLagging(client, time, connectionTime, settings) {
         }
         if (settings.kickLagging) {
             client.reporter.systemLog(`Lagging (dt: ${dt} time: ${time} connectionTime: ${connectionTime})`);
-            playerUtils_1.kickClient(client, 'lagging');
+            (0, playerUtils_1.kickClient)(client, 'lagging');
             return true;
         }
     }
@@ -110,8 +113,8 @@ function checkTeleporting(client, x, y, time, settings, counter) {
     const borderX = 0.5;
     const borderY = 0.5;
     const delta = ((time - client.lastTime) / 1000) * 1;
-    const afterX = positionUtils_1.roundPositionX(client.lastX + client.lastVX * delta);
-    const afterY = positionUtils_1.roundPositionY(client.lastY + client.lastVY * delta);
+    const afterX = (0, positionUtils_1.roundPositionX)(client.lastX + client.lastVX * delta);
+    const afterY = (0, positionUtils_1.roundPositionY)(client.lastY + client.lastVY * delta);
     const afterMinX = client.lastVX === 0 ? afterX - Math.abs(client.lastVY) : afterX;
     const afterMaxX = client.lastVX === 0 ? afterX + Math.abs(client.lastVY) : afterX;
     const afterMinY = client.lastVY === 0 ? afterY - Math.abs(client.lastVX) : afterY;
@@ -140,14 +143,14 @@ function checkTeleporting(client, x, y, time, settings, counter) {
             }
         }
         if (settings.kickTeleporting) {
-            playerUtils_1.kickClient(client, 'teleporting');
+            (0, playerUtils_1.kickClient)(client, 'teleporting');
             return true;
         }
         if (settings.fixTeleporting) {
             pony.vx = 0;
             pony.vy = 0;
             client.reporter.systemLog(`Fixed teleporting (${x} ${y}) -> (${pony.x} ${pony.y})`);
-            entityUtils_2.fixPosition(client.pony, client.map, pony.x, pony.y, false);
+            (0, entityUtils_2.fixPosition)(client.pony, client.map, pony.x, pony.y, false);
             return true;
         }
     }
@@ -158,7 +161,7 @@ function checkTeleporting(client, x, y, time, settings, counter) {
             pony.vx = 0;
             pony.vy = 0;
             client.reporter.systemLog(`Fixed teleporting (too far) (${x} ${y}) -> (${pony.x} ${pony.y})`);
-            entityUtils_2.fixPosition(client.pony, client.map, pony.x, pony.y, false);
+            (0, entityUtils_2.fixPosition)(client.pony, client.map, pony.x, pony.y, false);
             return true;
         }
     }

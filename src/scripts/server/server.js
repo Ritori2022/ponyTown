@@ -1,18 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 require("./boot");
-const fs = require("fs");
-const Bluebird = require("bluebird");
-const mongoose = require("mongoose");
-const http = require("http");
-const morgan = require("morgan");
-const bodyParser = require("body-parser");
-const expressSession = require("express-session");
-const serveFavicon = require("serve-favicon");
-const Rollbar = require("rollbar");
-const passport = require("passport");
-const connectMongo = require("connect-mongo");
-const express = require("express");
+const fs = tslib_1.__importStar(require("fs"));
+const Bluebird = tslib_1.__importStar(require("bluebird"));
+const mongoose = tslib_1.__importStar(require("mongoose"));
+const http = tslib_1.__importStar(require("http"));
+const morgan = tslib_1.__importStar(require("morgan"));
+const bodyParser = tslib_1.__importStar(require("body-parser"));
+const expressSession = tslib_1.__importStar(require("express-session"));
+const serveFavicon = tslib_1.__importStar(require("serve-favicon"));
+const Rollbar = tslib_1.__importStar(require("rollbar"));
+const passport = tslib_1.__importStar(require("passport"));
+const connectMongo = tslib_1.__importStar(require("connect-mongo"));
+const express = tslib_1.__importStar(require("express"));
 // import { WebSocketServer } from '@clusterws/cws';
 const clusterws_uws_1 = require("clusterws-uws");
 const lodash_1 = require("lodash");
@@ -43,10 +44,10 @@ const paths_1 = require("./paths");
 const liveSettings_1 = require("./liveSettings");
 const index_1 = require("./routes/index");
 const auth_1 = require("./routes/auth");
-const api_1 = require("./routes/api");
-const api1_1 = require("./routes/api1");
-const api2_1 = require("./routes/api2");
-const api_tools_1 = require("./routes/api-tools");
+const api_1 = tslib_1.__importDefault(require("./routes/api"));
+const api1_1 = tslib_1.__importDefault(require("./routes/api1"));
+const api2_1 = tslib_1.__importDefault(require("./routes/api2"));
+const api_tools_1 = tslib_1.__importDefault(require("./routes/api-tools"));
 const internal_2 = require("./api/internal");
 const internal_login_1 = require("./api/internal-login");
 const admin_accounts_1 = require("./api/admin-accounts");
@@ -55,9 +56,9 @@ const adminService_1 = require("./services/adminService");
 const admin_1 = require("./api/admin");
 function getServiceWorker() {
     try {
-        return fs.readFileSync(paths_1.pathTo('build', 'sw.min.js'));
+        return fs.readFileSync((0, paths_1.pathTo)('build', 'sw.min.js'));
     }
-    catch (_a) {
+    catch {
         return '';
     }
 }
@@ -82,23 +83,23 @@ const rollbar = config_1.config.rollbar && Rollbar.init({
     captureUncaught: true,
     checkIgnore: rollbar_1.rollbarCheckIgnore,
 });
-let assetsPath = paths_1.pathTo('build', 'assets');
-let adminAssetsPath = paths_1.pathTo('build', 'assets-admin');
-fs_extra_1.ensureDirSync(paths_1.pathTo('build-copy'));
+let assetsPath = (0, paths_1.pathTo)('build', 'assets');
+let adminAssetsPath = (0, paths_1.pathTo)('build', 'assets-admin');
+(0, fs_extra_1.ensureDirSync)((0, paths_1.pathTo)('build-copy'));
 if (production && config_1.args.login) {
-    const newAssetsPath = paths_1.pathTo('build-copy', 'assets');
-    fs_extra_1.removeSync(newAssetsPath);
-    fs_extra_1.copySync(assetsPath, newAssetsPath);
+    const newAssetsPath = (0, paths_1.pathTo)('build-copy', 'assets');
+    (0, fs_extra_1.removeSync)(newAssetsPath);
+    (0, fs_extra_1.copySync)(assetsPath, newAssetsPath);
     assetsPath = newAssetsPath;
 }
 if (production && config_1.args.admin) {
-    const newAssetsPath = paths_1.pathTo('build-copy', 'assets-admin');
-    fs_extra_1.removeSync(newAssetsPath);
-    fs_extra_1.copySync(adminAssetsPath, newAssetsPath);
+    const newAssetsPath = (0, paths_1.pathTo)('build-copy', 'assets-admin');
+    (0, fs_extra_1.removeSync)(newAssetsPath);
+    (0, fs_extra_1.copySync)(adminAssetsPath, newAssetsPath);
     adminAssetsPath = newAssetsPath;
 }
 app.set('port', config_1.port);
-app.set('views', paths_1.pathTo('views'));
+app.set('views', (0, paths_1.pathTo)('views'));
 app.set('view engine', 'pug');
 app.set('view options', { doctype: 'html' });
 app.set('x-powered-by', false);
@@ -112,7 +113,7 @@ if (production) {
     // app.use(require('shrink-ray-current')());
 }
 if (config_1.args.login || config_1.args.admin) {
-    app.use(serveFavicon(paths_1.pathTo('favicons', 'favicon.ico')));
+    app.use(serveFavicon((0, paths_1.pathTo)('favicons', 'favicon.ico')));
 }
 app.use(morgan('dev', { skip: (_, res) => res.statusCode < 500 || res.statusCode === 503 }));
 const serviceWorker = getServiceWorker();
@@ -128,35 +129,35 @@ else {
 }
 if (config_1.args.login || config_1.args.admin) {
     if (production) {
-        app.use(requestUtils_1.inMemoryStaticFiles(assetsPath, '/assets', maxAge));
+        app.use((0, requestUtils_1.inMemoryStaticFiles)(assetsPath, '/assets', maxAge));
     }
-    app.use('/assets', requestUtils_1.blockMaps(DEVELOPMENT, !!config_1.args.local), express.static(assetsPath, { maxAge, etag }));
-    app.use(express.static(paths_1.pathTo('public'), { maxAge, etag }));
-    app.use(express.static(paths_1.pathTo('favicons'), { maxAge, etag }));
+    app.use('/assets', (0, requestUtils_1.blockMaps)(DEVELOPMENT, !!config_1.args.local), express.static(assetsPath, { maxAge, etag }));
+    app.use(express.static((0, paths_1.pathTo)('public'), { maxAge, etag }));
+    app.use(express.static((0, paths_1.pathTo)('favicons'), { maxAge, etag }));
 }
 app.use(bodyParser.json({ type: ['json', 'application/csp-report'], limit }));
 app.use(bodyParser.urlencoded({ extended: true, limit }));
 app.use(require('cookie-parser')());
 if (config_1.args.login || config_1.args.admin) {
     passport.serializeUser((account, done) => done(null, account._id.toString()));
-    passport.deserializeUser((id, done) => db_1.Account.findById(id, (err, a) => done(err, a && !adminUtils_1.isBanned(a) ? a : false)));
+    passport.deserializeUser((id, done) => db_1.Account.findById(id, (err, a) => done(err, a && !(0, adminUtils_1.isBanned)(a) ? a : false)));
 }
 const ignore = [
     'RangeNotSatisfiableError',
     'PreconditionFailedError',
 ];
 app.use((err, req, res, next) => {
-    const ignored = err instanceof Error && utils_1.includes(ignore, err.name);
+    const ignored = err instanceof Error && (0, utils_1.includes)(ignore, err.name);
     return next(ignored ? null : err, req, res);
 });
 if (rollbar) {
     app.use(rollbar.errorHandler());
 }
 if (!production) {
-    app.use('/assets-admin', express.static(paths_1.pathTo('assets')));
-    app.use('/assets-admin', express.static(paths_1.pathTo('src')));
-    app.use('/assets', express.static(paths_1.pathTo('assets')));
-    app.use('/assets', express.static(paths_1.pathTo('src')));
+    app.use('/assets-admin', express.static((0, paths_1.pathTo)('assets')));
+    app.use('/assets-admin', express.static((0, paths_1.pathTo)('src')));
+    app.use('/assets', express.static((0, paths_1.pathTo)('assets')));
+    app.use('/assets', express.static((0, paths_1.pathTo)('src')));
     app.use(require('errorhandler')());
 }
 const httpServer = http.createServer(app);
@@ -170,17 +171,17 @@ const createSession = () => expressSession({
     },
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
 });
-const statsPath = paths_1.pathTo('logs', `stats-${config_1.server.id}.csv`);
+const statsPath = (0, paths_1.pathTo)('logs', `stats-${config_1.server.id}.csv`);
 const stats = new stats_1.StatsTracker(statsPath);
-const sessionMiddlewares = lodash_1.once(() => [createSession(), passport.initialize(), passport.session()]);
-const adminMiddlewares = lodash_1.once(() => [...sessionMiddlewares(), requestUtils_1.admin(config_1.server)]);
+const sessionMiddlewares = (0, lodash_1.once)(() => [createSession(), passport.initialize(), passport.session()]);
+const adminMiddlewares = (0, lodash_1.once)(() => [...sessionMiddlewares(), (0, requestUtils_1.admin)(config_1.server)]);
 const socketOptionsBase = {
     ws: { Server: clusterws_uws_1.WebSocketServer },
     hash: hash_1.STAMP,
 };
-requestUtils_1.initLogRequest(stats.logRequest);
-admin_accounts_1.initLogSwearingAndSpamming(stats.logSwearing, stats.logSpamming);
-const host = ag_sockets_1.createServerHost(httpServer, {
+(0, requestUtils_1.initLogRequest)(stats.logRequest);
+(0, admin_accounts_1.initLogSwearingAndSpamming)(stats.logSwearing, stats.logSpamming);
+const host = (0, ag_sockets_1.createServerHost)(httpServer, {
     path: config_1.args.standaloneadmin && !config_1.args.game ? '/admin/ws-admin' : config_1.server.path,
     ws: { Server: clusterws_uws_1.WebSocketServer },
     perMessageDeflate: false,
@@ -191,7 +192,7 @@ let sent = 0, received = 0;
 let sentPackets = 0, receivedPackets = 0;
 if (config_1.args.game) {
     const getSettings = () => settings_1.settings.servers[config_1.server.id] || {};
-    const { world, createServerActions, hiding } = serverActionsManager_1.createServerActionsFactory(config_1.server, settings_1.settings, getSettings, {
+    const { world, createServerActions, hiding } = (0, serverActionsManager_1.createServerActionsFactory)(config_1.server, settings_1.settings, getSettings, {
         stats: () => {
             const result = { sent, received, sentPackets, receivedPackets };
             sent = 0;
@@ -201,33 +202,39 @@ if (config_1.args.game) {
             return result;
         }
     });
-    const options = Object.assign({}, socketOptionsBase, { verifyClient: () => !getSettings().isServerOffline && !liveSettings_1.liveSettings.shutdown, forceBinary: true, onSend: (packet) => {
+    const options = {
+        ...socketOptionsBase,
+        verifyClient: () => !getSettings().isServerOffline && !liveSettings_1.liveSettings.shutdown,
+        forceBinary: true,
+        onSend: (packet) => {
             sent += packet.binary ? packet.binary.byteLength : (packet.json ? packet.json.length : 0);
             sentPackets++;
             stats.logSendStats(packet);
-        }, onRecv: (packet) => {
+        },
+        onRecv: (packet) => {
             received += packet.binary ? packet.binary.byteLength : (packet.json ? packet.json.length : 0);
             receivedPackets++;
             stats.logRecvStats(packet);
-        } });
+        },
+    };
     const gameSocket = host.socket(serverActions_1.ServerActions, clientActions_1.ClientActions, createServerActions, options);
-    const tokens = serverUtils_1.tokenService(gameSocket);
-    start_1.start(world, config_1.server);
-    internal_1.init(world, tokens);
+    const tokens = (0, serverUtils_1.tokenService)(gameSocket);
+    (0, start_1.start)(world, config_1.server);
+    (0, internal_1.init)(world, tokens);
     theWorld = world;
-    const apiInternal = internal_2.createInternalApi(world, config_1.server, settings_1.reloadSettings, getSettings, tokens, hiding, stats, liveSettings_1.liveSettings);
-    app.use('/api-internal', requestUtils_1.internal(config_1.config, config_1.server), requestUtils_1.wrapApi(config_1.server, apiInternal));
+    const apiInternal = (0, internal_2.createInternalApi)(world, config_1.server, settings_1.reloadSettings, getSettings, tokens, hiding, stats, liveSettings_1.liveSettings);
+    app.use('/api-internal', (0, requestUtils_1.internal)(config_1.config, config_1.server), (0, requestUtils_1.wrapApi)(config_1.server, apiInternal));
 }
-const endPoints = config_1.args.admin ? admin_1.createEndPoints() : undefined;
+const endPoints = config_1.args.admin ? (0, admin_1.createEndPoints)() : undefined;
 const adminService = config_1.args.admin ? new adminService_1.AdminService() : undefined;
-const removedDocument = internal_1.createRemovedDocument(endPoints, adminService);
-const index = index_1.createIndex(assetsPath, adminAssetsPath);
+const removedDocument = (0, internal_1.createRemovedDocument)(endPoints, adminService);
+const index = (0, index_1.createIndex)(assetsPath, adminAssetsPath);
 if (config_1.args.admin) {
     if (config_1.args.standaloneadmin) {
         app.use('/admin/assets-admin', ...adminMiddlewares(), express.static(adminAssetsPath, { maxAge, etag }));
         app.get('/admin/assets-admin/*', (_, res) => res.sendStatus(404));
         const adminApi = new internal_admin_1.InternalAdminApi(adminService, endPoints);
-        app.use('/api-internal-admin', requestUtils_1.internal(config_1.config, config_1.server), requestUtils_1.wrapApi(config_1.server, adminApi));
+        app.use('/api-internal-admin', (0, requestUtils_1.internal)(config_1.config, config_1.server), (0, requestUtils_1.wrapApi)(config_1.server, adminApi));
     }
     const createClient = (client) => new adminServerActions_1.AdminServerActions(client, config_1.server, settings_1.settings, adminService, endPoints, removedDocument);
     const base = '/admin';
@@ -241,13 +248,13 @@ if (config_1.args.tools) {
     const toolsPage = index.user(production, '/tools/', 'style-tools.css', 'bootstrap-tools.js', 'bootstrap-tools.js', undefined, true, !!config_1.args.local, false);
     app.get('/tools', ...sessionMiddlewares(), requestUtils_1.auth, (_, res) => res.send(toolsPage.page));
     app.get('/tools/*', ...sessionMiddlewares(), requestUtils_1.auth, (_, res) => res.send(toolsPage.page));
-    app.use('/api-tools', ...sessionMiddlewares(), api_tools_1.default(config_1.server, settings_1.settings, theWorld));
+    app.use('/api-tools', ...sessionMiddlewares(), (0, api_tools_1.default)(config_1.server, settings_1.settings, theWorld));
     app.get('/api-tools/*', (_, res) => res.sendStatus(404));
 }
 if (config_1.args.login) {
-    const socketOptions = ag_sockets_1.createClientOptions(serverActions_1.ServerActions, clientActions_1.ClientActions, socketOptionsBase);
+    const socketOptions = (0, ag_sockets_1.createClientOptions)(serverActions_1.ServerActions, clientActions_1.ClientActions, socketOptionsBase);
     const userPage = index.user(production, '/', 'style.css', 'bootstrap.js', 'bootstrap-es.js', socketOptions, false, !!config_1.args.local, !production);
-    const offlinePage = fs.readFileSync(paths_1.pathTo('public', 'offline.html'), 'utf8');
+    const offlinePage = fs.readFileSync((0, paths_1.pathTo)('public', 'offline.html'), 'utf8');
     const script = `${config_1.config.host}${index.getRevScript('bootstrap.js')}`;
     const scriptES = `${config_1.config.host}${index.getRevScript('bootstrap-es.js')}`;
     const analytics = config_1.config.analytics ? 'https://www.google-analytics.com' : '';
@@ -263,12 +270,12 @@ if (config_1.args.login) {
         ...userPage.preload,
     ];
     app.use('/assets-admin', ...adminMiddlewares(), express.static(adminAssetsPath, { maxAge, etag }));
-    app.use('/auth', ...sessionMiddlewares(), auth_1.authRoutes(config_1.config.host, config_1.server, settings_1.settings, liveSettings_1.liveSettings, config_1.args.local || DEVELOPMENT, removedDocument));
-    app.use('/api', ...sessionMiddlewares(), api_1.default(config_1.server, settings_1.settings, { version: config_1.version, host: config_1.config.host, debug: DEVELOPMENT, local: !!config_1.args.local }, removedDocument));
-    app.use('/api1', ...sessionMiddlewares(), api1_1.default(config_1.server, settings_1.settings));
-    app.use('/api2', api2_1.default(settings_1.settings, liveSettings_1.liveSettings, stats));
-    const loginApi = internal_login_1.createInternalLoginApi(settings_1.settings, liveSettings_1.liveSettings, stats, settings_1.reloadSettings, removedDocument);
-    app.use('/api-internal-login', requestUtils_1.internal(config_1.config, config_1.server), requestUtils_1.wrapApi(config_1.server, loginApi));
+    app.use('/auth', ...sessionMiddlewares(), (0, auth_1.authRoutes)(config_1.config.host, config_1.server, settings_1.settings, liveSettings_1.liveSettings, config_1.args.local || DEVELOPMENT, removedDocument));
+    app.use('/api', ...sessionMiddlewares(), (0, api_1.default)(config_1.server, settings_1.settings, { version: config_1.version, host: config_1.config.host, debug: DEVELOPMENT, local: !!config_1.args.local }, removedDocument));
+    app.use('/api1', ...sessionMiddlewares(), (0, api1_1.default)(config_1.server, settings_1.settings));
+    app.use('/api2', (0, api2_1.default)(settings_1.settings, liveSettings_1.liveSettings, stats));
+    const loginApi = (0, internal_login_1.createInternalLoginApi)(settings_1.settings, liveSettings_1.liveSettings, stats, settings_1.reloadSettings, removedDocument);
+    app.use('/api-internal-login', (0, requestUtils_1.internal)(config_1.config, config_1.server), (0, requestUtils_1.wrapApi)(config_1.server, loginApi));
     app.get('/assets-admin/*', requestUtils_1.notFound);
     app.get('/assets/*', requestUtils_1.notFound);
     app.get('/auth/*', requestUtils_1.notFound);
@@ -301,34 +308,34 @@ app.use((err, req, res, next) => {
         return next(err, req, res);
     }
 });
-settings_1.reloadSettings().then(() => {
+(0, settings_1.reloadSettings)().then(() => {
     if (config_1.args.login || config_1.args.game) {
         stats.startStatTracking();
     }
     if (config_1.args.login || config_1.args.admin) {
-        polling_1.pollServers();
+        (0, polling_1.pollServers)();
     }
     if (config_1.args.admin && !config_1.args.nocleanup) {
-        polling_1.startStrayAuthsCleanup(removedDocument);
-        polling_1.startClearOldIgnores();
-        polling_1.startMergesCleanup();
-        polling_1.startBansCleanup();
-        polling_1.startCollectingUsersVisitedCount();
-        polling_1.startSupporterInvitesCleanup();
-        polling_1.startPotentialDuplicatesCleanup(adminService);
-        polling_1.startAccountAlertsCleanup();
-        polling_1.startUpdatePastSupporters();
-        polling_1.startClearTo10Origns(adminService);
-        polling_1.startClearVeryOldOrigns(adminService);
-        polling_1.pollPatreon(config_1.server, settings_1.settings);
+        (0, polling_1.startStrayAuthsCleanup)(removedDocument);
+        (0, polling_1.startClearOldIgnores)();
+        (0, polling_1.startMergesCleanup)();
+        (0, polling_1.startBansCleanup)();
+        (0, polling_1.startCollectingUsersVisitedCount)();
+        (0, polling_1.startSupporterInvitesCleanup)();
+        (0, polling_1.startPotentialDuplicatesCleanup)(adminService);
+        (0, polling_1.startAccountAlertsCleanup)();
+        (0, polling_1.startUpdatePastSupporters)();
+        (0, polling_1.startClearTo10Origns)(adminService);
+        (0, polling_1.startClearVeryOldOrigns)(adminService);
+        (0, polling_1.pollPatreon)(config_1.server, settings_1.settings);
     }
     if (config_1.args.admin) {
-        polling_1.pollDiskSpace();
-        polling_1.pollMemoryUsage();
-        polling_1.pollCertificateExpirationDate();
+        (0, polling_1.pollDiskSpace)();
+        (0, polling_1.pollMemoryUsage)();
+        (0, polling_1.pollCertificateExpirationDate)();
     }
     httpServer.listen(config_1.port, () => {
-        const options = lodash_1.compact([
+        const options = (0, lodash_1.compact)([
             app.get('env'),
             config_1.args.login && 'login',
             config_1.args.admin && 'admin',

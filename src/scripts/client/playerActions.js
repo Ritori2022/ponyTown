@@ -1,5 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.handleActionCommand = handleActionCommand;
+exports.upAction = upAction;
+exports.downAction = downAction;
+exports.sitAction = sitAction;
+exports.standAction = standAction;
+exports.lieAction = lieAction;
+exports.flyAction = flyAction;
+exports.boopAction = boopAction;
+exports.turnHeadAction = turnHeadAction;
+exports.interact = interact;
+exports.toggleWall = toggleWall;
+exports.editorSelectEntities = editorSelectEntities;
+exports.editorDragEntities = editorDragEntities;
+exports.editorMoveEntities = editorMoveEntities;
 const utils_1 = require("../common/utils");
 const pony_1 = require("../common/pony");
 const entityUtils_1 = require("../common/entityUtils");
@@ -10,13 +24,13 @@ const rect_1 = require("../common/rect");
 const positionUtils_1 = require("../common/positionUtils");
 const entities_1 = require("../common/entities");
 function handleActionCommand(message, game) {
-    if (utils_1.isCommand(message)) {
-        const { command = '' } = utils_1.processCommand(message);
+    if ((0, utils_1.isCommand)(message)) {
+        const { command = '' } = (0, utils_1.processCommand)(message);
         const player = game.player;
         if (DEVELOPMENT) {
             if (command === 'spammessages') {
                 let i = 0;
-                setInterval(() => game.send(server => server.say(0, stringUtils_1.randomString(5) + ` #${i++}`, 0 /* Say */)), 100);
+                setInterval(() => game.send(server => server.say(0, (0, stringUtils_1.randomString)(5) + ` #${i++}`, 0 /* ChatType.Say */)), 100);
                 return true;
             }
         }
@@ -29,7 +43,7 @@ function handleActionCommand(message, game) {
             case 'lie':
             case 'lay':
                 if (player) {
-                    if (entityUtils_1.isPonyLying(player)) {
+                    if ((0, entityUtils_1.isPonyLying)(player)) {
                         sitAction(player, game);
                     }
                     else {
@@ -39,7 +53,7 @@ function handleActionCommand(message, game) {
                 return true;
             case 'sit':
                 if (player) {
-                    if (entityUtils_1.isPonyFlying(player)) {
+                    if ((0, entityUtils_1.isPonyFlying)(player)) {
                         standAction(player, game);
                     }
                     else {
@@ -54,7 +68,7 @@ function handleActionCommand(message, game) {
                 return true;
             case 'fly':
                 if (player) {
-                    if (entityUtils_1.isPonyFlying(player)) {
+                    if ((0, entityUtils_1.isPonyFlying)(player)) {
                         standAction(player, game);
                     }
                     else {
@@ -66,93 +80,84 @@ function handleActionCommand(message, game) {
     }
     return false;
 }
-exports.handleActionCommand = handleActionCommand;
 function upAction(game) {
     const player = game.player;
     if (player) {
-        if (entityUtils_1.isPonyLying(player)) {
+        if ((0, entityUtils_1.isPonyLying)(player)) {
             sitAction(player, game);
         }
-        else if (entityUtils_1.isPonySitting(player)) {
+        else if ((0, entityUtils_1.isPonySitting)(player)) {
             standAction(player, game);
         }
-        else if (entityUtils_1.isPonyStanding(player)) {
+        else if ((0, entityUtils_1.isPonyStanding)(player)) {
             flyAction(player, game);
         }
     }
 }
-exports.upAction = upAction;
 function downAction(game) {
     const player = game.player;
     if (player) {
-        if (entityUtils_1.isPonySitting(player)) {
+        if ((0, entityUtils_1.isPonySitting)(player)) {
             lieAction(player, game);
         }
-        else if (entityUtils_1.isPonyStanding(player)) {
+        else if ((0, entityUtils_1.isPonyStanding)(player)) {
             sitAction(player, game);
         }
-        else if (entityUtils_1.isPonyFlying(player)) {
+        else if ((0, entityUtils_1.isPonyFlying)(player)) {
             standAction(player, game);
         }
     }
 }
-exports.downAction = downAction;
 function sitAction(player, game) {
-    if (pony_1.canPonySit(player, game.map) && game.send(server => server.action(6 /* Sit */))) {
-        player.state = entityUtils_1.setPonyState(player.state, 48 /* PonySitting */);
-        game.stateOverride = 48 /* PonySitting */;
+    if ((0, pony_1.canPonySit)(player, game.map) && game.send(server => server.action(6 /* Action.Sit */))) {
+        player.state = (0, entityUtils_1.setPonyState)(player.state, 48 /* EntityState.PonySitting */);
+        game.stateOverride = 48 /* EntityState.PonySitting */;
         game.onActionsUpdate.next();
     }
 }
-exports.sitAction = sitAction;
 function standAction(player, game) {
-    if (pony_1.canPonyStand(player, game.map) && game.send(server => server.action(10 /* Stand */))) {
-        player.state = entityUtils_1.setPonyState(player.state, 0 /* PonyStanding */);
-        game.stateOverride = 0 /* PonyStanding */;
+    if ((0, pony_1.canPonyStand)(player, game.map) && game.send(server => server.action(10 /* Action.Stand */))) {
+        player.state = (0, entityUtils_1.setPonyState)(player.state, 0 /* EntityState.PonyStanding */);
+        game.stateOverride = 0 /* EntityState.PonyStanding */;
         game.onActionsUpdate.next();
     }
 }
-exports.standAction = standAction;
 function lieAction(player, game) {
-    if (pony_1.canPonyLie(player, game.map) && game.send(server => server.action(7 /* Lie */))) {
-        player.state = entityUtils_1.setPonyState(player.state, 64 /* PonyLying */);
-        game.stateOverride = 64 /* PonyLying */;
+    if ((0, pony_1.canPonyLie)(player, game.map) && game.send(server => server.action(7 /* Action.Lie */))) {
+        player.state = (0, entityUtils_1.setPonyState)(player.state, 64 /* EntityState.PonyLying */);
+        game.stateOverride = 64 /* EntityState.PonyLying */;
         game.onActionsUpdate.next();
     }
 }
-exports.lieAction = lieAction;
 function flyAction(player, game) {
-    if (pony_1.canPonyFlyUp(player) && game.send(server => server.action(8 /* Fly */))) {
-        player.state = entityUtils_1.setPonyState(player.state, 80 /* PonyFlying */);
+    if ((0, pony_1.canPonyFlyUp)(player) && game.send(server => server.action(8 /* Action.Fly */))) {
+        player.state = (0, entityUtils_1.setPonyState)(player.state, 80 /* EntityState.PonyFlying */);
         player.inTheAirDelay = constants_1.FLY_DELAY;
-        game.stateOverride = 80 /* PonyFlying */;
+        game.stateOverride = 80 /* EntityState.PonyFlying */;
         game.onActionsUpdate.next();
     }
 }
-exports.flyAction = flyAction;
 function boopAction(game) {
-    if (game.player && entityUtils_1.canBoop(game.player) && game.send(server => server.action(1 /* Boop */))) {
-        pony_1.doBoopPonyAction(game, game.player);
+    if (game.player && (0, entityUtils_1.canBoop)(game.player) && game.send(server => server.action(1 /* Action.Boop */))) {
+        (0, pony_1.doBoopPonyAction)(game, game.player);
     }
 }
-exports.boopAction = boopAction;
 function turnHeadAction(game) {
-    if (game.player && game.send(server => server.action(2 /* TurnHead */))) {
-        game.player.state = game.player.state ^ 4 /* HeadTurned */;
-        game.headTurnedOverride = utils_1.hasFlag(game.player.state, 4 /* HeadTurned */);
+    if (game.player && game.send(server => server.action(2 /* Action.TurnHead */))) {
+        game.player.state = game.player.state ^ 4 /* EntityState.HeadTurned */;
+        game.headTurnedOverride = (0, utils_1.hasFlag)(game.player.state, 4 /* EntityState.HeadTurned */);
         game.onActionsUpdate.next();
     }
 }
-exports.turnHeadAction = turnHeadAction;
 function interact(game, shift) {
     const player = game.player;
     if (player) {
-        const bounds = entityUtils_1.getInteractBounds(player);
-        const entities = worldMap_1.pickEntitiesByRect(game.map, bounds, true, false);
-        const center = rect_1.centerPoint(bounds);
-        center.x += (bounds.w / 4) * (entityUtils_1.isFacingRight(player) ? -1 : 1);
-        const entity = entityUtils_1.closestEntity(positionUtils_1.pointToWorld(center), entities);
-        if (entity && entityUtils_1.entityInRange(entity, player)) {
+        const bounds = (0, entityUtils_1.getInteractBounds)(player);
+        const entities = (0, worldMap_1.pickEntitiesByRect)(game.map, bounds, true, false);
+        const center = (0, rect_1.centerPoint)(bounds);
+        center.x += (bounds.w / 4) * ((0, entityUtils_1.isFacingRight)(player) ? -1 : 1);
+        const entity = (0, entityUtils_1.closestEntity)((0, positionUtils_1.pointToWorld)(center), entities);
+        if (entity && (0, entityUtils_1.entityInRange)(entity, player)) {
             game.send(server => server.interact(entity.id));
         }
         else if (player.hold === entities_1.hammer.type) {
@@ -161,12 +166,11 @@ function interact(game, shift) {
         else if (player.hold === entities_1.shovel.type) {
             game.changePlaceTile(shift);
         }
-        else if (player.ponyState.holding && utils_1.hasFlag(player.ponyState.holding.flags, 8 /* Usable */)) {
+        else if (player.ponyState.holding && (0, utils_1.hasFlag)(player.ponyState.holding.flags, 8 /* EntityFlags.Usable */)) {
             game.send(server => server.use());
         }
     }
 }
-exports.interact = interact;
 function toggleWall(game, hover) {
     const x = hover.x | 0;
     const y = hover.y | 0;
@@ -174,44 +178,42 @@ function toggleWall(game, hover) {
     const dy = hover.y - y;
     if (dx > dy) {
         if ((dx + dy) < 1) {
-            game.send(server => server.changeTile(x, y, 100 /* WallH */));
+            game.send(server => server.changeTile(x, y, 100 /* TileType.WallH */));
         }
         else {
-            game.send(server => server.changeTile(x + 1, y, 101 /* WallV */));
+            game.send(server => server.changeTile(x + 1, y, 101 /* TileType.WallV */));
         }
     }
     else {
         if ((dx + dy) < 1) {
-            game.send(server => server.changeTile(x, y, 101 /* WallV */));
+            game.send(server => server.changeTile(x, y, 101 /* TileType.WallV */));
         }
         else {
-            game.send(server => server.changeTile(x, y + 1, 100 /* WallH */));
+            game.send(server => server.changeTile(x, y + 1, 100 /* TileType.WallH */));
         }
     }
 }
-exports.toggleWall = toggleWall;
 function editorSelectEntities(game, hover, shift) {
     game.apply(() => {
-        const entities = worldMap_1.pickAnyEntities(game.map, hover);
+        const entities = (0, worldMap_1.pickAnyEntities)(game.map, hover);
         if (shift) {
-            const entity = entities.filter(e => !utils_1.includes(game.editor.selectedEntities, e))[0];
+            const entity = entities.filter(e => !(0, utils_1.includes)(game.editor.selectedEntities, e))[0];
             entity && game.editor.selectedEntities.push(entity);
         }
         else {
-            const index = entities.findIndex(e => utils_1.includes(game.editor.selectedEntities, e));
+            const index = entities.findIndex(e => (0, utils_1.includes)(game.editor.selectedEntities, e));
             const entity = entities[(index + 1) % entities.length];
             game.editor.selectedEntities = entity ? [entity] : [];
         }
     });
 }
-exports.editorSelectEntities = editorSelectEntities;
 function editorDragEntities(game, hover, buttonPressed) {
     if (buttonPressed) {
         const dx = hover.x - game.editor.draggingStart.x;
         const dy = hover.y - game.editor.draggingStart.y;
         game.editor.selectedEntities.forEach(e => {
-            e.x = positionUtils_1.roundPositionX(e.draggingStart.x + dx);
-            e.y = positionUtils_1.roundPositionY(e.draggingStart.y + dy);
+            e.x = (0, positionUtils_1.roundPositionX)(e.draggingStart.x + dx);
+            e.y = (0, positionUtils_1.roundPositionY)(e.draggingStart.y + dy);
         });
     }
     else {
@@ -222,11 +224,9 @@ function editorDragEntities(game, hover, buttonPressed) {
         }));
     }
 }
-exports.editorDragEntities = editorDragEntities;
 function editorMoveEntities(game, hover) {
     game.editor.draggingEntities = true;
     game.editor.draggingStart = hover;
-    game.editor.selectedEntities.forEach(e => e.draggingStart = utils_1.point(e.x, e.y));
+    game.editor.selectedEntities.forEach(e => e.draggingStart = (0, utils_1.point)(e.x, e.y));
 }
-exports.editorMoveEntities = editorMoveEntities;
 //# sourceMappingURL=playerActions.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.lastPacket = exports.FakeClientsController = void 0;
 const lodash_1 = require("lodash");
 const ag_sockets_1 = require("ag-sockets");
 const db_1 = require("../db");
@@ -20,7 +21,7 @@ class FakeClientsController {
     initialize() {
         if (this.initialized)
             return;
-        utils_1.times(1000, async (i) => {
+        (0, utils_1.times)(1000, async (i) => {
             try {
                 const name = `perf-${i}`;
                 const account = await db_1.Account.findOne({ name }).exec();
@@ -40,7 +41,7 @@ class FakeClientsController {
     update() {
     }
     sparseUpdate() {
-        timing_1.timingStart('FakeClientController.sparseUpdate()');
+        (0, timing_1.timingStart)('FakeClientController.sparseUpdate()');
         if (this.tokens.length) {
             for (let i = this.clients.length - 1; i >= 0; i--) {
                 if (Math.random() < (10 / this.options.count)) {
@@ -53,11 +54,11 @@ class FakeClientsController {
                 }
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
     async join() {
         try {
-            const token = lodash_1.sample(this.tokens);
+            const token = (0, lodash_1.sample)(this.tokens);
             if (!this.clients.some(c => c.tokenId === token.id)) {
                 const client = await joinFakeClient(token, this.server, this.world);
                 this.clients.push(client);
@@ -69,11 +70,11 @@ class FakeClientsController {
     }
     async leave(client) {
         this.world.leaveClient(client);
-        utils_1.removeItem(this.clients, client);
+        (0, utils_1.removeItem)(this.clients, client);
     }
 }
 exports.FakeClientsController = FakeClientsController;
-const packetWriter = ag_sockets_1.createBinaryWriter();
+const packetWriter = (0, ag_sockets_1.createBinaryWriter)();
 async function joinFakeClient(token, server, world) {
     const client = {
         tokenId: token.id,
@@ -92,36 +93,36 @@ async function joinFakeClient(token, server, world) {
         update(_, subscribes, adds, datas) {
             do {
                 try {
-                    ag_sockets_1.resetWriter(packetWriter);
-                    ag_sockets_1.writeUint8(packetWriter, 123);
-                    if (ag_sockets_1.writeArrayHeader(packetWriter, subscribes)) {
+                    (0, ag_sockets_1.resetWriter)(packetWriter);
+                    (0, ag_sockets_1.writeUint8)(packetWriter, 123);
+                    if ((0, ag_sockets_1.writeArrayHeader)(packetWriter, subscribes)) {
                         for (let i = 0; i < subscribes.length; i++) {
-                            ag_sockets_1.writeUint8Array(packetWriter, subscribes[i]);
+                            (0, ag_sockets_1.writeUint8Array)(packetWriter, subscribes[i]);
                         }
                     }
-                    ag_sockets_1.writeUint8Array(packetWriter, adds);
-                    if (ag_sockets_1.writeArrayHeader(packetWriter, datas)) {
+                    (0, ag_sockets_1.writeUint8Array)(packetWriter, adds);
+                    if ((0, ag_sockets_1.writeArrayHeader)(packetWriter, datas)) {
                         for (let i = 0; i < datas.length; i++) {
-                            ag_sockets_1.writeUint8Array(packetWriter, datas[i]);
+                            (0, ag_sockets_1.writeUint8Array)(packetWriter, datas[i]);
                         }
                     }
                     break;
                 }
                 catch (e) {
                     if (e instanceof RangeError || /DataView/.test(e.message)) {
-                        ag_sockets_1.resizeWriter(packetWriter);
+                        (0, ag_sockets_1.resizeWriter)(packetWriter);
                     }
                     else {
                         throw e;
                     }
                 }
             } while (true);
-            exports.lastPacket = ag_sockets_1.getWriterBuffer(packetWriter);
+            exports.lastPacket = (0, ag_sockets_1.getWriterBuffer)(packetWriter);
         },
         addNotification() { },
         removeNotification() { },
     };
-    playerUtils_1.createClientAndPony(client, [], [], server, world, mockCharacterStates);
+    (0, playerUtils_1.createClientAndPony)(client, [], [], server, world, mockCharacterStates);
     world.joinClientToQueue(client);
     return client;
 }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Anchor = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 let Anchor = class Anchor {
@@ -14,11 +15,11 @@ let Anchor = class Anchor {
         }
     }
 };
-Anchor = tslib_1.__decorate([
-    core_1.Directive({
+exports.Anchor = Anchor;
+exports.Anchor = Anchor = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: 'a[href]'
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef])
 ], Anchor);
-exports.Anchor = Anchor;
 //# sourceMappingURL=anchor.js.map

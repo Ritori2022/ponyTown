@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MouseController = void 0;
 const utils_1 = require("../../common/utils");
-const MOUSE_BUTTONS = [302 /* MOUSE_BUTTON1 */, 304 /* MOUSE_BUTTON3 */, 303 /* MOUSE_BUTTON2 */];
+const MOUSE_BUTTONS = [302 /* Key.MOUSE_BUTTON1 */, 304 /* Key.MOUSE_BUTTON3 */, 303 /* Key.MOUSE_BUTTON2 */];
 class MouseController {
     constructor(manager) {
         this.manager = manager;
@@ -9,8 +10,8 @@ class MouseController {
         this.mousemove = (e) => {
             if (this.element) {
                 const rect = this.element.getBoundingClientRect();
-                this.manager.setValue(300 /* MOUSE_X */, Math.floor(e.clientX - rect.left));
-                this.manager.setValue(301 /* MOUSE_Y */, Math.floor(e.clientY - rect.top));
+                this.manager.setValue(300 /* Key.MOUSE_X */, Math.floor(e.clientX - rect.left));
+                this.manager.setValue(301 /* Key.MOUSE_Y */, Math.floor(e.clientY - rect.top));
             }
         };
         this.mousedown = (e) => {
@@ -29,8 +30,8 @@ class MouseController {
             }
         };
         this.mousewheel = (e) => {
-            this.manager.addValue(305 /* MOUSE_WHEEL_X */, utils_1.clamp(e.deltaX, -1, 1));
-            this.manager.addValue(306 /* MOUSE_WHEEL_Y */, utils_1.clamp(e.deltaY, -1, 1));
+            this.manager.addValue(305 /* Key.MOUSE_WHEEL_X */, (0, utils_1.clamp)(e.deltaX, -1, 1));
+            this.manager.addValue(306 /* Key.MOUSE_WHEEL_Y */, (0, utils_1.clamp)(e.deltaY, -1, 1));
         };
         this.contextmenu = (e) => {
             e.preventDefault();

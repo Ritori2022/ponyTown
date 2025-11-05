@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.emojiNames = exports.emojiMap = exports.emojis = void 0;
+exports.findEmoji = findEmoji;
+exports.replaceEmojis = replaceEmojis;
+exports.getEmojiImageAsync = getEmojiImageAsync;
+exports.splitEmojis = splitEmojis;
+exports.hasEmojis = hasEmojis;
+exports.nameToHTML = nameToHTML;
+exports.autocompleteMesssage = autocompleteMesssage;
 const lodash_1 = require("lodash");
 const canvasUtils_1 = require("./canvasUtils");
 const contextSpriteBatch_1 = require("../graphics/contextSpriteBatch");
@@ -104,13 +112,11 @@ exports.emojiMap = new Map();
 exports.emojiNames = exports.emojis.slice().sort().map(e => `:${e.names[0]}:`);
 exports.emojis.forEach(e => e.names.forEach(name => exports.emojiMap.set(`:${name}:`, e.symbol)));
 function findEmoji(name) {
-    return exports.emojis.find(e => name === e.symbol || utils_1.includes(e.names, name));
+    return exports.emojis.find(e => name === e.symbol || (0, utils_1.includes)(e.names, name));
 }
-exports.findEmoji = findEmoji;
 function replaceEmojis(text) {
     return (text || '').replace(/:[a-z0-9_]+:/ig, match => exports.emojiMap.get(match) || match);
 }
-exports.replaceEmojis = replaceEmojis;
 function createEmoji([symbol, ...names]) {
     return { symbol, names: [...names, ...names.filter(n => /_/.test(n)).map(n => n.replace(/_/g, ''))] };
 }
@@ -129,8 +135,8 @@ function getEmojiImageAsync(sprite, callback) {
     }
     const width = sprite.w + sprite.ox;
     // const height = sprite.h + sprite.oy;
-    const canvas = contextSpriteBatch_1.drawCanvas(width, 10, sprites_1.normalSpriteSheet, undefined, batch => batch.drawSprite(sprite, colors_1.WHITE, 0, 0));
-    const newPromise = canvasUtils_1.canvasToSource(canvas);
+    const canvas = (0, contextSpriteBatch_1.drawCanvas)(width, 10, sprites_1.normalSpriteSheet, undefined, batch => batch.drawSprite(sprite, colors_1.WHITE, 0, 0));
+    const newPromise = (0, canvasUtils_1.canvasToSource)(canvas);
     emojiImagePromises.set(sprite, newPromise);
     newPromise
         .then(src => {
@@ -140,7 +146,6 @@ function getEmojiImageAsync(sprite, callback) {
     })
         .then(callback);
 }
-exports.getEmojiImageAsync = getEmojiImageAsync;
 const emojisRegex = new RegExp(`(${[
     ...exports.emojis.map(e => e.symbol),
     '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '⛎',
@@ -148,15 +153,12 @@ const emojisRegex = new RegExp(`(${[
 function splitEmojis(text) {
     return text.split(emojisRegex);
 }
-exports.splitEmojis = splitEmojis;
 function hasEmojis(text) {
     return emojisRegex.test(text);
 }
-exports.hasEmojis = hasEmojis;
 function nameToHTML(name) {
-    return lodash_1.escape(name);
+    return (0, lodash_1.escape)(name);
 }
-exports.nameToHTML = nameToHTML;
 const names = exports.emojiNames.slice().sort();
 function autocompleteMesssage(message, shift, state) {
     return message.replace(/:[a-z0-9_]+:?$/, match => {
@@ -167,5 +169,4 @@ function autocompleteMesssage(message, shift, state) {
         return matches[offset] || match;
     });
 }
-exports.autocompleteMesssage = autocompleteMesssage;
 //# sourceMappingURL=emoji.js.map

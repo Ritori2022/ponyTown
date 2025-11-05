@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EventsTable = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminInterfaces_1 = require("../../../../common/adminInterfaces");
@@ -38,7 +39,7 @@ let EventsTable = class EventsTable {
         }
     }
     translateUrl(e) {
-        return adminUtils_1.getTranslationUrl(e.desc);
+        return (0, adminUtils_1.getTranslationUrl)(e.desc);
     }
     onShowChat(e, event, account) {
         if (e.shiftKey) {
@@ -52,29 +53,29 @@ let EventsTable = class EventsTable {
         this.addChat.emit({ event, account });
     }
 };
+exports.EventsTable = EventsTable;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Array)
 ], EventsTable.prototype, "events", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], EventsTable.prototype, "showChat", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], EventsTable.prototype, "addChat", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], EventsTable.prototype, "removedEvent", void 0);
-EventsTable = tslib_1.__decorate([
-    core_1.Component({
+exports.EventsTable = EventsTable = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'events-table',
         templateUrl: 'events-table.pug',
         styleUrls: ['events-table.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], EventsTable);
-exports.EventsTable = EventsTable;
 //# sourceMappingURL=events-table.js.map

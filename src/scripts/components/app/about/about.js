@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.About = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const emoji_1 = require("../../../client/emoji");
@@ -9,7 +10,11 @@ const changelog_1 = require("../../../generated/changelog");
 const constants_1 = require("../../../common/constants");
 const data_1 = require("../../../client/data");
 function toCredit(credit) {
-    return Object.assign({}, credit, { background: `url(${rev_1.getUrl('images/avatars.jpg')})`, position: `${(credit.avatarIndex % 4) * -82}px ${Math.floor(credit.avatarIndex / 4) * -82}px` });
+    return {
+        ...credit,
+        background: `url(${(0, rev_1.getUrl)('images/avatars.jpg')})`,
+        position: `${(credit.avatarIndex % 4) * -82}px ${Math.floor(credit.avatarIndex / 4) * -82}px`,
+    };
 }
 let About = class About {
     constructor() {
@@ -23,12 +28,12 @@ let About = class About {
         this.contactEmail = data_1.contactEmail;
     }
 };
-About = tslib_1.__decorate([
-    core_1.Component({
+exports.About = About;
+exports.About = About = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'about',
         templateUrl: 'about.pug',
         styleUrls: ['about.scss'],
     })
 ], About);
-exports.About = About;
 //# sourceMappingURL=about.js.map

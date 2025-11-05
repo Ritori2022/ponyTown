@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.splitAccounts = exports.mergeAccounts = void 0;
+exports.split = split;
 const lodash_1 = require("lodash");
 const utils_1 = require("../../common/utils");
 const accountUtils_1 = require("../accountUtils");
@@ -12,7 +14,7 @@ function mergeBan(a, b) {
     return (a === -1 || b === -1) ? -1 : Math.max(a || 0, b || 0);
 }
 function mergeLists(a, b, limit) {
-    return [...(a || []), ...(b || [])].sort((a, b) => utils_1.compareDates(a.date, b.date)).slice(-limit);
+    return [...(a || []), ...(b || [])].sort((a, b) => (0, utils_1.compareDates)(a.date, b.date)).slice(-limit);
 }
 async function findAccounts(id, withId, allowAdmin = false) {
     const accounts = await db_1.Account.find({ _id: { $in: [id, withId] } })
@@ -20,7 +22,7 @@ async function findAccounts(id, withId, allowAdmin = false) {
         .populate('characters', 'name')
         .exec();
     if (!allowAdmin) {
-        accounts.forEach(a => accountUtils_1.checkIfNotAdmin(a, `merge: ${a._id}`));
+        accounts.forEach(a => (0, accountUtils_1.checkIfNotAdmin)(a, `merge: ${a._id}`));
     }
     const account = accounts.find(a => a._id.toString() === id);
     const merge = accounts.find(a => a._id.toString() === withId);
@@ -39,7 +41,7 @@ function dumpData(account, friends, hides) {
         birthdate,
         emails: emails.slice(),
         ignores: ignores.slice(),
-        counters: lodash_1.clone(counters),
+        counters: (0, lodash_1.clone)(counters),
         auths: auths.map(({ _id, name }) => ({ id: _id.toString(), name })),
         characters: characters.map(({ _id, name }) => ({ id: _id.toString(), name })),
         settings: account.settings,
@@ -49,7 +51,14 @@ function dumpData(account, friends, hides) {
 }
 function mergeStates(a, b) {
     if (a && b) {
-        return Object.assign({}, b, a, { gifts: utils_1.toInt(a.gifts) + utils_1.toInt(b.gifts), candies: utils_1.toInt(a.candies) + utils_1.toInt(b.candies), clovers: utils_1.toInt(a.clovers) + utils_1.toInt(b.clovers), toys: utils_1.toInt(a.toys) | utils_1.toInt(b.toys) });
+        return {
+            ...b,
+            ...a,
+            gifts: (0, utils_1.toInt)(a.gifts) + (0, utils_1.toInt)(b.gifts),
+            candies: (0, utils_1.toInt)(a.candies) + (0, utils_1.toInt)(b.candies),
+            clovers: (0, utils_1.toInt)(a.clovers) + (0, utils_1.toInt)(b.clovers),
+            toys: (0, utils_1.toInt)(a.toys) | (0, utils_1.toInt)(b.toys),
+        };
     }
     else {
         return a || b;
@@ -59,32 +68,32 @@ async function merge(id, withId, reason, removedDocument, allowAdmin = false, cr
     const start = Date.now();
     const [{ account, merge }, accountFriends, mergeFriends, accountHides, mergeHides] = await Promise.all([
         findAccounts(id, withId, allowAdmin),
-        db_1.findFriendIds(id),
-        db_1.findFriendIds(withId),
-        db_1.findHidesForMerge(id),
-        db_1.findHidesForMerge(withId),
+        (0, db_1.findFriendIds)(id),
+        (0, db_1.findFriendIds)(withId),
+        (0, db_1.findHidesForMerge)(id),
+        (0, db_1.findHidesForMerge)(withId),
     ]);
     const data = {
         account: dumpData(account, accountFriends, accountHides),
         merge: dumpData(merge, mergeFriends, mergeHides),
     };
-    const origins = lodash_1.uniqBy([...(account.origins || []), ...(merge.origins || [])], x => x.ip);
-    const ignores = lodash_1.uniq([...(account.ignores || []), ...(merge.ignores || [])]);
-    const emails = lodash_1.uniq([...(account.emails || []), ...(merge.emails || [])]);
+    const origins = (0, lodash_1.uniqBy)([...(account.origins || []), ...(merge.origins || [])], x => x.ip);
+    const ignores = (0, lodash_1.uniq)([...(account.ignores || []), ...(merge.ignores || [])]);
+    const emails = (0, lodash_1.uniq)([...(account.emails || []), ...(merge.emails || [])]);
     const note = `${account.note || ''}\n${merge.note || ''}`.trim();
-    const createdAt = utils_1.minDate(account.createdAt, merge.createdAt);
-    const lastVisit = utils_1.maxDate(account.lastVisit, merge.lastVisit);
+    const createdAt = (0, utils_1.minDate)(account.createdAt, merge.createdAt);
+    const lastVisit = (0, utils_1.maxDate)(account.lastVisit, merge.lastVisit);
     const ban = mergeBan(account.ban, merge.ban);
     const shadow = mergeBan(account.shadow, merge.shadow);
     const mute = mergeBan(account.mute, merge.mute);
-    const patreon = Math.max(utils_1.toInt(account.patreon), utils_1.toInt(merge.patreon));
-    const counters = lodash_1.assignWith(account.counters || {}, merge.counters || {}, (a, b) => (a | 0) + (b | 0));
-    const creatingDuplicatesFlag = creatingDuplicates ? 2 /* CreatingDuplicates */ : 0;
+    const patreon = Math.max((0, utils_1.toInt)(account.patreon), (0, utils_1.toInt)(merge.patreon));
+    const counters = (0, lodash_1.assignWith)(account.counters || {}, merge.counters || {}, (a, b) => (a | 0) + (b | 0));
+    const creatingDuplicatesFlag = creatingDuplicates ? 2 /* AccountFlags.CreatingDuplicates */ : 0;
     const flags = account.flags | merge.flags | creatingDuplicatesFlag;
-    const supporter = utils_1.toInt(account.supporter) | utils_1.toInt(merge.supporter);
+    const supporter = (0, utils_1.toInt)(account.supporter) | (0, utils_1.toInt)(merge.supporter);
     const birthdate = account.birthdate || merge.birthdate;
     const supporterLog = mergeLists(account.supporterLog, merge.supporterLog, 10);
-    const supporterTotal = utils_1.toInt(account.supporterTotal) + utils_1.toInt(merge.supporterTotal);
+    const supporterTotal = (0, utils_1.toInt)(account.supporterTotal) + (0, utils_1.toInt)(merge.supporterTotal);
     const banLog = mergeLists(account.banLog, merge.banLog, 10);
     const merges = mergeLists(account.merges, merge.merges, 20);
     const state = mergeStates(account.state, merge.state);
@@ -116,12 +125,12 @@ async function merge(id, withId, reason, removedDocument, allowAdmin = false, cr
     ]);
     await removeDuplicateFriendRequests(id);
     await merge.remove();
-    await admin_1.kickFromAllServers(withId);
+    await (0, admin_1.kickFromAllServers)(withId);
     await removedDocument('accounts', withId);
-    await accountUtils_1.updateCharacterCount(id);
-    await internal_1.accountMerged(id, withId);
-    await internal_1.accountChanged(id);
-    logger_1.system(account._id, `Merged ${account.name} with ${merge.name} [${merge._id}] (${reason}) (${Date.now() - start}ms)`);
+    await (0, accountUtils_1.updateCharacterCount)(id);
+    await (0, internal_1.accountMerged)(id, withId);
+    await (0, internal_1.accountChanged)(id);
+    (0, logger_1.system)(account._id, `Merged ${account.name} with ${merge.name} [${merge._id}] (${reason}) (${Date.now() - start}ms)`);
 }
 async function removeDuplicateFriendRequests(id) {
     const friendRequests = await db_1.FriendRequest.find({ $or: [{ source: id }, { target: id }] }).exec();
@@ -142,7 +151,7 @@ async function removeDuplicateFriendRequests(id) {
 }
 async function split(accountId, mergeId, split, keep, reason) {
     const start = Date.now();
-    const account = await db_1.findAccountSafe(accountId);
+    const account = await (0, db_1.findAccountSafe)(accountId);
     const unmerge = await db_1.Account.create({
         name: split.name,
         note: split.note,
@@ -158,14 +167,14 @@ async function split(accountId, mergeId, split, keep, reason) {
         note: `${account.note}\nsplit: [${unmerge._id}]`.trim(),
         state: keep.state,
     };
-    const removeIgnores = lodash_1.difference(split.ignores, account.ignores || []);
+    const removeIgnores = (0, lodash_1.difference)(split.ignores, account.ignores || []);
     if (removeIgnores.length) {
         accountUpdate.$pull = { ignores: removeIgnores };
     }
     const newCounters = split.counters || {};
     if (Object.keys(newCounters).length > 0) {
         const oldCounters = account.counters || {};
-        const counters = lodash_1.mapValues(newCounters, (value, key) => Math.max(0, utils_1.toInt(oldCounters[key]) - utils_1.toInt(value)));
+        const counters = (0, lodash_1.mapValues)(newCounters, (value, key) => Math.max(0, (0, utils_1.toInt)(oldCounters[key]) - (0, utils_1.toInt)(value)));
         accountUpdate.counters = counters;
     }
     const authIds = split.auths.map(x => x.id);
@@ -202,13 +211,12 @@ async function split(accountId, mergeId, split, keep, reason) {
         await db_1.Account.updateOne({ _id: account._id, 'merges._id': mergeId }, { 'merges.$.split': true }).exec();
     }
     await Promise.all([
-        accountUtils_1.updateCharacterCount(accountId),
-        accountUtils_1.updateCharacterCount(unmerge._id),
-        internal_1.accountChanged(accountId),
+        (0, accountUtils_1.updateCharacterCount)(accountId),
+        (0, accountUtils_1.updateCharacterCount)(unmerge._id),
+        (0, internal_1.accountChanged)(accountId),
     ]);
-    logger_1.system(account._id, `Split off ${unmerge.name} [${unmerge._id}] (${reason}) (${Date.now() - start}ms)`);
+    (0, logger_1.system)(account._id, `Split off ${unmerge.name} [${unmerge._id}] (${reason}) (${Date.now() - start}ms)`);
 }
-exports.split = split;
-exports.mergeAccounts = taskQueue_1.makeQueued(merge);
-exports.splitAccounts = taskQueue_1.makeQueued(split);
+exports.mergeAccounts = (0, taskQueue_1.makeQueued)(merge);
+exports.splitAccounts = (0, taskQueue_1.makeQueued)(split);
 //# sourceMappingURL=merge.js.map

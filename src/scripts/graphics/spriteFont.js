@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.VAlign = exports.HAlign = void 0;
+exports.createSpriteFont = createSpriteFont;
+exports.drawText = drawText;
+exports.drawOutlinedText = drawOutlinedText;
+exports.drawTextAligned = drawTextAligned;
+exports.lineBreak = lineBreak;
+exports.measureText = measureText;
+exports.getCharacterSprite = getCharacterSprite;
 const interfaces_1 = require("../common/interfaces");
 const colors_1 = require("../common/colors");
 const stringUtils_1 = require("../common/stringUtils");
@@ -9,13 +17,13 @@ var HAlign;
     HAlign[HAlign["Left"] = 0] = "Left";
     HAlign[HAlign["Right"] = 1] = "Right";
     HAlign[HAlign["Center"] = 2] = "Center";
-})(HAlign = exports.HAlign || (exports.HAlign = {}));
+})(HAlign || (exports.HAlign = HAlign = {}));
 var VAlign;
 (function (VAlign) {
     VAlign[VAlign["Top"] = 0] = "Top";
     VAlign[VAlign["Bottom"] = 1] = "Bottom";
     VAlign[VAlign["Middle"] = 2] = "Middle";
-})(VAlign = exports.VAlign || (exports.VAlign = {}));
+})(VAlign || (exports.VAlign = VAlign = {}));
 const SPACE = ' '.charCodeAt(0);
 const TAB = '\t'.charCodeAt(0);
 const DEFAULT = '?'.charCodeAt(0);
@@ -36,15 +44,14 @@ function createSpriteFont(charset, emojiCharset, spaceWidth) {
     const letterHeight = char0.h;
     const letterWidth = char0.w;
     const letterHeightReal = char0.h + char0.oy;
-    chars.set(SPACE, spriteUtils_1.createSprite(0, 0, 0, 0, spaceWidth, char0.h, 0));
-    chars.set(TAB, spriteUtils_1.createSprite(0, 0, 0, 0, spaceWidth * 4, char0.h, 0));
+    chars.set(SPACE, (0, spriteUtils_1.createSprite)(0, 0, 0, 0, spaceWidth, char0.h, 0));
+    chars.set(TAB, (0, spriteUtils_1.createSprite)(0, 0, 0, 0, spaceWidth * 4, char0.h, 0));
     const defaultChar = chars.get(DEFAULT);
     return {
         lineSpacing, letterSpacing, letterShiftX, letterShiftY, letterShiftWidth, letterShiftHeight,
         letterHeight, letterHeightReal, letterWidth, chars, emoji, defaultChar,
     };
 }
-exports.createSpriteFont = createSpriteFont;
 function drawChars(batch, chars, length, font, color, x, y, options) {
     const { lineSpacing = font.lineSpacing, monospace = false } = options;
     x = Math.round(x) | 0;
@@ -63,12 +70,11 @@ function drawChars(batch, chars, length, font, color, x, y, options) {
     }
 }
 function drawText(batch, text, font, color, x, y, options = defaultOptions) {
-    const length = stringUtils_1.stringToCodesTemp(text);
+    const length = (0, stringUtils_1.stringToCodesTemp)(text);
     drawChars(batch, stringUtils_1.codesBuffer, length, font, color, x, y, options);
 }
-exports.drawText = drawText;
 function drawOutlinedText(batch, text, font, color, outlineColor, x, y, options = defaultOptions) {
-    const length = stringUtils_1.stringToCodesTemp(text);
+    const length = (0, stringUtils_1.stringToCodesTemp)(text);
     options.skipEmotes = true;
     drawChars(batch, stringUtils_1.codesBuffer, length, font, outlineColor, x - 1, y - 1, options);
     drawChars(batch, stringUtils_1.codesBuffer, length, font, outlineColor, x + 1, y - 1, options);
@@ -81,13 +87,11 @@ function drawOutlinedText(batch, text, font, color, outlineColor, x, y, options 
     options.skipEmotes = false;
     drawChars(batch, stringUtils_1.codesBuffer, length, font, color, x, y, options);
 }
-exports.drawOutlinedText = drawOutlinedText;
-function drawTextAligned(spriteBatch, text, font, color, rect, halign = 0 /* Left */, valign = 0 /* Top */, options = defaultOptions) {
-    const length = stringUtils_1.stringToCodesTemp(text);
+function drawTextAligned(spriteBatch, text, font, color, rect, halign = 0 /* HAlign.Left */, valign = 0 /* VAlign.Top */, options = defaultOptions) {
+    const length = (0, stringUtils_1.stringToCodesTemp)(text);
     const { x, y } = alignChars(font, stringUtils_1.codesBuffer, length, rect, halign, valign);
     drawChars(spriteBatch, stringUtils_1.codesBuffer, length, font, color, x, y, options);
 }
-exports.drawTextAligned = drawTextAligned;
 function lineBreak(text, font, width) {
     const lines = [];
     const spaceWidth = measureChar(font, SPACE) + font.letterSpacing * 2;
@@ -111,7 +115,6 @@ function lineBreak(text, font, width) {
     }
     return lines.map(x => x.join(' ')).join('\n');
 }
-exports.lineBreak = lineBreak;
 function measureChars(chars, length, font) {
     let maxW = 0;
     let lines = 1;
@@ -136,14 +139,13 @@ function measureChars(chars, length, font) {
     };
 }
 function measureText(text, font) {
-    const length = stringUtils_1.stringToCodesTemp(text);
+    const length = (0, stringUtils_1.stringToCodesTemp)(text);
     return measureChars(stringUtils_1.codesBuffer, length, font);
 }
-exports.measureText = measureText;
 function getCharacterSprite(char, font) {
     let sprite;
     let unset = false;
-    const length = stringUtils_1.stringToCodesTemp(char);
+    const length = (0, stringUtils_1.stringToCodesTemp)(char);
     for (let i = 0; i < length; i++) {
         const code = stringUtils_1.codesBuffer[i];
         unset = !!sprite;
@@ -151,7 +153,6 @@ function getCharacterSprite(char, font) {
     }
     return unset ? undefined : sprite;
 }
-exports.getCharacterSprite = getCharacterSprite;
 function measureChar(font, code) {
     const sprite = font.emoji.get(code) || getChar(font, code);
     return sprite.w + sprite.ox;
@@ -165,7 +166,7 @@ function drawChar(batch, font, code, color, x, y, options) {
         const colorEmote = !!options.colorEmotes;
         const emoteColor = colorEmote ? color : colors_1.WHITE;
         if (!skipEmote) {
-            if (interfaces_1.isPaletteSpriteBatch(batch)) {
+            if ((0, interfaces_1.isPaletteSpriteBatch)(batch)) {
                 batch.drawSprite(emote, emoteColor, options.emojiPalette, px, py);
             }
             else {
@@ -176,7 +177,7 @@ function drawChar(batch, font, code, color, x, y, options) {
     }
     else {
         const c = getChar(font, code);
-        if (interfaces_1.isPaletteSpriteBatch(batch)) {
+        if ((0, interfaces_1.isPaletteSpriteBatch)(batch)) {
             batch.drawSprite(c, color, options.palette, px, py);
         }
         else {
@@ -188,13 +189,13 @@ function drawChar(batch, font, code, color, x, y, options) {
 function alignChars(font, chars, length, rect, halign, valign) {
     let x = rect.x;
     let y = rect.y;
-    if (halign !== 0 /* Left */ || valign !== 0 /* Top */) {
+    if (halign !== 0 /* HAlign.Left */ || valign !== 0 /* VAlign.Top */) {
         const size = measureChars(chars, length, font);
-        if (halign !== 0 /* Left */) {
-            x += halign === 2 /* Center */ ? (rect.w - size.w) / 2 : (rect.w - size.w);
+        if (halign !== 0 /* HAlign.Left */) {
+            x += halign === 2 /* HAlign.Center */ ? (rect.w - size.w) / 2 : (rect.w - size.w);
         }
-        if (valign !== 0 /* Top */) {
-            y += valign === 2 /* Middle */ ? (rect.h - size.h) / 2 : (rect.h - size.h);
+        if (valign !== 0 /* VAlign.Top */) {
+            y += valign === 2 /* VAlign.Middle */ ? (rect.h - size.h) / 2 : (rect.h - size.h);
         }
     }
     return { x, y };

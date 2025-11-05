@@ -1,5 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EMOJI = exports.ROMAJI = exports.CHARS = exports.BASE_CHARS = exports.CHINESE = void 0;
+exports.charsToCodes = charsToCodes;
+exports.createFont = createFont;
+exports.createEmojis = createEmojis;
+exports.fontSpritesToStringAndSprites = fontSpritesToStringAndSprites;
 const canvas_utils_1 = require("./canvas-utils");
 const lodash_1 = require("lodash");
 exports.CHINESE = [
@@ -239,7 +244,6 @@ function charsToCodes(text) {
     }
     return chars;
 }
-exports.charsToCodes = charsToCodes;
 function createFont(canvas, w, h, addImage, options = {}) {
     const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
     const cols = canvas.width / w;
@@ -251,7 +255,7 @@ function createFont(canvas, w, h, addImage, options = {}) {
     const baseCodesLength = charsCodes.length + chineseCodes.length;
     const added = new Set();
     const arrows = new Set('↑↓'.split('').map(x => x.charCodeAt(0)));
-    return lodash_1.compact(codes
+    return (0, lodash_1.compact)(codes
         .map((code, i) => {
         if (i >= baseCodesLength) {
             i = 32 + (i - baseCodesLength);
@@ -275,18 +279,17 @@ function createFont(canvas, w, h, addImage, options = {}) {
             return undefined;
         }
         else {
-            const sprite = addImage(canvas_utils_1.cropCanvas(canvas, x * w + left, y * h, width - left, h));
+            const sprite = addImage((0, canvas_utils_1.cropCanvas)(canvas, x * w + left, y * h, width - left, h));
             added.add(actualCode);
             return { code: actualCode, sprite };
         }
     }))
         .sort(compareFontSprite);
 }
-exports.createFont = createFont;
 function createEmojis(canvas, w, h, addImage) {
     const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
     const cols = canvas.width / w;
-    return lodash_1.compact(charsToCodes(exports.EMOJI)
+    return (0, lodash_1.compact)(charsToCodes(exports.EMOJI)
         .map((code, i) => {
         const { x, y } = getXY(cols, i);
         const { left, width } = getCharWidth(data, x, y, w, h);
@@ -297,18 +300,16 @@ function createEmojis(canvas, w, h, addImage) {
             console.log('emoji not found in PSD', code, width);
             return undefined;
         }
-        const sprite = addImage(canvas_utils_1.cropCanvas(canvas, x * w + left, y * h, width - left, h));
+        const sprite = addImage((0, canvas_utils_1.cropCanvas)(canvas, x * w + left, y * h, width - left, h));
         return { code, sprite };
     }))
         .sort(compareFontSprite);
 }
-exports.createEmojis = createEmojis;
 function fontSpritesToStringAndSprites(fontSprites) {
     const chars = fontSprites.map(s => String.fromCodePoint(s.code)).join('');
     const sprites = fontSprites.map(s => s.sprite);
     return { chars, sprites };
 }
-exports.fontSpritesToStringAndSprites = fontSpritesToStringAndSprites;
 function compareFontSprite(a, b) {
     return a.code - b.code;
 }

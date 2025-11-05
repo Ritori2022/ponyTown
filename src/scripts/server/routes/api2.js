@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = default_1;
 const express_1 = require("express");
 const requestUtils_1 = require("../requestUtils");
 const internal_1 = require("../internal");
@@ -21,7 +22,7 @@ function toServerState(server) {
         alert,
         dead: false,
         online,
-        offline: serverUtils_1.isServerOffline(server),
+        offline: (0, serverUtils_1.isServerOffline)(server),
         filter: !!settings.filterSwears,
         require,
     };
@@ -30,7 +31,7 @@ function toServerStateShort(server) {
     return {
         id: server.id,
         online: server.state.online,
-        offline: serverUtils_1.isServerOffline(server),
+        offline: (0, serverUtils_1.isServerOffline)(server),
     };
 }
 function getGameStatus(servers, live, short, age) {
@@ -44,17 +45,16 @@ function getGameStatus(servers, live, short, age) {
     };
 }
 function default_1(settings, live, statsTracker) {
-    const app = express_1.Router();
-    app.get('/game/status', requestUtils_1.offline(settings), (req, res) => {
+    const app = (0, express_1.Router)();
+    app.get('/game/status', (0, requestUtils_1.offline)(settings), (req, res) => {
         const status = getGameStatus(internal_1.servers, live, req.query.short === 'true', req.query.d | 0);
         res.json(status);
         statsTracker.logRequest(req, status);
     });
-    app.post('/csp', requestUtils_1.offline(settings), (_, res) => {
+    app.post('/csp', (0, requestUtils_1.offline)(settings), (_, res) => {
         //logger.warn('CSP report', getIPFromRequest(req), req.body['csp-report']);
         res.sendStatus(200);
     });
     return app;
 }
-exports.default = default_1;
 //# sourceMappingURL=api2.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TimingEntryType = exports.Stats = exports.eventFields = exports.CharacterStateFlags = exports.supporterFlags = exports.SupporterFlags = exports.PatreonFlags = exports.accountFlags = exports.AccountFlags = exports.accountCounters = exports.SERVER_SETTINGS = exports.LOGIN_SERVER_SETTINGS = exports.CharacterFlags = exports.Suspicious = exports.SERVER_LABELS = exports.ROLES = exports.ITEM_LIMIT = void 0;
 exports.ITEM_LIMIT = 1000;
 exports.ROLES = ['superadmin', 'admin', 'mod', 'dev'];
 exports.SERVER_LABELS = {
@@ -17,7 +18,7 @@ var Suspicious;
     Suspicious[Suspicious["No"] = 0] = "No";
     Suspicious[Suspicious["Yes"] = 1] = "Yes";
     Suspicious[Suspicious["Very"] = 2] = "Very";
-})(Suspicious = exports.Suspicious || (exports.Suspicious = {}));
+})(Suspicious || (exports.Suspicious = Suspicious = {}));
 var CharacterFlags;
 (function (CharacterFlags) {
     CharacterFlags[CharacterFlags["None"] = 0] = "None";
@@ -25,7 +26,7 @@ var CharacterFlags;
     CharacterFlags[CharacterFlags["HideSupport"] = 4] = "HideSupport";
     CharacterFlags[CharacterFlags["RespawnAtSpawn"] = 8] = "RespawnAtSpawn";
     CharacterFlags[CharacterFlags["ForbiddenName"] = 16] = "ForbiddenName";
-})(CharacterFlags = exports.CharacterFlags || (exports.CharacterFlags = {}));
+})(CharacterFlags || (exports.CharacterFlags = CharacterFlags = {}));
 // NOTE: also update createLoginServerStatus()
 exports.LOGIN_SERVER_SETTINGS = [
     { id: 'canCreateAccounts', label: 'Can create accounts' },
@@ -68,13 +69,13 @@ var AccountFlags;
     AccountFlags[AccountFlags["DuplicatesNotification"] = 4] = "DuplicatesNotification";
     AccountFlags[AccountFlags["BlockMerging"] = 16] = "BlockMerging";
     AccountFlags[AccountFlags["BlockFriendRequests"] = 256] = "BlockFriendRequests";
-})(AccountFlags = exports.AccountFlags || (exports.AccountFlags = {}));
+})(AccountFlags || (exports.AccountFlags = AccountFlags = {}));
 exports.accountFlags = [
-    { value: 1 /* BlockPartyInvites */, name: 'BlockPartyInvites', label: 'block party invites' },
-    { value: 2 /* CreatingDuplicates */, name: 'CreatingDuplicates', label: 'creating duplicates' },
-    { value: 4 /* DuplicatesNotification */, name: 'DuplicatesNotification', label: 'duplicates notification' },
-    { value: 16 /* BlockMerging */, name: 'BlockMerging', label: 'block merging' },
-    { value: 256 /* BlockFriendRequests */, name: 'BlockFriendRequests', label: 'block friend requests' },
+    { value: 1 /* AccountFlags.BlockPartyInvites */, name: 'BlockPartyInvites', label: 'block party invites' },
+    { value: 2 /* AccountFlags.CreatingDuplicates */, name: 'CreatingDuplicates', label: 'creating duplicates' },
+    { value: 4 /* AccountFlags.DuplicatesNotification */, name: 'DuplicatesNotification', label: 'duplicates notification' },
+    { value: 16 /* AccountFlags.BlockMerging */, name: 'BlockMerging', label: 'block merging' },
+    { value: 256 /* AccountFlags.BlockFriendRequests */, name: 'BlockFriendRequests', label: 'block friend requests' },
 ];
 var PatreonFlags;
 (function (PatreonFlags) {
@@ -82,7 +83,7 @@ var PatreonFlags;
     PatreonFlags[PatreonFlags["Supporter1"] = 1] = "Supporter1";
     PatreonFlags[PatreonFlags["Supporter2"] = 2] = "Supporter2";
     PatreonFlags[PatreonFlags["Supporter3"] = 3] = "Supporter3";
-})(PatreonFlags = exports.PatreonFlags || (exports.PatreonFlags = {}));
+})(PatreonFlags || (exports.PatreonFlags = PatreonFlags = {}));
 var SupporterFlags;
 (function (SupporterFlags) {
     SupporterFlags[SupporterFlags["None"] = 0] = "None";
@@ -94,16 +95,16 @@ var SupporterFlags;
     SupporterFlags[SupporterFlags["PastSupporter"] = 256] = "PastSupporter";
     SupporterFlags[SupporterFlags["ForcePastSupporter"] = 512] = "ForcePastSupporter";
     SupporterFlags[SupporterFlags["IgnorePastSupporter"] = 1024] = "IgnorePastSupporter";
-})(SupporterFlags = exports.SupporterFlags || (exports.SupporterFlags = {}));
+})(SupporterFlags || (exports.SupporterFlags = SupporterFlags = {}));
 exports.supporterFlags = [
-    { value: 128 /* IgnorePatreon */, label: 'ignore data from patreon' },
+    { value: 128 /* SupporterFlags.IgnorePatreon */, label: 'ignore data from patreon' },
 ];
 var CharacterStateFlags;
 (function (CharacterStateFlags) {
     CharacterStateFlags[CharacterStateFlags["None"] = 0] = "None";
     CharacterStateFlags[CharacterStateFlags["Right"] = 1] = "Right";
     CharacterStateFlags[CharacterStateFlags["Extra"] = 2] = "Extra";
-})(CharacterStateFlags = exports.CharacterStateFlags || (exports.CharacterStateFlags = {}));
+})(CharacterStateFlags || (exports.CharacterStateFlags = CharacterStateFlags = {}));
 exports.eventFields = [
     '_id', 'updatedAt', 'createdAt', 'type', 'server', 'message', 'desc', 'count', 'origin', 'account', 'pony'
 ];
@@ -112,10 +113,10 @@ var Stats;
     Stats[Stats["Country"] = 0] = "Country";
     Stats[Stats["Support"] = 1] = "Support";
     Stats[Stats["Maps"] = 2] = "Maps";
-})(Stats = exports.Stats || (exports.Stats = {}));
+})(Stats || (exports.Stats = Stats = {}));
 var TimingEntryType;
 (function (TimingEntryType) {
     TimingEntryType[TimingEntryType["Start"] = 0] = "Start";
     TimingEntryType[TimingEntryType["End"] = 1] = "End";
-})(TimingEntryType = exports.TimingEntryType || (exports.TimingEntryType = {}));
+})(TimingEntryType || (exports.TimingEntryType = TimingEntryType = {}));
 //# sourceMappingURL=adminInterfaces.js.map

@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SupporterInvitesService = exports.INVITE_REJECTED_LIMIT = exports.INVITE_REJECTED_TIMEOUT = void 0;
+exports.updateSupporterInvites = updateSupporterInvites;
 const lodash_1 = require("lodash");
 const logger_1 = require("../logger");
 const userError_1 = require("../userError");
@@ -13,7 +15,7 @@ exports.INVITE_REJECTED_LIMIT = 5;
 function formatMessage(requester, target, message) {
     const requesterInfo = `${requester.characterName} (${requester.account.name})`;
     const targetInfo = `${target.characterName} (${target.account.name}) [${target.accountId}]`;
-    return logger_1.systemMessage(requester.accountId, `${requesterInfo} ${message} ${targetInfo}`);
+    return (0, logger_1.systemMessage)(requester.accountId, `${requesterInfo} ${message} ${targetInfo}`);
 }
 class SupporterInvitesService {
     constructor(model, notifications, log) {
@@ -35,11 +37,11 @@ class SupporterInvitesService {
     }
     async requestInvite(requester, target) {
         const items = await this.getInvites(requester);
-        const limit = accountUtils_1.getSupporterInviteLimit(requester.account);
+        const limit = (0, accountUtils_1.getSupporterInviteLimit)(requester.account);
         if (items.length >= limit)
-            return chat_1.saySystem(requester, 'Invite limit reached');
-        if (this.limiter.canExecute(requester, target) !== 0 /* Yes */)
-            return chat_1.saySystem(requester, 'Cannot invite');
+            return (0, chat_1.saySystem)(requester, 'Invite limit reached');
+        if (this.limiter.canExecute(requester, target) !== 0 /* LimiterResult.Yes */)
+            return (0, chat_1.saySystem)(requester, 'Cannot invite');
         this.log(formatMessage(requester, target, 'invited to supporter server'));
         this.notifications.addNotification(target, {
             id: 0,
@@ -47,8 +49,8 @@ class SupporterInvitesService {
             name: requester.pony.name || '',
             entityId: requester.pony.id,
             message: `<b>#NAME#</b> invited you to supporter servers`,
-            flags: 8 /* Accept */ | 16 /* Reject */ | 64 /* Ignore */ |
-                (requester.pony.nameBad ? 128 /* NameBad */ : 0),
+            flags: 8 /* NotificationFlags.Accept */ | 16 /* NotificationFlags.Reject */ | 64 /* NotificationFlags.Ignore */ |
+                (requester.pony.nameBad ? 128 /* NotificationFlags.NameBad */ : 0),
             accept: () => this.acceptInvite(requester, target),
             reject: () => this.rejectInvite(requester, target),
         });
@@ -62,7 +64,7 @@ class SupporterInvitesService {
         this.limiter.count(requester);
     }
     async invite(requester, target) {
-        const limit = accountUtils_1.getSupporterInviteLimit(requester.account);
+        const limit = (0, accountUtils_1.getSupporterInviteLimit)(requester.account);
         const items = await this.getInvites(requester);
         if (items.length >= limit) {
             throw new userError_1.UserError('Invite limit reached');
@@ -85,25 +87,24 @@ async function updateSupporterInvites(model) {
         .populate('source', '_id supporter patreon roles')
         .lean()
         .exec();
-    const itemsBySource = lodash_1.toPairs(lodash_1.groupBy(invites, i => i.source._id));
+    const itemsBySource = (0, lodash_1.toPairs)((0, lodash_1.groupBy)(invites, i => i.source._id));
     const itemsToUpdate = itemsBySource
         .map(([_, items]) => {
         const source = items[0].source;
-        const limit = accountUtils_1.getSupporterInviteLimit(source);
-        return lodash_1.compact(items
-            .sort((a, b) => utils_1.compareDates(a.createdAt, b.createdAt))
+        const limit = (0, accountUtils_1.getSupporterInviteLimit)(source);
+        return (0, lodash_1.compact)(items
+            .sort((a, b) => (0, utils_1.compareDates)(a.createdAt, b.createdAt))
             .map((item, i) => {
             const active = i < limit;
             return item.active === active ? undefined : { id: item._id, active };
         }));
     });
-    const groups = lodash_1.toPairs(lodash_1.groupBy(utils_1.flatten(itemsToUpdate), i => i.active));
+    const groups = (0, lodash_1.toPairs)((0, lodash_1.groupBy)((0, utils_1.flatten)(itemsToUpdate), i => i.active));
     await Promise.all(groups.map(([_, items]) => {
         const active = items[0].active;
         const ids = items.map(i => i.id);
         return model.updateMany({ _id: { $in: ids } }, { active }).exec();
     }));
-    await model.deleteMany({ active: false, updatedAt: { $lt: utils_1.fromNow(-100 * constants_1.DAY) } }).exec();
+    await model.deleteMany({ active: false, updatedAt: { $lt: (0, utils_1.fromNow)(-100 * constants_1.DAY) } }).exec();
 }
-exports.updateSupporterInvites = updateSupporterInvites;
 //# sourceMappingURL=supporterInvites.js.map

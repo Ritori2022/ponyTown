@@ -1,5 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.writeVelocity = writeVelocity;
+exports.readVelocity = readVelocity;
+exports.writeCoordX = writeCoordX;
+exports.writeCoordY = writeCoordY;
+exports.readCoordX = readCoordX;
+exports.readCoordY = readCoordY;
+exports.emptyUpdate = emptyUpdate;
+exports.decodeUpdate = decodeUpdate;
+exports.readOneUpdate = readOneUpdate;
 const browser_1 = require("ag-sockets/dist/browser");
 const utf8_1 = require("ag-sockets/dist/utf8");
 const constants_1 = require("../constants");
@@ -7,29 +16,23 @@ function writeVelocity(writer, value) {
     if (value >= constants_1.MAX_VELOCITY || value <= -constants_1.MAX_VELOCITY) {
         throw new Error(`Exceeded max velocity (${value})`);
     }
-    browser_1.writeInt16(writer, (value * 0x8000) / constants_1.MAX_VELOCITY);
+    (0, browser_1.writeInt16)(writer, (value * 0x8000) / constants_1.MAX_VELOCITY);
 }
-exports.writeVelocity = writeVelocity;
 function readVelocity(reader) {
-    return (browser_1.readInt16(reader) * constants_1.MAX_VELOCITY) / 0x8000;
+    return ((0, browser_1.readInt16)(reader) * constants_1.MAX_VELOCITY) / 0x8000;
 }
-exports.readVelocity = readVelocity;
 function writeCoordX(writer, value) {
-    browser_1.writeInt16(writer, (value * constants_1.tileWidth) | 0);
+    (0, browser_1.writeInt16)(writer, (value * constants_1.tileWidth) | 0);
 }
-exports.writeCoordX = writeCoordX;
 function writeCoordY(writer, value) {
-    browser_1.writeInt16(writer, (value * constants_1.tileHeight) | 0);
+    (0, browser_1.writeInt16)(writer, (value * constants_1.tileHeight) | 0);
 }
-exports.writeCoordY = writeCoordY;
 function readCoordX(reader) {
-    return browser_1.readInt16(reader) / constants_1.tileWidth;
+    return (0, browser_1.readInt16)(reader) / constants_1.tileWidth;
 }
-exports.readCoordX = readCoordX;
 function readCoordY(reader) {
-    return browser_1.readInt16(reader) / constants_1.tileHeight;
+    return (0, browser_1.readInt16)(reader) / constants_1.tileHeight;
 }
-exports.readCoordY = readCoordY;
 function emptyUpdate(id) {
     return {
         id,
@@ -50,79 +53,76 @@ function emptyUpdate(id) {
         playerState: undefined,
     };
 }
-exports.emptyUpdate = emptyUpdate;
 function decodeUpdate(data) {
-    const reader = browser_1.createBinaryReader(data);
-    const x = browser_1.readUint16(reader);
-    const y = browser_1.readUint16(reader);
+    const reader = (0, browser_1.createBinaryReader)(data);
+    const x = (0, browser_1.readUint16)(reader);
+    const y = (0, browser_1.readUint16)(reader);
     const updates = [];
     let update;
     while (update = readOneUpdate(reader)) {
         updates.push(update);
     }
-    const removesLength = browser_1.readLength(reader);
+    const removesLength = (0, browser_1.readLength)(reader);
     const removes = [];
     for (let i = 0; i < removesLength; i++) {
-        removes.push(browser_1.readUint32(reader));
+        removes.push((0, browser_1.readUint32)(reader));
     }
-    const tilesLength = browser_1.readLength(reader);
+    const tilesLength = (0, browser_1.readLength)(reader);
     const tiles = [];
     for (let i = 0; i < tilesLength; i++) {
         tiles.push({
-            x: browser_1.readUint8(reader),
-            y: browser_1.readUint8(reader),
-            type: browser_1.readUint8(reader),
+            x: (0, browser_1.readUint8)(reader),
+            y: (0, browser_1.readUint8)(reader),
+            type: (0, browser_1.readUint8)(reader),
         });
     }
-    const tileData = browser_1.readUint8Array(reader);
+    const tileData = (0, browser_1.readUint8Array)(reader);
     return { x, y, updates, removes, tiles, tileData };
 }
-exports.decodeUpdate = decodeUpdate;
 function readOneUpdate(reader) {
     if (reader.offset >= reader.view.byteLength)
         return undefined;
-    const flags = browser_1.readUint16(reader);
+    const flags = (0, browser_1.readUint16)(reader);
     if (flags === 0) {
         return undefined;
     }
-    const id = browser_1.readUint32(reader);
+    const id = (0, browser_1.readUint32)(reader);
     const update = emptyUpdate(id);
-    update.switchRegion = (flags & 2048 /* SwitchRegion */) !== 0;
-    if ((flags & 1 /* Position */) !== 0) {
+    update.switchRegion = (flags & 2048 /* UpdateFlags.SwitchRegion */) !== 0;
+    if ((flags & 1 /* UpdateFlags.Position */) !== 0) {
         update.x = readCoordX(reader);
         update.y = readCoordY(reader);
     }
-    if ((flags & 2 /* Velocity */) !== 0) {
+    if ((flags & 2 /* UpdateFlags.Velocity */) !== 0) {
         update.vx = readVelocity(reader);
         update.vy = readVelocity(reader);
     }
-    if ((flags & 4 /* State */) !== 0) {
-        update.state = browser_1.readUint8(reader);
+    if ((flags & 4 /* UpdateFlags.State */) !== 0) {
+        update.state = (0, browser_1.readUint8)(reader);
     }
-    if ((flags & 8 /* Expression */) !== 0) {
-        update.expression = browser_1.readUint32(reader);
+    if ((flags & 8 /* UpdateFlags.Expression */) !== 0) {
+        update.expression = (0, browser_1.readUint32)(reader);
     }
-    if ((flags & 16 /* Type */) !== 0) {
-        update.type = browser_1.readUint16(reader);
+    if ((flags & 16 /* UpdateFlags.Type */) !== 0) {
+        update.type = (0, browser_1.readUint16)(reader);
     }
-    if ((flags & 32 /* Options */) !== 0) {
-        update.options = browser_1.readObject(reader);
+    if ((flags & 32 /* UpdateFlags.Options */) !== 0) {
+        update.options = (0, browser_1.readObject)(reader);
     }
-    if ((flags & 64 /* Info */) !== 0) {
-        update.crc = browser_1.readUint16(reader);
-        update.info = browser_1.readUint8Array(reader);
+    if ((flags & 64 /* UpdateFlags.Info */) !== 0) {
+        update.crc = (0, browser_1.readUint16)(reader);
+        update.info = (0, browser_1.readUint8Array)(reader);
     }
-    if ((flags & 128 /* Action */) !== 0) {
-        update.action = browser_1.readUint8(reader);
+    if ((flags & 128 /* UpdateFlags.Action */) !== 0) {
+        update.action = (0, browser_1.readUint8)(reader);
     }
-    if ((flags & 256 /* Name */) !== 0) {
-        update.name = utf8_1.decodeString(browser_1.readUint8Array(reader)) || undefined;
-        update.filterName = (flags & 512 /* NameBad */) !== 0;
+    if ((flags & 256 /* UpdateFlags.Name */) !== 0) {
+        update.name = (0, utf8_1.decodeString)((0, browser_1.readUint8Array)(reader)) || undefined;
+        update.filterName = (flags & 512 /* UpdateFlags.NameBad */) !== 0;
     }
-    if ((flags & 1024 /* PlayerState */) !== 0) {
-        update.playerState = browser_1.readUint8(reader);
+    if ((flags & 1024 /* UpdateFlags.PlayerState */) !== 0) {
+        update.playerState = (0, browser_1.readUint8)(reader);
     }
     return update;
 }
-exports.readOneUpdate = readOneUpdate;
 //# sourceMappingURL=updateDecoder.js.map

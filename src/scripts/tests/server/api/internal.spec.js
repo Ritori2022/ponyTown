@@ -17,30 +17,30 @@ describe('api internal', () => {
         let clearTokensForAccount;
         beforeEach(() => {
             world = new world_1.World({}, { partyChanged: { subscribe() { } } }, {}, {}, {}, () => ({}), {}, {});
-            clearTokensForAccount = sinon_1.stub();
-            findAccount = sinon_1.stub();
-            func = internal_1.createAccountChanged(world, { clearTokensForAccount }, findAccount);
+            clearTokensForAccount = (0, sinon_1.stub)();
+            findAccount = (0, sinon_1.stub)();
+            func = (0, internal_1.createAccountChanged)(world, { clearTokensForAccount }, findAccount);
         });
         it('notifies world of account update', async () => {
-            const account = { _id: mocks_1.genObjectId() };
+            const account = { _id: (0, mocks_1.genObjectId)() };
             findAccount.withArgs('foobar').resolves(account);
-            const accountUpdated = sinon_1.stub(world, 'accountUpdated');
+            const accountUpdated = (0, sinon_1.stub)(world, 'accountUpdated');
             await func('foobar');
             sinon_1.assert.calledWith(accountUpdated, account);
         });
         it('clears tokens for account if account is banned', async () => {
-            const account = { _id: mocks_1.genObjectId(), ban: -1 };
+            const account = { _id: (0, mocks_1.genObjectId)(), ban: -1 };
             findAccount.withArgs('foobar').resolves(account);
             await func('foobar');
             sinon_1.assert.calledWith(clearTokensForAccount, 'foobar');
         });
     });
     describe('accountMerged()', () => {
-        const hiding = lib_1.stubClass(hiding_1.HidingService);
+        const hiding = (0, lib_1.stubClass)(hiding_1.HidingService);
         let func;
         beforeEach(() => {
-            lib_1.resetStubMethods(hiding, 'merged');
-            func = internal_1.createAccountMerged(hiding);
+            (0, lib_1.resetStubMethods)(hiding, 'merged');
+            func = (0, internal_1.createAccountMerged)(hiding);
         });
         it('notifies hiding service of merge', async () => {
             await func('foo', 'bar');
@@ -53,16 +53,16 @@ describe('api internal', () => {
         let server;
         let clock;
         beforeEach(() => {
-            clock = sinon_1.useFakeTimers();
+            clock = (0, sinon_1.useFakeTimers)();
             world = { clientsByAccount: new Map() };
             server = { id: 'foo' };
-            func = internal_1.createAccountStatus(world, server);
+            func = (0, internal_1.createAccountStatus)(world, server);
         });
         afterEach(() => {
             clock.restore();
         });
         it('returns client account status', async () => {
-            const client = mocks_1.mockClient();
+            const client = (0, mocks_1.mockClient)();
             client.characterName = 'derpy';
             client.pony.name = '?????';
             client.pony.x = 5.2;
@@ -71,7 +71,7 @@ describe('api internal', () => {
             client.connectedTime = 0;
             clock.setSystemTime(12 * 1000);
             world.clientsByAccount.set('bar', client);
-            await chai_1.expect(func('bar')).eventually.eql({
+            await (0, chai_1.expect)(func('bar')).eventually.eql({
                 online: true,
                 incognito: undefined,
                 character: 'derpy',
@@ -84,29 +84,29 @@ describe('api internal', () => {
             });
         });
         it('returns offline status for missing client', async () => {
-            await chai_1.expect(func('bar')).eventually.eql({ online: false });
+            await (0, chai_1.expect)(func('bar')).eventually.eql({ online: false });
         });
     });
     describe('accountAround()', () => {
         let func;
         beforeEach(() => {
-            func = internal_1.createAccountAround({ clientsByAccount: new Map() });
+            func = (0, internal_1.createAccountAround)({ clientsByAccount: new Map() });
         });
         it('returns client arount given account', async () => {
-            await chai_1.expect(func('bar')).eventually.eql([]);
+            await (0, chai_1.expect)(func('bar')).eventually.eql([]);
         });
     });
     describe('hiddenStats()', () => {
         let hiddenStats;
         let hiding;
         beforeEach(() => {
-            hiding = sinon_1.createStubInstance(hiding_1.HidingService);
-            hiddenStats = internal_1.createHiddenStats(hiding);
+            hiding = (0, sinon_1.createStubInstance)(hiding_1.HidingService);
+            hiddenStats = (0, internal_1.createHiddenStats)(hiding);
         });
         it('returns hiding stats for given account', async () => {
             const result = {};
             hiding.getStatsFor.withArgs('bar').returns(result);
-            await chai_1.expect(hiddenStats('bar')).eventually.equal(result);
+            await (0, chai_1.expect)(hiddenStats('bar')).eventually.equal(result);
         });
     });
     describe('join()', () => {
@@ -127,33 +127,33 @@ describe('api internal', () => {
         beforeEach(() => {
             account = { save() { }, _id: new mongoose_1.Types.ObjectId('5983e1f7519f95530becdf7d') };
             character = { save() { }, _id: new mongoose_1.Types.ObjectId('5983e1f7519f95530becdf7a') };
-            world = mocks_1.mock(world_1.World);
+            world = (0, mocks_1.mock)(world_1.World);
             server = { id: 'foo' };
             settings = {};
             liveSettings = {};
-            clearTokensForAccount = sinon_1.stub();
-            createToken = sinon_1.stub();
-            findAccount = sinon_1.stub().withArgs('foo').resolves(account);
-            findCharacter = sinon_1.stub().withArgs('bar', 'foo').resolves(character);
-            findAuth = sinon_1.stub();
-            hasInvite = sinon_1.stub();
-            func = internal_1.createJoin(world, () => settings, server, { clearTokensForAccount, createToken }, findAccount, findCharacter, findAuth, liveSettings, hasInvite);
-            clock = sinon_1.useFakeTimers();
+            clearTokensForAccount = (0, sinon_1.stub)();
+            createToken = (0, sinon_1.stub)();
+            findAccount = (0, sinon_1.stub)().withArgs('foo').resolves(account);
+            findCharacter = (0, sinon_1.stub)().withArgs('bar', 'foo').resolves(character);
+            findAuth = (0, sinon_1.stub)();
+            hasInvite = (0, sinon_1.stub)();
+            func = (0, internal_1.createJoin)(world, () => settings, server, { clearTokensForAccount, createToken }, findAccount, findCharacter, findAuth, liveSettings, hasInvite);
+            clock = (0, sinon_1.useFakeTimers)();
         });
         afterEach(() => clock.restore());
         it('returns new token id', () => {
             createToken.returns('lalala');
-            return chai_1.expect(func('foo', 'bar')).eventually.equal('lalala');
+            return (0, chai_1.expect)(func('foo', 'bar')).eventually.equal('lalala');
         });
         it('creates token using fetched account and character', () => {
             return func('foo', 'bar')
                 .then(() => {
-                chai_1.expect(createToken.args[0][0].account).equal(account);
-                chai_1.expect(createToken.args[0][0].character).equal(character);
+                (0, chai_1.expect)(createToken.args[0][0].account).equal(account);
+                (0, chai_1.expect)(createToken.args[0][0].character).equal(character);
             });
         });
         it('kicks all other clients with the same account', () => {
-            const kickByAccount = sinon_1.stub(world, 'kickByAccount');
+            const kickByAccount = (0, sinon_1.stub)(world, 'kickByAccount');
             return func('foo', 'bar')
                 .then(() => {
                 sinon_1.assert.calledWith(kickByAccount, 'foo');
@@ -161,49 +161,49 @@ describe('api internal', () => {
             });
         });
         it('updates account default server', () => {
-            const save = sinon_1.stub(account, 'save');
+            const save = (0, sinon_1.stub)(account, 'save');
             server.id = 'someidhere';
             return func('foo', 'bar')
                 .then(() => {
-                chai_1.expect(account.settings).eql({ defaultServer: 'someidhere' });
+                (0, chai_1.expect)(account.settings).eql({ defaultServer: 'someidhere' });
                 sinon_1.assert.calledOnce(save);
             });
         });
         it('updates account default server (with existing settings)', () => {
-            const save = sinon_1.stub(account, 'save');
+            const save = (0, sinon_1.stub)(account, 'save');
             server.id = 'someidhere';
             account.settings = { ignorePartyInvites: true };
             return func('foo', 'bar')
                 .then(() => {
-                chai_1.expect(account.settings).eql({ ignorePartyInvites: true, defaultServer: 'someidhere' });
+                (0, chai_1.expect)(account.settings).eql({ ignorePartyInvites: true, defaultServer: 'someidhere' });
                 sinon_1.assert.calledOnce(save);
             });
         });
         it('updates account last visit', () => {
-            const save = sinon_1.stub(account, 'save');
+            const save = (0, sinon_1.stub)(account, 'save');
             clock.setSystemTime(123);
             return func('foo', 'bar')
                 .then(() => {
-                chai_1.expect(account.lastVisit.toISOString()).equal(new Date(123).toISOString());
+                (0, chai_1.expect)(account.lastVisit.toISOString()).equal(new Date(123).toISOString());
                 sinon_1.assert.calledOnce(save);
             });
         });
         it('updates character last used', () => {
-            const save = sinon_1.stub(character, 'save');
+            const save = (0, sinon_1.stub)(character, 'save');
             clock.setSystemTime(123);
             return func('foo', 'bar')
                 .then(() => {
-                chai_1.expect(character.lastUsed.toISOString()).equal(new Date(123).toISOString());
+                (0, chai_1.expect)(character.lastUsed.toISOString()).equal(new Date(123).toISOString());
                 sinon_1.assert.calledOnce(save);
             });
         });
         it('rejects if server is offline', () => {
             settings.isServerOffline = true;
-            return chai_1.expect(func('foo', 'bar')).rejectedWith('Server is offline');
+            return (0, chai_1.expect)(func('foo', 'bar')).rejectedWith('Server is offline');
         });
         it('rejects if server is restricted from user', () => {
             server.require = 'mod';
-            return chai_1.expect(func('foo', 'bar')).rejectedWith('Server is restricted');
+            return (0, chai_1.expect)(func('foo', 'bar')).rejectedWith('Server is restricted');
         });
         it('resolves if user meets server restrictions', () => {
             server.require = 'mod';
@@ -212,7 +212,7 @@ describe('api internal', () => {
         });
         it('resolves if user meets server restrictions (supporter)', () => {
             server.require = 'sup1';
-            account.patreon = 2 /* Supporter2 */;
+            account.patreon = 2 /* PatreonFlags.Supporter2 */;
             return func('foo', 'bar');
         });
         it('resolves if user meets server restrictions (invited)', () => {
@@ -226,14 +226,14 @@ describe('api internal', () => {
             findAuth.withArgs(siteId, account._id).resolves(site);
             character.site = siteId;
             await func('foo', 'bar');
-            chai_1.expect(character.auth).equal(site);
+            (0, chai_1.expect)(character.auth).equal(site);
         });
         it('does not set up character social site if its missing', async () => {
             const siteId = new mongoose_1.Types.ObjectId('5983e1f7519f95530becdf70');
             findAuth.withArgs(siteId, account._id).resolves(undefined);
             character.site = siteId;
             await func('foo', 'bar');
-            chai_1.expect(character.auth).undefined;
+            (0, chai_1.expect)(character.auth).undefined;
         });
         it('does not set up character social site if its disabled', async () => {
             const site = { disabled: true };
@@ -241,7 +241,7 @@ describe('api internal', () => {
             findAuth.withArgs(siteId, account._id).resolves(site);
             character.site = siteId;
             await func('foo', 'bar');
-            chai_1.expect(character.auth).undefined;
+            (0, chai_1.expect)(character.auth).undefined;
         });
         it('does not set up character social site if its banned', async () => {
             const site = { banned: true };
@@ -249,7 +249,7 @@ describe('api internal', () => {
             findAuth.withArgs(siteId, account._id).resolves(site);
             character.site = siteId;
             await func('foo', 'bar');
-            chai_1.expect(character.auth).undefined;
+            (0, chai_1.expect)(character.auth).undefined;
         });
     });
     describe('getServerState()', () => {
@@ -259,11 +259,11 @@ describe('api internal', () => {
         let settings;
         let liveSettings;
         beforeEach(() => {
-            world = mocks_1.mock(world_1.World);
+            world = (0, mocks_1.mock)(world_1.World);
             server = { flags: {} };
             settings = {};
             liveSettings = { updating: false, shutdown: false };
-            func = internal_1.createGetServerState(server, () => settings, world, liveSettings);
+            func = (0, internal_1.createGetServerState)(server, () => settings, world, liveSettings);
         });
         it('returns combined server state', async () => {
             Object.assign(server, { id: 'aaa', name: 'bbb', path: 'ccc', desc: 'ddd', alert: 'eee', require: 'mod' });
@@ -273,7 +273,7 @@ describe('api internal', () => {
             settings.isServerOffline = true;
             settings.filterSwears = true;
             const result = await func();
-            chai_1.expect(result).eql({
+            (0, chai_1.expect)(result).eql({
                 id: 'aaa',
                 name: 'bbb',
                 path: 'ccc',
@@ -298,7 +298,7 @@ describe('api internal', () => {
             world.joinQueue = [];
             world.maps = [];
             const result = await func();
-            chai_1.expect(result).eql({
+            (0, chai_1.expect)(result).eql({
                 id: 'aaa',
                 name: 'bbb',
                 path: 'ccc',
@@ -322,22 +322,22 @@ describe('api internal', () => {
         let stats;
         let func;
         beforeEach(() => {
-            stats = sinon_1.createStubInstance(stats_1.StatsTracker);
-            func = internal_1.createGetServerStats(stats);
+            stats = (0, sinon_1.createStubInstance)(stats_1.StatsTracker);
+            func = (0, internal_1.createGetServerStats)(stats);
         });
         it('returns socket stats', async () => {
             const result = {};
             stats.getSocketStats.returns(result);
-            await chai_1.expect(func()).eventually.equal(result);
+            await (0, chai_1.expect)(func()).eventually.equal(result);
         });
     });
     describe('action()', () => {
         let action;
         beforeEach(() => {
-            action = internal_1.createAction({});
+            action = (0, internal_1.createAction)({});
         });
         it('throws if action is invalid', async () => {
-            await chai_1.expect(action('foo', 'foobar')).rejectedWith('Invalid action (foo)');
+            await (0, chai_1.expect)(action('foo', 'foobar')).rejectedWith('Invalid action (foo)');
         });
     });
     describe('kick()', () => {
@@ -345,12 +345,12 @@ describe('api internal', () => {
         let world;
         let clearTokensForAccount;
         beforeEach(() => {
-            world = mocks_1.mock(world_1.World);
-            clearTokensForAccount = sinon_1.stub();
-            func = internal_1.createKick(world, { clearTokensForAccount });
+            world = (0, mocks_1.mock)(world_1.World);
+            clearTokensForAccount = (0, sinon_1.stub)();
+            func = (0, internal_1.createKick)(world, { clearTokensForAccount });
         });
         it('kicks clients by account ID', async () => {
-            const kickByAccount = sinon_1.stub(world, 'kickByAccount');
+            const kickByAccount = (0, sinon_1.stub)(world, 'kickByAccount');
             await func('foo', undefined);
             sinon_1.assert.calledWith(kickByAccount, 'foo');
         });
@@ -359,7 +359,7 @@ describe('api internal', () => {
             sinon_1.assert.calledWith(clearTokensForAccount, 'foo');
         });
         it('kicks clients by character ID', async () => {
-            const kickByCharacter = sinon_1.stub(world, 'kickByCharacter');
+            const kickByCharacter = (0, sinon_1.stub)(world, 'kickByCharacter');
             await func(undefined, 'bar');
             sinon_1.assert.calledWith(kickByCharacter, 'bar');
         });
@@ -372,12 +372,12 @@ describe('api internal', () => {
         let world;
         let clearTokensAll;
         beforeEach(() => {
-            world = mocks_1.mock(world_1.World);
-            clearTokensAll = sinon_1.stub();
-            func = internal_1.createKickAll(world, { clearTokensAll });
+            world = (0, mocks_1.mock)(world_1.World);
+            clearTokensAll = (0, sinon_1.stub)();
+            func = (0, internal_1.createKickAll)(world, { clearTokensAll });
         });
         it('kicks all clients', async () => {
-            const kickAll = sinon_1.stub(world, 'kickAll');
+            const kickAll = (0, sinon_1.stub)(world, 'kickAll');
             await func();
             sinon_1.assert.calledOnce(kickAll);
         });
@@ -388,12 +388,12 @@ describe('api internal', () => {
     });
     describe('notifyUpdate()', () => {
         let func;
-        let world = lib_1.stubClass(world_1.World);
+        let world = (0, lib_1.stubClass)(world_1.World);
         let liveSettings;
         beforeEach(() => {
-            lib_1.resetStubMethods(world, 'notifyUpdate', 'saveClientStates');
+            (0, lib_1.resetStubMethods)(world, 'notifyUpdate', 'saveClientStates');
             liveSettings = {};
-            func = internal_1.createNotifyUpdate(world, liveSettings);
+            func = (0, internal_1.createNotifyUpdate)(world, liveSettings);
         });
         it('notifies world of update', async () => {
             await func();
@@ -409,12 +409,12 @@ describe('api internal', () => {
         let live;
         beforeEach(() => {
             live = {};
-            func = internal_1.createCancelUpdate(live);
+            func = (0, internal_1.createCancelUpdate)(live);
         });
         it('sets updating to false', async () => {
             live.updating = true;
             await func();
-            chai_1.expect(live.updating).false;
+            (0, chai_1.expect)(live.updating).false;
         });
     });
     describe('shutdownServer()', () => {
@@ -422,21 +422,21 @@ describe('api internal', () => {
         let world;
         let liveSettings;
         beforeEach(() => {
-            world = mocks_1.mock(world_1.World);
+            world = (0, mocks_1.mock)(world_1.World);
             world.server = { id: 'foo' };
             liveSettings = {};
-            shutdownServer = internal_1.createShutdownServer(world, liveSettings);
+            shutdownServer = (0, internal_1.createShutdownServer)(world, liveSettings);
         });
         it('updates shutdown option in live settings to true', async () => {
             await shutdownServer(true);
-            chai_1.expect(liveSettings.shutdown).true;
+            (0, chai_1.expect)(liveSettings.shutdown).true;
         });
         it('updates shutdown option in live settings to false', async () => {
             await shutdownServer(false);
-            chai_1.expect(liveSettings.shutdown).false;
+            (0, chai_1.expect)(liveSettings.shutdown).false;
         });
         it('kicks all players', async () => {
-            const kickAll = sinon_1.stub(world, 'kickAll');
+            const kickAll = (0, sinon_1.stub)(world, 'kickAll');
             await shutdownServer(true);
             sinon_1.assert.calledOnce(kickAll);
         });

@@ -1,6 +1,31 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("fs");
+exports.loadImage = loadImage;
+exports.createExtCanvas = createExtCanvas;
+exports.imageToCanvas = imageToCanvas;
+exports.cropCanvas = cropCanvas;
+exports.mirrorCanvas = mirrorCanvas;
+exports.padCanvas = padCanvas;
+exports.clipCanvas = clipCanvas;
+exports.mergeCanvases = mergeCanvases;
+exports.reverseMaskCanvas = reverseMaskCanvas;
+exports.maskCanvas = maskCanvas;
+exports.colorCanvas = colorCanvas;
+exports.copyCanvas = copyCanvas;
+exports.recolorCanvas = recolorCanvas;
+exports.createColorCanvas = createColorCanvas;
+exports.isCanvasEmpty = isCanvasEmpty;
+exports.saveCanvas = saveCanvas;
+exports.forEachPixel = forEachPixel;
+exports.forEachPixelOf2Canvases = forEachPixelOf2Canvases;
+exports.mapEachPixel = mapEachPixel;
+exports.mapColors = mapColors;
+exports.findTemplate = findTemplate;
+exports.offsetCanvas = offsetCanvas;
+exports.cropAndPadByColRow = cropAndPadByColRow;
+exports.cropByIndex = cropByIndex;
+const tslib_1 = require("tslib");
+const fs = tslib_1.__importStar(require("fs"));
 const canvas_1 = require("canvas");
 function loadImage(filePath) {
     const image = new canvas_1.Image();
@@ -8,19 +33,16 @@ function loadImage(filePath) {
     image.currentSrc = filePath;
     return image;
 }
-exports.loadImage = loadImage;
 function createExtCanvas(width, height, info) {
-    const canvas = canvas_1.createCanvas(width, height);
+    const canvas = (0, canvas_1.createCanvas)(width, height);
     canvas.info = info;
     return canvas;
 }
-exports.createExtCanvas = createExtCanvas;
 function imageToCanvas(image) {
     const canvas = createExtCanvas(image.width, image.height, `imageToCanvas(${image.currentSrc})`);
     canvas.getContext('2d').drawImage(image, 0, 0);
     return canvas;
 }
-exports.imageToCanvas = imageToCanvas;
 function cropCanvas(canvas, x, y, w, h) {
     if (Math.round(x) !== x || Math.round(y) !== y || Math.round(w) !== w || Math.round(h) !== h) {
         throw new Error(`Invalid cropping dimentions (${x} ${y} ${w} ${h})`);
@@ -33,7 +55,6 @@ function cropCanvas(canvas, x, y, w, h) {
     }
     return result;
 }
-exports.cropCanvas = cropCanvas;
 function mirrorCanvas(canvas, offsetX = 0) {
     const mirrored = createExtCanvas(canvas.width, canvas.height, `${canvas.info} (mirrored)`);
     const context = mirrored.getContext('2d');
@@ -43,7 +64,6 @@ function mirrorCanvas(canvas, offsetX = 0) {
     context.drawImage(canvas, 0, 0);
     return mirrored;
 }
-exports.mirrorCanvas = mirrorCanvas;
 function padCanvas(canvas, left, top, right = 0, bottom = 0, bg) {
     if (left === 0 && top === 0 && right === 0 && bottom === 0)
         return canvas;
@@ -56,11 +76,9 @@ function padCanvas(canvas, left, top, right = 0, bottom = 0, bg) {
     context.drawImage(canvas, left, top);
     return result;
 }
-exports.padCanvas = padCanvas;
 function clipCanvas(canvas, x, y, w, h) {
     return padCanvas(cropCanvas(canvas, x, y, w, h), x, y, canvas.width - (w + x), canvas.height - (h + y));
 }
-exports.clipCanvas = clipCanvas;
 function mergeCanvases(...canvases) {
     const existing = canvases.filter(c => !!c);
     const { width, height } = existing[0];
@@ -69,7 +87,6 @@ function mergeCanvases(...canvases) {
     existing.forEach(c => context.drawImage(c, 0, 0));
     return result;
 }
-exports.mergeCanvases = mergeCanvases;
 function reverseMaskCanvas(canvas) {
     if (!canvas)
         return undefined;
@@ -81,7 +98,6 @@ function reverseMaskCanvas(canvas) {
     context.drawImage(canvas, 0, 0);
     return result;
 }
-exports.reverseMaskCanvas = reverseMaskCanvas;
 function maskCanvas(canvas, mask) {
     if (!canvas || !mask)
         return undefined;
@@ -92,7 +108,6 @@ function maskCanvas(canvas, mask) {
     context.drawImage(mask, 0, 0);
     return result;
 }
-exports.maskCanvas = maskCanvas;
 function colorCanvas(canvas, color) {
     const copy = copyCanvas(canvas);
     if (copy) {
@@ -103,7 +118,6 @@ function colorCanvas(canvas, color) {
     }
     return copy;
 }
-exports.colorCanvas = colorCanvas;
 function copyCanvas(canvas) {
     if (!canvas)
         return undefined;
@@ -111,7 +125,6 @@ function copyCanvas(canvas) {
     newCanvas.getContext('2d').drawImage(canvas, 0, 0);
     return newCanvas;
 }
-exports.copyCanvas = copyCanvas;
 function recolorCanvas(canvas, color) {
     const result = createExtCanvas(canvas.width, canvas.height, `recolorCanvas(${canvas.info}, ${color})`);
     const context = result.getContext('2d');
@@ -121,7 +134,6 @@ function recolorCanvas(canvas, color) {
     context.drawImage(canvas, 0, 0);
     return result;
 }
-exports.recolorCanvas = recolorCanvas;
 function createColorCanvas(width, height, color) {
     const canvas = createExtCanvas(width, height, `createColorCanvas(${color})`);
     const context = canvas.getContext('2d');
@@ -129,7 +141,6 @@ function createColorCanvas(width, height, color) {
     context.fillRect(0, 0, canvas.width, canvas.height);
     return canvas;
 }
-exports.createColorCanvas = createColorCanvas;
 function isCanvasEmpty(canvas) {
     if (canvas && canvas.width > 0 && canvas.height > 0) {
         const context = canvas.getContext('2d');
@@ -143,11 +154,9 @@ function isCanvasEmpty(canvas) {
     }
     return true;
 }
-exports.isCanvasEmpty = isCanvasEmpty;
 function saveCanvas(filePath, canvas) {
     fs.writeFileSync(filePath, canvas.toBuffer());
 }
-exports.saveCanvas = saveCanvas;
 function getColorAt(d, i) {
     return ((d[i] << 24) | (d[i + 1] << 16) | (d[i + 2] << 8) | d[i + 3]) >>> 0;
 }
@@ -159,7 +168,6 @@ function forEachPixel(canvas, action) {
         }
     }
 }
-exports.forEachPixel = forEachPixel;
 function forEachPixelOf2Canvases(canvas1, canvas2, action) {
     if (canvas1.width !== canvas2.width || canvas1.height !== canvas2.height) {
         throw new Error('Canvas not the same size');
@@ -172,7 +180,6 @@ function forEachPixelOf2Canvases(canvas1, canvas2, action) {
         }
     }
 }
-exports.forEachPixelOf2Canvases = forEachPixelOf2Canvases;
 function mapEachPixel(canvas, action) {
     const context = canvas.getContext('2d');
     const data = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -189,7 +196,6 @@ function mapEachPixel(canvas, action) {
     }
     context.putImageData(data, 0, 0);
 }
-exports.mapEachPixel = mapEachPixel;
 function mapColors(canvas, map) {
     const result = copyCanvas(canvas);
     if (result) {
@@ -197,7 +203,6 @@ function mapColors(canvas, map) {
     }
     return result;
 }
-exports.mapColors = mapColors;
 function compareTemplate(canvas, template, ox, oy) {
     for (let y = 0; y < template.height; y++) {
         for (let x = 0; x < template.width; x++) {
@@ -224,17 +229,13 @@ function findTemplate(canvas, template) {
     }
     return null;
 }
-exports.findTemplate = findTemplate;
 function offsetCanvas(canvas, { x, y }) {
     return canvas && padCanvas(canvas, x, y);
 }
-exports.offsetCanvas = offsetCanvas;
 function cropAndPadByColRow(x, y, w, h, dx, dy, padLeft = 0, padTop = 0) {
     return (canvas, col, row) => padCanvas(cropCanvas(canvas, x + dx * col, y + dy * row, w, h), padLeft, padTop);
 }
-exports.cropAndPadByColRow = cropAndPadByColRow;
 function cropByIndex(get, perLine) {
     return (canvas, i) => get(canvas, i % perLine, Math.floor(i / perLine));
 }
-exports.cropByIndex = cropByIndex;
 //# sourceMappingURL=canvas-utils.js.map

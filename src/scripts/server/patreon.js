@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Bluebird = require("bluebird");
+exports.createAddTotalPledged = exports.createUpdateSupporters = exports.createRemoveOldSupporters = exports.createUpdatePatreonInfo = exports.SUPPORTER_REWARD_IDS = exports.supporterLogLimit = exports.declinedTimeLimit = exports.declinedDayLimit = void 0;
+exports.getLastPatreonData = getLastPatreonData;
+exports.createPatreonClient = createPatreonClient;
+exports.fetchPatreonData = fetchPatreonData;
+const tslib_1 = require("tslib");
+const Bluebird = tslib_1.__importStar(require("bluebird"));
 const lodash_1 = require("lodash");
 const patreon_1 = require("patreon");
 const constants_1 = require("../common/constants");
@@ -10,26 +15,24 @@ exports.declinedDayLimit = 14;
 exports.declinedTimeLimit = exports.declinedDayLimit * constants_1.DAY;
 exports.supporterLogLimit = 10;
 exports.SUPPORTER_REWARD_IDS = {
-    [constants_1.rewardLevel1]: 1 /* Supporter1 */,
-    [constants_1.rewardLevel2]: 2 /* Supporter2 */,
-    [constants_1.rewardLevel3]: 3 /* Supporter3 */,
+    [constants_1.rewardLevel1]: 1 /* PatreonFlags.Supporter1 */,
+    [constants_1.rewardLevel2]: 2 /* PatreonFlags.Supporter2 */,
+    [constants_1.rewardLevel3]: 3 /* PatreonFlags.Supporter3 */,
 };
 let lastPatreonData = undefined;
 function getLastPatreonData() {
     return lastPatreonData;
 }
-exports.getLastPatreonData = getLastPatreonData;
 /* istanbul ignore next */
 function createPatreonClient(accessToken) {
     const timeoutLimit = 10 * constants_1.SECOND;
-    const client = patreon_1.patreon(accessToken);
+    const client = (0, patreon_1.patreon)(accessToken);
     client.setStore({ sync() { } });
     return (path) => Promise.race([
-        utils_1.delay(timeoutLimit).then(() => { throw new Error('Patreon request timed out'); }),
+        (0, utils_1.delay)(timeoutLimit).then(() => { throw new Error('Patreon request timed out'); }),
         client(path),
     ]);
 }
-exports.createPatreonClient = createPatreonClient;
 async function fetchPatreonData(client, log) {
     const campaignData = await client('/current_user/campaigns');
     const rewards = campaignData.rawJson.included
@@ -65,8 +68,7 @@ async function fetchPatreonData(client, log) {
     log(`fetched patreon data (pages: ${pages}, pledges: ${pledges.length}, rewards: ${rewards.length})`);
     return lastPatreonData = { pledges, rewards };
 }
-exports.fetchPatreonData = fetchPatreonData;
-exports.createUpdatePatreonInfo = (queryAuths, queryAccounts, removeOldSupporters, updateSupporters, updateTotalPledged) => async ({ pledges }, now) => {
+const createUpdatePatreonInfo = (queryAuths, queryAccounts, removeOldSupporters, updateSupporters, updateTotalPledged) => async ({ pledges }, now) => {
     const ids = pledges.map(p => p.user);
     const query = {
         provider: 'patreon',
@@ -82,7 +84,8 @@ exports.createUpdatePatreonInfo = (queryAuths, queryAccounts, removeOldSupporter
     await updateSupporters(patreonAuths, accountsWithPatreon, pledges, now);
     await updateTotalPledged(patreonAuths, pledges);
 };
-exports.createRemoveOldSupporters = (updateAccounts, log) => async (auths, accounts) => {
+exports.createUpdatePatreonInfo = createUpdatePatreonInfo;
+const createRemoveOldSupporters = (updateAccounts, log) => async (auths, accounts) => {
     const clear = accounts
         .filter(account => auths.every(auth => !auth.account || !account._id.equals(auth.account)))
         .map(account => account._id);
@@ -96,9 +99,10 @@ exports.createRemoveOldSupporters = (updateAccounts, log) => async (auths, accou
             },
         },
     });
-    await updateAccounts({ supporterDeclinedSince: { $exists: true, $lt: utils_1.fromNow(-2 * constants_1.MONTH) } }, { $unset: { supporterDeclinedSince: 1 } });
+    await updateAccounts({ supporterDeclinedSince: { $exists: true, $lt: (0, utils_1.fromNow)(-2 * constants_1.MONTH) } }, { $unset: { supporterDeclinedSince: 1 } });
 };
-exports.createUpdateSupporters = (updateAccount, log) => async (auths, accountsWithPatreon, pledges, now) => {
+exports.createRemoveOldSupporters = createRemoveOldSupporters;
+const createUpdateSupporters = (updateAccount, log) => async (auths, accountsWithPatreon, pledges, now) => {
     const start = Date.now();
     const pledgesMap = new Map();
     const accountsWithPatreonMap = new Map();
@@ -113,11 +117,11 @@ exports.createUpdateSupporters = (updateAccount, log) => async (auths, accountsW
         .map(auth => {
         const accountId = auth.account.toString();
         const pledge = auth.openId && pledgesMap.get(auth.openId);
-        const pledgeFlags = pledge && exports.SUPPORTER_REWARD_IDS[pledge.reward] || 0 /* None */;
+        const pledgeFlags = pledge && exports.SUPPORTER_REWARD_IDS[pledge.reward] || 0 /* PatreonFlags.None */;
         const declinedSince = (pledge && pledge.declinedSince) ? new Date(pledge.declinedSince) : undefined;
         const account = accountsWithPatreonMap.get(accountId);
         const declined = isDeclined(declinedSince, now);
-        const patreon = declined ? 0 /* None */ : pledgeFlags;
+        const patreon = declined ? 0 /* PatreonFlags.None */ : pledgeFlags;
         const current = account && account.patreon || 0;
         const declinedChanged = !!account && !datesEqual(account.supporterDeclinedSince, declinedSince);
         const hadPatreon = !!account;
@@ -125,10 +129,10 @@ exports.createUpdateSupporters = (updateAccount, log) => async (auths, accountsW
             account: accountId, patreon, declinedSince, declinedChanged, declined, current, hadPatreon
         };
     });
-    const grouped = lodash_1.toPairs(lodash_1.groupBy(setup, x => x.account))
+    const grouped = (0, lodash_1.toPairs)((0, lodash_1.groupBy)(setup, x => x.account))
         .map(([account, items]) => {
-        const current = lodash_1.max(items.map(i => i.current));
-        const patreon = lodash_1.max(items.map(i => i.patreon));
+        const current = (0, lodash_1.max)(items.map(i => i.current));
+        const patreon = (0, lodash_1.max)(items.map(i => i.patreon));
         return {
             account,
             changed: items.some(i => !i.hadPatreon) || current !== patreon,
@@ -145,21 +149,26 @@ exports.createUpdateSupporters = (updateAccount, log) => async (auths, accountsW
         .map(g => ({ account: g.account, message: supporterMessage(g.patreon, g.declined, g.hadPatreon) }))
         .filter(({ message }) => !!message)
         .forEach(({ account, message }) => log(`${account}`, message));
-    logger_1.logPatreon(`update supporters (${Date.now() - start}ms) ` +
+    (0, logger_1.logPatreon)(`update supporters (${Date.now() - start}ms) ` +
         `[auths: ${auths.length}, grouped: ${grouped.length}, pledges: ${pledges.length}, ` +
         `accountsWithPatreon: ${accountsWithPatreon.length}]`);
     await Bluebird.map(grouped, ({ account, patreon, declinedSince, changed, declined, hadPatreon }) => {
         const message = changed ? supporterMessage(patreon, declined, hadPatreon) : undefined;
-        return updateAccount(account, Object.assign({ supporterDeclinedSince: declinedSince }, (changed ? { patreon } : {}), (message ? {
-            $push: {
-                supporterLog: {
-                    $each: [{ date: new Date(), message }],
-                    $slice: -exports.supporterLogLimit,
-                },
-            }
-        } : {})));
+        return updateAccount(account, {
+            supporterDeclinedSince: declinedSince,
+            ...(changed ? { patreon } : {}),
+            ...(message ? {
+                $push: {
+                    supporterLog: {
+                        $each: [{ date: new Date(), message }],
+                        $slice: -exports.supporterLogLimit,
+                    },
+                }
+            } : {}),
+        });
     }, { concurrency: 4 });
 };
+exports.createUpdateSupporters = createUpdateSupporters;
 function isDeclined(declinedSince, now) {
     return !!declinedSince && (now.getDate() > exports.declinedDayLimit ||
         (now.getTime() - declinedSince.getTime()) > exports.declinedTimeLimit);
@@ -172,10 +181,11 @@ function supporterMessage(patreon, declined, hadPatreon) {
 function datesEqual(a, b) {
     return (!a && !b) || (a && b && a.getTime() === b.getTime());
 }
-exports.createAddTotalPledged = (updateAuth) => async (auths, pledges) => {
+const createAddTotalPledged = (updateAuth) => async (auths, pledges) => {
     const setup = auths
         .map(auth => ({ auth, pledge: pledges.find(p => p.user === auth.openId) }))
         .filter(({ auth, pledge }) => pledge && pledge.total !== auth.pledged);
     await Bluebird.map(setup, ({ auth, pledge }) => updateAuth(auth._id, { pledged: pledge.total }), { concurrency: 4 });
 };
+exports.createAddTotalPledged = createAddTotalPledged;
 //# sourceMappingURL=patreon.js.map

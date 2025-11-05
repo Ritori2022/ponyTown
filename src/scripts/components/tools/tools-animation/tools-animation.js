@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsAnimation = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -10,7 +11,7 @@ const ponyInfo_1 = require("../../../common/ponyInfo");
 const ponyHelpers_1 = require("../../../client/ponyHelpers");
 const ponyAnimations_1 = require("../../../client/ponyAnimations");
 const contextSpriteBatch_1 = require("../../../graphics/contextSpriteBatch");
-const sprites = require("../../../generated/sprites");
+const sprites = tslib_1.__importStar(require("../../../generated/sprites"));
 const canvasUtils_1 = require("../../../client/canvasUtils");
 const spriteUtils_1 = require("../../../client/spriteUtils");
 const ponyDraw_1 = require("../../../client/ponyDraw");
@@ -20,9 +21,9 @@ const storageService_1 = require("../../services/storageService");
 const compressPony_1 = require("../../../common/compressPony");
 const ponyWidth = 80;
 const ponyHeight = 80;
-const testPony = { name: 'test pony', info: ponyInfo_1.createDefaultPony() };
+const testPony = { name: 'test pony', info: (0, ponyInfo_1.createDefaultPony)() };
 function eyeSprite(e) {
-    return spriteUtils_1.createEyeSprite(e, 0, sprites.defaultPalette);
+    return (0, spriteUtils_1.createEyeSprite)(e, 0, sprites.defaultPalette);
 }
 let ToolsAnimation = class ToolsAnimation {
     constructor(http, route, storage, frameService) {
@@ -56,7 +57,7 @@ let ToolsAnimation = class ToolsAnimation {
         this.ponies = [testPony];
         this.scale = 3;
         this.shareLinkOpen = false;
-        this.state = ponyHelpers_1.defaultPonyState();
+        this.state = (0, ponyHelpers_1.defaultPonyState)();
         this.bodyAnimations = ponyAnimations_1.animations.map(fromBodyAnimation);
         this.headAnimations = ponyAnimations_1.headAnimations.map(fromHeadAnimation);
         this.body = sprites.body.map(x => x && x[0] && x[0][0].color).map(color => ({ color: color, colors: 2 }));
@@ -80,13 +81,13 @@ let ToolsAnimation = class ToolsAnimation {
         this.loop = frameService.create(delta => this.tick(delta));
         const data = this.loadAnimations();
         const extraAnimations = [
-            ponyAnimations_1.mergeAnimations('sit-lie-sit', 24, false, [...utils_1.repeat(12, ponyAnimations_1.sit), ponyAnimations_1.lieDown, ...utils_1.repeat(12, ponyAnimations_1.lie), ponyAnimations_1.sitUp, ponyAnimations_1.sit]),
-            ponyAnimations_1.mergeAnimations('stand-sit-stand', 24, false, [...utils_1.repeat(12, ponyAnimations_1.stand), ponyAnimations_1.sitDown, ...utils_1.repeat(12, ponyAnimations_1.sit), ponyAnimations_1.standUp, ponyAnimations_1.stand]),
-            ponyAnimations_1.mergeAnimations('stand-to-sit', 24, false, [ponyAnimations_1.stand, ponyAnimations_1.sitDown, ponyAnimations_1.sit]),
-            ponyAnimations_1.mergeAnimations('sit-to-lie', 24, false, [ponyAnimations_1.sit, ponyAnimations_1.lieDown, ponyAnimations_1.lie]),
-            Object.assign({}, ponyAnimations_1.stand, { loop: false, name: 'standing (1s)', frames: utils_1.array(ponyAnimations_1.stand.fps, ponyAnimations_1.stand.frames[0]) }),
-            Object.assign({}, ponyAnimations_1.sit, { loop: false, name: 'sitting (1s)', frames: utils_1.array(ponyAnimations_1.sit.fps, ponyAnimations_1.sit.frames[0]) }),
-            Object.assign({}, ponyAnimations_1.lie, { loop: false, name: 'lying (1s)', frames: utils_1.array(ponyAnimations_1.lie.fps, ponyAnimations_1.lie.frames[0]) }),
+            (0, ponyAnimations_1.mergeAnimations)('sit-lie-sit', 24, false, [...(0, utils_1.repeat)(12, ponyAnimations_1.sit), ponyAnimations_1.lieDown, ...(0, utils_1.repeat)(12, ponyAnimations_1.lie), ponyAnimations_1.sitUp, ponyAnimations_1.sit]),
+            (0, ponyAnimations_1.mergeAnimations)('stand-sit-stand', 24, false, [...(0, utils_1.repeat)(12, ponyAnimations_1.stand), ponyAnimations_1.sitDown, ...(0, utils_1.repeat)(12, ponyAnimations_1.sit), ponyAnimations_1.standUp, ponyAnimations_1.stand]),
+            (0, ponyAnimations_1.mergeAnimations)('stand-to-sit', 24, false, [ponyAnimations_1.stand, ponyAnimations_1.sitDown, ponyAnimations_1.sit]),
+            (0, ponyAnimations_1.mergeAnimations)('sit-to-lie', 24, false, [ponyAnimations_1.sit, ponyAnimations_1.lieDown, ponyAnimations_1.lie]),
+            { ...ponyAnimations_1.stand, loop: false, name: 'standing (1s)', frames: (0, utils_1.array)(ponyAnimations_1.stand.fps, ponyAnimations_1.stand.frames[0]) },
+            { ...ponyAnimations_1.sit, loop: false, name: 'sitting (1s)', frames: (0, utils_1.array)(ponyAnimations_1.sit.fps, ponyAnimations_1.sit.frames[0]) },
+            { ...ponyAnimations_1.lie, loop: false, name: 'lying (1s)', frames: (0, utils_1.array)(ponyAnimations_1.lie.fps, ponyAnimations_1.lie.frames[0]) },
         ];
         this.bodyAnimations.push(...extraAnimations.map((a, i) => fromBodyAnimation(a, 90 + i)));
         this.bodyAnimations.push(...(data.animations || []).map(fixBodyAnimation));
@@ -108,7 +109,7 @@ let ToolsAnimation = class ToolsAnimation {
             'orange', '', '', '', 'orange',
             'orange', 'orange', 'orange', 'orange', 'orange',
         ];
-        ponyInfo_1.syncLockedPonyInfo(this.pony.info);
+        (0, ponyInfo_1.syncLockedPonyInfo)(this.pony.info);
         this.reloadPonies();
     }
     get info() {
@@ -157,7 +158,7 @@ let ToolsAnimation = class ToolsAnimation {
     }
     ngOnInit() {
         this.route.params.subscribe(({ id }) => id && this.fetchAnimation(id));
-        return spriteUtils_1.loadAndInitSpriteSheets().then(() => {
+        return (0, spriteUtils_1.loadAndInitSpriteSheets)().then(() => {
             this.loaded = true;
             this.update();
             this.loop.init();
@@ -172,7 +173,7 @@ let ToolsAnimation = class ToolsAnimation {
             this.ponies = [
                 testPony,
                 ...data
-                    .map(p => ({ name: p.name, info: compressPony_1.decompressPonyString(p.info) }))
+                    .map(p => ({ name: p.name, info: (0, compressPony_1.decompressPonyString)(p.info) }))
                     .sort((a, b) => a.name.localeCompare(b.name)),
             ];
             const ponyName = this.storage.getItem('tools-animation-pony');
@@ -231,7 +232,7 @@ let ToolsAnimation = class ToolsAnimation {
         this.selectAnimation(animation);
     }
     duplicateAnimation() {
-        const animation = utils_1.cloneDeep(this.animation);
+        const animation = (0, utils_1.cloneDeep)(this.animation);
         const animations = this.animations;
         animation.name = animation.name.replace(/# builtin \d+ #/, '').trim() + ' (clone)';
         delete animation.builtin;
@@ -241,7 +242,7 @@ let ToolsAnimation = class ToolsAnimation {
     removeAnimation() {
         const animations = this.animations;
         if (animations.length && confirm('are you sure ?')) {
-            utils_1.removeItem(animations, this.animation);
+            (0, utils_1.removeItem)(animations, this.animation);
             this.selectAnimation(animations[0]);
         }
     }
@@ -279,7 +280,7 @@ let ToolsAnimation = class ToolsAnimation {
     }
     duplicateFrame() {
         const frames = this.frames;
-        frames.splice(this.frame + 1, 0, utils_1.cloneDeep(frames[this.frame]));
+        frames.splice(this.frame + 1, 0, (0, utils_1.cloneDeep)(frames[this.frame]));
         this.update();
         this.frame++;
     }
@@ -319,7 +320,7 @@ let ToolsAnimation = class ToolsAnimation {
         return this.animation.frames;
     }
     keydown(e) {
-        if (!utils_1.isKeyEventInvalid(e) && this.handleKey(e.keyCode)) {
+        if (!(0, utils_1.isKeyEventInvalid)(e) && this.handleKey(e.keyCode)) {
             e.preventDefault();
         }
     }
@@ -338,13 +339,13 @@ let ToolsAnimation = class ToolsAnimation {
         this.update();
     }
     handleKey(keyCode) {
-        if (keyCode === 219 /* OPEN_BRACKET */ || keyCode === 37 /* LEFT */ || keyCode === 188 /* COMMA */) {
+        if (keyCode === 219 /* Key.OPEN_BRACKET */ || keyCode === 37 /* Key.LEFT */ || keyCode === 188 /* Key.COMMA */) {
             this.prevFrame();
         }
-        else if (keyCode === 221 /* CLOSE_BRACKET */ || keyCode === 39 /* RIGHT */ || keyCode === 190 /* PERIOD */) {
+        else if (keyCode === 221 /* Key.CLOSE_BRACKET */ || keyCode === 39 /* Key.RIGHT */ || keyCode === 190 /* Key.PERIOD */) {
             this.nextFrame();
         }
-        else if (keyCode === 13 /* ENTER */) {
+        else if (keyCode === 13 /* Key.ENTER */) {
             this.playing = !this.playing;
         }
         else {
@@ -384,7 +385,7 @@ let ToolsAnimation = class ToolsAnimation {
     }
     png(scale = 1) {
         const { canvas } = this.createAnimationSprites(scale);
-        canvasUtils_1.saveCanvas(canvas, `${this.animation.name}.png`);
+        (0, canvasUtils_1.saveCanvas)(canvas, `${this.animation.name}.png`);
     }
     gif(scale = 1) {
         const { canvas, empty } = this.createAnimationSprites(scale);
@@ -420,10 +421,10 @@ let ToolsAnimation = class ToolsAnimation {
                 });
             }
         }
-        this.bodyAnimationsToPlay = lodash_1.compact([
-            this.playing && this.beforeAnimation && Object.assign({}, toBodyAnimation(this.beforeAnimation, true, false), { loop: false }),
+        this.bodyAnimationsToPlay = (0, lodash_1.compact)([
+            this.playing && this.beforeAnimation && { ...toBodyAnimation(this.beforeAnimation, true, false), loop: false },
             toBodyAnimation(this.bodyAnimation, this.playing, this.switch),
-            this.playing && this.afterAnimation && Object.assign({}, toBodyAnimation(this.afterAnimation, true, false), { loop: true }),
+            this.playing && this.afterAnimation && { ...toBodyAnimation(this.afterAnimation, true, false), loop: true },
         ]);
         this.bodyAnimationPlaying = 0;
         this.state.animation = this.bodyAnimationsToPlay[this.bodyAnimationPlaying];
@@ -474,35 +475,43 @@ let ToolsAnimation = class ToolsAnimation {
         const animation = toBodyAnimation(this.bodyAnimation, true, this.switch);
         const headAnimation = toHeadAnimation(this.headAnimation, true);
         const frames = this.mode === 'body' ? animation.frames.length : headAnimation.frames.length;
-        const buffer = canvasUtils_1.createCanvas(ponyWidth, ponyHeight);
+        const buffer = (0, canvasUtils_1.createCanvas)(ponyWidth, ponyHeight);
         const batch = new contextSpriteBatch_1.ContextSpriteBatch(buffer);
-        const info = ponyInfo_1.toPalette(this.pony.info);
+        const info = (0, ponyInfo_1.toPalette)(this.pony.info);
         const cols = Math.ceil(Math.sqrt(frames));
-        const canvas = canvasUtils_1.createCanvas(ponyWidth * cols * scale, ponyHeight * Math.ceil(frames / cols) * scale);
+        const canvas = (0, canvasUtils_1.createCanvas)(ponyWidth * cols * scale, ponyHeight * Math.ceil(frames / cols) * scale);
         const context = canvas.getContext('2d');
         const empty = (cols * Math.ceil(frames / cols)) - frames;
-        const options = ponyHelpers_1.defaultDrawPonyOptions();
-        canvasUtils_1.disableImageSmoothing(context);
+        const options = (0, ponyHelpers_1.defaultDrawPonyOptions)();
+        (0, canvasUtils_1.disableImageSmoothing)(context);
         context.scale(scale, scale);
         for (let i = 0; i < frames; i++) {
             const x = i % cols;
             const y = Math.floor(i / cols);
             batch.start(sprites.paletteSpriteSheet, 0);
-            ponyDraw_1.drawPony(batch, info, Object.assign({}, ponyHelpers_1.defaultPonyState(), { animation, animationFrame: this.mode === 'body' ? i : 0, headAnimation: this.mode === 'head' ? headAnimation : undefined, headAnimationFrame: this.mode === 'head' ? i : 0, blinkFrame: 1 }), ponyWidth / 2, ponyHeight - 10, options);
+            (0, ponyDraw_1.drawPony)(batch, info, {
+                ...(0, ponyHelpers_1.defaultPonyState)(),
+                animation,
+                animationFrame: this.mode === 'body' ? i : 0,
+                headAnimation: this.mode === 'head' ? headAnimation : undefined,
+                headAnimationFrame: this.mode === 'head' ? i : 0,
+                blinkFrame: 1,
+            }, ponyWidth / 2, ponyHeight - 10, options);
             batch.end();
             context.drawImage(buffer, x * ponyWidth, y * ponyHeight);
         }
         return { canvas, empty };
     }
 };
+exports.ToolsAnimation = ToolsAnimation;
 tslib_1.__decorate([
-    core_1.HostListener('window:keydown', ['$event']),
+    (0, core_1.HostListener)('window:keydown', ['$event']),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [KeyboardEvent]),
     tslib_1.__metadata("design:returntype", void 0)
 ], ToolsAnimation.prototype, "keydown", null);
-ToolsAnimation = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsAnimation = ToolsAnimation = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-animation',
         templateUrl: 'tools-animation.pug',
         styleUrls: ['tools-animation.scss'],
@@ -512,7 +521,6 @@ ToolsAnimation = tslib_1.__decorate([
         storageService_1.StorageService,
         frameService_1.FrameService])
 ], ToolsAnimation);
-exports.ToolsAnimation = ToolsAnimation;
 // helper methods
 function compareAnimations(a, b) {
     return a.name.localeCompare(b.name);
@@ -538,7 +546,12 @@ function fromBodyAnimation({ name, frames, fps, loop, shadow }, index) {
             l.duration++;
         }
         else {
-            fs.push(Object.assign({ duration: 1 }, f, { shadowOffset: s && s.offset || 0, shadowFrame: s && s.frame || 0 }));
+            fs.push({
+                duration: 1,
+                ...f,
+                shadowOffset: s && s.offset || 0,
+                shadowFrame: s && s.frame || 0
+            });
         }
     });
     return {
@@ -552,14 +565,14 @@ function fromBodyAnimation({ name, frames, fps, loop, shadow }, index) {
 function toBodyAnimation({ name, loop, fps, frames }, full, switchFarClose) {
     let shadow = undefined;
     if (frames.some(f => !!f.shadowFrame || !!f.shadowOffset)) {
-        shadow = lodash_1.flatMap(frames, f => utils_1.repeat(full ? f.duration : 1, { frame: f.shadowFrame, offset: f.shadowOffset }));
+        shadow = (0, lodash_1.flatMap)(frames, f => (0, utils_1.repeat)(full ? f.duration : 1, { frame: f.shadowFrame, offset: f.shadowOffset }));
     }
     return {
         name,
         loop,
         fps,
         shadow,
-        frames: lodash_1.flatMap(frames, f => utils_1.repeat(full ? f.duration : 1, {
+        frames: (0, lodash_1.flatMap)(frames, f => (0, utils_1.repeat)(full ? f.duration : 1, {
             body: f.body,
             head: f.head,
             wing: f.wing,
@@ -584,7 +597,7 @@ function toBodyAnimation({ name, loop, fps, frames }, full, switchFarClose) {
     };
 }
 function compressBodyFrame(f) {
-    return lodash_1.dropRightWhile([
+    return (0, lodash_1.dropRightWhile)([
         f.body, f.head, f.wing, f.tail, f.frontLeg, f.frontFarLeg, f.backLeg, f.backFarLeg,
         f.bodyX, f.bodyY, f.headX, f.headY,
         f.frontLegX, f.frontLegY, f.frontFarLegX, f.frontFarLegY,
@@ -599,7 +612,7 @@ function fromHeadAnimation({ name, fps, loop, frames }, index) {
             l.duration++;
         }
         else {
-            fs.push(Object.assign({ duration: 1 }, f));
+            fs.push({ duration: 1, ...f });
         }
     });
     return {
@@ -611,22 +624,22 @@ function fromHeadAnimation({ name, fps, loop, frames }, index) {
     };
 }
 function toHeadAnimation({ name, frames, fps, loop }, full) {
-    const fs = (full && !loop) ? utils_1.repeat(fps, createDefaultHeadFrame()).concat(frames) : frames;
+    const fs = (full && !loop) ? (0, utils_1.repeat)(fps, createDefaultHeadFrame()).concat(frames) : frames;
     return {
         name,
         fps,
         loop,
-        frames: lodash_1.flatMap(fs, f => utils_1.repeat(full ? f.duration : 1, f)),
+        frames: (0, lodash_1.flatMap)(fs, f => (0, utils_1.repeat)(full ? f.duration : 1, f)),
     };
 }
 function compressHeadFrame({ headX, headY, left, right, mouth }) {
     return [headX, headY, left, right, mouth];
 }
 function createDefaultBodyFrame() {
-    return Object.assign({ duration: 1 }, ponyAnimations_1.createBodyFrame([1, 1, 0, 0, 1, 1, 1, 1]), { shadowFrame: 0, shadowOffset: 0 });
+    return { duration: 1, ...(0, ponyAnimations_1.createBodyFrame)([1, 1, 0, 0, 1, 1, 1, 1]), shadowFrame: 0, shadowOffset: 0 };
 }
 function createDefaultHeadFrame() {
-    return Object.assign({ duration: 1 }, ponyAnimations_1.createHeadFrame([0, 0, 1, 1, 0]));
+    return { duration: 1, ...(0, ponyAnimations_1.createHeadFrame)([0, 0, 1, 1, 0]) };
 }
 // fixing helpers
 function fixBodyAnimation(a) {

@@ -1,8 +1,15 @@
 "use strict";
 /// <reference path="../../typings/my.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mergedExtraAccessories = exports.mergedBackAccessories = exports.mergedChestAccessories = exports.mergedFaceAccessories = exports.mergedHeadAccessories = exports.mergedEarAccessories = exports.mergedFacialHair = exports.mergedBackManes = exports.mergedManes = exports.backLegSleeves = exports.blinkFrames = exports.defaultExpression = exports.waistAccessories = exports.neckAccessories = exports.backAccessories = exports.chestBehind = exports.chest = exports.tails = exports.wings = exports.backHoovesInFront = exports.frontHoovesInFront = exports.frontHooves = exports.claws = exports.headCenter = exports.NO_MANE_HEAD_ACCESSORIES = exports.CHEST_ACCESSORIES_IN_FRONT = exports.SLEEVED_BACK_ACCESSORIES = exports.SLEEVED_ACCESSORIES = exports.BLINK_FRAMES = exports.PONY_HEIGHT = exports.PONY_WIDTH = void 0;
+exports.canFly = canFly;
+exports.canMagic = canMagic;
+exports.flipIris = flipIris;
+exports.flipFaceAccessoryType = flipFaceAccessoryType;
+exports.flipFaceAccessoryPattern = flipFaceAccessoryPattern;
+const tslib_1 = require("tslib");
 const lodash_1 = require("lodash");
-const sprites = require("../generated/sprites");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 const offsets_1 = require("../common/offsets");
 exports.PONY_WIDTH = 80;
 exports.PONY_HEIGHT = 70;
@@ -36,7 +43,7 @@ function frameType(sets, frame, type) {
 }
 function createCompleteSets(sets, frameCount) {
     const typeCount = sets.reduce((max, s) => Math.max(max, s ? s.length : 0), 0);
-    const typeRange = lodash_1.range(0, typeCount);
+    const typeRange = (0, lodash_1.range)(0, typeCount);
     const result = [];
     for (let frame = 0; frame < frameCount; frame++) {
         result.push(typeRange.map(type => frameType(sets, frame, type) || frameType(result, frame - 1, type)));
@@ -47,24 +54,21 @@ function canFly(info) {
     const type = info.wings && info.wings.type || 0;
     return type > 0;
 }
-exports.canFly = canFly;
 function canMagic(info) {
     const type = info.horn && info.horn.type || 0;
     return type === 1 || type === 2 || type === 3 || type === 14;
 }
-exports.canMagic = canMagic;
 function flipIris(iris) {
-    if (iris === 2 /* Left */ || iris === 4 /* UpLeft */) {
+    if (iris === 2 /* Iris.Left */ || iris === 4 /* Iris.UpLeft */) {
         return iris + 1;
     }
-    else if (iris === 3 /* Right */ || iris === 5 /* UpRight */) {
+    else if (iris === 3 /* Iris.Right */ || iris === 5 /* Iris.UpRight */) {
         return iris - 1;
     }
     else {
         return iris;
     }
 }
-exports.flipIris = flipIris;
 function flipFaceAccessoryType(type) {
     if (type === 6)
         return 7;
@@ -76,7 +80,6 @@ function flipFaceAccessoryType(type) {
         return 9;
     return type;
 }
-exports.flipFaceAccessoryType = flipFaceAccessoryType;
 function flipFaceAccessoryPattern(type, pattern) {
     if (type === 2) { // dark glasses
         if (pattern === 1)
@@ -92,33 +95,36 @@ function flipFaceAccessoryPattern(type, pattern) {
     }
     return pattern;
 }
-exports.flipFaceAccessoryPattern = flipFaceAccessoryPattern;
 exports.defaultExpression = {
-    left: 1 /* Neutral */,
-    leftIris: 0 /* Forward */,
-    right: 1 /* Neutral */,
-    rightIris: 0 /* Forward */,
-    muzzle: 2 /* Neutral */,
-    extra: 0 /* None */,
+    left: 1 /* Eye.Neutral */,
+    leftIris: 0 /* Iris.Forward */,
+    right: 1 /* Eye.Neutral */,
+    rightIris: 0 /* Iris.Forward */,
+    muzzle: 2 /* Muzzle.Neutral */,
+    extra: 0 /* ExpressionExtra.None */,
 };
 exports.blinkFrames = [];
 function setupBlinkFrames(frames) {
-    lodash_1.dropRight(frames, 1).forEach((f, i) => exports.blinkFrames[f] = exports.blinkFrames[f] || frames.slice(i + 1));
+    (0, lodash_1.dropRight)(frames, 1).forEach((f, i) => exports.blinkFrames[f] = exports.blinkFrames[f] || frames.slice(i + 1));
 }
-setupBlinkFrames([1 /* Neutral */, 2 /* Neutral2 */, 3 /* Neutral3 */, 4 /* Neutral4 */, 5 /* Neutral5 */, 6 /* Closed */]);
-setupBlinkFrames([7 /* Frown */, 8 /* Frown2 */, 9 /* Frown3 */, 10 /* Frown4 */, 6 /* Closed */]);
-setupBlinkFrames([15 /* Sad */, 16 /* Sad2 */, 17 /* Sad3 */, 18 /* Sad4 */, 5 /* Neutral5 */, 6 /* Closed */]);
-setupBlinkFrames([19 /* Angry */, 20 /* Angry2 */, 4 /* Neutral4 */, 5 /* Neutral5 */, 6 /* Closed */]);
+setupBlinkFrames([1 /* Eye.Neutral */, 2 /* Eye.Neutral2 */, 3 /* Eye.Neutral3 */, 4 /* Eye.Neutral4 */, 5 /* Eye.Neutral5 */, 6 /* Eye.Closed */]);
+setupBlinkFrames([7 /* Eye.Frown */, 8 /* Eye.Frown2 */, 9 /* Eye.Frown3 */, 10 /* Eye.Frown4 */, 6 /* Eye.Closed */]);
+setupBlinkFrames([15 /* Eye.Sad */, 16 /* Eye.Sad2 */, 17 /* Eye.Sad3 */, 18 /* Eye.Sad4 */, 5 /* Eye.Neutral5 */, 6 /* Eye.Closed */]);
+setupBlinkFrames([19 /* Eye.Angry */, 20 /* Eye.Angry2 */, 4 /* Eye.Neutral4 */, 5 /* Eye.Neutral5 */, 6 /* Eye.Closed */]);
 // sets
 function mergeColorExtras(sprites) {
-    const filtered = lodash_1.compact(sprites);
-    return Object.assign({}, filtered[0], { colors: lodash_1.max(filtered.map(x => x.colors || 0)), colorMany: filtered.length > 1 ? filtered.map(x => x.color) : undefined });
+    const filtered = (0, lodash_1.compact)(sprites);
+    return {
+        ...filtered[0],
+        colors: (0, lodash_1.max)(filtered.map(x => x.colors || 0)),
+        colorMany: filtered.length > 1 ? filtered.map(x => x.color) : undefined,
+    };
 }
 function mergeSprites(sets) {
-    return lodash_1.zip(...sets).map(mergeColorExtras);
+    return (0, lodash_1.zip)(...sets).map(mergeColorExtras);
 }
 function mergeSpriteSets(...sets) {
-    return lodash_1.zip(...sets).map(mergeSprites);
+    return (0, lodash_1.zip)(...sets).map(mergeSprites);
 }
 exports.backLegSleeves = sprites.backLegSleeves
     .map(sets => sets && [undefined, undefined, undefined, undefined, undefined, ...sets]);

@@ -69,7 +69,7 @@ export class MouseController implements InputController {
 			this.manager.setValue(button, 0);
 		}
 	}
-	private mousewheel: any = (e: MouseWheelEvent) => {
+	private mousewheel: any = (e: WheelEvent) => {
 		this.manager.addValue(Key.MOUSE_WHEEL_X, clamp(e.deltaX, -1, 1));
 		this.manager.addValue(Key.MOUSE_WHEEL_Y, clamp(e.deltaY, -1, 1));
 	}

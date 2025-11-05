@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CharacterSelect = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
@@ -64,7 +65,7 @@ let CharacterSelect = class CharacterSelect {
     createNew() {
         if (this.canNew) {
             this.removing = false;
-            this.model.selectPony(model_1.createDefaultPonyObject());
+            this.model.selectPony((0, model_1.createDefaultPonyObject)());
             this.change.emit(this.pony);
             this.router.navigate(['/character']);
             this.focusName();
@@ -79,12 +80,12 @@ let CharacterSelect = class CharacterSelect {
     remove() {
         if (this.canRemove) {
             this.removing = true;
-            htmlUtils_1.focusElementAfterTimeout(this.element.nativeElement, '.cancel-remove-button');
+            (0, htmlUtils_1.focusElementAfterTimeout)(this.element.nativeElement, '.cancel-remove-button');
         }
     }
     cancelRemove() {
         this.removing = false;
-        htmlUtils_1.focusElementAfterTimeout(this.element.nativeElement, '.remove-button');
+        (0, htmlUtils_1.focusElementAfterTimeout)(this.element.nativeElement, '.remove-button');
     }
     confirmRemove() {
         if (this.canRemove) {
@@ -95,7 +96,7 @@ let CharacterSelect = class CharacterSelect {
                 .then(() => this.change.emit(this.pony))
                 .catch((e) => this.setError(e.message))
                 .then(() => this.ariaAnnounce.nativeElement.textContent = 'Character removed')
-                .then(() => utils_1.delay(2000))
+                .then(() => (0, utils_1.delay)(2000))
                 .then(() => this.locked = false)
                 .then(() => this.focusName());
         }
@@ -115,48 +116,49 @@ let CharacterSelect = class CharacterSelect {
         this.errorChange.emit(error);
     }
 };
+exports.CharacterSelect = CharacterSelect;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "newButton", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "editButton", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "removeButton", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", String)
 ], CharacterSelect.prototype, "error", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "errorChange", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "change", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], CharacterSelect.prototype, "preview", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('nameInput', { static: true }),
+    (0, core_1.ViewChild)('nameInput', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], CharacterSelect.prototype, "nameInput", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('ariaAnnounce', { static: true }),
+    (0, core_1.ViewChild)('ariaAnnounce', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], CharacterSelect.prototype, "ariaAnnounce", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('dropdown', { static: true }),
+    (0, core_1.ViewChild)('dropdown', { static: true }),
     tslib_1.__metadata("design:type", dropdown_1.Dropdown)
 ], CharacterSelect.prototype, "dropdown", void 0);
-CharacterSelect = tslib_1.__decorate([
-    core_1.Component({
+exports.CharacterSelect = CharacterSelect = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'character-select',
         templateUrl: 'character-select.pug',
         styleUrls: ['character-select.scss'],
@@ -166,5 +168,4 @@ CharacterSelect = tslib_1.__decorate([
         model_1.Model,
         gameService_1.GameService])
 ], CharacterSelect);
-exports.CharacterSelect = CharacterSelect;
 //# sourceMappingURL=character-select.js.map

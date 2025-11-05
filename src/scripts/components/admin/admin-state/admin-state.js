@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminState = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminInterfaces_1 = require("../../../common/adminInterfaces");
@@ -27,7 +28,7 @@ let AdminState = class AdminState {
         return this.model.state.gameServers;
     }
     get isSuperadmin() {
-        return accountUtils_1.hasRole(this.model.account, 'superadmin');
+        return (0, accountUtils_1.hasRole)(this.model.account, 'superadmin');
     }
     kickAll(server) {
         return this.model.kickAll(server.id);
@@ -69,13 +70,13 @@ let AdminState = class AdminState {
     }
     // stats tables
     fetchCountryStats(server) {
-        return this.fetchStatsTable(server, 0 /* Country */);
+        return this.fetchStatsTable(server, 0 /* Stats.Country */);
     }
     fetchSupportStats(server) {
-        return this.fetchStatsTable(server, 1 /* Support */);
+        return this.fetchStatsTable(server, 1 /* Stats.Support */);
     }
     fetchMapStats(server) {
-        return this.fetchStatsTable(server, 2 /* Maps */);
+        return this.fetchStatsTable(server, 2 /* Stats.Maps */);
     }
     resetStatsTable(server) {
         this.statsTables.delete(server.id);
@@ -102,13 +103,13 @@ let AdminState = class AdminState {
         this.model.resetUpdating(server);
     }
 };
-AdminState = tslib_1.__decorate([
-    core_1.Component({
+exports.AdminState = AdminState;
+exports.AdminState = AdminState = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'admin-state',
         templateUrl: 'admin-state.pug',
         styleUrls: ['admin-state.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], AdminState);
-exports.AdminState = AdminState;
 //# sourceMappingURL=admin-state.js.map

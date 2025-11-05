@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 require("../lib");
-const fs = require("fs");
+const fs = tslib_1.__importStar(require("fs"));
 const chai_1 = require("chai");
 const lodash_1 = require("lodash");
 const bitUtils_1 = require("../../common/bitUtils");
@@ -79,10 +80,10 @@ describe('compressPony', () => {
         ];
         tests.forEach(test => it(`works for set: ${JSON.stringify(test)}`, () => {
             const [set, colorBits, customOutlines] = test;
-            const buffer = bitUtils_1.bitWriter(write => compressPony_1.writeSet(write, colorBits, customOutlines, set));
+            const buffer = (0, bitUtils_1.bitWriter)(write => (0, compressPony_1.writeSet)(write, colorBits, customOutlines, set));
             // console.log(map(buffer, x => x).map(x => x.toString(2).padStart(8, '0')).join(' '));
-            const result = compressPony_1.readSet(bitUtils_1.bitReader(buffer), colorBits, customOutlines);
-            chai_1.expect(result).eql(set);
+            const result = (0, compressPony_1.readSet)((0, bitUtils_1.bitReader)(buffer), colorBits, customOutlines);
+            (0, chai_1.expect)(result).eql(set);
         }));
     });
     describe('writePony() + readPony()', () => {
@@ -103,49 +104,49 @@ describe('compressPony', () => {
         };
         const tests = [
             base,
-            lodash_1.merge({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN] }),
-            lodash_1.merge({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], cm: [1, 2, 1, 1, 2] }),
-            lodash_1.merge({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], setFields: [set1] }),
-            lodash_1.merge({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN, colors_1.ORANGE, colors_1.CYAN], setFields: { nose: set2 }, booleanFields: [true] }),
-            lodash_1.merge({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], cm: [1, 2, 1, 1, 2], booleanFields: [true, false, true, false] }),
-            lodash_1.merge({}, base, { booleanFields: [true, false] }),
+            (0, lodash_1.merge)({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN] }),
+            (0, lodash_1.merge)({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], cm: [1, 2, 1, 1, 2] }),
+            (0, lodash_1.merge)({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], setFields: [set1] }),
+            (0, lodash_1.merge)({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN, colors_1.ORANGE, colors_1.CYAN], setFields: { nose: set2 }, booleanFields: [true] }),
+            (0, lodash_1.merge)({}, base, { colors: [colors_1.RED, colors_1.BLUE, colors_1.GREEN], cm: [1, 2, 1, 1, 2], booleanFields: [true, false, true, false] }),
+            (0, lodash_1.merge)({}, base, { booleanFields: [true, false] }),
         ];
         tests.forEach(test => it(`works for pony: ${JSON.stringify(test)}`, () => {
-            const buffer = bitUtils_1.bitWriter(write => compressPony_1.writePony(write, test));
-            const result = compressPony_1.readPony(bitUtils_1.bitReader(buffer));
-            chai_1.expect(result).eql(test);
+            const buffer = (0, bitUtils_1.bitWriter)(write => (0, compressPony_1.writePony)(write, test));
+            const result = (0, compressPony_1.readPony)((0, bitUtils_1.bitReader)(buffer));
+            (0, chai_1.expect)(result).eql(test);
         }));
     });
     describe('precompressCM()', () => {
         it('converts colors to indexes', () => {
             const cm = [colors_1.RED, colors_1.RED, colors_1.RED];
-            chai_1.expect(compressPony_1.precompressCM(cm, () => 1)).eql([1, 1, 1]);
+            (0, chai_1.expect)((0, compressPony_1.precompressCM)(cm, () => 1)).eql([1, 1, 1]);
         });
         it('handles holey arrays', () => {
             const cm = [colors_1.RED, , , colors_1.RED];
-            chai_1.expect(compressPony_1.precompressCM(cm, c => c === undefined ? 0 : 1)).eql([1, 0, 0, 1]);
+            (0, chai_1.expect)((0, compressPony_1.precompressCM)(cm, c => c === undefined ? 0 : 1)).eql([1, 0, 0, 1]);
         });
         it('empty CM', () => {
-            chai_1.expect(compressPony_1.precompressCM([], () => 1)).eql([]);
+            (0, chai_1.expect)((0, compressPony_1.precompressCM)([], () => 1)).eql([]);
         });
         it('trims CM', () => {
             const cm = [colors_1.RED, colors_1.RED, colors_1.RED, colors_1.TRANSPARENT, colors_1.TRANSPARENT];
-            chai_1.expect(compressPony_1.precompressCM(cm, () => 1)).eql([1, 1, 1]);
+            (0, chai_1.expect)((0, compressPony_1.precompressCM)(cm, () => 1)).eql([1, 1, 1]);
         });
         it('trims CM size to 25', () => {
-            const cm = utils_1.repeat(50, colors_1.RED);
-            chai_1.expect(compressPony_1.precompressCM(cm, () => 1).length).equal(25);
+            const cm = (0, utils_1.repeat)(50, colors_1.RED);
+            (0, chai_1.expect)((0, compressPony_1.precompressCM)(cm, () => 1).length).equal(25);
         });
     });
     describe('precompressPony() + postdecompressPony()', () => {
         const BASE = base(colors_1.BLACK, colors_1.WHITE);
         function test(input, expected) {
             return () => {
-                const data = compressPony_1.precompressPony(input, colors_1.BLACK, x => x);
-                const result1 = compressPony_1.postdecompressPony(data, x => x);
-                const result2 = compressPony_1.fastPostdecompressPony(data);
-                chai_1.expect(result1).eql(Object.assign({}, BASE, (expected || input)), 'postdecompressPony');
-                chai_1.expect(result2).eql(Object.assign({}, BASE, (expected || input)), 'fastPostdecompressPony');
+                const data = (0, compressPony_1.precompressPony)(input, colors_1.BLACK, x => x);
+                const result1 = (0, compressPony_1.postdecompressPony)(data, x => x);
+                const result2 = (0, compressPony_1.fastPostdecompressPony)(data);
+                (0, chai_1.expect)(result1).eql({ ...BASE, ...(expected || input) }, 'postdecompressPony');
+                (0, chai_1.expect)(result2).eql({ ...BASE, ...(expected || input) }, 'fastPostdecompressPony');
             };
         }
         it('empty', test({}, {
@@ -269,38 +270,38 @@ describe('compressPony', () => {
     });
     describe('decompressPony()', () => {
         it('works for empty string', () => {
-            chai_1.expect(compressPony_1.decompressPony('')).eql(base(colors_1.BLACK, colors_1.WHITE));
+            (0, chai_1.expect)((0, compressPony_1.decompressPony)('')).eql(base(colors_1.BLACK, colors_1.WHITE));
         });
         it('decompresses a pony', () => {
-            const pony = compressPony_1.decompressPony('CAKVlZUvLy82QIxomgCfgAYAGIAoQGEBwAEERFEUEA==');
-            chai_1.expect(pony.coatFill).equal(0x959595ff);
-            chai_1.expect(pony.mane.type).equal(2);
-            chai_1.expect(pony.mane.pattern).equal(0);
-            chai_1.expect(pony.mane.fills).eql([0x2f2f2fff]);
+            const pony = (0, compressPony_1.decompressPony)('CAKVlZUvLy82QIxomgCfgAYAGIAoQGEBwAEERFEUEA==');
+            (0, chai_1.expect)(pony.coatFill).equal(0x959595ff);
+            (0, chai_1.expect)(pony.mane.type).equal(2);
+            (0, chai_1.expect)(pony.mane.pattern).equal(0);
+            (0, chai_1.expect)(pony.mane.fills).eql([0x2f2f2fff]);
         });
         it('decompresses a pony from buffer', () => {
-            const pony = compressPony_1.decompressPony(base64_js_1.toByteArray('CAKVlZUvLy82QIxomgCfgAYAGIAoQGEBwAEERFEUEA=='));
-            chai_1.expect(pony.coatFill).equal(0x959595ff);
-            chai_1.expect(pony.mane.type).equal(2);
-            chai_1.expect(pony.mane.pattern).equal(0);
-            chai_1.expect(pony.mane.fills).eql([0x2f2f2fff]);
+            const pony = (0, compressPony_1.decompressPony)((0, base64_js_1.toByteArray)('CAKVlZUvLy82QIxomgCfgAYAGIAoQGEBwAEERFEUEA=='));
+            (0, chai_1.expect)(pony.coatFill).equal(0x959595ff);
+            (0, chai_1.expect)(pony.mane.type).equal(2);
+            (0, chai_1.expect)(pony.mane.pattern).equal(0);
+            (0, chai_1.expect)(pony.mane.fills).eql([0x2f2f2fff]);
         });
     });
     describe('decompressPonyString()', () => {
         it('works for empty string', () => {
-            chai_1.expect(compressPony_1.decompressPonyString('')).eql(base('000000', 'ffffff'));
+            (0, chai_1.expect)((0, compressPony_1.decompressPonyString)('')).eql(base('000000', 'ffffff'));
         });
         it('works for empty string (editable: true)', () => {
-            compressPony_1.decompressPonyString('', true);
+            (0, compressPony_1.decompressPonyString)('', true);
         });
     });
     describe('compressPony() + decompressPony()', () => {
         const BASE = base('000000', 'ffffff');
         function test(input, expected) {
             return () => {
-                const data = compressPony_1.compressPonyString(input);
-                const result = compressPony_1.decompressPonyString(data, false);
-                chai_1.expect(result).eql(Object.assign({}, BASE, (expected || input)));
+                const data = (0, compressPony_1.compressPonyString)(input);
+                const result = (0, compressPony_1.decompressPonyString)(data, false);
+                (0, chai_1.expect)(result).eql({ ...BASE, ...(expected || input) });
             };
         }
         it('empty', test({}, {}));
@@ -584,7 +585,7 @@ describe('compressPony', () => {
             cmFlip: false,
         }));
         it('back leg accessory (editable)', () => {
-            const data = compressPony_1.compressPonyString({
+            const data = (0, compressPony_1.compressPonyString)({
                 lockBackLegAccessory: false,
                 backLegAccessory: {
                     type: 1,
@@ -593,9 +594,9 @@ describe('compressPony', () => {
                     lockFills: [false],
                 }
             });
-            const result = compressPony_1.decompressPonyString(data, true);
-            chai_1.expect(result.lockBackLegAccessory).false;
-            chai_1.expect(result.backLegAccessory).eql({
+            const result = (0, compressPony_1.decompressPonyString)(data, true);
+            (0, chai_1.expect)(result.lockBackLegAccessory).false;
+            (0, chai_1.expect)(result.backLegAccessory).eql({
                 type: 1,
                 pattern: 1,
                 fills: ['ff0000', '00ff00', '0000ff', 'ffff00', '00ffff', 'ff00ff'],
@@ -605,19 +606,19 @@ describe('compressPony', () => {
             });
         });
         it('black colors (editable)', () => {
-            const data = compressPony_1.compressPonyString({ coatFill: '000000' });
-            const result = compressPony_1.decompressPonyString(data, true);
-            chai_1.expect(result.coatFill).equal('000000');
+            const data = (0, compressPony_1.compressPonyString)({ coatFill: '000000' });
+            const result = (0, compressPony_1.decompressPonyString)(data, true);
+            (0, chai_1.expect)(result.coatFill).equal('000000');
         });
         it('neckAccessory: { type: 0 }', () => {
-            const data = compressPony_1.compressPonyString({ neckAccessory: { type: 0, pattern: 0 } });
-            const result = compressPony_1.decompressPonyString(data, true);
-            chai_1.expect(result.neckAccessory.type).eql(0);
+            const data = (0, compressPony_1.compressPonyString)({ neckAccessory: { type: 0, pattern: 0 } });
+            const result = (0, compressPony_1.decompressPonyString)(data, true);
+            (0, chai_1.expect)(result.neckAccessory.type).eql(0);
         });
         it('mane: { type: 0 }', () => {
-            const data = compressPony_1.compressPonyString({ mane: { type: 0, pattern: 0 } });
-            const result = compressPony_1.decompressPonyString(data, true);
-            chai_1.expect(result.mane.type).eql(0);
+            const data = (0, compressPony_1.compressPonyString)({ mane: { type: 0, pattern: 0 } });
+            const result = (0, compressPony_1.decompressPonyString)(data, true);
+            (0, chai_1.expect)(result.mane.type).eql(0);
         });
         // fs.readdirSync(poniesPath).forEach(f => it(`(${f})`, () => {
         // 	const json = JSON.parse(fs.readFileSync(path.join(poniesPath, f), 'utf8'));
@@ -626,14 +627,14 @@ describe('compressPony', () => {
         // 	expect(result).eql(json);
         // }));
         it.skip('error test', () => {
-            const json = JSON.parse(fs.readFileSync(paths_1.pathTo('tools', 'data', 'error-1504869659641.json'), 'utf8'));
+            const json = JSON.parse(fs.readFileSync((0, paths_1.pathTo)('tools', 'data', 'error-1504869659641.json'), 'utf8'));
             const infoJson = json.data.info;
             const compressedTemp = 'CAjNzc3////apSD/1wAekP8yzTLacNbcFDw+oCoACJiRngCBNET8ADjAcAAlSUCrPH6QGAA=';
-            console.log(Array.from(base64_js_1.toByteArray(compressedTemp)).map(x => x.toString(16).padStart(2, '0')).join(' '));
-            console.log(Array.from(base64_js_1.toByteArray(json.data.compressed)).map(x => x.toString(16).padStart(2, '0')).join(' '));
-            const compressed = compressPony_1.compressPonyString(infoJson);
+            console.log(Array.from((0, base64_js_1.toByteArray)(compressedTemp)).map(x => x.toString(16).padStart(2, '0')).join(' '));
+            console.log(Array.from((0, base64_js_1.toByteArray)(json.data.compressed)).map(x => x.toString(16).padStart(2, '0')).join(' '));
+            const compressed = (0, compressPony_1.compressPonyString)(infoJson);
             //const result = decompressPonyString(compressed, true);
-            chai_1.expect(compressed).eql(json.data.compressed);
+            (0, chai_1.expect)(compressed).eql(json.data.compressed);
         });
     });
 });

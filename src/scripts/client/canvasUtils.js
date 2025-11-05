@@ -1,15 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getPixelRatio = exports.loadImage = exports.createCanvas = void 0;
+exports.setup = setup;
+exports.resizeCanvas = resizeCanvas;
+exports.resizeCanvasWithRatio = resizeCanvasWithRatio;
+exports.canvasToSource = canvasToSource;
+exports.saveCanvas = saveCanvas;
+exports.disableImageSmoothing = disableImageSmoothing;
 const file_saver_1 = require("file-saver");
 /* istanbul ignore next */
-exports.createCanvas = (width, height) => {
+let createCanvas = (width, height) => {
     const canvas = document.createElement('canvas');
     canvas.width = width | 0;
     canvas.height = height | 0;
     return canvas;
 };
+exports.createCanvas = createCanvas;
 /* istanbul ignore next */
-exports.loadImage = (src) => {
+let loadImage = (src) => {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.addEventListener('load', () => resolve(img));
@@ -17,6 +25,7 @@ exports.loadImage = (src) => {
         img.src = src;
     });
 };
+exports.loadImage = loadImage;
 /* istanbul ignore next */
 function canUseImageBitmap() {
     return typeof fetch === 'function' &&
@@ -33,7 +42,6 @@ function setup(methods) {
     exports.createCanvas = methods.createCanvas;
     exports.loadImage = methods.loadImage;
 }
-exports.setup = setup;
 /* istanbul ignore next */
 exports.getPixelRatio = SERVER ? () => 1 : () => window.devicePixelRatio;
 function resizeCanvas(canvas, width, height) {
@@ -42,9 +50,8 @@ function resizeCanvas(canvas, width, height) {
         canvas.height = height;
     }
 }
-exports.resizeCanvas = resizeCanvas;
 function resizeCanvasWithRatio(canvas, width, height, updateStyle = true) {
-    const ratio = exports.getPixelRatio();
+    const ratio = (0, exports.getPixelRatio)();
     const w = Math.round(width * ratio);
     const h = Math.round(height * ratio);
     let resized = false;
@@ -60,7 +67,6 @@ function resizeCanvasWithRatio(canvas, width, height, updateStyle = true) {
     }
     return resized;
 }
-exports.resizeCanvasWithRatio = resizeCanvasWithRatio;
 /* istanbul ignore next */
 function canvasToSource(canvas) {
     return new Promise((resolve, reject) => {
@@ -74,12 +80,10 @@ function canvasToSource(canvas) {
         });
     });
 }
-exports.canvasToSource = canvasToSource;
 /* istanbul ignore next */
 function saveCanvas(canvas, name) {
-    canvas.toBlob(blob => blob && file_saver_1.saveAs(blob, name));
+    canvas.toBlob(blob => blob && (0, file_saver_1.saveAs)(blob, name));
 }
-exports.saveCanvas = saveCanvas;
 /* istanbul ignore next */
 function disableImageSmoothing(context) {
     if ('imageSmoothingEnabled' in context) {
@@ -91,5 +95,4 @@ function disableImageSmoothing(context) {
         context.msImageSmoothingEnabled = false;
     }
 }
-exports.disableImageSmoothing = disableImageSmoothing;
 //# sourceMappingURL=canvasUtils.js.map

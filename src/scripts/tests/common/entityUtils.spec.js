@@ -7,27 +7,27 @@ const entityUtils_1 = require("../../common/entityUtils");
 describe('entityUtils [common]', () => {
     describe('compareEntities()', () => {
         it('compares by y position', () => {
-            const a = mocks_1.entity(0, 0, 1);
-            const b = mocks_1.entity(0, 0, 2);
-            chai_1.expect(entityUtils_1.compareEntities(a, b)).lt(0);
-            chai_1.expect(entityUtils_1.compareEntities(b, a)).gt(0);
+            const a = (0, mocks_1.entity)(0, 0, 1);
+            const b = (0, mocks_1.entity)(0, 0, 2);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(a, b)).lt(0);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(b, a)).gt(0);
         });
         it('compares by x position', () => {
-            const a = mocks_1.entity(0, 1, 1);
-            const b = mocks_1.entity(0, 2, 1);
-            chai_1.expect(entityUtils_1.compareEntities(a, b)).lt(0);
-            chai_1.expect(entityUtils_1.compareEntities(b, a)).gt(0);
+            const a = (0, mocks_1.entity)(0, 1, 1);
+            const b = (0, mocks_1.entity)(0, 2, 1);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(a, b)).lt(0);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(b, a)).gt(0);
         });
         it('compares by id', () => {
-            const a = mocks_1.entity(1, 1, 1);
-            const b = mocks_1.entity(2, 1, 1);
-            chai_1.expect(entityUtils_1.compareEntities(a, b)).gt(0);
-            chai_1.expect(entityUtils_1.compareEntities(b, a)).lt(0);
+            const a = (0, mocks_1.entity)(1, 1, 1);
+            const b = (0, mocks_1.entity)(2, 1, 1);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(a, b)).gt(0);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(b, a)).lt(0);
         });
         it('returns 0 for identical entities', () => {
-            const a = mocks_1.entity(1, 1, 1);
-            const b = mocks_1.entity(1, 1, 1);
-            chai_1.expect(entityUtils_1.compareEntities(a, b)).equal(0);
+            const a = (0, mocks_1.entity)(1, 1, 1);
+            const b = (0, mocks_1.entity)(1, 1, 1);
+            (0, chai_1.expect)((0, entityUtils_1.compareEntities)(a, b)).equal(0);
         });
     });
 });

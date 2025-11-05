@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChatLog = void 0;
+exports.createChatLogLineDOM = createChatLogLineDOM;
+exports.updateChatLogLine = updateChatLogLine;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -16,54 +19,53 @@ const WHISPER_CHAT_LIMIT = 100;
 const FORGET_INDEX_AFTER = 1000;
 const SCROLL_END_THRESHOLD = 60;
 const LABELS = [];
-LABELS[1 /* System */] = 'system';
-LABELS[2 /* Admin */] = 'admin';
-LABELS[3 /* Mod */] = 'mod';
-LABELS[4 /* Party */] = 'party';
-LABELS[6 /* PartyThinking */] = 'party';
-LABELS[8 /* PartyAnnouncement */] = 'party';
+LABELS[1 /* MessageType.System */] = 'system';
+LABELS[2 /* MessageType.Admin */] = 'admin';
+LABELS[3 /* MessageType.Mod */] = 'mod';
+LABELS[4 /* MessageType.Party */] = 'party';
+LABELS[6 /* MessageType.PartyThinking */] = 'party';
+LABELS[8 /* MessageType.PartyAnnouncement */] = 'party';
 const PREFIXES = [];
-PREFIXES[14 /* WhisperTo */] = 'To ';
-PREFIXES[16 /* WhisperToAnnouncement */] = 'To ';
+PREFIXES[14 /* MessageType.WhisperTo */] = 'To ';
+PREFIXES[16 /* MessageType.WhisperToAnnouncement */] = 'To ';
 const SUFFIXES = [];
-SUFFIXES[5 /* Thinking */] = 'thinks';
-SUFFIXES[6 /* PartyThinking */] = 'thinks';
-SUFFIXES[13 /* Whisper */] = 'whispers';
-SUFFIXES[15 /* WhisperAnnouncement */] = 'whispers';
+SUFFIXES[5 /* MessageType.Thinking */] = 'thinks';
+SUFFIXES[6 /* MessageType.PartyThinking */] = 'thinks';
+SUFFIXES[13 /* MessageType.Whisper */] = 'whispers';
+SUFFIXES[15 /* MessageType.WhisperAnnouncement */] = 'whispers';
 const CLASSES = [];
-CLASSES[1 /* System */] = 'chat-line-system';
-CLASSES[2 /* Admin */] = 'chat-line-admin';
-CLASSES[3 /* Mod */] = 'chat-line-mod';
-CLASSES[4 /* Party */] = 'chat-line-party';
-CLASSES[5 /* Thinking */] = 'chat-line-thinking';
-CLASSES[6 /* PartyThinking */] = 'chat-line-party-thinking';
-CLASSES[7 /* Announcement */] = 'chat-line-announcement';
-CLASSES[8 /* PartyAnnouncement */] = 'chat-line-party-announcement';
-CLASSES[9 /* Supporter1 */] = 'chat-line-supporter-1';
-CLASSES[10 /* Supporter2 */] = 'chat-line-supporter-2';
-CLASSES[11 /* Supporter3 */] = 'chat-line-supporter-3';
-CLASSES[13 /* Whisper */] = 'chat-line-whisper';
-CLASSES[14 /* WhisperTo */] = 'chat-line-whisper';
-CLASSES[15 /* WhisperAnnouncement */] = 'chat-line-whisper-announcement';
-CLASSES[16 /* WhisperToAnnouncement */] = 'chat-line-whisper-announcement';
+CLASSES[1 /* MessageType.System */] = 'chat-line-system';
+CLASSES[2 /* MessageType.Admin */] = 'chat-line-admin';
+CLASSES[3 /* MessageType.Mod */] = 'chat-line-mod';
+CLASSES[4 /* MessageType.Party */] = 'chat-line-party';
+CLASSES[5 /* MessageType.Thinking */] = 'chat-line-thinking';
+CLASSES[6 /* MessageType.PartyThinking */] = 'chat-line-party-thinking';
+CLASSES[7 /* MessageType.Announcement */] = 'chat-line-announcement';
+CLASSES[8 /* MessageType.PartyAnnouncement */] = 'chat-line-party-announcement';
+CLASSES[9 /* MessageType.Supporter1 */] = 'chat-line-supporter-1';
+CLASSES[10 /* MessageType.Supporter2 */] = 'chat-line-supporter-2';
+CLASSES[11 /* MessageType.Supporter3 */] = 'chat-line-supporter-3';
+CLASSES[13 /* MessageType.Whisper */] = 'chat-line-whisper';
+CLASSES[14 /* MessageType.WhisperTo */] = 'chat-line-whisper';
+CLASSES[15 /* MessageType.WhisperAnnouncement */] = 'chat-line-whisper-announcement';
+CLASSES[16 /* MessageType.WhisperToAnnouncement */] = 'chat-line-whisper-announcement';
 function createChatLogLineDOM(clickLabel, clickName) {
     const line = {};
-    line.root = htmlUtils_1.element('div', 'chat-line', [
-        htmlUtils_1.element('span', 'chat-line-lead'),
-        line.label = htmlUtils_1.element('span', 'chat-line-label mr-1', [line.labelText = htmlUtils_1.textNode('')], undefined, { click: () => clickLabel(line.entry) }),
-        line.prefixText = htmlUtils_1.textNode(''),
-        line.name = htmlUtils_1.element('span', 'chat-line-name', [
-            htmlUtils_1.textNode('['),
-            line.nameContent = htmlUtils_1.element('span', 'chat-line-name-content', [htmlUtils_1.textNode('')], undefined, { click: () => clickName(line.entry) }),
-            line.index = htmlUtils_1.element('span', 'chat-line-name-index', [line.indexText = htmlUtils_1.textNode('')], { title: 'duplicate name' }),
-            htmlUtils_1.textNode(']'),
+    line.root = (0, htmlUtils_1.element)('div', 'chat-line', [
+        (0, htmlUtils_1.element)('span', 'chat-line-lead'),
+        line.label = (0, htmlUtils_1.element)('span', 'chat-line-label mr-1', [line.labelText = (0, htmlUtils_1.textNode)('')], undefined, { click: () => clickLabel(line.entry) }),
+        line.prefixText = (0, htmlUtils_1.textNode)(''),
+        line.name = (0, htmlUtils_1.element)('span', 'chat-line-name', [
+            (0, htmlUtils_1.textNode)('['),
+            line.nameContent = (0, htmlUtils_1.element)('span', 'chat-line-name-content', [(0, htmlUtils_1.textNode)('')], undefined, { click: () => clickName(line.entry) }),
+            line.index = (0, htmlUtils_1.element)('span', 'chat-line-name-index', [line.indexText = (0, htmlUtils_1.textNode)('')], { title: 'duplicate name' }),
+            (0, htmlUtils_1.textNode)(']'),
         ]),
-        line.suffixText = htmlUtils_1.textNode(''),
-        line.message = htmlUtils_1.element('span', 'chat-line-message', [htmlUtils_1.textNode('')]),
+        line.suffixText = (0, htmlUtils_1.textNode)(''),
+        line.message = (0, htmlUtils_1.element)('span', 'chat-line-message', [(0, htmlUtils_1.textNode)('')]),
     ]);
     return line;
 }
-exports.createChatLogLineDOM = createChatLogLineDOM;
 function updateChatLogLine(line, entry) {
     const { classes, label, message, prefix, suffix } = entry;
     const hasSpace = message.indexOf(' ') !== -1;
@@ -74,13 +76,12 @@ function updateChatLogLine(line, entry) {
     updateChatLogName(line, entry);
     line.prefixText.nodeValue = prefix || '';
     line.suffixText.nodeValue = suffix ? ` ${suffix}: ` : ': ';
-    htmlUtils_1.replaceNodes(line.message, message);
+    (0, htmlUtils_1.replaceNodes)(line.message, message);
 }
-exports.updateChatLogLine = updateChatLogLine;
 function updateChatLogName(line, { name, index }) {
     if (name) {
         line.name.style.display = 'inline';
-        htmlUtils_1.replaceNodes(line.nameContent, name);
+        (0, htmlUtils_1.replaceNodes)(line.nameContent, name);
         line.index.style.display = (index > 0) ? 'inline' : 'none';
         line.indexText.nodeValue = (index > 0) ? ` #${index + 1}` : '';
     }
@@ -241,7 +242,7 @@ let ChatLog = class ChatLog {
             this.updateInnerWidth();
         });
         if (DEVELOPMENT) {
-            debugData_1.sampleMessages.forEach(({ name, id, message, type }) => this.addMessage({ id: id || 999999, crc: undefined, name, message, type: type || 0 /* Chat */ }));
+            debugData_1.sampleMessages.forEach(({ name, id, message, type }) => this.addMessage({ id: id || 999999, crc: undefined, name, message, type: type || 0 /* MessageType.Chat */ }));
         }
     }
     ngOnDestroy() {
@@ -304,7 +305,7 @@ let ChatLog = class ChatLog {
         return `rgba(0, 0, 0, ${(this.opacity / 200) * 0.5})`;
     }
     createEntry({ id, crc, name, message, type }) {
-        const system = type === 1 /* System */;
+        const system = type === 1 /* MessageType.System */;
         const entry = {
             entityId: system ? 0 : id,
             name: system ? '' : name,
@@ -341,25 +342,25 @@ let ChatLog = class ChatLog {
     addMessage(message) {
         if (message.name && message.message) {
             const entry = this.createEntry(message);
-            const party = interfaces_1.isPartyMessage(message.type);
-            const whisper = interfaces_1.isWhisper(message.type) || interfaces_1.isWhisperTo(message.type);
+            const party = (0, interfaces_1.isPartyMessage)(message.type);
+            const whisper = (0, interfaces_1.isWhisper)(message.type) || (0, interfaces_1.isWhisperTo)(message.type);
             const open = this.open;
             const scrolledToEnd = open ? this.scrolledToEnd : false;
             const tab = this.activeTab;
             this.addEntryToList(this.local, GENERAL_CHAT_LIMIT, open && tab === 'local', entry);
             if (party || whisper) {
-                const partyEntry = Object.assign({}, entry);
+                const partyEntry = { ...entry };
                 partyEntry.dom = undefined;
                 partyEntry.label = whisper ? partyEntry.label : undefined;
                 this.addEntryToList(this.party, PARTY_CHAT_LIMIT, open && tab === 'party', partyEntry);
             }
             if (whisper) {
-                const whisperEntry = Object.assign({}, entry);
+                const whisperEntry = { ...entry };
                 whisperEntry.dom = undefined;
                 whisperEntry.label = undefined;
                 this.addEntryToList(this.whisper, WHISPER_CHAT_LIMIT, open && tab === 'whisper', whisperEntry);
             }
-            if (message.type === 13 /* Whisper */ && !this.open) {
+            if (message.type === 13 /* MessageType.Whisper */ && !this.open) {
                 this.setUnread(this.unread + 1);
             }
             if (scrolledToEnd) {
@@ -421,7 +422,7 @@ let ChatLog = class ChatLog {
         this.scrollToEndAtFrame = true;
     }
     clearList() {
-        htmlUtils_1.removeAllNodes(this.linesElement);
+        (0, htmlUtils_1.removeAllNodes)(this.linesElement);
     }
     regenerateList() {
         this.clearList();
@@ -443,10 +444,10 @@ let ChatLog = class ChatLog {
             this.shouldScrollToEnd = this.scrolledToEnd;
         }
         if (resizeX) {
-            this.settings.chatlogWidth = lodash_1.clamp(x - this.startX, 200, 2000);
+            this.settings.chatlogWidth = (0, lodash_1.clamp)(x - this.startX, 200, 2000);
         }
         if (resizeY) {
-            this.settings.chatlogHeight = lodash_1.clamp(this.startY - y, 120, 2000);
+            this.settings.chatlogHeight = (0, lodash_1.clamp)(this.startY - y, 120, 2000);
         }
         this.updateChatlog();
         this.updateInnerWidth();
@@ -473,58 +474,59 @@ let ChatLog = class ChatLog {
         }
     }
 };
+exports.ChatLog = ChatLog;
 tslib_1.__decorate([
-    core_1.ViewChild('chatLog', { static: true }),
+    (0, core_1.ViewChild)('chatLog', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "chatLog", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('scroll', { static: true }),
+    (0, core_1.ViewChild)('scroll', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "scroll", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('lines', { static: true }),
+    (0, core_1.ViewChild)('lines', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "lines", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('localTab', { static: true }),
+    (0, core_1.ViewChild)('localTab', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "localTab", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('partyTab', { static: true }),
+    (0, core_1.ViewChild)('partyTab', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "partyTab", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('whisperTab', { static: true }),
+    (0, core_1.ViewChild)('whisperTab', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "whisperTab", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('toggleButton', { static: true }),
+    (0, core_1.ViewChild)('toggleButton', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "toggleButton", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('count', { static: true }),
+    (0, core_1.ViewChild)('count', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "countElement", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('content', { static: true }),
+    (0, core_1.ViewChild)('content', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatLog.prototype, "contentElement", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ChatLog.prototype, "toggleType", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ChatLog.prototype, "nameClick", void 0);
 tslib_1.__decorate([
-    core_1.HostListener('window:resize'),
+    (0, core_1.HostListener)('window:resize'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], ChatLog.prototype, "updateInnerWidth", null);
-ChatLog = tslib_1.__decorate([
-    core_1.Component({
+exports.ChatLog = ChatLog = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'chat-log',
         templateUrl: 'chat-log.pug',
         styleUrls: ['chat-log.scss'],
@@ -534,7 +536,6 @@ ChatLog = tslib_1.__decorate([
         core_1.ElementRef,
         core_1.NgZone])
 ], ChatLog);
-exports.ChatLog = ChatLog;
 function findEntityFromMessages(id, messages) {
     for (let i = messages.length - 1; i >= 0; i--) {
         if (messages[i].entityId === id) {
@@ -544,7 +545,7 @@ function findEntityFromMessages(id, messages) {
     return undefined;
 }
 function findEntityFromMessagesByName(name, playerId, messages) {
-    const regex = new RegExp(`^${lodash_1.escapeRegExp(name)}$`, 'i');
+    const regex = new RegExp(`^${(0, lodash_1.escapeRegExp)(name)}$`, 'i');
     for (let i = messages.length - 1; i >= 0; i--) {
         const message = messages[i];
         if (message.name && message.entityId && message.entityId !== playerId && regex.test(message.name)) {

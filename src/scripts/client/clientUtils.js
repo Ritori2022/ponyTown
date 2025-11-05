@@ -1,5 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.featureFlagsChanged = exports.isInIncognitoMode = exports.isBrowserOutdated = exports.isAndroidBrowser = exports.matchRomaji = exports.containsCyrillic = exports.matchCyrillic = void 0;
+exports.isValid = isValid;
+exports.isValid2 = isValid2;
+exports.replaceRomaji = replaceRomaji;
+exports.cleanName = cleanName;
+exports.cleanMessage = cleanMessage;
+exports.filterString = filterString;
+exports.validatePonyName = validatePonyName;
+exports.toSocialSiteInfo = toSocialSiteInfo;
+exports.isSpamMessage = isSpamMessage;
+exports.getSaysTime = getSaysTime;
+exports.createExpression = createExpression;
+exports.getLocale = getLocale;
+exports.isLanguage = isLanguage;
+exports.sortServersForRussian = sortServersForRussian;
+exports.readFileAsText = readFileAsText;
+exports.isFileSaverSupported = isFileSaverSupported;
+exports.setIsIncognitoMode = setIsIncognitoMode;
+exports.isFocused = isFocused;
+exports.isStandalone = isStandalone;
+exports.supportsLetAndConst = supportsLetAndConst;
+exports.registerServiceWorker = registerServiceWorker;
+exports.unregisterServiceWorker = unregisterServiceWorker;
+exports.attachDebugMethod = attachDebugMethod;
+exports.updateRangeIndicator = updateRangeIndicator;
+exports.checkIframeKey = checkIframeKey;
+exports.initFeatureFlags = initFeatureFlags;
+exports.hasFeatureFlag = hasFeatureFlag;
+exports.hardReload = hardReload;
+exports.initLogger = initLogger;
+exports.log = log;
+exports.isSupporterOrPastSupporter = isSupporterOrPastSupporter;
+exports.supporterTitle = supporterTitle;
+exports.supporterClass = supporterClass;
+exports.supporterRewards = supporterRewards;
 const lodash_1 = require("lodash");
 const constants_1 = require("../common/constants");
 const stringUtils_1 = require("../common/stringUtils");
@@ -8,12 +43,12 @@ const rxjs_1 = require("../../../node_modules/rxjs");
 const positionUtils_1 = require("../common/positionUtils");
 const utils_1 = require("../common/utils");
 exports.matchCyrillic = /[\u0400-\u04FF]/g;
-exports.containsCyrillic = stringUtils_1.matcher(exports.matchCyrillic);
+exports.containsCyrillic = (0, stringUtils_1.matcher)(exports.matchCyrillic);
 const otherValid = [
-    '♂♀⚲⚥⚧☿♁⚨⚩⚦⚢⚣⚤',
-    '™®♥♦♣♠❥♡♢♤♧ღஐ·´°•◦✿❀◆◇◈◉◊｡¥€«»，：■□—',
-    '〈〉「」『』【】《》♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼№●○◌★☆✰✦✧▪▫･',
-    '\u1160\u3000\u3164',
+    '♂♀⚲⚥⚧☿♁⚨⚩⚦⚢⚣⚤', // gender symbols
+    '™®♥♦♣♠❥♡♢♤♧ღஐ·´°•◦✿❀◆◇◈◉◊｡¥€«»，：■□—', // other
+    '〈〉「」『』【】《》♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼№●○◌★☆✰✦✧▪▫･', // other 2
+    '\u1160\u3000\u3164', // spaces (replaced later)
 ].join('').split('').reduce((set, c) => (set.add(c.charCodeAt(0)), set), new Set());
 function isValid(c) {
     return (c >= 0x0020 && c <= 0x007e) // latin
@@ -42,7 +77,6 @@ function isValid(c) {
         || otherValid.has(c) // other symbols
     ;
 }
-exports.isValid = isValid;
 function isValid2(c) {
     return (c >= 0x2b0 && c <= 0x2ff) // Spacing Modifier Letters
         || (c >= 0x531 && c <= 0x556) || (c >= 0x559 && c <= 0x55f) || (c >= 0x561 && c <= 0x587)
@@ -75,7 +109,6 @@ function isValid2(c) {
         || (c >= 0x1f1e6 && c <= 0x1f1ff) // Enclosed Alphanumeric Supplement (regional indicators)
     ;
 }
-exports.isValid2 = isValid2;
 function isInvalid(c) {
     return c === 0x1f595 // middle finger emoji
         || c === 0x00ad // soft hyphen
@@ -92,7 +125,6 @@ const matchOtherWhitespace = /[\u1160\u2800\u3000\u3164\uffa0]+/g;
 function replaceRomaji(match) {
     return String.fromCharCode(match.charCodeAt(0) - 0xfee0);
 }
-exports.replaceRomaji = replaceRomaji;
 function cleanName(name) {
     return filterString(name, isValidForName)
         .replace(matchOtherWhitespace, ' ') // whitespace characters
@@ -100,7 +132,6 @@ function cleanName(name) {
         .replace(exports.matchRomaji, replaceRomaji)
         .trim();
 }
-exports.cleanName = cleanName;
 function cleanMessage(text) {
     return filterString(text, isValidForMessage)
         .replace(matchOtherWhitespace, ' ') // whitespace characters
@@ -109,17 +140,16 @@ function cleanMessage(text) {
         .trim()
         .substr(0, constants_1.SAY_MAX_LENGTH);
 }
-exports.cleanMessage = cleanMessage;
 function filterString(value, filter) {
     value = value || '';
     for (let i = 0; i < value.length; i++) {
         let code = value.charCodeAt(i);
         let size = 1;
         let invalidSurrogate = false;
-        if (stringUtils_1.isSurrogate(code) && (i + 1) < value.length) {
+        if ((0, stringUtils_1.isSurrogate)(code) && (i + 1) < value.length) {
             const extra = value.charCodeAt(i + 1);
-            if (stringUtils_1.isLowSurrogate(extra)) {
-                code = stringUtils_1.fromSurrogate(code, extra);
+            if ((0, stringUtils_1.isLowSurrogate)(extra)) {
+                code = (0, stringUtils_1.fromSurrogate)(code, extra);
                 i++;
                 size++;
             }
@@ -134,11 +164,9 @@ function filterString(value, filter) {
     }
     return value;
 }
-exports.filterString = filterString;
 function validatePonyName(name) {
     return !!name && !!name.length && name.length <= constants_1.PLAYER_NAME_MAX_LENGTH && !/^[.,_-]+$/.test(name);
 }
-exports.validatePonyName = validatePonyName;
 function toSocialSiteInfo({ id, name, url, provider }) {
     const oauth = data_1.oauthProviders.find(p => p.id === provider);
     return {
@@ -149,7 +177,6 @@ function toSocialSiteInfo({ id, name, url, provider }) {
         color: oauth && oauth.color,
     };
 }
-exports.toSocialSiteInfo = toSocialSiteInfo;
 function isMultipleMatch(message, last) {
     const minMessageLength = 4;
     if (message.length >= minMessageLength && last.length >= minMessageLength) {
@@ -186,15 +213,12 @@ function isSpamMessage(message, lastMessages) {
         return false;
     }
 }
-exports.isSpamMessage = isSpamMessage;
 function getSaysTime(message) {
-    return constants_1.SAYS_TIME_MIN + lodash_1.clamp(message.length / constants_1.SAY_MAX_LENGTH, 0, 1) * (constants_1.SAYS_TIME_MAX - constants_1.SAYS_TIME_MIN);
+    return constants_1.SAYS_TIME_MIN + (0, lodash_1.clamp)(message.length / constants_1.SAY_MAX_LENGTH, 0, 1) * (constants_1.SAYS_TIME_MAX - constants_1.SAYS_TIME_MIN);
 }
-exports.getSaysTime = getSaysTime;
-function createExpression(right, left, muzzle, rightIris = 0 /* Forward */, leftIris = 0 /* Forward */, extra = 0 /* None */) {
+function createExpression(right, left, muzzle, rightIris = 0 /* Iris.Forward */, leftIris = 0 /* Iris.Forward */, extra = 0 /* ExpressionExtra.None */) {
     return { right, left, muzzle, rightIris, leftIris, extra };
 }
-exports.createExpression = createExpression;
 exports.isAndroidBrowser = (() => {
     const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
     // Android browser
@@ -229,13 +253,11 @@ exports.isBrowserOutdated = (() => {
 function getLocale() {
     return (navigator.languages ? navigator.languages[0] : navigator.language) || 'en-US';
 }
-exports.getLocale = getLocale;
 /* istanbul ignore next */
 function isLanguage(lang) {
     const languages = navigator.languages || [navigator.language];
     return languages.some(l => l === lang);
 }
-exports.isLanguage = isLanguage;
 /* istanbul ignore next */
 function sortServersForRussian(a, b) {
     if (a.flag === 'ru' && a.flag !== b.flag) {
@@ -246,7 +268,6 @@ function sortServersForRussian(a, b) {
     }
     return a.id.localeCompare(b.id);
 }
-exports.sortServersForRussian = sortServersForRussian;
 function readFileAsText(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -255,22 +276,19 @@ function readFileAsText(file) {
         reader.readAsText(file);
     });
 }
-exports.readFileAsText = readFileAsText;
 /* istanbul ignore next */
 function isFileSaverSupported() {
     try {
         return !!new Blob;
     }
-    catch (_a) {
+    catch {
         return false;
     }
 }
-exports.isFileSaverSupported = isFileSaverSupported;
 exports.isInIncognitoMode = false;
 function setIsIncognitoMode(value) {
     exports.isInIncognitoMode = value;
 }
-exports.setIsIncognitoMode = setIsIncognitoMode;
 /* istanbul ignore next */
 function checkIncognitoMode(wnd) {
     if (!wnd || !wnd.chrome)
@@ -285,7 +303,6 @@ let focused = true;
 function isFocused() {
     return focused;
 }
-exports.isFocused = isFocused;
 /* istanbul ignore next */
 if (typeof window !== 'undefined') {
     checkIncognitoMode(window);
@@ -297,17 +314,15 @@ function isStandalone() {
     return !!window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone === true; // safari
 }
-exports.isStandalone = isStandalone;
 /* istanbul ignore next */
 function supportsLetAndConst() {
     try {
         return (new Function('let x = true; return x;'))();
     }
-    catch (_a) {
+    catch {
         return false;
     }
 }
-exports.supportsLetAndConst = supportsLetAndConst;
 /* istanbul ignore next */
 function registerServiceWorker(url, onUpdate) {
     try {
@@ -333,7 +348,6 @@ function registerServiceWorker(url, onUpdate) {
         console.error(e);
     }
 }
-exports.registerServiceWorker = registerServiceWorker;
 /* istanbul ignore next */
 function unregisterServiceWorker() {
     if ('serviceWorker' in navigator && typeof navigator.serviceWorker.getRegistrations === 'function') {
@@ -348,22 +362,20 @@ function unregisterServiceWorker() {
         return Promise.resolve();
     }
 }
-exports.unregisterServiceWorker = unregisterServiceWorker;
 /* istanbul ignore next */
 function attachDebugMethod(name, method) {
     if (typeof window !== 'undefined') {
         window[name] = method;
     }
 }
-exports.attachDebugMethod = attachDebugMethod;
 /* istanbul ignore next */
 function updateRangeIndicator(range, { player, scale, camera }) {
     const e = document.getElementById('range-indicator');
-    if (player && !constants_1.isChatlogRangeUnlimited(range)) {
-        const x = (positionUtils_1.toScreenX(player.x) - camera.x) * scale;
-        const y = (positionUtils_1.toScreenY(player.y) - camera.actualY) * scale;
-        const w = positionUtils_1.toScreenX(range) * scale * 2;
-        const h = positionUtils_1.toScreenY(range) * scale * 2;
+    if (player && !(0, constants_1.isChatlogRangeUnlimited)(range)) {
+        const x = ((0, positionUtils_1.toScreenX)(player.x) - camera.x) * scale;
+        const y = ((0, positionUtils_1.toScreenY)(player.y) - camera.actualY) * scale;
+        const w = (0, positionUtils_1.toScreenX)(range) * scale * 2;
+        const h = (0, positionUtils_1.toScreenY)(range) * scale * 2;
         e.style.width = `${w}px`;
         e.style.height = `${h}px`;
         e.style.left = `${-w / 2}px`;
@@ -375,7 +387,6 @@ function updateRangeIndicator(range, { player, scale, camera }) {
         e.style.display = 'none';
     }
 }
-exports.updateRangeIndicator = updateRangeIndicator;
 /* istanbul ignore next */
 function checkIframeKey(iframeId, expectedKey) {
     try {
@@ -391,23 +402,19 @@ function checkIframeKey(iframeId, expectedKey) {
         return false;
     }
 }
-exports.checkIframeKey = checkIframeKey;
 let flags = {};
 exports.featureFlagsChanged = new rxjs_1.Subject();
 function initFeatureFlags(newFlags) {
     flags = newFlags;
     exports.featureFlagsChanged.next(newFlags);
 }
-exports.initFeatureFlags = initFeatureFlags;
 function hasFeatureFlag(flag) {
     return !!flags[flag];
 }
-exports.hasFeatureFlag = hasFeatureFlag;
 function hardReload() {
     unregisterServiceWorker()
-        .then(() => location.reload(true));
+        .then(() => location.reload());
 }
-exports.hardReload = hardReload;
 const LOGGING = false;
 let logger = (_) => { };
 function initLogger(newLogger) {
@@ -415,51 +422,45 @@ function initLogger(newLogger) {
         logger = newLogger;
     }
 }
-exports.initLogger = initLogger;
 function log(message) {
     if (LOGGING) {
         logger(message);
     }
 }
-exports.log = log;
 function isSupporterOrPastSupporter(account) {
-    return !!account && (!!account.supporter || utils_1.hasFlag(account.flags, 4 /* PastSupporter */));
+    return !!account && (!!account.supporter || (0, utils_1.hasFlag)(account.flags, 4 /* AccountDataFlags.PastSupporter */));
 }
-exports.isSupporterOrPastSupporter = isSupporterOrPastSupporter;
 function supporterTitle(account) {
     if (account && account.supporter) {
         return `Supporter Tier ${account.supporter}`;
     }
-    else if (account && utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
+    else if (account && (0, utils_1.hasFlag)(account.flags, 4 /* AccountDataFlags.PastSupporter */)) {
         return 'Past supporter';
     }
     else {
         return '';
     }
 }
-exports.supporterTitle = supporterTitle;
 function supporterClass(account) {
     if (account && account.supporter) {
         return `supporter-${account.supporter}`;
     }
-    else if (account && utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
+    else if (account && (0, utils_1.hasFlag)(account.flags, 4 /* AccountDataFlags.PastSupporter */)) {
         return 'supporter-past';
     }
     else {
         return 'd-none';
     }
 }
-exports.supporterClass = supporterClass;
 function supporterRewards(account) {
     if (account && account.supporter) {
         return constants_1.SUPPORTER_REWARDS[account.supporter];
     }
-    else if (account && utils_1.hasFlag(account.flags, 4 /* PastSupporter */)) {
+    else if (account && (0, utils_1.hasFlag)(account.flags, 4 /* AccountDataFlags.PastSupporter */)) {
         return constants_1.PAST_SUPPORTER_REWARDS;
     }
     else {
         return constants_1.SUPPORTER_REWARDS[0];
     }
 }
-exports.supporterRewards = supporterRewards;
 //# sourceMappingURL=clientUtils.js.map

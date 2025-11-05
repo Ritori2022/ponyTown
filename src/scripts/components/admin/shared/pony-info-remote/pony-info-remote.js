@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PonyInfoRemote = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const adminModel_1 = require("../../../services/adminModel");
@@ -24,25 +25,25 @@ let PonyInfoRemote = class PonyInfoRemote {
         this.subscription && this.subscription.unsubscribe();
     }
 };
+exports.PonyInfoRemote = PonyInfoRemote;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyInfoRemote.prototype, "highlight", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], PonyInfoRemote.prototype, "showName", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", Object),
-    tslib_1.__metadata("design:paramtypes", [Object])
+    (0, core_1.Input)(),
+    tslib_1.__metadata("design:type", String),
+    tslib_1.__metadata("design:paramtypes", [String])
 ], PonyInfoRemote.prototype, "ponyId", null);
-PonyInfoRemote = tslib_1.__decorate([
-    core_1.Component({
+exports.PonyInfoRemote = PonyInfoRemote = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'pony-info-remote',
         templateUrl: 'pony-info-remote.pug',
     }),
     tslib_1.__metadata("design:paramtypes", [adminModel_1.AdminModel])
 ], PonyInfoRemote);
-exports.PonyInfoRemote = PonyInfoRemote;
 //# sourceMappingURL=pony-info-remote.js.map

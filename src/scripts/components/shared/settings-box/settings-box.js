@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SettingsBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const modal_1 = require("ngx-bootstrap/modal");
@@ -59,7 +60,7 @@ let SettingsBox = class SettingsBox {
     }
     ngOnInit() {
         this.game.onClock
-            .pipe(operators_1.distinctUntilChanged())
+            .pipe((0, operators_1.distinctUntilChanged)())
             .subscribe(text => {
             if (this.dropdown.isOpen) {
                 this.zone.run(() => this.time = text);
@@ -92,7 +93,7 @@ let SettingsBox = class SettingsBox {
         this.game.zoomIn();
     }
     unhideAllHiddenPlayers() {
-        this.game.send(server => server.action(9 /* UnhideAllHiddenPlayers */));
+        this.game.send(server => server.action(9 /* Action.UnhideAllHiddenPlayers */));
         this.dropdown.close();
     }
     openModal(template) {
@@ -113,24 +114,25 @@ let SettingsBox = class SettingsBox {
         }
     }
 };
+exports.SettingsBox = SettingsBox;
 tslib_1.__decorate([
-    core_1.ViewChild('dropdown', { static: true }),
+    (0, core_1.ViewChild)('dropdown', { static: true }),
     tslib_1.__metadata("design:type", dropdown_1.Dropdown)
 ], SettingsBox.prototype, "dropdown", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('actionsModal', { static: true }),
+    (0, core_1.ViewChild)('actionsModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], SettingsBox.prototype, "actionsModal", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('settingsModal', { static: true }),
+    (0, core_1.ViewChild)('settingsModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], SettingsBox.prototype, "settingsModal", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('invitesModal', { static: true }),
+    (0, core_1.ViewChild)('invitesModal', { static: true }),
     tslib_1.__metadata("design:type", core_1.TemplateRef)
 ], SettingsBox.prototype, "invitesModal", void 0);
-SettingsBox = tslib_1.__decorate([
-    core_1.Component({
+exports.SettingsBox = SettingsBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'settings-box',
         templateUrl: 'settings-box.pug',
         styleUrls: ['settings-box.scss'],
@@ -143,5 +145,4 @@ SettingsBox = tslib_1.__decorate([
         audio_1.Audio,
         core_1.NgZone])
 ], SettingsBox);
-exports.SettingsBox = SettingsBox;
 //# sourceMappingURL=settings-box.js.map

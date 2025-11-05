@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ToolsXY = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const icons_1 = require("../../../../client/icons");
@@ -28,41 +29,41 @@ let ToolsXY = class ToolsXY {
         this.change.emit();
     }
 };
+exports.ToolsXY = ToolsXY;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "min", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "max", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "x", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "y", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "xChange", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "yChange", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], ToolsXY.prototype, "change", void 0);
-ToolsXY = tslib_1.__decorate([
-    core_1.Component({
+exports.ToolsXY = ToolsXY = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'tools-xy',
         templateUrl: 'tools-xy.pug',
         styleUrls: ['tools-xy.scss'],
         changeDetection: core_1.ChangeDetectionStrategy.OnPush,
     })
 ], ToolsXY);
-exports.ToolsXY = ToolsXY;
 //# sourceMappingURL=tools-xy.js.map

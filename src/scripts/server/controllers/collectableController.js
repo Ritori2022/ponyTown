@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CollectableController = void 0;
+exports.randomPosition = randomPosition;
 const lodash_1 = require("lodash");
 const timing_1 = require("../timing");
 const entityUtils_1 = require("../entityUtils");
@@ -8,7 +10,6 @@ function randomPosition(map) {
     const y = Math.random() * map.height;
     return { x, y };
 }
-exports.randomPosition = randomPosition;
 class CollectableController {
     constructor(world, map, ctors, limit, pick, check = () => true, tries = 1, position = randomPosition, active = () => true) {
         this.world = world;
@@ -24,10 +25,10 @@ class CollectableController {
         this.interact = (entity, client) => {
             if (this.check(client)) {
                 if (client.shadowed) {
-                    entityUtils_1.pushRemoveEntityToClient(client, entity);
+                    (0, entityUtils_1.pushRemoveEntityToClient)(client, entity);
                 }
                 else {
-                    lodash_1.remove(this.items, e => e === entity);
+                    (0, lodash_1.remove)(this.items, e => e === entity);
                     this.world.removeEntity(entity, this.map);
                     this.generateItem();
                     this.pick(client, entity);
@@ -38,7 +39,7 @@ class CollectableController {
     initialize() {
     }
     update() {
-        timing_1.timingStart('CollectableController.update()');
+        (0, timing_1.timingStart)('CollectableController.update()');
         if (this.active()) {
             for (let i = 0; i < this.tries; i++) {
                 if (this.items.length < this.limit) {
@@ -46,17 +47,17 @@ class CollectableController {
                 }
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
     generateItem() {
         const { world, map } = this;
         const { x, y } = this.position(map);
-        const ctor = lodash_1.sample(this.ctors);
+        const ctor = (0, lodash_1.sample)(this.ctors);
         const entity = ctor(x, y);
         if (!entity.interactRange) {
             entity.interactRange = 1.5;
         }
-        if (x > 0 && y > 0 && x < map.width && y < map.height && entityUtils_1.canPlaceItem(map, entity) && !entityUtils_1.canBePickedByPlayer(map, entity)) {
+        if (x > 0 && y > 0 && x < map.width && y < map.height && (0, entityUtils_1.canPlaceItem)(map, entity) && !(0, entityUtils_1.canBePickedByPlayer)(map, entity)) {
             entity.interact = this.interact;
             this.items.push(world.addEntity(entity, map));
         }

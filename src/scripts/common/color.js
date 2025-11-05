@@ -1,5 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.colorNames = void 0;
+exports.getR = getR;
+exports.getG = getG;
+exports.getB = getB;
+exports.getAlpha = getAlpha;
+exports.withAlpha = withAlpha;
+exports.withAlphaFloat = withAlphaFloat;
+exports.colorToRGBA = colorToRGBA;
+exports.colorToHSVA = colorToHSVA;
+exports.colorToCSS = colorToCSS;
+exports.colorToHexRGB = colorToHexRGB;
+exports.colorToFloatArray = colorToFloatArray;
+exports.colorToExistingFloatArray = colorToExistingFloatArray;
+exports.colorToFloat = colorToFloat;
+exports.colorToFloatAlpha = colorToFloatAlpha;
+exports.colorFromRGBA = colorFromRGBA;
+exports.colorFromHSVA = colorFromHSVA;
+exports.colorFromHSVAObject = colorFromHSVAObject;
+exports.parseColorFast = parseColorFast;
+exports.parseColor = parseColor;
+exports.parseColorWithAlpha = parseColorWithAlpha;
+exports.toGrayscale = toGrayscale;
+exports.makeTransparent = makeTransparent;
+exports.multiplyColor = multiplyColor;
+exports.lerpColors = lerpColors;
+exports.rgb2hsv = rgb2hsv;
+exports.hsv2rgb = hsv2rgb;
+exports.h2rgb = h2rgb;
 const lodash_1 = require("lodash");
 const utils_1 = require("./utils");
 exports.colorNames = {
@@ -152,27 +180,21 @@ const BLACK = 0x000000ff >>> 0;
 function getR(color) {
     return (color >> 24) & 0xff;
 }
-exports.getR = getR;
 function getG(color) {
     return (color >> 16) & 0xff;
 }
-exports.getG = getG;
 function getB(color) {
     return (color >> 8) & 0xff;
 }
-exports.getB = getB;
 function getAlpha(color) {
     return color & 0xff;
 }
-exports.getAlpha = getAlpha;
 function withAlpha(color, alpha) {
     return (color & 0xffffff00) | (alpha & 0xff);
 }
-exports.withAlpha = withAlpha;
 function withAlphaFloat(color, alpha) {
     return (color & 0xffffff00) | ((alpha * 255) & 0xff);
 }
-exports.withAlphaFloat = withAlphaFloat;
 // to
 function colorToRGBA(color) {
     return {
@@ -182,11 +204,9 @@ function colorToRGBA(color) {
         a: getAlpha(color),
     };
 }
-exports.colorToRGBA = colorToRGBA;
 function colorToHSVA(color, h) {
     return rgb2hsv(getR(color), getG(color), getB(color), getAlpha(color) / 255, h);
 }
-exports.colorToHSVA = colorToHSVA;
 function colorToCSS(color) {
     const alpha = getAlpha(color);
     if (alpha === 0xff) {
@@ -196,27 +216,23 @@ function colorToCSS(color) {
         return `rgba(${getR(color)},${getG(color)},${getB(color)},${alpha / 255})`;
     }
 }
-exports.colorToCSS = colorToCSS;
 function toHex(value, length) {
     return value.toString(16).padStart(length, '0');
 }
 function colorToHexRGB(color) {
     return toHex(color >>> 8, 6);
 }
-exports.colorToHexRGB = colorToHexRGB;
 function colorToFloatArray(color) {
     const result = new Float32Array(4);
     colorToExistingFloatArray(result, color);
     return result;
 }
-exports.colorToFloatArray = colorToFloatArray;
 function colorToExistingFloatArray(array, color) {
     array[0] = getR(color) / 255;
     array[1] = getG(color) / 255;
     array[2] = getB(color) / 255;
     array[3] = getAlpha(color) / 255;
 }
-exports.colorToExistingFloatArray = colorToExistingFloatArray;
 const int8 = new Int8Array(4);
 const int32 = new Int32Array(int8.buffer, 0, 1);
 const float32 = new Float32Array(int8.buffer, 0, 1);
@@ -225,30 +241,25 @@ function colorToFloat(color) {
     int32[0] = int & 0xfeffffff;
     return float32[0];
 }
-exports.colorToFloat = colorToFloat;
 function colorToFloatAlpha(color, alpha /* 0-1 */) {
     const int = (((getAlpha(color) * alpha) & 0xff) << 24) | (getB(color) << 16) | (getG(color) << 8) | getR(color);
     int32[0] = int & 0xfeffffff;
     return float32[0];
 }
-exports.colorToFloatAlpha = colorToFloatAlpha;
 // from
 function colorFromRGBA(r, g, b, a /* 0-255 */) {
     return ((r << 24) | (g << 16) | (b << 8) | a) >>> 0;
 }
-exports.colorFromRGBA = colorFromRGBA;
 function colorFromHSVA(h, s, v, a /* 0-1 */) {
     const { r, g, b } = hsv2rgb(h, s, v);
     return colorFromRGBA(r, g, b, a * 255);
 }
-exports.colorFromHSVA = colorFromHSVA;
 function colorFromHSVAObject({ h, s, v, a }) {
     return colorFromHSVA(h, s, v, a);
 }
-exports.colorFromHSVAObject = colorFromHSVAObject;
 // parse
 function parseColorFast(str) {
-    if (!lodash_1.isString(str))
+    if (!(0, lodash_1.isString)(str))
         return TRANSPARENT;
     const int = parseInt(str, 16);
     if (str.length !== 6 || isNaN(int) || int < 0) {
@@ -258,9 +269,8 @@ function parseColorFast(str) {
         return (((int << 8) | 0xff) >>> 0);
     }
 }
-exports.parseColorFast = parseColorFast;
 function parseColor(str) {
-    if (!lodash_1.isString(str))
+    if (!(0, lodash_1.isString)(str))
         return TRANSPARENT;
     str = str.trim().toLowerCase();
     if (str === '' || str === 'none' || str === 'transparent')
@@ -282,32 +292,26 @@ function parseColor(str) {
     }
     return BLACK;
 }
-exports.parseColor = parseColor;
 function parseColorWithAlpha(str, alpha /* 0-1 */) {
     return ((parseColor(str) & 0xffffff00) | ((alpha * 255) & 0xff)) >>> 0;
 }
-exports.parseColorWithAlpha = parseColorWithAlpha;
 // utils
 function toGrayscale(color) {
-    const c = Math.round(utils_1.clamp(getR(color) * 0.2126 + getG(color) * 0.7152 + getB(color) * 0.0722, 0, 255)) | 0;
+    const c = Math.round((0, utils_1.clamp)(getR(color) * 0.2126 + getG(color) * 0.7152 + getB(color) * 0.0722, 0, 255)) | 0;
     const a = getAlpha(color);
     return colorFromRGBA(c, c, c, a);
 }
-exports.toGrayscale = toGrayscale;
 function makeTransparent(color, factor /* 0-1 */) {
     return ((color & 0xffffff00) | ((getAlpha(color) * factor) & 0xff)) >>> 0;
 }
-exports.makeTransparent = makeTransparent;
 function multiplyColor(color, factor /* 0-1 */) {
-    return colorFromRGBA(utils_1.clamp(getR(color) * factor, 0, 255), utils_1.clamp(getG(color) * factor, 0, 255), utils_1.clamp(getB(color) * factor, 0, 255), getAlpha(color));
+    return colorFromRGBA((0, utils_1.clamp)(getR(color) * factor, 0, 255), (0, utils_1.clamp)(getG(color) * factor, 0, 255), (0, utils_1.clamp)(getB(color) * factor, 0, 255), getAlpha(color));
 }
-exports.multiplyColor = multiplyColor;
 function lerpColors(a, b, factor) {
     const f = factor;
     const t = 1 - factor;
     return colorFromRGBA(getR(a) * t + getR(b) * f, getG(a) * t + getG(b) * f, getB(a) * t + getB(b) * f, getAlpha(a) * t + getAlpha(b) * f);
 }
-exports.lerpColors = lerpColors;
 /// r, g, b = <0, 255>, a = <0, 1>
 function rgb2hsv(r, g, b, a /* 0-1 */, h = 0) {
     r = r / 255;
@@ -335,7 +339,6 @@ function rgb2hsv(r, g, b, a /* 0-1 */, h = 0) {
     }
     return { h: h * 360, s, v, a };
 }
-exports.rgb2hsv = rgb2hsv;
 /// h = <0, 360>; s, v = <0, 1>
 function hsv2rgb(h, s, v) {
     h = Math.max(0, Math.min(360, h === 360 ? 0 : h));
@@ -389,7 +392,6 @@ function hsv2rgb(h, s, v) {
         b: Math.round(b * 255),
     };
 }
-exports.hsv2rgb = hsv2rgb;
 function h2rgb(h) {
     h /= 60;
     let r = 0, g = 0, b = 0;
@@ -428,5 +430,4 @@ function h2rgb(h) {
         b: Math.round(b * 255)
     };
 }
-exports.h2rgb = h2rgb;
 //# sourceMappingURL=color.js.map

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MenuBar = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const data_1 = require("../../../client/data");
@@ -28,13 +29,13 @@ let MenuBar = class MenuBar {
         this.signIn = new core_1.EventEmitter();
     }
     get hasSupporterIcon() {
-        return clientUtils_1.isSupporterOrPastSupporter(this.account);
+        return (0, clientUtils_1.isSupporterOrPastSupporter)(this.account);
     }
     get supporterTitle() {
-        return clientUtils_1.supporterTitle(this.account);
+        return (0, clientUtils_1.supporterTitle)(this.account);
     }
     get supporterClass() {
-        return clientUtils_1.supporterClass(this.account);
+        return (0, clientUtils_1.supporterClass)(this.account);
     }
     get showAccountAlert() {
         return this.model.missingBirthdate && constants_1.REQUEST_DATE_OF_BIRTH;
@@ -43,7 +44,7 @@ let MenuBar = class MenuBar {
         return !!this.settings.account.hidden;
     }
     icon(id) {
-        return sign_in_box_1.getProviderIcon(id);
+        return (0, sign_in_box_1.getProviderIcon)(id);
     }
     signInTo(provider) {
         this.signIn.emit(provider);
@@ -55,43 +56,43 @@ let MenuBar = class MenuBar {
         this.settings.saveAccountSettings(this.settings.account);
     }
 };
+exports.MenuBar = MenuBar;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "logo", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "loading", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "loadingError", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "account", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "signOut", void 0);
 tslib_1.__decorate([
-    core_1.Output(),
+    (0, core_1.Output)(),
     tslib_1.__metadata("design:type", Object)
 ], MenuBar.prototype, "signIn", void 0);
 tslib_1.__decorate([
-    core_1.HostListener('window:resize'),
+    (0, core_1.HostListener)('window:resize'),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", void 0)
 ], MenuBar.prototype, "resize", null);
-MenuBar = tslib_1.__decorate([
-    core_1.Component({
+exports.MenuBar = MenuBar = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'menu-bar',
         templateUrl: 'menu-bar.pug',
         styleUrls: ['menu-bar.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [model_1.Model, settingsService_1.SettingsService])
 ], MenuBar);
-exports.MenuBar = MenuBar;
 //# sourceMappingURL=menu-bar.js.map

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const sprites = require("../generated/sprites");
+exports.magicAnimation = exports.holdPoofAnimation = exports.sneezeAnimation = exports.heartsAnimation = exports.tearsAnimation = exports.cryAnimation = exports.zzzAnimations = exports.zzzAnimation2 = exports.zzzAnimation1 = void 0;
+const tslib_1 = require("tslib");
+const sprites = tslib_1.__importStar(require("../generated/sprites"));
 exports.zzzAnimation1 = createSpriteAnimation(sprites.emote_sleep1, 8, 8, 4, 7, true, sprites.emote_sleep1_flip.frames);
 exports.zzzAnimation2 = createSpriteAnimation(sprites.emote_sleep2, 12, 13, 13, 12, true, sprites.emote_sleep2_flip.frames);
 exports.zzzAnimations = [exports.zzzAnimation1, exports.zzzAnimation2];

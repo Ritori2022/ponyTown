@@ -10,13 +10,13 @@ describe('compress', () => {
         it('test', () => {
             const tiles = new Uint8Array(constants_1.REGION_SIZE * constants_1.REGION_SIZE);
             for (let i = 0; i < tiles.length; i++) {
-                tiles[i] = lodash_1.random(0, 5);
+                tiles[i] = (0, lodash_1.random)(0, 5);
             }
             // console.log(Array.from(tiles).join(', '));
-            const compressed = compress_1.compressTiles(new Uint8Array(tiles));
-            const decompressed = compress_1.decompressTiles(compressed);
+            const compressed = (0, compress_1.compressTiles)(new Uint8Array(tiles));
+            const decompressed = (0, compress_1.decompressTiles)(compressed);
             //console.log(`${JSON.stringify(test)}: ${test.length} -> ${compressed.length}`);
-            chai_1.expect(Array.from(decompressed)).eql(Array.from(tiles), `compressed: [${Array.from(compressed).join(', ')}]`);
+            (0, chai_1.expect)(Array.from(decompressed)).eql(Array.from(tiles), `compressed: [${Array.from(compressed).join(', ')}]`);
         });
     });
 });

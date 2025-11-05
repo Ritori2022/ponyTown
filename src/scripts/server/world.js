@@ -1,5 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.World = void 0;
+exports.refreshMap = refreshMap;
+exports.goToMap = goToMap;
+exports.findAllOnlineFriends = findAllOnlineFriends;
+exports.findClientByAccountId = findClientByAccountId;
+exports.findClientByCharacterId = findClientByCharacterId;
+exports.findClientsAroundAccountId = findClientsAroundAccountId;
 const ag_sockets_1 = require("ag-sockets");
 const lodash_1 = require("lodash");
 const utils_1 = require("../common/utils");
@@ -39,8 +46,8 @@ class World {
         this.getSettings = getSettings;
         this.liveSettings = liveSettings;
         this.socketStats = socketStats;
-        this.season = 1 /* Summer */;
-        this.holiday = 0 /* None */;
+        this.season = 1 /* Season.Summer */;
+        this.holiday = 0 /* Holiday.None */;
         this.maps = [];
         this.controllers = [];
         this.options = {
@@ -62,7 +69,7 @@ class World {
         // clients
         this.lastCleanup = 0;
         partyService.partyChanged.subscribe(client => {
-            if (client.isConnected && client.map.usage === 1 /* Party */) {
+            if (client.isConnected && client.map.usage === 1 /* MapUsage.Party */) {
                 if (client.party && client.party.leader === client && client.map.instance === client.accountId &&
                     !this.maps.some(m => m.id === client.map.id && m.instance === client.party.id)) {
                     client.map.instance = client.party.id;
@@ -91,8 +98,8 @@ class World {
     setTile(map, x, y, type) {
         if (!BETA && map.tilesLocked)
             return;
-        if (x >= 0 && y >= 0 && x < map.width && y < map.height && !serverMap_1.isTileLocked(map, x, y) && type !== worldMap_1.getTile(map, x, y)) {
-            serverMap_1.setTile(map, x, y, type);
+        if (x >= 0 && y >= 0 && x < map.width && y < map.height && !(0, serverMap_1.isTileLocked)(map, x, y) && type !== (0, worldMap_1.getTile)(map, x, y)) {
+            (0, serverMap_1.setTile)(map, x, y, type);
         }
     }
     toggleWall(map, x, y, type) {
@@ -107,7 +114,7 @@ class World {
             time: this.time,
             season: this.season,
             holiday: this.holiday,
-            flags: this.getSettings().filterSwears ? 1 /* Safe */ : 0 /* None */,
+            flags: this.getSettings().filterSwears ? 1 /* WorldStateFlags.Safe */ : 0 /* WorldStateFlags.None */,
             featureFlags: this.featureFlags,
         };
     }
@@ -115,7 +122,7 @@ class World {
         this.season = season;
         this.holiday = holiday;
         this.updateWorldState();
-        mainMap_1.updateMainMapSeason(this, this.getMainMap(), season, holiday);
+        (0, mainMap_1.updateMainMapSeason)(this, this.getMainMap(), season, holiday);
     }
     updateWorldState() {
         const state = this.getState();
@@ -138,27 +145,27 @@ class World {
                 console.error('Entity update() method is only for client-side use');
             }
             if (entity.id && this.entityById.has(entity.id)) {
-                console.error(`Entity already added to the world ${entities_1.getEntityTypeName(entity.type)} [${entity.id}]`);
+                console.error(`Entity already added to the world ${(0, entities_1.getEntityTypeName)(entity.type)} [${entity.id}]`);
             }
         }
         entity.id = entity.id || this.getNewEntityId();
         entity.timestamp = this.now / 1000;
         this.entityById.set(entity.id, entity);
-        positionUtils_1.roundPosition(entity);
-        const region = worldMap_1.getRegionGlobal(map, entity.x, entity.y);
-        regionUtils_1.addToRegion(entity, region, map);
+        (0, positionUtils_1.roundPosition)(entity);
+        const region = (0, worldMap_1.getRegionGlobal)(map, entity.x, entity.y);
+        (0, regionUtils_1.addToRegion)(entity, region, map);
         return entity;
     }
     removeEntity(entity, map) {
         let removed = false;
         if (entity.region) {
-            removed = regionUtils_1.removeFromRegion(entity, entity.region, map);
+            removed = (0, regionUtils_1.removeFromRegion)(entity, entity.region, map);
         }
         this.entityById.delete(entity.id);
         return removed;
     }
     removeEntityFromSomeMap(entity) {
-        const map = this.maps.find(m => m.regions.some(r => utils_1.includes(r.entities, entity)));
+        const map = this.maps.find(m => m.regions.some(r => (0, utils_1.includes)(r.entities, entity)));
         if (map) {
             this.removeEntity(entity, map);
         }
@@ -183,18 +190,18 @@ class World {
         client.isSwitchingMap = true;
         client.pony.vx = 0;
         client.pony.vy = 0;
-        entityUtils_1.updateEntity(client.pony, false);
+        (0, entityUtils_1.updateEntity)(client.pony, false);
         client.mapSwitching();
     }
     actualSwitchToMap(client, map, x, y) {
-        regionUtils_1.unsubscribeFromAllRegions(client, false);
+        (0, regionUtils_1.unsubscribeFromAllRegions)(client, false);
         if (client.pony.region) {
-            regionUtils_1.removeFromRegion(client.pony, client.pony.region, client.map);
+            (0, regionUtils_1.removeFromRegion)(client.pony, client.pony.region, client.map);
         }
-        x = utils_1.clamp(x, 0, map.width);
-        y = utils_1.clamp(y, 0, map.height);
-        playerUtils_1.resetClientUpdates(client);
-        client.mapState(serverMap_1.getMapInfo(map), map.state);
+        x = (0, utils_1.clamp)(x, 0, map.width);
+        y = (0, utils_1.clamp)(y, 0, map.height);
+        (0, playerUtils_1.resetClientUpdates)(client);
+        client.mapState((0, serverMap_1.getMapInfo)(map), map.state);
         client.map = map;
         client.pony.x = x;
         client.pony.y = y;
@@ -208,8 +215,8 @@ class World {
         client.lastCameraW = 0;
         client.lastCameraH = 0;
         client.isSwitchingMap = false;
-        regionUtils_1.addToRegion(client.pony, worldMap_1.getRegionGlobal(map, x, y), map);
-        entityUtils_1.fixPosition(client.pony, map, x, y, true);
+        (0, regionUtils_1.addToRegion)(client.pony, (0, worldMap_1.getRegionGlobal)(map, x, y), map);
+        (0, entityUtils_1.fixPosition)(client.pony, map, x, y, true);
         client.reporter.systemLog(`Switched map to [${client.map.id || 'main'}]`);
     }
     // main
@@ -228,34 +235,34 @@ class World {
     }
     update(delta, now) {
         const started = Date.now();
-        timing_1.timingStart('world.update()');
-        regionUtils_1.resetEncodeUpdate();
+        (0, timing_1.timingStart)('world.update()');
+        (0, regionUtils_1.resetEncodeUpdate)();
         this.now = now;
         const nowSeconds = now / 1000;
         const deltaSeconds = delta / 1000;
-        timing_1.timingStart('update tiles');
+        (0, timing_1.timingStart)('update tiles');
         for (const map of this.maps) {
             if (!map.dontUpdateTilesAndColliders) {
                 for (const region of map.regions) {
                     if (region.tilesDirty) {
-                        tileUtils_1.updateTileIndices(region, map);
+                        (0, tileUtils_1.updateTileIndices)(region, map);
                     }
                 }
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('update colliders');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('update colliders');
         for (const map of this.maps) {
             if (!map.dontUpdateTilesAndColliders) {
                 for (const region of map.regions) {
                     if (region.colliderDirty) {
-                        region_1.generateRegionCollider(region, map);
+                        (0, region_1.generateRegionCollider)(region, map);
                     }
                 }
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('update positions');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('update positions');
         for (const map of this.maps) {
             for (const region of map.regions) {
                 // TODO: update only moving entities, separate list of movingEntities
@@ -264,25 +271,25 @@ class World {
                     const delta = nowSeconds - entity.timestamp;
                     if (delta > 0) {
                         if (entity.vx !== 0 || entity.vy !== 0) {
-                            timing_1.timingStart('updatePosition()');
-                            collision_1.updatePosition(entity, delta, map);
-                            timing_1.timingEnd();
+                            (0, timing_1.timingStart)('updatePosition()');
+                            (0, collision_1.updatePosition)(entity, delta, map);
+                            (0, timing_1.timingEnd)();
                         }
                         entity.timestamp = nowSeconds;
                     }
                 }
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('updateCamera + updateSubscriptions');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('updateCamera + updateSubscriptions');
         for (const client of this.clients) {
             if (updateClientCamera(client)) {
-                regionUtils_1.unsubscribeFromOutOfRangeRegions(client);
-                regionUtils_1.subscribeToRegionsInRange(client);
+                (0, regionUtils_1.unsubscribeFromOutOfRangeRegions)(client);
+                (0, regionUtils_1.subscribeToRegionsInRange)(client);
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('update controllers');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('update controllers');
         for (const controller of this.controllers) {
             controller.update(deltaSeconds, nowSeconds);
         }
@@ -291,42 +298,42 @@ class World {
                 controller.update(deltaSeconds, nowSeconds);
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('actualSwitchToMap');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('actualSwitchToMap');
         for (let i = 0; i < constants_1.MAP_SWITCHES_PER_UPDATE && this.mapSwitchQueue.length; i++) {
             const { client, map, x, y } = this.mapSwitchQueue.shift();
             this.actualSwitchToMap(client, map, x, y);
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('updateRegions');
-        regionUtils_1.updateRegions(this.maps); // NOTE: creates transfers
-        timing_1.timingEnd();
-        timing_1.timingStart('timeoutEntityExpression + inTheAirDelay');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('updateRegions');
+        (0, regionUtils_1.updateRegions)(this.maps); // NOTE: creates transfers
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('timeoutEntityExpression + inTheAirDelay');
         for (const { pony } of this.clients) {
             // timeout expressions
             if (pony.exprTimeout && pony.exprTimeout < now) {
-                playerUtils_1.setEntityExpression(pony, undefined); // NOTE: creates updates
+                (0, playerUtils_1.setEntityExpression)(pony, undefined); // NOTE: creates updates
             }
             // count down in-the-air delay
             if (pony.inTheAirDelay !== undefined && pony.inTheAirDelay > 0) {
                 pony.inTheAirDelay -= deltaSeconds;
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
         // const { totalUpdates, reusedUpdates } = this.updatesStats();
-        timing_1.timingStart(`commitRegionUpdates`); // [${totalUpdates} / ${reusedUpdates}]`);
+        (0, timing_1.timingStart)(`commitRegionUpdates`); // [${totalUpdates} / ${reusedUpdates}]`);
         for (const map of this.maps) {
-            regionUtils_1.commitRegionUpdates(map.regions);
+            (0, regionUtils_1.commitRegionUpdates)(map.regions);
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
         let clientsWithAdds = 0;
         let clientsWithUpdates = 0;
         let clientsWithSays = 0;
         let totalSays = 0;
-        timing_1.timingStart(`send updates`);
+        (0, timing_1.timingStart)(`send updates`);
         for (const client of this.clients) {
             const { updateQueue, regionUpdates, saysQueue, unsubscribes, subscribes } = client;
-            const updateBuffer = updateQueue.offset ? ag_sockets_1.getWriterBuffer(updateQueue) : null;
+            const updateBuffer = updateQueue.offset ? (0, ag_sockets_1.getWriterBuffer)(updateQueue) : null;
             const total = updateQueue.offset + regionUpdates.length + saysQueue.length + unsubscribes.length + subscribes.length;
             if (total !== 0) {
                 if (updateQueue.offset > 0)
@@ -336,35 +343,35 @@ class World {
                 if (saysQueue.length > 0)
                     clientsWithSays++;
                 totalSays += saysQueue.length;
-                regionUtils_1.setupTiming(client);
-                timing_1.timingStart('client.update()');
+                (0, regionUtils_1.setupTiming)(client);
+                (0, timing_1.timingStart)('client.update()');
                 client.update(unsubscribes, subscribes, updateBuffer, regionUpdates, saysQueue);
-                timing_1.timingEnd();
-                regionUtils_1.clearTiming(client);
-                playerUtils_1.resetClientUpdates(client);
+                (0, timing_1.timingEnd)();
+                (0, regionUtils_1.clearTiming)(client);
+                (0, playerUtils_1.resetClientUpdates)(client);
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('joinQueuedClients');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('joinQueuedClients');
         if (Date.now() < (started + (1000 / constants_1.SERVER_FPS))) {
             for (let i = 0; i < constants_1.JOINS_PER_UPDATE && this.joinQueue.length > 0; i++) {
                 this.joinClientToWorld(this.joinQueue.shift()); // NOTE: creates adds
             }
         }
-        timing_1.timingEnd();
-        const { isCollidingCount, isCollidingObjectCount } = collision_1.getCollisionStats();
-        timing_1.timingStart(`adds [${clientsWithAdds}]\n` +
+        (0, timing_1.timingEnd)();
+        const { isCollidingCount, isCollidingObjectCount } = (0, collision_1.getCollisionStats)();
+        (0, timing_1.timingStart)(`adds [${clientsWithAdds}]\n` +
             `updates [${clientsWithUpdates}]\n` +
             `says [${totalSays} / ${clientsWithSays}]\n` +
             `sockets [${this.socketStatsText()}]\n` +
             `collisions [${isCollidingObjectCount} / ${isCollidingCount}]`);
         this.cleanupOfflineClients();
-        timing_1.timingEnd();
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingEnd)();
     }
     sparseUpdate(now) {
-        timing_1.timingStart('world.sparseUpdate()');
-        timing_1.timingStart('sparse update controllers');
+        (0, timing_1.timingStart)('world.sparseUpdate()');
+        (0, timing_1.timingStart)('sparse update controllers');
         for (const controller of this.controllers) {
             if (controller.sparseUpdate !== undefined) {
                 controller.sparseUpdate();
@@ -377,36 +384,36 @@ class World {
                 }
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('sparseRegionUpdate');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('sparseRegionUpdate');
         for (const map of this.maps) {
             for (const region of map.regions) {
-                regionUtils_1.sparseRegionUpdate(map, region, this.options);
+                (0, regionUtils_1.sparseRegionUpdate)(map, region, this.options);
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('kick afk clients');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('kick afk clients');
         for (const client of this.clients) {
             if ((now - client.lastPacket) > constants_1.AFK_TIMEOUT) {
                 this.kick(client, 'afk');
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('send queue status (join)');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('send queue status (join)');
         for (let i = 0; i < this.joinQueue.length; i++) {
             this.joinQueue[i].queue(i + 1);
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('send queue status (map)');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('send queue status (map)');
         for (let i = 0; i < this.mapSwitchQueue.length; i++) {
             this.mapSwitchQueue[i].client.queue(i + 1);
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('cleanup unused maps');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('cleanup unused maps');
         const discardTimeout = this.maps.length > MAP_SOFT_LIMIT ? 5 * constants_1.MINUTE : constants_1.MAP_DISCARD_TIMEOUT;
         const mapDiscardThreshold = now - discardTimeout;
         for (const map of this.maps) {
-            if (map.instance && (serverMap_1.hasAnyClients(map) || this.mapSwitchQueue.some(q => q.map === map))) {
+            if (map.instance && ((0, serverMap_1.hasAnyClients)(map) || this.mapSwitchQueue.some(q => q.map === map))) {
                 map.lastUsed = now;
             }
         }
@@ -428,8 +435,8 @@ class World {
                 // }
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('cleanup reserved ids');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('cleanup reserved ids');
         const threshold = Date.now() - 5 * constants_1.MINUTE;
         for (const key of Array.from(this.reservedIdsByKey.keys())) { // TODO: avoid doing this to save gc
             const { id, time } = this.reservedIdsByKey.get(key);
@@ -438,11 +445,11 @@ class World {
                 this.reservedIds.delete(id);
             }
         }
-        timing_1.timingEnd();
-        timing_1.timingStart('cleanup parties');
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingStart)('cleanup parties');
         this.partyService.cleanupParties();
-        timing_1.timingEnd();
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
+        (0, timing_1.timingEnd)();
     }
     socketStatsText() {
         const { sent, received, sentPackets, receivedPackets } = this.socketStats.stats();
@@ -450,7 +457,7 @@ class World {
             `recv: ${(received / 1024).toFixed(2)} kb (${receivedPackets})`;
     }
     updatesStats() {
-        timing_1.timingStart('updatesStats()');
+        (0, timing_1.timingStart)('updatesStats()');
         let totalUpdates = 0, reusedUpdates = 0;
         for (const map of this.maps) {
             for (const region of map.regions) {
@@ -458,7 +465,7 @@ class World {
                 reusedUpdates += region.reusedUpdates;
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
         return { totalUpdates, reusedUpdates };
     }
     cleanupOfflineClients() {
@@ -466,7 +473,7 @@ class World {
         if ((now - this.lastCleanup) > constants_1.REMOVE_INTERVAL) {
             this.lastCleanup = now;
             const removeFrom = now - constants_1.REMOVE_TIMEOUT;
-            lodash_1.remove(this.offlineClients, c => c.offline && !c.party && c.offlineAt && c.offlineAt.getTime() < removeFrom);
+            (0, lodash_1.remove)(this.offlineClients, c => c.offline && !c.party && c.offlineAt && c.offlineAt.getTime() < removeFrom);
         }
     }
     joinClientToQueue(client) {
@@ -485,14 +492,14 @@ class World {
         ];
         for (const client of clientsToKick) {
             const reason = client.tokenId === tokenId ? 'kicked [joining again]' : 'kicked [alone on ip]';
-            this.kick(client, reason, 0 /* None */, true);
+            this.kick(client, reason, 0 /* LeaveReason.None */, true);
         }
         // TODO: wait for all clients to be kicked before adding to the queue
         //       another queue before joinQueue
         this.joinQueue.push(client);
     }
     joinClientToWorld(client) {
-        timing_1.timingStart('joinClientToWorld()');
+        (0, timing_1.timingStart)('joinClientToWorld()');
         const key = `${client.accountId}:${client.characterId}`;
         const reserved = this.reservedIdsByKey.get(key);
         if (reserved) {
@@ -511,29 +518,29 @@ class World {
         let map = findOrCreateMapForClient(this, client.characterState.map || '', client);
         if (!map) {
             map = this.getMainMap();
-            const { x, y } = utils_1.randomPoint(map.spawnArea);
+            const { x, y } = (0, utils_1.randomPoint)(map.spawnArea);
             client.pony.x = x;
             client.pony.y = y;
         }
-        if (collision_1.isStaticCollision(client.pony, map)) {
-            if (!collision_1.fixCollision(client.pony, map)) {
-                const { x, y } = utils_1.randomPoint(map.spawnArea);
+        if ((0, collision_1.isStaticCollision)(client.pony, map)) {
+            if (!(0, collision_1.fixCollision)(client.pony, map)) {
+                const { x, y } = (0, utils_1.randomPoint)(map.spawnArea);
                 client.pony.x = x;
                 client.pony.y = y;
             }
         }
-        client.pony.x = positionUtils_1.roundPositionXMidPixel(client.pony.x);
-        client.pony.y = positionUtils_1.roundPositionYMidPixel(client.pony.y);
+        client.pony.x = (0, positionUtils_1.roundPositionXMidPixel)(client.pony.x);
+        client.pony.y = (0, positionUtils_1.roundPositionYMidPixel)(client.pony.y);
         client.map = map;
-        camera_1.centerCameraOn(client.camera, client.pony);
+        (0, camera_1.centerCameraOn)(client.camera, client.pony);
         client.worldState(this.getState(), true);
-        client.mapState(serverMap_1.getMapInfo(client.map), client.map.state);
+        client.mapState((0, serverMap_1.getMapInfo)(client.map), client.map.state);
         if (BETA) {
-            timing_1.timingStart('minimap');
-            client.mapTest(client.map.width, client.map.height, serverMap_1.createMinimap(this, client.map));
-            timing_1.timingEnd();
+            (0, timing_1.timingStart)('minimap');
+            client.mapTest(client.map.width, client.map.height, (0, serverMap_1.createMinimap)(this, client.map));
+            (0, timing_1.timingEnd)();
         }
-        camera_1.updateCamera(client.camera, client.pony, map);
+        (0, camera_1.updateCamera)(client.camera, client.pony, map);
         this.addEntity(client.pony, client.map);
         const visibleOnlineFriends = [];
         for (const c of this.clients) {
@@ -545,14 +552,14 @@ class World {
                     visibleOnlineFriends.push(c);
                 }
                 if (!client.accountSettings.hidden) {
-                    c.updateFriends([friends_1.toFriendOnline(client)], false);
+                    c.updateFriends([(0, friends_1.toFriendOnline)(client)], false);
                 }
                 if (!c.friends.has(client.accountId)) {
-                    playerUtils_1.reloadFriends(c).catch(e => logger_1.logger.error(e));
+                    (0, playerUtils_1.reloadFriends)(c).catch(e => logger_1.logger.error(e));
                 }
             }
             else if (c.friends.has(client.accountId)) {
-                playerUtils_1.reloadFriends(c).catch(e => logger_1.logger.error(e));
+                (0, playerUtils_1.reloadFriends)(c).catch(e => logger_1.logger.error(e));
             }
         }
         if (visibleOnlineFriends.length) {
@@ -573,7 +580,7 @@ class World {
                 }
             }
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
     getClientByEntityId(entityId) {
         if (entityId === 0) {
@@ -589,7 +596,7 @@ class World {
             for (const region of map.regions) {
                 const index = region.entities.indexOf(entity);
                 if (index !== -1) {
-                    serverRegion_1.removeEntityFromRegion(region, entity, map);
+                    (0, serverRegion_1.removeEntityFromRegion)(region, entity, map);
                     return map;
                 }
             }
@@ -600,7 +607,7 @@ class World {
         const friends = findAllOnlineFriends(this, client);
         if (!client.accountSettings.hidden) {
             for (const friend of friends) {
-                friend.updateFriends([friends_1.toFriendOffline(client)], false);
+                friend.updateFriends([(0, friends_1.toFriendOffline)(client)], false);
             }
         }
         this.reservedIds.set(client.pony.id, client.accountId);
@@ -611,9 +618,9 @@ class World {
                 `expected: ${client.map && client.map.id} [${client.map && client.map.instance}], ` +
                 `actual: ${map && map.id} [${map && map.instance}])`);
         }
-        regionUtils_1.unsubscribeFromAllRegions(client, true);
-        utils_1.removeItem(this.joinQueue, client);
-        utils_1.removeItem(this.clients, client);
+        (0, regionUtils_1.unsubscribeFromAllRegions)(client, true);
+        (0, utils_1.removeItem)(this.joinQueue, client);
+        (0, utils_1.removeItem)(this.clients, client);
         this.clientsByAccount.delete(client.accountId);
         this.offlineClients.push(client);
         const index = this.mapSwitchQueue.findIndex(x => x.client === client);
@@ -625,16 +632,16 @@ class World {
         const byClient = findClientByAccountId(this, by);
         const whoClient = findClientByAccountId(this, who);
         if (byClient && whoClient) {
-            playerUtils_1.updateEntityPlayerState(byClient, whoClient.pony);
-            playerUtils_1.updateEntityPlayerState(whoClient, byClient.pony);
+            (0, playerUtils_1.updateEntityPlayerState)(byClient, whoClient.pony);
+            (0, playerUtils_1.updateEntityPlayerState)(whoClient, byClient.pony);
         }
     }
     resetToSpawn(client) {
-        Object.assign(client.pony, utils_1.randomPoint(client.map.spawnArea));
+        Object.assign(client.pony, (0, utils_1.randomPoint)(client.map.spawnArea));
     }
-    kick(client, leaveReason = 'kicked', reason = 0 /* None */, force = false) {
+    kick(client, leaveReason = 'kicked', reason = 0 /* LeaveReason.None */, force = false) {
         if (client) {
-            utils_1.removeItem(this.joinQueue, client);
+            (0, utils_1.removeItem)(this.joinQueue, client);
             this.notifications.rejectAll(client);
             this.leaveClient(client);
             client.leaveReason = leaveReason;
@@ -670,7 +677,7 @@ class World {
             this.updateClientAccount(client, account);
             for (const c of this.clients) {
                 if (c.isMod && c.selected === client.pony) {
-                    entityUtils_1.pushUpdateEntityToClient(c, { entity: client.pony, flags: 32 /* Options */, options: { modInfo: accountUtils_1.getModInfo(client) } });
+                    (0, entityUtils_1.pushUpdateEntityToClient)(c, { entity: client.pony, flags: 32 /* UpdateFlags.Options */, options: { modInfo: (0, accountUtils_1.getModInfo)(client) } });
                 }
             }
         }
@@ -678,16 +685,16 @@ class World {
     updateClientAccount(client, newAccount) {
         const oldAccount = client.account;
         client.account = newAccount;
-        if (oldAccount.ban !== newAccount.ban && adminUtils_1.isBanned(newAccount)) {
+        if (oldAccount.ban !== newAccount.ban && (0, adminUtils_1.isBanned)(newAccount)) {
             sendAcl(client);
             this.kick(client, 'kick (ban)');
             return;
         }
         if (oldAccount.shadow !== newAccount.shadow) {
-            if (adminUtils_1.isShadowed(newAccount)) {
+            if ((0, adminUtils_1.isShadowed)(newAccount)) {
                 this.shadow(client);
             }
-            else if (adminUtils_1.isShadowed(oldAccount)) {
+            else if ((0, adminUtils_1.isShadowed)(oldAccount)) {
                 sendAcl(client);
                 this.kick(client, 'kick (unshadow)');
                 return;
@@ -708,7 +715,7 @@ class World {
         if (client.pony.region) {
             for (const c of client.pony.region.clients) {
                 if (c !== client) {
-                    entityUtils_1.pushRemoveEntityToClient(c, client.pony);
+                    (0, entityUtils_1.pushRemoveEntityToClient)(c, client.pony);
                 }
             }
         }
@@ -721,22 +728,22 @@ class World {
     }
     saveClientStates() {
         for (const client of this.clients) {
-            playerUtils_1.createAndUpdateCharacterState(client, this.server);
+            (0, playerUtils_1.createAndUpdateCharacterState)(client, this.server);
         }
     }
 }
 exports.World = World;
 // account creation lock
 function sendAcl(client) {
-    const acl = playerUtils_1.isMutedOrShadowed(client) ? utils_1.fromNow(12 * constants_1.HOUR) : new Date(0);
-    client.actionParam(client.pony.id, 25 /* ACL */, acl.toISOString());
+    const acl = (0, playerUtils_1.isMutedOrShadowed)(client) ? (0, utils_1.fromNow)(12 * constants_1.HOUR) : new Date(0);
+    client.actionParam(client.pony.id, 25 /* Action.ACL */, acl.toISOString());
 }
 function updateNotification() {
     return {
         id: 0,
         name: '',
         message: 'Server will restart shortly for updates and maintenance',
-        flags: 1 /* Ok */,
+        flags: 1 /* NotificationFlags.Ok */,
     };
 }
 function refreshMap(world, client) {
@@ -748,19 +755,17 @@ function refreshMap(world, client) {
         logger_1.logger.warn(`Missing map: ${client.map.id}`);
     }
 }
-exports.refreshMap = refreshMap;
 function goToMap(world, client, id, spawn) {
     const map = findOrCreateMapForClient(world, id, client);
     if (map) {
         const area = spawn && map.spawns.get(spawn) || map.spawnArea;
-        const { x, y } = utils_1.randomPoint(area);
+        const { x, y } = (0, utils_1.randomPoint)(area);
         world.switchToMap(client, map, x, y);
     }
     else {
         logger_1.logger.warn(`Missing map: ${id}`);
     }
 }
-exports.goToMap = goToMap;
 function findOrCreateMapInstance(world, id, instance) {
     let map = world.maps.find(m => m.id === id && m.instance === instance);
     if (!map) {
@@ -770,10 +775,10 @@ function findOrCreateMapInstance(world, id, instance) {
         // }
         switch (id) {
             case 'house':
-                map = houseMap_1.createHouseMap(world, true);
+                map = (0, houseMap_1.createHouseMap)(world, true);
                 break;
             case 'island':
-                map = islandMap_1.createIslandMap(world, true);
+                map = (0, islandMap_1.createIslandMap)(world, true);
                 break;
             default:
                 throw new Error(`Invalid map id: ${id}`);
@@ -802,7 +807,7 @@ function findOrCreateMapForClient(world, id, client) {
 }
 function updateClientCamera(client) {
     const camera = client.camera;
-    camera_1.updateCamera(camera, client.pony, client.map);
+    (0, camera_1.updateCamera)(camera, client.pony, client.map);
     if (client.lastCameraX !== camera.x || client.lastCameraY !== camera.y ||
         client.lastCameraW !== camera.w || client.lastCameraH !== camera.h) {
         client.lastCameraX = camera.x;
@@ -816,30 +821,26 @@ function updateClientCamera(client) {
     }
 }
 function findAllOnlineFriends(world, client) {
-    return lodash_1.compact(Array.from(client.friends.keys())
+    return (0, lodash_1.compact)(Array.from(client.friends.keys())
         .map(account => findClientByAccountId(world, account)));
 }
-exports.findAllOnlineFriends = findAllOnlineFriends;
 function findClientByAccountId(world, accountId) {
     return world.clientsByAccount.get(accountId);
 }
-exports.findClientByAccountId = findClientByAccountId;
 function findClientByCharacterId(world, characterId) {
     return world.clients.find(c => c.characterId === characterId);
 }
-exports.findClientByCharacterId = findClientByCharacterId;
 function findClientsAroundAccountId(world, accountId) {
     const client = findClientByAccountId(world, accountId);
     return client ? world.clients
         .filter(c => c !== client && c.map === client.map)
         .map(c => ({
         account: c.accountId,
-        distance: utils_1.distance(client.pony, c.pony),
+        distance: (0, utils_1.distance)(client.pony, c.pony),
         party: !!(c.party && c.party === client.party),
     }))
         .filter(x => x.distance < 5 || x.party)
         .sort((a, b) => a.distance - b.distance)
         .slice(0, 12) : [];
 }
-exports.findClientsAroundAccountId = findClientsAroundAccountId;
 //# sourceMappingURL=world.js.map

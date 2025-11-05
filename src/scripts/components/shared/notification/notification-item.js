@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationItem = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const game_1 = require("../../../client/game");
@@ -21,25 +22,25 @@ let NotificationItem = class NotificationItem {
         this.notification.open = value;
     }
     get okButton() {
-        return utils_1.hasFlag(this.notification.flags, 1 /* Ok */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 1 /* NotificationFlags.Ok */);
     }
     get yesButton() {
-        return utils_1.hasFlag(this.notification.flags, 2 /* Yes */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 2 /* NotificationFlags.Yes */);
     }
     get acceptButton() {
-        return utils_1.hasFlag(this.notification.flags, 8 /* Accept */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 8 /* NotificationFlags.Accept */);
     }
     get noButton() {
-        return utils_1.hasFlag(this.notification.flags, 4 /* No */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 4 /* NotificationFlags.No */);
     }
     get rejectButton() {
-        return utils_1.hasFlag(this.notification.flags, 16 /* Reject */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 16 /* NotificationFlags.Reject */);
     }
     get ignoreButton() {
-        return utils_1.hasFlag(this.notification.flags, 64 /* Ignore */);
+        return (0, utils_1.hasFlag)(this.notification.flags, 64 /* NotificationFlags.Ignore */);
     }
     get paletteInfo() {
-        return pony_1.getPaletteInfo(this.notification.pony);
+        return (0, pony_1.getPaletteInfo)(this.notification.pony);
     }
     ngOnDestroy() {
         this.isOpen = false;
@@ -54,22 +55,22 @@ let NotificationItem = class NotificationItem {
         this.reject();
         const pony = this.notification.pony;
         if (pony !== this.game.player) {
-            this.game.send(server => server.playerAction(pony.id, 1 /* Ignore */, undefined));
-            pony.playerState = utils_1.setFlag(pony.playerState, 1 /* Ignored */, true);
+            this.game.send(server => server.playerAction(pony.id, 1 /* PlayerAction.Ignore */, undefined));
+            pony.playerState = (0, utils_1.setFlag)(pony.playerState, 1 /* EntityPlayerState.Ignored */, true);
         }
     }
 };
+exports.NotificationItem = NotificationItem;
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object)
 ], NotificationItem.prototype, "notification", void 0);
-NotificationItem = tslib_1.__decorate([
-    core_1.Component({
+exports.NotificationItem = NotificationItem = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'notification-item',
         templateUrl: 'notification-item.pug',
         styleUrls: ['notification-item.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [game_1.PonyTownGame])
 ], NotificationItem);
-exports.NotificationItem = NotificationItem;
 //# sourceMappingURL=notification-item.js.map

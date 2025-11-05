@@ -1,6 +1,7 @@
 "use strict";
 /* tslint:disable */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CHANGELOG = void 0;
 exports.CHANGELOG = [
     {
         "version": "v0.53.1",

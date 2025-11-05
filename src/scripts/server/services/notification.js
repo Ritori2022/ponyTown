@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationService = void 0;
 const utils_1 = require("../../common/utils");
 const NOTIFICATION_LIMIT = 10;
 function getId(notifications) {
     for (let id = 1; id <= 0xffff; id++) {
-        if (!utils_1.findById(notifications, id)) {
+        if (!(0, utils_1.findById)(notifications, id)) {
             return id;
         }
     }
@@ -32,7 +33,7 @@ class NotificationService {
         }
     }
     removeNotification(client, id) {
-        if (utils_1.removeById(client.notifications, id)) {
+        if ((0, utils_1.removeById)(client.notifications, id)) {
             client.removeNotification(id);
             return true;
         }
@@ -41,14 +42,14 @@ class NotificationService {
         }
     }
     acceptNotification(client, id) {
-        const notification = utils_1.findById(client.notifications, id);
+        const notification = (0, utils_1.findById)(client.notifications, id);
         this.removeNotification(client, id);
         if (notification && notification.accept) {
             notification.accept();
         }
     }
     rejectNotification(client, id) {
-        const notification = utils_1.findById(client.notifications, id);
+        const notification = (0, utils_1.findById)(client.notifications, id);
         this.removeNotification(client, id);
         if (notification && notification.reject) {
             notification.reject();

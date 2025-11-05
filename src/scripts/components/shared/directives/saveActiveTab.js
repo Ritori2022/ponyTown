@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SaveActiveTab = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const tabset_1 = require("../tabset/tabset");
@@ -22,16 +23,16 @@ let SaveActiveTab = class SaveActiveTab {
         }
     }
 };
+exports.SaveActiveTab = SaveActiveTab;
 tslib_1.__decorate([
-    core_1.Input('saveActiveTab'),
+    (0, core_1.Input)('saveActiveTab'),
     tslib_1.__metadata("design:type", String)
 ], SaveActiveTab.prototype, "key", void 0);
-SaveActiveTab = tslib_1.__decorate([
-    core_1.Directive({
+exports.SaveActiveTab = SaveActiveTab = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[saveActiveTab]',
     }),
-    tslib_1.__param(0, core_1.Host()),
+    tslib_1.__param(0, (0, core_1.Host)()),
     tslib_1.__metadata("design:paramtypes", [tabset_1.Tabset, storageService_1.StorageService])
 ], SaveActiveTab);
-exports.SaveActiveTab = SaveActiveTab;
 //# sourceMappingURL=saveActiveTab.js.map

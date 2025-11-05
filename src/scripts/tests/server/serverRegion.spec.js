@@ -8,26 +8,26 @@ const region_1 = require("../../common/region");
 describe('serverRegion', () => {
     let region;
     beforeEach(() => {
-        region = serverRegion_1.createServerRegion(1, 2);
+        region = (0, serverRegion_1.createServerRegion)(1, 2);
     });
     it('has correct bounds', () => {
-        chai_1.expect(region.bounds).eql({ x: 8, y: 16, w: 8, h: 8 });
+        (0, chai_1.expect)(region.bounds).eql({ x: 8, y: 16, w: 8, h: 8 });
     });
     it('has correct boundsWithBorder', () => {
-        chai_1.expect(region.boundsWithBorder).eql({ x: 7, y: 15, w: 10, h: 10 });
+        (0, chai_1.expect)(region.boundsWithBorder).eql({ x: 7, y: 15, w: 10, h: 10 });
     });
     it('sets and gets tile at given position', () => {
-        serverRegion_1.setRegionTile({}, region, 1, 2, 2 /* Grass */);
-        chai_1.expect(region_1.getRegionTile(region, 1, 2)).equal(2 /* Grass */);
+        (0, serverRegion_1.setRegionTile)({}, region, 1, 2, 2 /* TileType.Grass */);
+        (0, chai_1.expect)((0, region_1.getRegionTile)(region, 1, 2)).equal(2 /* TileType.Grass */);
     });
     describe('addUpdate()', () => {
         it('adds entity update to update list', () => {
-            const entity = mocks_1.serverEntity(1, 5, 4);
-            serverRegion_1.pushUpdateEntityToRegion(region, { entity, flags: 1 /* Position */, x: 5, y: 4, vx: 0, vy: 0 });
-            chai_1.expect(region.entityUpdates).eql([
+            const entity = (0, mocks_1.serverEntity)(1, 5, 4);
+            (0, serverRegion_1.pushUpdateEntityToRegion)(region, { entity, flags: 1 /* UpdateFlags.Position */, x: 5, y: 4, vx: 0, vy: 0 });
+            (0, chai_1.expect)(region.entityUpdates).eql([
                 {
                     entity,
-                    flags: 1 /* Position */,
+                    flags: 1 /* UpdateFlags.Position */,
                     x: 5,
                     y: 4,
                     vx: 0,
@@ -39,13 +39,13 @@ describe('serverRegion', () => {
             ]);
         });
         it('updates existing entity update', () => {
-            const entity = mocks_1.serverEntity(1, 5, 4);
-            serverRegion_1.pushUpdateEntityToRegion(region, { entity, flags: 0 /* None */ });
-            serverRegion_1.pushUpdateEntityToRegion(region, { entity, flags: 1 /* Position */ | 8 /* Expression */, x: 10, y: 11, vx: 5, vy: 3 });
-            chai_1.expect(region.entityUpdates).eql([
+            const entity = (0, mocks_1.serverEntity)(1, 5, 4);
+            (0, serverRegion_1.pushUpdateEntityToRegion)(region, { entity, flags: 0 /* UpdateFlags.None */ });
+            (0, serverRegion_1.pushUpdateEntityToRegion)(region, { entity, flags: 1 /* UpdateFlags.Position */ | 8 /* UpdateFlags.Expression */, x: 10, y: 11, vx: 5, vy: 3 });
+            (0, chai_1.expect)(region.entityUpdates).eql([
                 {
                     entity,
-                    flags: 1 /* Position */ | 8 /* Expression */,
+                    flags: 1 /* UpdateFlags.Position */ | 8 /* UpdateFlags.Expression */,
                     x: 10,
                     y: 11,
                     vx: 5,
@@ -57,17 +57,17 @@ describe('serverRegion', () => {
             ]);
         });
         it('does not update position of existing entry if position flag is false', () => {
-            const entity = mocks_1.serverEntity(1, 5, 4);
-            serverRegion_1.pushUpdateEntityToRegion(region, { entity, flags: 1 /* Position */, x: 5, y: 4, vx: 0, vy: 0 });
+            const entity = (0, mocks_1.serverEntity)(1, 5, 4);
+            (0, serverRegion_1.pushUpdateEntityToRegion)(region, { entity, flags: 1 /* UpdateFlags.Position */, x: 5, y: 4, vx: 0, vy: 0 });
             entity.x = 10;
             entity.y = 11;
             entity.vx = 5;
             entity.vy = 3;
-            serverRegion_1.pushUpdateEntityToRegion(region, { entity, flags: 8 /* Expression */ });
-            chai_1.expect(region.entityUpdates).eql([
+            (0, serverRegion_1.pushUpdateEntityToRegion)(region, { entity, flags: 8 /* UpdateFlags.Expression */ });
+            (0, chai_1.expect)(region.entityUpdates).eql([
                 {
                     entity,
-                    flags: 1 /* Position */ | 8 /* Expression */,
+                    flags: 1 /* UpdateFlags.Position */ | 8 /* UpdateFlags.Expression */,
                     x: 5,
                     y: 4,
                     vx: 0,
@@ -81,8 +81,8 @@ describe('serverRegion', () => {
     });
     describe('addRemove()', () => {
         it('adds entity remove to remove list', () => {
-            serverRegion_1.pushRemoveEntityToRegion(region, mocks_1.serverEntity(123));
-            chai_1.expect(region.entityRemoves).eql([123]);
+            (0, serverRegion_1.pushRemoveEntityToRegion)(region, (0, mocks_1.serverEntity)(123));
+            (0, chai_1.expect)(region.entityRemoves).eql([123]);
         });
     });
     describe('resetRegionUpdates()', () => {
@@ -90,10 +90,10 @@ describe('serverRegion', () => {
             region.entityUpdates = [{}, {}];
             region.entityRemoves = [{}, {}];
             region.tileUpdates = [{}, {}];
-            serverRegion_1.resetRegionUpdates(region);
-            chai_1.expect(region.entityUpdates).eql([]);
-            chai_1.expect(region.entityRemoves).eql([]);
-            chai_1.expect(region.tileUpdates).eql([]);
+            (0, serverRegion_1.resetRegionUpdates)(region);
+            (0, chai_1.expect)(region.entityUpdates).eql([]);
+            (0, chai_1.expect)(region.entityRemoves).eql([]);
+            (0, chai_1.expect)(region.tileUpdates).eql([]);
         });
     });
 });

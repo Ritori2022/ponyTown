@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.taskQueue = taskQueue;
+exports.makeQueued = makeQueued;
 const lodash_1 = require("lodash");
 function taskQueue() {
     const queue = [];
@@ -37,10 +39,8 @@ function taskQueue() {
     }
     return { push, wait };
 }
-exports.taskQueue = taskQueue;
 function makeQueued(action) {
     const queue = taskQueue();
     return ((...args) => queue.push(() => action(...args)));
 }
-exports.makeQueued = makeQueued;
 //# sourceMappingURL=taskQueue.js.map

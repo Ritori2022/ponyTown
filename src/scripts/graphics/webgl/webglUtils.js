@@ -1,5 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getRenderTargetSize = getRenderTargetSize;
+exports.getWebGLContext = getWebGLContext;
+exports.isWebGL2 = isWebGL2;
+exports.getWebGLError = getWebGLError;
+exports.unbindAllTexturesAndBuffers = unbindAllTexturesAndBuffers;
 const errors_1 = require("../../common/errors");
 function getRenderTargetSize(width, height) {
     const max = Math.max(width, height);
@@ -9,7 +14,6 @@ function getRenderTargetSize(width, height) {
     }
     return pow;
 }
-exports.getRenderTargetSize = getRenderTargetSize;
 function getWebGLContext(canvas) {
     const options = {
         alpha: false,
@@ -24,11 +28,9 @@ function getWebGLContext(canvas) {
     }
     return gl;
 }
-exports.getWebGLContext = getWebGLContext;
 function isWebGL2(gl) {
     return !!(gl && gl.MAX_ELEMENT_INDEX);
 }
-exports.isWebGL2 = isWebGL2;
 function getWebGLError(gl) {
     const error = gl.getError();
     switch (error) {
@@ -42,7 +44,6 @@ function getWebGLError(gl) {
         default: return `${error}`;
     }
 }
-exports.getWebGLError = getWebGLError;
 function unbindAllTexturesAndBuffers(gl) {
     try {
         const numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) | 0;
@@ -59,5 +60,4 @@ function unbindAllTexturesAndBuffers(gl) {
         DEVELOPMENT && console.error(e);
     }
 }
-exports.unbindAllTexturesAndBuffers = unbindAllTexturesAndBuffers;
 //# sourceMappingURL=webglUtils.js.map

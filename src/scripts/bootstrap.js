@@ -9,6 +9,6 @@ if (DEVELOPMENT || data_1.local || data_1.host === `${location.protocol}//${loca
         const path = location.href.replace(data_1.host, '');
         window.opener.postMessage({ type: 'loaded-page', path }, '*');
     }
-    platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule, { preserveWhitespaces: true });
+    (0, platform_browser_dynamic_1.platformBrowserDynamic)().bootstrapModule(app_module_1.AppModule, { preserveWhitespaces: true });
 }
 //# sourceMappingURL=bootstrap.js.map

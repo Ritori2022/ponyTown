@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PlantController = void 0;
 const lodash_1 = require("lodash");
 const timing_1 = require("../timing");
 const utils_1 = require("../../common/utils");
@@ -12,7 +13,7 @@ class PlantController {
         this.plants = [];
         this.interact = (entity, client) => {
             this.world.removeEntity(entity, this.map);
-            utils_1.removeItem(this.plants, entity);
+            (0, utils_1.removeItem)(this.plants, entity);
             this.config.onPick && this.config.onPick(entity, client);
         };
         this.nextSpawn = 0;
@@ -22,16 +23,16 @@ class PlantController {
     update() {
     }
     sparseUpdate() {
-        timing_1.timingStart('PlantController.sparseUpdate()');
+        (0, timing_1.timingStart)('PlantController.sparseUpdate()');
         const now = Date.now();
         const maxStage = this.config.stages.length - 1;
         if (this.nextSpawn < now &&
             (this.config.isActive === undefined || this.config.isActive()) &&
             this.plants.length < this.config.count) {
-            const { x, y } = utils_1.randomPoint(this.config.area);
-            if (this.config.growOnlyOn === undefined || worldMap_1.getTile(this.map, x, y) === this.config.growOnlyOn) {
+            const { x, y } = (0, utils_1.randomPoint)(this.config.area);
+            if (this.config.growOnlyOn === undefined || (0, worldMap_1.getTile)(this.map, x, y) === this.config.growOnlyOn) {
                 this.addPlant(x, y, 0);
-                this.nextSpawn = now + lodash_1.random(10000, 20000);
+                this.nextSpawn = now + (0, lodash_1.random)(10000, 20000);
             }
         }
         const plantsToRemove = [];
@@ -44,18 +45,18 @@ class PlantController {
         for (const plant of plantsToRemove) {
             this.removePlant(plant);
         }
-        timing_1.timingEnd();
+        (0, timing_1.timingEnd)();
     }
     removePlant(plant) {
-        utils_1.removeItem(this.plants, plant);
+        (0, utils_1.removeItem)(this.plants, plant);
         this.world.removeEntity(plant, this.map);
     }
     addPlant(x, y, stage) {
-        const create = lodash_1.sample(this.config.stages[stage]);
+        const create = (0, lodash_1.sample)(this.config.stages[stage]);
         const plant = create(x, y);
         plant.plantStage = stage;
-        plant.plantStageNext = Date.now() + lodash_1.random(15000, 40000);
-        plant.serverFlags = 2 /* DoNotSave */;
+        plant.plantStageNext = Date.now() + (0, lodash_1.random)(15000, 40000);
+        plant.serverFlags = 2 /* ServerFlags.DoNotSave */;
         if (stage === (this.config.stages.length - 1)) {
             plant.interact = this.interact;
         }

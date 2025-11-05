@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment = require("moment");
+exports.connectOnlySocialError = void 0;
+exports.getModInfo = getModInfo;
+exports.findOrCreateAccount = findOrCreateAccount;
+exports.isNew = isNew;
+exports.checkIfNotAdmin = checkIfNotAdmin;
+exports.updateCharacterCount = updateCharacterCount;
+exports.updateAccountState = updateAccountState;
+exports.getAccountAlertMessage = getAccountAlertMessage;
+exports.addFriend = addFriend;
+exports.removeFriend = removeFriend;
+exports.getCharacterLimit = getCharacterLimit;
+exports.getSupporterInviteLimit = getSupporterInviteLimit;
+const tslib_1 = require("tslib");
+const moment = tslib_1.__importStar(require("moment"));
 const lodash_1 = require("lodash");
 const constants_1 = require("../common/constants");
 const utils_1 = require("../common/utils");
@@ -14,7 +27,7 @@ const adminUtils_1 = require("../common/adminUtils");
 const oauth_1 = require("./oauth");
 const taskQueue_1 = require("./utils/taskQueue");
 function getBanInfo(value) {
-    return adminUtils_1.isActive(value) ? (value === -1 ? 'perma' : moment(value).fromNow(true)) : undefined;
+    return (0, adminUtils_1.isActive)(value) ? (value === -1 ? 'perma' : moment(value).fromNow(true)) : undefined;
 }
 function getModInfo({ accountId, account, country }) {
     return {
@@ -26,9 +39,8 @@ function getModInfo({ accountId, account, country }) {
         account: `${account.name} [${accountId.substr(-3)}]`,
     };
 }
-exports.getModInfo = getModInfo;
 function findAccountByEmail(emails) {
-    return emails && emails.length ? db_1.queryAccount({ emails: { $in: emails } }) : Promise.resolve(undefined);
+    return emails && emails.length ? (0, db_1.queryAccount)({ emails: { $in: emails } }) : Promise.resolve(undefined);
 }
 const availableProviders = oauth_1.providers.filter(a => !a.connectOnly).map(a => a.name).join(', ');
 exports.connectOnlySocialError = `Cannot create new account using this social site, new accounts can only be created using: ${availableProviders}`;
@@ -58,14 +70,14 @@ async function hasDuplicatesAtOrigin(account, ip) {
             return false;
         if (ban === -1 || ban > now || mute === -1 || mute > now || shadow === -1 || shadow > now)
             return true;
-        if (utils_1.hasFlag(flags, 2 /* CreatingDuplicates */))
+        if ((0, utils_1.hasFlag)(flags, 2 /* AccountFlags.CreatingDuplicates */))
             return true;
         if (name === account.name)
             return true;
         return false;
     });
 }
-const newAccountCheckQueue = taskQueue_1.taskQueue();
+const newAccountCheckQueue = (0, taskQueue_1.taskQueue)();
 async function checkNewAccount(account, options) {
     newAccountCheckQueue.push(async () => {
         try {
@@ -85,7 +97,7 @@ async function findOrCreateAccount(auth, profile, options) {
     let account = undefined;
     let isNew = false;
     if (auth.account) {
-        account = await db_1.findAccount(auth.account);
+        account = await (0, db_1.findAccount)(auth.account);
     }
     if (!account) {
         account = await findAccountByEmail(profile.emails);
@@ -94,19 +106,19 @@ async function findOrCreateAccount(auth, profile, options) {
         account = createNewAccount(profile, options);
         isNew = true;
     }
-    const assigned = await authUtils_1.assignAuth(auth, account);
+    const assigned = await (0, authUtils_1.assignAuth)(auth, account);
     if (assigned && options.isSuspiciousAuth(auth)) {
         options.warn(account._id, 'Suspicious auth');
     }
     // fix accounts fields
-    account.name = account.name || lodash_1.truncate(clientUtils_1.cleanName(profile.name) || 'Anonymous', { length: constants_1.ACCOUNT_NAME_MAX_LENGTH });
+    account.name = account.name || (0, lodash_1.truncate)((0, clientUtils_1.cleanName)(profile.name) || 'Anonymous', { length: constants_1.ACCOUNT_NAME_MAX_LENGTH });
     account.emails = account.emails || [];
-    if (profile.emails.some(e => !utils_1.includes(account.emails, e))) {
+    if (profile.emails.some(e => !(0, utils_1.includes)(account.emails, e))) {
         const suspiciousEmails = profile.emails.filter(options.isSuspiciousName);
         if (suspiciousEmails.length) {
             options.warn(account._id, 'Suspicious email', suspiciousEmails.join(', '));
         }
-        account.emails = lodash_1.uniq([...account.emails, ...profile.emails]);
+        account.emails = (0, lodash_1.uniq)([...account.emails, ...profile.emails]);
     }
     account.lastVisit = new Date();
     account.lastUserAgent = options.userAgent || account.lastUserAgent;
@@ -114,7 +126,7 @@ async function findOrCreateAccount(auth, profile, options) {
     // save account
     if (isNew) {
         await account.save();
-        logger_1.system(account._id, `created account "${account.name}"`);
+        (0, logger_1.system)(account._id, `created account "${account.name}"`);
         checkNewAccount(account, options);
     }
     else {
@@ -123,13 +135,11 @@ async function findOrCreateAccount(auth, profile, options) {
     }
     return account;
 }
-exports.findOrCreateAccount = findOrCreateAccount;
 function isNew(account) {
-    return !account.createdAt || account.createdAt.getTime() > utils_1.fromNow(-constants_1.DAY).getTime();
+    return !account.createdAt || account.createdAt.getTime() > (0, utils_1.fromNow)(-constants_1.DAY).getTime();
 }
-exports.isNew = isNew;
 function checkIfNotAdmin(account, message) {
-    if (accountUtils_1.isAdmin(account)) {
+    if ((0, accountUtils_1.isAdmin)(account)) {
         logger_1.logger.warn(`Cannot perform this action on admin user (${message})`);
         throw new Error('Cannot perform this action on admin user');
     }
@@ -137,24 +147,20 @@ function checkIfNotAdmin(account, message) {
         return account;
     }
 }
-exports.checkIfNotAdmin = checkIfNotAdmin;
 async function updateCharacterCount(account) {
-    const characterCount = await db_1.characterCount(account);
-    await db_1.updateAccount(account, { characterCount });
+    const characterCount = await (0, db_1.characterCount)(account);
+    await (0, db_1.updateAccount)(account, { characterCount });
 }
-exports.updateCharacterCount = updateCharacterCount;
 function updateAccountState(account, update) {
     const state = account.state || {};
     update(state);
     account.state = state;
-    db_1.updateAccount(account._id, { state: account.state })
+    (0, db_1.updateAccount)(account._id, { state: account.state })
         .catch(e => logger_1.logger.error(e));
 }
-exports.updateAccountState = updateAccountState;
 function getAccountAlertMessage(account) {
     return (account.alert && account.alert.expires.getTime() > Date.now()) ? account.alert.message : undefined;
 }
-exports.getAccountAlertMessage = getAccountAlertMessage;
 async function findFriendRequest(accountId, friendId) {
     const requests = await db_1.FriendRequest.find({
         $or: [
@@ -171,27 +177,23 @@ async function addFriend(accountId, friendId) {
     }
     await db_1.FriendRequest.create({ source: accountId, target: friendId });
 }
-exports.addFriend = addFriend;
 async function removeFriend(accountId, friendId) {
     const existing = await findFriendRequest(accountId, friendId);
     if (existing) {
         existing.remove();
     }
 }
-exports.removeFriend = removeFriend;
 function getCharacterLimit(account) {
-    return accountUtils_1.getCharacterLimit({
-        flags: adminUtils_1.isPastSupporter(account) ? 4 /* PastSupporter */ : 0,
-        supporter: adminUtils_1.supporterLevel(account),
+    return (0, accountUtils_1.getCharacterLimit)({
+        flags: (0, adminUtils_1.isPastSupporter)(account) ? 4 /* AccountDataFlags.PastSupporter */ : 0,
+        supporter: (0, adminUtils_1.supporterLevel)(account),
     });
 }
-exports.getCharacterLimit = getCharacterLimit;
 function getSupporterInviteLimit(account) {
-    return accountUtils_1.getSupporterInviteLimit({
+    return (0, accountUtils_1.getSupporterInviteLimit)({
         roles: account.roles,
-        flags: adminUtils_1.isPastSupporter(account) ? 4 /* PastSupporter */ : 0,
-        supporter: adminUtils_1.supporterLevel(account),
+        flags: (0, adminUtils_1.isPastSupporter)(account) ? 4 /* AccountDataFlags.PastSupporter */ : 0,
+        supporter: (0, adminUtils_1.supporterLevel)(account),
     });
 }
-exports.getSupporterInviteLimit = getSupporterInviteLimit;
 //# sourceMappingURL=accountUtils.js.map

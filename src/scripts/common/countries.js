@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.countryCodeToName = void 0;
 exports.countryCodeToName = {
     AD: `Andorra`,
     AE: `United Arab Emirates (the)`,

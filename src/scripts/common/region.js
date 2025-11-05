@@ -1,5 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createRegion = createRegion;
+exports.getRegionTile = getRegionTile;
+exports.setRegionTile = setRegionTile;
+exports.getRegionTileIndex = getRegionTileIndex;
+exports.setRegionTileDirty = setRegionTileDirty;
+exports.getRegionElevation = getRegionElevation;
+exports.setRegionElevation = setRegionElevation;
+exports.worldToRegionX = worldToRegionX;
+exports.worldToRegionY = worldToRegionY;
+exports.invalidateRegionsCollider = invalidateRegionsCollider;
+exports.generateRegionCollider = generateRegionCollider;
 const utils_1 = require("./utils");
 const constants_1 = require("./constants");
 const worldMap_1 = require("./worldMap");
@@ -9,13 +20,13 @@ const compress_1 = require("./compress");
 const { min, max, floor } = Math;
 function createRegion(x, y, tileData) {
     const size = constants_1.REGION_SIZE;
-    const tiles = tileData ? compress_1.decompressTiles(tileData) : new Uint8Array(size * size);
+    const tiles = tileData ? (0, compress_1.decompressTiles)(tileData) : new Uint8Array(size * size);
     const tileIndices = new Int16Array(size * size);
     const randoms = new Uint8Array(size * size);
     // const elevation = new Uint8Array(size * size);
     const collider = new Uint8Array(size * size * constants_1.tileWidth * constants_1.tileHeight);
     if (!tileData) {
-        tiles.fill(1 /* Dirt */);
+        tiles.fill(1 /* TileType.Dirt */);
     }
     tileIndices.fill(-1);
     for (let i = 0; i < randoms.length; i++) {
@@ -32,40 +43,31 @@ function createRegion(x, y, tileData) {
         tilesDirty: true,
     };
 }
-exports.createRegion = createRegion;
 function getRegionTile(region, x, y) {
     return region.tiles[x | (y << 3)];
 }
-exports.getRegionTile = getRegionTile;
 function setRegionTile(region, x, y, type) {
     region.tiles[x | (y << 3)] = type;
 }
-exports.setRegionTile = setRegionTile;
 function getRegionTileIndex(region, x, y) {
     return region.tileIndices[x | (y << 3)];
 }
-exports.getRegionTileIndex = getRegionTileIndex;
 function setRegionTileDirty(region, x, y) {
     region.tileIndices[x | (y << 3)] = -1;
     region.tilesDirty = true;
 }
-exports.setRegionTileDirty = setRegionTileDirty;
 function getRegionElevation(_region, _x, _y) {
     return 0; // region.elevation[x | (y << 3)];
 }
-exports.getRegionElevation = getRegionElevation;
 function setRegionElevation(_region, _x, _y, _value) {
     // region.elevation[x | (y << 3)] = value;
 }
-exports.setRegionElevation = setRegionElevation;
 function worldToRegionX(x, map) {
-    return utils_1.clamp(floor(x / constants_1.REGION_SIZE), 0, map.regionsX - 1);
+    return (0, utils_1.clamp)(floor(x / constants_1.REGION_SIZE), 0, map.regionsX - 1);
 }
-exports.worldToRegionX = worldToRegionX;
 function worldToRegionY(y, map) {
-    return utils_1.clamp(floor(y / constants_1.REGION_SIZE), 0, map.regionsY - 1);
+    return (0, utils_1.clamp)(floor(y / constants_1.REGION_SIZE), 0, map.regionsY - 1);
 }
-exports.worldToRegionY = worldToRegionY;
 function invalidateRegionsCollider(region, map) {
     const minY = max(0, region.y - 1);
     const maxY = min(map.regionsY - 1, region.y + 1);
@@ -73,14 +75,13 @@ function invalidateRegionsCollider(region, map) {
     const maxX = min(map.regionsX - 1, region.x + 1);
     for (let ry = minY; ry <= maxY; ry++) {
         for (let rx = minX; rx <= maxX; rx++) {
-            const r = worldMap_1.getRegion(map, rx, ry);
+            const r = (0, worldMap_1.getRegion)(map, rx, ry);
             if (r) {
                 r.colliderDirty = true;
             }
         }
     }
 }
-exports.invalidateRegionsCollider = invalidateRegionsCollider;
 function generateRegionCollider(region, map) {
     const regionCollider = region.collider;
     const tileTypes = region.tiles;
@@ -89,7 +90,7 @@ function generateRegionCollider(region, map) {
     for (let ty = 0, i = 0; ty < constants_1.REGION_SIZE; ty++) {
         for (let tx = 0; tx < constants_1.REGION_SIZE; tx++, i++) {
             const type = tileTypes[i];
-            if (type === 0 /* None */) {
+            if (type === 0 /* TileType.None */) {
                 const x0 = (tx * constants_1.tileWidth) | 0;
                 const y0 = (ty * constants_1.tileHeight) | 0;
                 const x1 = (x0 + constants_1.tileWidth) | 0;
@@ -115,12 +116,12 @@ function generateRegionCollider(region, map) {
     const baseY = region.y * constants_1.REGION_SIZE;
     for (let ry = minY; ry <= maxY; ry++) {
         for (let rx = minX; rx <= maxX; rx++) {
-            const r = worldMap_1.getRegion(map, rx, ry);
+            const r = (0, worldMap_1.getRegion)(map, rx, ry);
             if (r === undefined)
                 continue;
             for (const entity of r.colliders) {
-                const entityX = positionUtils_1.toScreenX(entity.x - baseX) | 0;
-                const entityY = positionUtils_1.toScreenY(entity.y - baseY) | 0;
+                const entityX = (0, positionUtils_1.toScreenX)(entity.x - baseX) | 0;
+                const entityY = (0, positionUtils_1.toScreenY)(entity.y - baseY) | 0;
                 const cBounds = entity.collidersBounds;
                 const ecbX = entityX + cBounds.x;
                 const ecbY = entityY + cBounds.y;
@@ -173,5 +174,4 @@ function generateRegionCollider(region, map) {
         }
     }
 }
-exports.generateRegionCollider = generateRegionCollider;
 //# sourceMappingURL=region.js.map

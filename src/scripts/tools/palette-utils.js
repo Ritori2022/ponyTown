@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.imageToPalette = imageToPalette;
 const canvas_utils_1 = require("./canvas-utils");
 const validPatternColors = [
-    255,
-    255 << 8,
-    255 | (255 << 8),
-    255 << 16,
-    255 | (255 << 16),
-    (255 << 8) | (255 << 16),
-    255 | (255 << 8) | (255 << 16),
-    0,
+    255, // red
+    255 << 8, // green
+    255 | (255 << 8), // yellow
+    255 << 16, // blue
+    255 | (255 << 16), // purple
+    (255 << 8) | (255 << 16), // teal
+    255 | (255 << 8) | (255 << 16), // white
+    0, // black
 ];
 const getAlpha = (alpha) => alpha < 15 ? false : (alpha > 250 ? true : null);
 const isOutline = (shade) => shade <= 159;
@@ -62,7 +63,7 @@ function pixel(data, index) {
     return data.slice(index, index + 4).join(', ');
 }
 function imageToPalette(rect, image, pattern, palette, config) {
-    const pat = canvas_utils_1.cropCanvas(pattern, 0, 0, image.width, image.height);
+    const pat = (0, canvas_utils_1.cropCanvas)(pattern, 0, 0, image.width, image.height);
     const ctx = pat.getContext('2d');
     ctx.globalCompositeOperation = 'destination-in';
     ctx.drawImage(image, 0, 0);
@@ -104,9 +105,8 @@ function imageToPalette(rect, image, pattern, palette, config) {
         data[i + 3] = 255;
     }
     config.colors = palette ? palette.length : ((maxIndex + 1) * 2 + 1);
-    const result = canvas_utils_1.createExtCanvas(image.width, image.height, `${image.info} (image to palette)`);
+    const result = (0, canvas_utils_1.createExtCanvas)(image.width, image.height, `${image.info} (image to palette)`);
     result.getContext('2d').putImageData(imageData, rect.x, rect.y);
     return result;
 }
-exports.imageToPalette = imageToPalette;
 //# sourceMappingURL=palette-utils.js.map

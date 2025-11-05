@@ -2,6 +2,27 @@
 // generated file
 /* tslint:disable */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.colorPal17 = exports.colorPal13 = exports.colorPal11 = exports.colorPal9 = exports.colorPal7 = exports.colorPal5 = exports.colorPal3 = exports.paletteSpriteSheet = exports.normalSpriteSheet = exports.spriteSheets = void 0;
+exports.createSprites = createSprites;
+exports.createFont = createFont;
+exports.createButton = createButton;
+exports.mapSprites = mapSprites;
+exports.mapSprites2 = mapSprites2;
+exports.createPalettes = createPalettes;
+exports.createColorPal = createColorPal;
+exports.colorPal = colorPal;
+exports.getPalette = getPalette;
+exports.emptyColorPalette = emptyColorPalette;
+exports.createSpritesPalette = createSpritesPalette;
+exports.createColorPalette = createColorPalette;
+exports.createColorExtraPal = createColorExtraPal;
+exports.createShadow = createShadow;
+exports.createColorShadowPalette = createColorShadowPalette;
+exports.createNose = createNose;
+exports.createEye = createEye;
+exports.createAnimation = createAnimation;
+exports.createAnimationPalette = createAnimationPalette;
+exports.createAnimationShadow = createAnimationShadow;
 const utils_1 = require("../common/utils");
 const bitUtils_1 = require("../common/bitUtils");
 const sprites = createSprites('/*SPRITES*/');
@@ -29,7 +50,7 @@ function createSprites(data) {
         { x: 0, y: 0, w: 0, h: 0, ox: 0, oy: 0, type: 0 },
     ];
     let offset = 0;
-    const read = bitUtils_1.bitReaderCustom(() => {
+    const read = (0, bitUtils_1.bitReaderCustom)(() => {
         const value = parseInt(data.substr(offset, 2), 16);
         offset += 2;
         return value;
@@ -47,7 +68,6 @@ function createSprites(data) {
     }
     return sprites;
 }
-exports.createSprites = createSprites;
 function createFont(sprites, groups) {
     const chars = [];
     for (const [start, codes] of groups) {
@@ -59,7 +79,6 @@ function createFont(sprites, groups) {
     }
     return chars;
 }
-exports.createFont = createFont;
 function createButton(border, topLeft, top, topRight, left, bg, right, bottomLeft, bottom, bottomRight) {
     return {
         border,
@@ -74,15 +93,12 @@ function createButton(border, topLeft, top, topRight, left, bg, right, bottomLef
         bottomRight: sprites[bottomRight]
     };
 }
-exports.createButton = createButton;
 function mapSprites(frames) {
     return frames.map(i => sprites[i]);
 }
-exports.mapSprites = mapSprites;
 function mapSprites2(frames) {
     return frames.map(i => sprites2[i]);
 }
-exports.mapSprites2 = mapSprites2;
 function createPalettes(colorsString, palettes) {
     const colors = colorsString.split(/ /g).map(utils_1.parseSpriteColor);
     return palettes.map(palette => {
@@ -93,15 +109,12 @@ function createPalettes(colorsString, palettes) {
         return result;
     });
 }
-exports.createPalettes = createPalettes;
 function createColorPal(color, colors) {
     return { color: sprites2[color], colors };
 }
-exports.createColorPal = createColorPal;
 function colorPal(colors) {
     return (color) => createColorPal(color, colors);
 }
-exports.colorPal = colorPal;
 const colorPal3 = colorPal(3);
 exports.colorPal3 = colorPal3;
 const colorPal5 = colorPal(5);
@@ -119,50 +132,38 @@ exports.colorPal17 = colorPal17;
 function getPalette(index) {
     return palettes[index];
 }
-exports.getPalette = getPalette;
 const emptyPalette = new Uint32Array(0);
 function emptyColorPalette() {
     return { color: sprites2[0], palettes: [emptyPalette] };
 }
-exports.emptyColorPalette = emptyColorPalette;
 function createSpritesPalette(sprites, paletteIndexes) {
     return { sprites: sprites.map(i => sprites2[i]), palettes: paletteIndexes.map(getPalette) };
 }
-exports.createSpritesPalette = createSpritesPalette;
 function createColorPalette(color, paletteIndexes) {
     return { color: sprites2[color], palettes: paletteIndexes.map(getPalette) };
 }
-exports.createColorPalette = createColorPalette;
 function createColorExtraPal(color, colors, extra, paletteIndexes) {
     return { color: sprites2[color], colors, extra: sprites2[extra], palettes: paletteIndexes.map(getPalette) };
 }
-exports.createColorExtraPal = createColorExtraPal;
 function createShadow(shadow) {
     return { shadow: sprites2[shadow] };
 }
-exports.createShadow = createShadow;
 function createColorShadowPalette(color, shadow, paletteIndexes) {
     return { color: sprites2[color], shadow: sprites2[shadow], palettes: paletteIndexes.map(getPalette) };
 }
-exports.createColorShadowPalette = createColorShadowPalette;
 function createNose(color, colors, mouth, fangs) {
     return { color: sprites2[color], colors, mouth: sprites2[mouth], fangs: sprites2[fangs] };
 }
-exports.createNose = createNose;
 function createEye(base, irises, shadow, shine) {
     return { base: sprites2[base], irises: mapSprites2(irises), shadow: sprites2[shadow || 0], shine: sprites2[shine || 0] };
 }
-exports.createEye = createEye;
 function createAnimation(frames) {
     return { frames: mapSprites(frames) };
 }
-exports.createAnimation = createAnimation;
 function createAnimationPalette(frames, palette) {
     return { frames: mapSprites2(frames), palette: getPalette(palette) };
 }
-exports.createAnimationPalette = createAnimationPalette;
 function createAnimationShadow(frames, shadow, palette) {
     return { frames: mapSprites2(frames), shadow: sprites2[shadow], palette: getPalette(palette) };
 }
-exports.createAnimationShadow = createAnimationShadow;
 //# sourceMappingURL=sprites-template.js.map

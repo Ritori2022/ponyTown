@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChatBox = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const interfaces_1 = require("../../../common/interfaces");
@@ -20,15 +21,15 @@ function setupChatType(type, name) {
     chatTypeNames[type] = name;
     chatTypeClasses[type] = `chat-${name.replace(/ /, '-')}`;
 }
-setupChatType(0 /* Say */, 'say');
-setupChatType(1 /* Party */, 'party');
-setupChatType(4 /* Supporter */, 'sup');
-setupChatType(5 /* Supporter1 */, 'sup1');
-setupChatType(6 /* Supporter2 */, 'sup2');
-setupChatType(7 /* Supporter3 */, 'sup3');
-setupChatType(9 /* Whisper */, 'whisper');
-setupChatType(2 /* Think */, 'think');
-setupChatType(3 /* PartyThink */, 'party think');
+setupChatType(0 /* ChatType.Say */, 'say');
+setupChatType(1 /* ChatType.Party */, 'party');
+setupChatType(4 /* ChatType.Supporter */, 'sup');
+setupChatType(5 /* ChatType.Supporter1 */, 'sup1');
+setupChatType(6 /* ChatType.Supporter2 */, 'sup2');
+setupChatType(7 /* ChatType.Supporter3 */, 'sup3');
+setupChatType(9 /* ChatType.Whisper */, 'whisper');
+setupChatType(2 /* ChatType.Think */, 'think');
+setupChatType(3 /* ChatType.PartyThink */, 'party think');
 function isActionCommand(message) {
     return /^\/(yawn|sneeze|achoo|laugh|lol|haha|хаха|jaja)/i.test(message);
 }
@@ -40,7 +41,7 @@ let ChatBox = class ChatBox {
         this.sendIcon = icons_1.faAngleDoubleRight;
         this.isOpen = false;
         this.message = '';
-        this.chatType = 0 /* Say */;
+        this.chatType = 0 /* ChatType.Say */;
         this.pasted = false;
         this.lastMessages = [];
         this.state = {};
@@ -53,7 +54,7 @@ let ChatBox = class ChatBox {
             this.game.onToggleChat.subscribe(() => zone.run(() => this.toggle())),
             this.game.onCommand.subscribe(() => zone.run(() => this.command())),
             this.game.onLeft.subscribe(() => {
-                this.chatType = 0 /* Say */;
+                this.chatType = 0 /* ChatType.Say */;
                 this.close();
             }),
         ];
@@ -80,15 +81,15 @@ let ChatBox = class ChatBox {
     }
     send(_event) {
         let chatType = this.chatType;
-        let message = emoji_1.replaceEmojis(clientUtils_1.cleanMessage(this.message || '')).substr(0, constants_1.SAY_MAX_LENGTH);
-        const handled = playerActions_1.handleActionCommand(message, this.game);
-        const spam = this.pasted && chatType !== 1 /* Party */ && clientUtils_1.isSpamMessage(message, this.lastMessages);
+        let message = (0, emoji_1.replaceEmojis)((0, clientUtils_1.cleanMessage)(this.message || '')).substr(0, constants_1.SAY_MAX_LENGTH);
+        const handled = (0, playerActions_1.handleActionCommand)(message, this.game);
+        const spam = this.pasted && chatType !== 1 /* ChatType.Party */ && (0, clientUtils_1.isSpamMessage)(message, this.lastMessages);
         const empty = !this.game.player || !message;
-        const ignoreAction = isActionCommand(message) && this.game.player && pony_1.hasHeadAnimation(this.game.player);
+        const ignoreAction = isActionCommand(message) && this.game.player && (0, pony_1.hasHeadAnimation)(this.game.player);
         const whisperTo = this.game.whisperTo;
         let entityId = whisperTo && whisperTo.id || 0;
         if (/^\/(w|whisper) .+$/i.test(message)) {
-            chatType = 9 /* Whisper */;
+            chatType = 9 /* ChatType.Whisper */;
             message = message.substr(/^\/w /i.test(message) ? 3 : 9);
             let offset = 0;
             let entity = undefined;
@@ -97,7 +98,7 @@ let ChatBox = class ChatBox {
                 if (offset === -1)
                     break;
                 const name = message.substr(0, offset);
-                entity = handlers_1.findBestEntityByName(this.game, name);
+                entity = (0, handlers_1.findBestEntityByName)(this.game, name);
                 offset++;
             } while (!entity);
             if (entity) {
@@ -119,32 +120,32 @@ let ChatBox = class ChatBox {
         }
     }
     keydown(e) {
-        if (e.keyCode !== 9 /* TAB */ && e.keyCode !== 16 /* SHIFT */) {
+        if (e.keyCode !== 9 /* Key.TAB */ && e.keyCode !== 16 /* Key.SHIFT */) {
             this.state.lastEmoji = undefined;
         }
-        if (e.keyCode === 9 /* TAB */) {
+        if (e.keyCode === 9 /* Key.TAB */) {
             if (this.message) {
                 if (/^\/(w|whisper) .+$/i.test(this.message)) {
                     const space = this.message.indexOf(' ');
-                    const names = handlers_1.findMatchingEntityNames(this.game, this.message.substr(space + 1));
+                    const names = (0, handlers_1.findMatchingEntityNames)(this.game, this.message.substr(space + 1));
                     if (names.length === 1) {
                         this.message = `${this.message.substring(0, space)} ${names[0]}`;
                     }
                 }
                 else {
-                    this.message = emoji_1.autocompleteMesssage(this.message, e.shiftKey, this.state);
+                    this.message = (0, emoji_1.autocompleteMesssage)(this.message, e.shiftKey, this.state);
                 }
             }
             e.preventDefault();
         }
-        else if (e.keyCode === 13 /* ENTER */ && this.isOpen) {
+        else if (e.keyCode === 13 /* Key.ENTER */ && this.isOpen) {
             this.send(e);
         }
-        else if (e.keyCode === 27 /* ESCAPE */) {
+        else if (e.keyCode === 27 /* Key.ESCAPE */) {
             this.close();
             e.preventDefault();
         }
-        else if (e.keyCode === 32 /* SPACE */) {
+        else if (e.keyCode === 32 /* Key.SPACE */) {
             if (!this.message)
                 return;
             const isParty = /^\/(p|party)$/i.test(this.message);
@@ -155,54 +156,54 @@ let ChatBox = class ChatBox {
             const isSup3 = /^\/(s3)$/i.test(this.message);
             const supporter = this.game.model.supporter;
             const isSayOrInvalid = isSay
-                || (isParty && !partyUtils_1.isInParty(this.game))
+                || (isParty && !(0, partyUtils_1.isInParty)(this.game))
                 || (isSup && supporter === 0)
                 || (isSup1 && supporter < 1)
                 || (isSup2 && supporter < 2)
                 || (isSup3 && supporter < 3);
             if (isSayOrInvalid) {
-                this.changeChatType(e, 0 /* Say */);
+                this.changeChatType(e, 0 /* ChatType.Say */);
             }
             else if (isParty) {
-                this.changeChatType(e, 1 /* Party */);
+                this.changeChatType(e, 1 /* ChatType.Party */);
             }
             else if (isSup) {
-                this.changeChatType(e, 4 /* Supporter */);
+                this.changeChatType(e, 4 /* ChatType.Supporter */);
             }
             else if (isSup1) {
-                this.changeChatType(e, 5 /* Supporter1 */);
+                this.changeChatType(e, 5 /* ChatType.Supporter1 */);
             }
             else if (isSup2) {
-                this.changeChatType(e, 6 /* Supporter2 */);
+                this.changeChatType(e, 6 /* ChatType.Supporter2 */);
             }
             else if (isSup3) {
-                this.changeChatType(e, 7 /* Supporter3 */);
+                this.changeChatType(e, 7 /* ChatType.Supporter3 */);
             }
             else if (/^\/(t|think)$/i.test(this.message)) {
-                if (interfaces_1.isPartyChat(this.chatType)) {
-                    this.changeChatType(e, 3 /* PartyThink */);
+                if ((0, interfaces_1.isPartyChat)(this.chatType)) {
+                    this.changeChatType(e, 3 /* ChatType.PartyThink */);
                 }
                 else {
-                    this.changeChatType(e, 2 /* Think */);
+                    this.changeChatType(e, 2 /* ChatType.Think */);
                 }
             }
             else if (/^\/(r|reply)$/i.test(this.message)) {
                 const lastWhisperFrom = this.game.lastWhisperFrom;
-                const entity = lastWhisperFrom && handlers_1.findEntityOrMockByAnyMeans(this.game, lastWhisperFrom.entityId);
+                const entity = lastWhisperFrom && (0, handlers_1.findEntityOrMockByAnyMeans)(this.game, lastWhisperFrom.entityId);
                 if (entity) {
                     this.game.whisperTo = entity;
-                    this.changeChatType(e, 9 /* Whisper */);
+                    this.changeChatType(e, 9 /* ChatType.Whisper */);
                 }
                 else {
-                    this.changeChatType(e, 0 /* Say */);
+                    this.changeChatType(e, 0 /* ChatType.Say */);
                 }
             }
             else if (/^\/(w|whisper) .+$/i.test(this.message) && !e.shiftKey) {
                 const name = this.message.substr(/^\/w /i.test(this.message) ? 3 : 9);
-                const entity = handlers_1.findBestEntityByName(this.game, name);
+                const entity = (0, handlers_1.findBestEntityByName)(this.game, name);
                 if (entity) {
                     this.game.whisperTo = entity;
-                    this.changeChatType(e, 9 /* Whisper */);
+                    this.changeChatType(e, 9 /* ChatType.Whisper */);
                 }
             }
         }
@@ -237,7 +238,7 @@ let ChatBox = class ChatBox {
             this.isOpen = true;
             this.chatBox.nativeElement.hidden = false;
         }
-        this.chatType = isValidChatType(this.chatType, this.game) ? this.chatType : 0 /* Say */;
+        this.chatType = isValidChatType(this.chatType, this.game) ? this.chatType : 0 /* ChatType.Say */;
         this.updateChatType();
         this.input.focus();
     }
@@ -266,15 +267,15 @@ let ChatBox = class ChatBox {
     }
     setChatType(type) {
         if (type === 'say') {
-            this.chatType = 0 /* Say */;
+            this.chatType = 0 /* ChatType.Say */;
             this.open();
         }
-        else if (type === 'party' && partyUtils_1.isInParty(this.game)) {
-            this.chatType = 1 /* Party */;
+        else if (type === 'party' && (0, partyUtils_1.isInParty)(this.game)) {
+            this.chatType = 1 /* ChatType.Party */;
             this.open();
         }
         else if (type === 'whisper') {
-            this.chatType = 9 /* Whisper */;
+            this.chatType = 9 /* ChatType.Whisper */;
             this.open();
         }
     }
@@ -287,7 +288,7 @@ let ChatBox = class ChatBox {
             this.currentTypeClass = typeClass;
             this.chatBoxInput.nativeElement.className = typeClass;
         }
-        if (this.chatType === 9 /* Whisper */) {
+        if (this.chatType === 9 /* ChatType.Whisper */) {
             typePrefix = 'To ';
             typeName = this.game.whisperTo && this.game.whisperTo.name || 'unknown';
         }
@@ -303,7 +304,7 @@ let ChatBox = class ChatBox {
         if (this.currentTypeName !== typeName) {
             changed = true;
             this.currentTypeName = typeName;
-            htmlUtils_1.replaceNodes(this.typeName.nativeElement, typeName);
+            (0, htmlUtils_1.replaceNodes)(this.typeName.nativeElement, typeName);
         }
         if (changed) {
             const { width } = this.typeBox.nativeElement.getBoundingClientRect();
@@ -312,46 +313,46 @@ let ChatBox = class ChatBox {
         }
     }
 };
+exports.ChatBox = ChatBox;
 tslib_1.__decorate([
-    core_1.ViewChild('inputElement', { static: true }),
+    (0, core_1.ViewChild)('inputElement', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "inputElement", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('typeBox', { static: true }),
+    (0, core_1.ViewChild)('typeBox', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "typeBox", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('typePrefix', { static: true }),
+    (0, core_1.ViewChild)('typePrefix', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "typePrefix", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('typeName', { static: true }),
+    (0, core_1.ViewChild)('typeName', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "typeName", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('chatBox', { static: true }),
+    (0, core_1.ViewChild)('chatBox', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "chatBox", void 0);
 tslib_1.__decorate([
-    core_1.ViewChild('chatBoxInput', { static: true }),
+    (0, core_1.ViewChild)('chatBoxInput', { static: true }),
     tslib_1.__metadata("design:type", core_1.ElementRef)
 ], ChatBox.prototype, "chatBoxInput", void 0);
 tslib_1.__decorate([
-    core_1.Input(),
+    (0, core_1.Input)(),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], ChatBox.prototype, "disabled", null);
-ChatBox = tslib_1.__decorate([
-    core_1.Component({
+exports.ChatBox = ChatBox = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'chat-box',
         templateUrl: 'chat-box.pug',
         styleUrls: ['chat-box.scss'],
     }),
     tslib_1.__metadata("design:paramtypes", [game_1.PonyTownGame, core_1.NgZone])
 ], ChatBox);
-exports.ChatBox = ChatBox;
 function chatTypeClass(chatType, supporter) {
-    if (chatType === 4 /* Supporter */) {
+    if (chatType === 4 /* ChatType.Supporter */) {
         switch (supporter) {
             case 1: return 'chat-sup chat-sup1';
             case 2: return 'chat-sup chat-sup2';
@@ -363,35 +364,35 @@ function chatTypeClass(chatType, supporter) {
 function isValidChatType(type, game) {
     const supporter = game.model.supporter;
     switch (type) {
-        case 0 /* Say */:
-        case 2 /* Think */:
-        case 9 /* Whisper */:
+        case 0 /* ChatType.Say */:
+        case 2 /* ChatType.Think */:
+        case 9 /* ChatType.Whisper */:
             return true;
-        case 1 /* Party */:
-        case 3 /* PartyThink */:
-            return partyUtils_1.isInParty(game);
-        case 4 /* Supporter */:
+        case 1 /* ChatType.Party */:
+        case 3 /* ChatType.PartyThink */:
+            return (0, partyUtils_1.isInParty)(game);
+        case 4 /* ChatType.Supporter */:
             return supporter > 0;
-        case 5 /* Supporter1 */:
+        case 5 /* ChatType.Supporter1 */:
             return supporter >= 1;
-        case 6 /* Supporter2 */:
+        case 6 /* ChatType.Supporter2 */:
             return supporter >= 2;
-        case 7 /* Supporter3 */:
+        case 7 /* ChatType.Supporter3 */:
             return supporter >= 3;
-        case 8 /* Dismiss */:
+        case 8 /* ChatType.Dismiss */:
             return false;
         default:
-            return utils_1.invalidEnumReturn(type, false);
+            return (0, utils_1.invalidEnumReturn)(type, false);
     }
 }
 function getChatTypes(game) {
-    const chatTypes = [0 /* Say */];
+    const chatTypes = [0 /* ChatType.Say */];
     const supporter = game.model.supporter;
-    if (partyUtils_1.isInParty(game)) {
-        chatTypes.push(1 /* Party */);
+    if ((0, partyUtils_1.isInParty)(game)) {
+        chatTypes.push(1 /* ChatType.Party */);
     }
     if (supporter) {
-        chatTypes.push(4 /* Supporter */);
+        chatTypes.push(4 /* ChatType.Supporter */);
     }
     return chatTypes;
 }

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InternalAdminApi = void 0;
 class InternalAdminApi {
     constructor(adminService, endPoints) {
         this.adminService = adminService;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.draggableComponents = exports.DraggableItem = exports.DraggableDrop = exports.DraggableOutlet = exports.DraggableService = void 0;
 const tslib_1 = require("tslib");
 const core_1 = require("@angular/core");
 const lodash_1 = require("lodash");
@@ -44,7 +45,7 @@ let DraggableService = class DraggableService {
         }
     }
     removeDropZone(dropZone) {
-        utils_1.removeItem(this.dropZones, dropZone);
+        (0, utils_1.removeItem)(this.dropZones, dropZone);
         if (this.draggedItem) {
             this.initRects();
         }
@@ -55,7 +56,7 @@ let DraggableService = class DraggableService {
     updateHover(x, y) {
         if (this.draggedItem) {
             for (const zone of this.dropZones) {
-                if (utils_1.pointInRect(x, y, zone.rect)) {
+                if ((0, utils_1.pointInRect)(x, y, zone.rect)) {
                     this.setActiveDropZone(zone);
                     return;
                 }
@@ -67,31 +68,31 @@ let DraggableService = class DraggableService {
         this.dropZones.forEach(i => i.initRect());
     }
 };
-DraggableService = tslib_1.__decorate([
-    core_1.Injectable({ providedIn: 'root' })
-], DraggableService);
 exports.DraggableService = DraggableService;
+exports.DraggableService = DraggableService = tslib_1.__decorate([
+    (0, core_1.Injectable)({ providedIn: 'root' })
+], DraggableService);
 let DraggableOutlet = class DraggableOutlet {
     constructor(element, service) {
         service.root = element;
     }
 };
-DraggableOutlet = tslib_1.__decorate([
-    core_1.Component({
+exports.DraggableOutlet = DraggableOutlet;
+exports.DraggableOutlet = DraggableOutlet = tslib_1.__decorate([
+    (0, core_1.Component)({
         selector: 'draggable-outlet',
         template: `<div></div>`,
         styles: [`:host { position: fixed; top: 0; left: 0; z-index: 10000; }`],
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, DraggableService])
 ], DraggableOutlet);
-exports.DraggableOutlet = DraggableOutlet;
 let DraggableDrop = class DraggableDrop {
     constructor(element, service) {
         this.element = element;
         this.service = service;
         this.pad = 0;
         this.drop = new core_1.EventEmitter();
-        this.rect = rect_1.rect(0, 0, 0, 0);
+        this.rect = (0, rect_1.rect)(0, 0, 0, 0);
     }
     ngOnInit() {
         this.service.addDropZone(this);
@@ -117,19 +118,19 @@ let DraggableDrop = class DraggableDrop {
         this.rect.h = clientBounds.height + 2 * this.pad;
     }
 };
+exports.DraggableDrop = DraggableDrop;
 tslib_1.__decorate([
-    core_1.Input('draggablePad'),
+    (0, core_1.Input)('draggablePad'),
     tslib_1.__metadata("design:type", Object)
 ], DraggableDrop.prototype, "pad", void 0);
 tslib_1.__decorate([
-    core_1.Output('draggableDrop'),
+    (0, core_1.Output)('draggableDrop'),
     tslib_1.__metadata("design:type", Object)
 ], DraggableDrop.prototype, "drop", void 0);
-DraggableDrop = tslib_1.__decorate([
-    core_1.Directive({ selector: '[draggableDrop]' }),
+exports.DraggableDrop = DraggableDrop = tslib_1.__decorate([
+    (0, core_1.Directive)({ selector: '[draggableDrop]' }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, DraggableService])
 ], DraggableDrop);
-exports.DraggableDrop = DraggableDrop;
 let DraggableItem = class DraggableItem {
     constructor(element, service) {
         this.element = element;
@@ -164,7 +165,7 @@ let DraggableItem = class DraggableItem {
         this.unsubscribeDrag();
         this.unsubscribeDrag = lodash_1.noop;
         if (!this.disabled) {
-            this.unsubscribeDrag = agDrag_1.handleDrag(this.element.nativeElement, e => this.drag(e), { prevent: true });
+            this.unsubscribeDrag = (0, agDrag_1.handleDrag)(this.element.nativeElement, e => this.drag(e), { prevent: true });
         }
     }
     drag(e) {
@@ -197,29 +198,30 @@ let DraggableItem = class DraggableItem {
                 this.service.endMove();
             }
             else {
-                const x = utils_1.clamp(this.startX + e.dx, 0, window.innerWidth - this.width);
-                const y = utils_1.clamp(this.startY + e.dy, 0, window.innerHeight - this.height);
-                utils_1.setTransform(this.draggable, `translate3d(${x}px, ${y}px, 0px)`);
+                const x = (0, utils_1.clamp)(this.startX + e.dx, 0, window.innerWidth - this.width);
+                const y = (0, utils_1.clamp)(this.startY + e.dy, 0, window.innerHeight - this.height);
+                (0, utils_1.setTransform)(this.draggable, `translate3d(${x}px, ${y}px, 0px)`);
                 this.service.updateHover(e.x, e.y);
             }
         }
     }
 };
+exports.DraggableItem = DraggableItem;
 tslib_1.__decorate([
-    core_1.Input('draggableItem'),
+    (0, core_1.Input)('draggableItem'),
     tslib_1.__metadata("design:type", Object)
 ], DraggableItem.prototype, "item", void 0);
 tslib_1.__decorate([
-    core_1.Output('draggableDrag'),
+    (0, core_1.Output)('draggableDrag'),
     tslib_1.__metadata("design:type", Object)
 ], DraggableItem.prototype, "dragStarted", void 0);
 tslib_1.__decorate([
-    core_1.Input('draggableDisabled'),
+    (0, core_1.Input)('draggableDisabled'),
     tslib_1.__metadata("design:type", Object),
     tslib_1.__metadata("design:paramtypes", [Object])
 ], DraggableItem.prototype, "disabled", null);
-DraggableItem = tslib_1.__decorate([
-    core_1.Directive({
+exports.DraggableItem = DraggableItem = tslib_1.__decorate([
+    (0, core_1.Directive)({
         selector: '[draggableItem]',
         host: {
             '[style.touch-action]': `touchAction`,
@@ -227,6 +229,5 @@ DraggableItem = tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:paramtypes", [core_1.ElementRef, DraggableService])
 ], DraggableItem);
-exports.DraggableItem = DraggableItem;
 exports.draggableComponents = [DraggableOutlet, DraggableItem, DraggableDrop];
 //# sourceMappingURL=draggable.js.map

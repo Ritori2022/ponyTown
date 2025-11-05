@@ -1,13 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.anyState = void 0;
+exports.animatorState = animatorState;
+exports.animatorTransition = animatorTransition;
+exports.createAnimator = createAnimator;
+exports.getAnimation = getAnimation;
+exports.getAnimationFrame = getAnimationFrame;
+exports.resetAnimatorState = resetAnimatorState;
+exports.setAnimatorState = setAnimatorState;
+exports.updateAnimator = updateAnimator;
 function animatorState(name, animation, variants = {}) {
     return { name, animation, variants, from: [] };
 }
-exports.animatorState = animatorState;
 function animatorTransition(from, to, options = {}) {
-    to.from.push(Object.assign({ state: from }, options));
+    to.from.push({ state: from, ...options });
 }
-exports.animatorTransition = animatorTransition;
 exports.anyState = animatorState('any', { fps: 1, loop: false, frames: [] });
 function createAnimator() {
     return {
@@ -18,22 +25,18 @@ function createAnimator() {
         next: undefined,
     };
 }
-exports.createAnimator = createAnimator;
 function getAnimation(animator) {
     return animator.state && getAnimationForState(animator.state, animator.variant);
 }
-exports.getAnimation = getAnimation;
 function getAnimationFrame(animator) {
     const animation = getAnimation(animator);
     return animation ? Math.floor(animator.time * animation.fps) % animation.frames.length : 0;
 }
-exports.getAnimationFrame = getAnimationFrame;
 function resetAnimatorState(animator) {
     animator.state = undefined;
     animator.target = undefined;
     animator.next = undefined;
 }
-exports.resetAnimatorState = resetAnimatorState;
 function setAnimatorState(animator, state) {
     if (animator.target !== state) {
         if (animator.state !== state) {
@@ -50,7 +53,6 @@ function setAnimatorState(animator, state) {
         animator.next = undefined;
     }
 }
-exports.setAnimatorState = setAnimatorState;
 function updateAnimator(animator, delta) {
     const time = animator.time;
     animator.time += delta;
@@ -82,7 +84,6 @@ function updateAnimator(animator, delta) {
         } while (switched && animator.target);
     }
 }
-exports.updateAnimator = updateAnimator;
 function setCurrentState(animator, state) {
     animator.next = undefined;
     animator.state = state;
@@ -112,7 +113,7 @@ function findTrans(current, target, finalTarget, depth, maxDepth, done) {
         done.push(target);
         for (const from of target.from) {
             if (from.state === current && (from.onlyDirectTo === undefined || from.onlyDirectTo === finalTarget)) {
-                return Object.assign({}, from, { state: target });
+                return { ...from, state: target };
             }
         }
         if (depth < maxDepth) {
