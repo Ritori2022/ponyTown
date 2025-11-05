@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node pony-town.js --login --admin --game",
     "start-inspect": "node --inspect pony-town.js --login --admin --game",
-    "lint": "tslint -c tslint.json src/ts/**/*.ts",
+    "lint": "eslint \"src/ts/**/*.ts\"",
     "dev": "gulp dev",
     "dev-sprites": "gulp dev --sprites",
     "sw-generate": "workbox generateSW workbox-config.js",
@@ -46,7 +46,11 @@
     "latest-angular": "npm i @angular/common@latest @angular/compiler@latest @angular/core@latest @angular/forms@latest @angular/platform-browser@latest @angular/platform-browser-dynamic@latest @angular/router@latest @angular/animations@latest @angular/compiler-cli@latest @angular/platform-server@latest @angular/cdk@latest --save",
     "update-fontawesome": "npm update @fortawesome/fontawesome-svg-core @fortawesome/free-brands-svg-icons @fortawesome/free-solid-svg-icons @fortawesome/angular-fontawesome --save"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.3",
+    "@typescript-eslint/parser": "^8.46.3",
+    "eslint": "^9.39.1"
+  },
   "dependencies": {
     "@angular/animations": "^8.2.4",
     "@angular/cdk": "^8.1.4",
@@ -190,7 +194,6 @@
     "ts-node": "^8.3.0",
     "tsickle": "^0.37.0",
     "tslib": "^1.10.0",
-    "tslint": "^5.19.0",
     "tsutils": "^3.17.1",
     "typescript": "^3.5.3",
     "ua-parser-js": "^0.7.20",
