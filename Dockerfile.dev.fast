@@ -1,0 +1,42 @@
+# ===========================================
+# Pony Town - Fast Development Build
+# ===========================================
+# 跳过构建步骤，使用预编译代码（适合快速测试）
+
+FROM node:22-alpine
+
+# 只安装运行时依赖
+RUN apk add --no-cache tini
+
+WORKDIR /app
+
+# 复制package文件
+COPY package*.json ./
+
+# 只安装生产依赖（更快）
+RUN npm ci --legacy-peer-deps --only=production && \
+    npm cache clean --force
+
+# 复制所有已编译的代码和资源
+COPY src/scripts ./src/scripts
+COPY assets ./assets
+COPY public ./public
+COPY views ./views
+COPY favicons ./favicons
+COPY pony-town.js ./
+COPY cli.js ./
+
+# 创建非root用户
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S ponytown -u 1001 && \
+    chown -R ponytown:nodejs /app
+
+USER ponytown
+
+EXPOSE 8090 8091
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=60s \
+    CMD node -e "require('http').get('http://localhost:8090/api/state', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "pony-town.js", "--login", "--admin", "--game", "--local"]

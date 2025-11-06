@@ -1,0 +1,55 @@
+version: '3.8'
+
+# 快速开发环境 - 跳过编译步骤（需要先在本地编译代码）
+# 使用前提: npm install && npm run ts && npm run build
+# 使用方法: docker-compose -f docker-compose.dev.fast.yml up -d
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: ponytown-db-fast
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme123}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ponytown}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_fast_data:/data/db
+    networks:
+      - ponytown-fast-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ponytown:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev.fast
+    container_name: ponytown-app-fast
+    restart: unless-stopped
+    ports:
+      - "${GAME_PORT:-8090}:8090"
+      - "${ADMIN_PORT:-8091}:8091"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./config.dev.json:/app/config.json:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ponytown-fast-network
+    command: ["node", "pony-town.js", "--login", "--admin", "--game", "--local"]
+
+networks:
+  ponytown-fast-network:
+    driver: bridge
+
+volumes:
+  mongodb_fast_data:
+    driver: local
