@@ -6,6 +6,15 @@
 
 Phase 1-5 全部完成 | All Phases Complete (2025-11-05)
 
+---
+
+**🚀 新手快速开始** | **Quick Start for Beginners**
+
+📋 [**QUICKSTART.md - Docker一键部署（无需OAuth）**](./QUICKSTART.md)
+☁️ [DEPLOYMENT.md - 云端部署完整指南](./DEPLOYMENT.md)
+
+---
+
 [English](#english) | [中文](#chinese)
 
 </div>
@@ -16,6 +25,31 @@ Phase 1-5 全部完成 | All Phases Complete (2025-11-05)
 ## 📖 English Documentation
 
 > **Status**: This fork has been fully modernized from 2019 tech stack to 2025 standards.
+
+### 🚀 Quick Start with Docker (No OAuth Required)
+
+**For beginners, the easiest way to get started:**
+
+```bash
+# 1. Quick setup with Docker (no OAuth configuration needed!)
+git clone https://github.com/Ritori2022/ponyTown.git
+cd ponyTown
+
+# 2. Start development mode
+docker-compose -f docker-compose.dev.yml up -d
+
+# 3. Create test account
+./create-test-account.sh "MyName" "test@example.com"
+
+# 4. Open browser and use the login URL from script output
+# Example: http://localhost:8090/local?username=<your_account_id>
+```
+
+**See [QUICKSTART.md](./QUICKSTART.md) for detailed instructions.**
+
+For production deployment with OAuth and cloud setup, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+---
 
 ### 📊 Modernization Overview
 

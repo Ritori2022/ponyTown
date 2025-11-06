@@ -1,0 +1,68 @@
+version: '3.8'
+
+# 开发环境配置 - 无需OAuth
+# 使用方法: docker-compose -f docker-compose.dev.yml up -d
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: ponytown-db-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme123}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ponytown}
+    ports:
+      - "27017:27017"  # 暴露MongoDB端口方便调试
+    volumes:
+      - mongodb_dev_data:/data/db
+      - mongodb_dev_config:/data/configdb
+    networks:
+      - ponytown-dev-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Pony Town Application (Development Mode)
+  ponytown:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ponytown-app-dev
+    restart: unless-stopped
+    ports:
+      - "${GAME_PORT:-8090}:8090"
+      - "${ADMIN_PORT:-8091}:8091"
+    environment:
+      NODE_ENV: development
+    volumes:
+      # 使用开发配置
+      - ./config.dev.json:/app/config.json:ro
+      # 可选：挂载代码以支持热重载（需要先编译）
+      # - ./src/scripts:/app/src/scripts
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ponytown-dev-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8090/api/state', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    command: ["node", "pony-town.js", "--login", "--admin", "--game", "--local"]
+
+networks:
+  ponytown-dev-network:
+    driver: bridge
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+  mongodb_dev_config:
+    driver: local

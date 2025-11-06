@@ -1,0 +1,29 @@
+{
+	"title": "Pony Town Dev",
+	"twitterLink": "",
+	"contactEmail": "admin@example.com",
+	"port": 8090,
+	"adminPort": 8091,
+	"host": "http://localhost:8090/",
+	"local": "localhost:8090",
+	"adminLocal": "localhost:8091",
+	"secret": "dev-secret-change-in-production-use-openssl-rand",
+	"token": "dev-token-change-in-production-use-openssl-rand",
+	"db": "mongodb://admin:changeme123@mongodb:27017/ponytown?authSource=admin",
+	"oauth": {},
+	"assetsPath": "assets",
+	"servers": [
+		{
+			"id": "dev",
+			"port": 8090,
+			"path": "/s00/ws",
+			"local": "localhost:8090",
+			"name": "Dev Server",
+			"desc": "Development server - no OAuth required",
+			"flags": {
+				"test": true,
+				"editor": true
+			}
+		}
+	]
+}
