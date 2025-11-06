@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm ci --legacy-peer-deps && npm run ts && npm run build"
+  },
+  "deploy": {
+    "startCommand": "node pony-town.js --login --admin --game",
+    "healthcheckPath": "/api/state",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
