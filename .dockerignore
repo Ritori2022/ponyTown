@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs (will be rebuilt in Docker)
+dist/
+build/
+.webpack/
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment and config
+.env
+.env.local
+.env.*.local
+config.json
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (not needed in runtime)
+*.md
+docs/
+CHANGELOG*
+LICENSE*
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Testing
+coverage/
+.nyc_output/
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Docker files (prevent recursion)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Source maps (if not needed in production)
+*.map
+
+# Assets source (keep compiled assets only)
+assets-source/

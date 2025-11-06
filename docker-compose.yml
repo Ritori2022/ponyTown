@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: ponytown-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme123}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ponytown}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - ponytown-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Pony Town Application
+  ponytown:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ponytown-app
+    restart: unless-stopped
+    ports:
+      - "${GAME_PORT:-8090}:8090"
+      - "${ADMIN_PORT:-8091}:8091"
+    environment:
+      NODE_ENV: production
+      # These will be loaded from config.json (created from template)
+    volumes:
+      # Mount config.json from host
+      - ./config.json:/app/config.json:ro
+      # Optional: Mount assets if you want to hot-reload them
+      # - ./assets:/app/assets
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ponytown-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8090/api/state', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy (Optional but recommended for production)
+  nginx:
+    image: nginx:alpine
+    container_name: ponytown-nginx
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - ponytown
+    networks:
+      - ponytown-network
+    profiles:
+      - production  # Only start with: docker-compose --profile production up
+
+networks:
+  ponytown-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
