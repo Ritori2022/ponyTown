@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pony Town - 游戏预览</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .logo {
+            margin: 20px 0;
+        }
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .pony {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        .note {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐴 Pony Town Custom Server</h1>
+
+        <div class="logo">
+            <img src="/assets/images/logo.png" alt="Pony Town Logo" onerror="this.style.display='none'">
+        </div>
+
+        <div class="status">
+            <h2>🎮 游戏服务器</h2>
+            <p id="server-status">检查中...</p>
+            <p id="server-info"></p>
+        </div>
+
+        <div class="pony">🦄</div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🎨 自定义角色</h3>
+                <p>创建你独特的小马外观</p>
+            </div>
+            <div class="feature">
+                <h3>🗺️ 探索世界</h3>
+                <p>多个地图等待探索</p>
+            </div>
+            <div class="feature">
+                <h3>💬 社交互动</h3>
+                <p>实时聊天和好友系统</p>
+            </div>
+            <div class="feature">
+                <h3>🎭 表情动作</h3>
+                <p>丰富的表情和动作</p>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>📝 开发模式启动说明：</strong><br>
+            • 运行 <code>node pony-town.js --login --admin --game --local</code><br>
+            • 访问 <a href="http://localhost:8090" style="color: #fff">http://localhost:8090</a><br>
+            • 使用 /local?username=&lt;id&gt; 登录（开发模式）
+        </div>
+    </div>
+
+    <script>
+        // 检查服务器状态
+        fetch('/api/state')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('server-status').innerHTML = '✅ 服务器运行中';
+                document.getElementById('server-info').innerHTML =
+                    `在线玩家: ${data.online || 0} | 服务器: ${data.id || 'dev'}`;
+            })
+            .catch(() => {
+                document.getElementById('server-status').innerHTML = '❌ 服务器未运行';
+                document.getElementById('server-info').innerHTML =
+                    '请先启动服务器: node pony-town.js --login --admin --game --local';
+            });
+    </script>
+</body>
+</html>
+    
